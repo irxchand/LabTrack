@@ -4,6 +4,29 @@ This file is a high-density, chronological record of decisions, file reorganizat
 
 ---
 
+## 2026-10-03 — GitHub Repository Created and Initial Push
+
+**Summary**
+Created public GitHub repository `irxchand/LabTrack` using `gh` CLI with authenticated credentials. Initialized Git locally on `main` branch, configured remote origin `https://github.com/irxchand/LabTrack.git`, committed all baseline documentation, presentation files, and `src/.gitkeep`, and pushed to GitHub.
+
+**Decisions**
+- Repository URL: `https://github.com/irxchand/LabTrack`.
+- Default branch: `main`.
+
+**Changes**
+- Initialized local Git repository (`git init -b main`).
+- Added remote origin `https://github.com/irxchand/LabTrack.git`.
+- Committed and pushed initial baseline commit.
+
+**Open Items**
+- Frontend teammate reviewing deck UI and content.
+- Architectural planning and backend setup in `src/`.
+
+**Next Context**
+The project repository is live on GitHub at `https://github.com/irxchand/LabTrack`.
+
+---
+
 ## 2026-10-03 — CCE Evaluation Plan Added to Documentation
 
 **Summary**
