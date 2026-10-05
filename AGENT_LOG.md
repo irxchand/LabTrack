@@ -4,6 +4,35 @@ This file is a high-density, chronological record of decisions, file reorganizat
 
 ---
 
+## 2026-10-05 — LabTrack Pitch Deck V1.1 Release
+
+**Summary**
+Created and compiled LabTrack Pitch Deck V1.1 (`presentations/v1.1/`) incorporating 24 comprehensive factual, architectural, domain-model, and academic defensibility fixes without modifying the V1 baseline. Generated `presentations/v1.1/pdf/LabTrack_Pitch_Deck_v1.pdf` (26 slides).
+
+**Decisions**
+- Preserved `presentations/v1/` as an immutable baseline.
+- Added new "Why LabTrack is more than inventory" conceptual ladder slide.
+- Added new "Research Context & Literature Survey" slide satisfying CCE evaluation requirements.
+- Restructured lifecycle into a branching model from Active Issue (Reminders, Extensions, FIFO Reservations).
+- Explicitly separated state model into Catalogue Stock Status, Physical Inventory State, and Request/Reservation State.
+- Grounded AI advisory capabilities with database validation flow and strict "never inventory authority" guardrail.
+- Standardized DCDS Lab ESE rubric mapping to the official 10 marks / 40% criteria.
+- Condensed faculty decisions to the top 8 P0 institutional policy questions.
+
+**Changes**
+- Created `presentations/v1.1/code/` with updated `src/slides.js`, `src/style.css`, and `export-pdf.js`.
+- Generated `presentations/v1.1/pdf/LabTrack_Pitch_Deck_v1.1.pdf` (26 slides, 2.8 MB).
+- Verified clean build (`npm run build`) and clean headless Puppeteer export.
+
+**Open Items**
+- Present V1.1 deck for faculty review and obtain guidance on P0 policy decisions (UAQ1, UAQ5, UAQ7, UAQ12, UAQ13, UAQ16, UAQ17, UAQ18).
+- Proceed to application scaffold in `src/`.
+
+**Next Context**
+Both V1 (`presentations/v1/`) and V1.1 (`presentations/v1.1/`) artifacts are available and tracked in the repository.
+
+---
+
 ## 2026-10-03 — GitHub Repository Created and Initial Push
 
 **Summary**

@@ -20,14 +20,23 @@ LabTrack/
 │   └── Evaluation_Plan_Cloud_Computing_Essentials.pdf  # Academic evaluation reference (CCE)
 │
 ├── presentations/                     # Presentation artifacts and pitch-deck projects ONLY
-│   └── v1/                            # Presentation version 1
+│   ├── v1/                            # Presentation version 1 (baseline)
+│   │   ├── code/                      # Interactive presentation web app (Vite project)
+│   │   │   ├── src/                   # Presentation slide definitions and design system
+│   │   │   ├── index.html             # Presentation stage and controls
+│   │   │   ├── export-pdf.js          # Headless PDF export automation script
+│   │   │   └── package.json           # Vite project configuration
+│   │   └── pdf/                       # Compiled PDF presentation exports
+│   │       └── LabTrack_Pitch_Deck_v1.pdf  # Compiled 25-slide baseline deck (PDF)
+│   │
+│   └── v1.1/                          # Presentation version 1.1 (fact-checked & refined)
 │       ├── code/                      # Interactive presentation web app (Vite project)
-│       │   ├── src/                   # Presentation slide definitions and design system
+│       │   ├── src/                   # Refined slide definitions and design system
 │       │   ├── index.html             # Presentation stage and controls
 │       │   ├── export-pdf.js          # Headless PDF export automation script
 │       │   └── package.json           # Vite project configuration
 │       └── pdf/                       # Compiled PDF presentation exports
-│           └── LabTrack_Pitch_Deck_v1.pdf  # Compiled 25-slide presentation deck (PDF)
+│           └── LabTrack_Pitch_Deck_v1.1.pdf # Compiled 26-slide refined deck (PDF)
 │
 └── src/                               # Application source code (reserved for implementation)
     └── .gitkeep                       # Placeholder until implementation starts
@@ -97,12 +106,13 @@ Every AI agent working in this repository must follow this sequence:
 
 ## 7. Current Project State
 
-- **Stage**: V1 Definition & Repository Baseline Setup.
-- **Pitch Deck**: A 25-slide interactive Vite deck lives under [`presentations/v1/code/`](file:///d:/Users/Documents/Symbiosis/Academics/Sem%203/Low%20Credit/CCE/Project/presentations/v1/code/) and its matching PDF export under [`presentations/v1/pdf/LabTrack_Pitch_Deck_v1.pdf`](file:///d:/Users/Documents/Symbiosis/Academics/Sem%203/Low%20Credit/CCE/Project/presentations/v1/pdf/LabTrack_Pitch_Deck_v1.pdf).
-- **Implementation**: The `src/` directory is reserved for application code. Framework and database architecture will be formalized following faculty consultation on P0 questions.
+- **Stage**: V1.1 Release & Faculty Proposal Review.
+- **Pitch Deck V1 (Baseline)**: 25-slide deck in [`presentations/v1/code/`](file:///d:/Users/Documents/Symbiosis/Academics/Sem%203/Low%20Credit/CCE/Project/presentations/v1/code/) with PDF in [`presentations/v1/pdf/LabTrack_Pitch_Deck_v1.pdf`](file:///d:/Users/Documents/Symbiosis/Academics/Sem%203/Low%20Credit/CCE/Project/presentations/v1/pdf/LabTrack_Pitch_Deck_v1.pdf).
+- **Pitch Deck V1.1 (Refined)**: 26-slide refined deck in [`presentations/v1.1/code/`](file:///d:/Users/Documents/Symbiosis/Academics/Sem%203/Low%20Credit/CCE/Project/presentations/v1.1/code/) with PDF in [`presentations/v1.1/pdf/LabTrack_Pitch_Deck_v1.1.pdf`](file:///d:/Users/Documents/Symbiosis/Academics/Sem%203/Low%20Credit/CCE/Project/presentations/v1.1/pdf/LabTrack_Pitch_Deck_v1.1.pdf).
+- **Implementation**: The `src/` directory is reserved for application code. Implementation will proceed following faculty consultation on P0 questions.
 
 ---
 
 ## 8. Explicit Current Boundary
 
-> **IMPORTANT:** The Pitch Deck UI and content are currently undergoing refinement by a dedicated frontend teammate. **Do not redesign, rewrite, critique, or modify the Pitch Deck content or styles** unless explicitly requested by the user.
+> **IMPORTANT:** Pitch Deck V1 and V1.1 are version-controlled assets. Do not overwrite V1 baseline when introducing future presentation revisions. Application source implementation in `src/` remains the next active development phase.
