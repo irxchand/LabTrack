@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLabData } from '../context/LabDataContext';
@@ -16,25 +16,27 @@ import {
   Radio,
   Sparkles,
   Search,
-  Globe,
-  Share2,
-  Code,
-  Send,
-  Zap,
+  Check,
+  LogOut,
+  ChevronRight,
+  FileText,
+  AlertCircle,
+  Clock,
+  Compass,
 } from 'lucide-react';
 
 export function HeroPage() {
   const navigate = useNavigate();
-  const { currentRole, setRole } = useAuth();
-  const { basket, setIsBasketOpen } = useLabData();
+  const { currentUser, role, currentRole, switchRole, logout } = useAuth();
+  const { basket, setIsBasketOpen, inventory } = useLabData();
 
-  // Pricing toggle state: monthly vs annual
-  const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' | 'annual'
-
-  // Interactive mouse tracking for 3D tilt effect on satellites
+  // Mouse tracking for subtle 3D perspective tilt on interactive hardware node
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [promptText, setPromptText] = useState('Allocate Jetson Nano 4GB to PRJ-AIML-08');
   const [promptSubmitted, setPromptSubmitted] = useState(false);
+  const [activeStage, setActiveStage] = useState(0);
+
+  const activeUserRole = currentRole || role || 'Student';
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -56,257 +58,330 @@ export function HeroPage() {
     }, 600);
   };
 
+  // 5-Stage Lifecycle Model (Replacing manual notebooks with complete digital lifecycle)
+  const lifecycleStages = [
+    {
+      step: '01',
+      title: 'Component Discovery',
+      tagline: '2-Tier Stock Boundary Model',
+      description:
+        'Digitized catalogue separates serialized high-value capital assets (FPGAs, GPUs, logic analyzers) from bulk passive consumables (jumpers, sensors, breadboards). Real-time inventory status prevents duplicate ordering and manual notebook searches.',
+      metrics: ['2-Tier Classification', 'Real-Time Stock Query', 'Sub-Zero Drift'],
+      responsibleRole: 'Student / Research Team',
+    },
+    {
+      step: '02',
+      title: 'Faculty Endorsement',
+      tagline: 'Supervisor Project Quota Governance',
+      description:
+        'Requisitions are cryptographically bound to approved academic projects. Faculty supervisors evaluate hardware necessity, project budget caps, and team return reliability before one-click endorsement.',
+      metrics: ['Project Cap Enforcement', 'Cryptographic Audit Trail', 'Zero Paper Slips'],
+      responsibleRole: 'Faculty Mentor / Supervisor',
+    },
+    {
+      step: '03',
+      title: 'Counter Dispatch',
+      tagline: 'Optical Barcode & Custody Handshake',
+      description:
+        'The lab assistant executes physical fulfillment using high-speed optical barcode & RFID scanning. Verification of pre-existing cosmetic condition is timestamped before student checkout.',
+      metrics: ['Optical Scanner Link', 'Sub-Second Handshake', 'Immutable Custody Transfer'],
+      responsibleRole: 'Lab Assistant Depot Custodian',
+    },
+    {
+      step: '04',
+      title: 'Physical Return & Triage',
+      tagline: 'Dual-State Return Verification',
+      description:
+        'Upon project completion, equipment undergoes bench inspection. Clean items immediately restock and notify waiting students in FIFO queues; defective items route to maintenance with automated incident logs.',
+      metrics: ['Bench Inspection Checklist', 'FIFO Waitlist Release', 'Automated Damage Ledger'],
+      responsibleRole: 'Lab Assistant & Maintenance Bench',
+    },
+    {
+      step: '05',
+      title: 'Reliability Index',
+      tagline: 'Vector Accountability Scoring',
+      description:
+        'An empirical compliance score (0-100%) dynamically updates based on on-time return rate, equipment handling hygiene, and prompt defect reporting, ensuring university-wide hardware accountability.',
+      metrics: ['Empirical 0-100% Score', 'Academic ESE Rubric Sync', 'Institutional Transparency'],
+      responsibleRole: 'Department HoD & Auditors',
+    },
+  ];
+
+  // Quad-Persona Institutional Matrix
+  const personas = [
+    {
+      role: 'Student',
+      title: 'Student Requester',
+      headline: 'Project Team Workspace',
+      description: 'Explore verified lab silicon, stage batch component requisitions, and track active loan countdowns.',
+      route: '/workspace/inventory',
+      badge: 'REQUEST CLEARANCE',
+      capabilities: ['Hardware discovery & reservation', 'Project team requisition basket', 'Active loan deadline tracking'],
+    },
+    {
+      role: 'Faculty',
+      title: 'Faculty Mentor',
+      headline: 'Supervisory Review Desk',
+      description: 'Review student project hardware requests, endorse allocations, and inspect team reliability ratings.',
+      route: '/workspace/operations/approvals',
+      badge: 'ENDORSEMENT CLEARANCE',
+      capabilities: ['Requisition queue authorization', 'Project allocation limits', 'Student accountability score review'],
+    },
+    {
+      role: 'Lab Assistant',
+      title: 'Lab Assistant',
+      headline: 'Counter Dispatch Terminal',
+      description: 'Physical equipment check-in/out station with optical barcode scanning, condition verification, and return triage.',
+      route: '/workspace/operations/dispatch',
+      badge: 'DISPATCH CLEARANCE',
+      capabilities: ['Barcode/RFID physical issue', 'Return inspection checklist', 'Defect triage & maintenance routing'],
+    },
+    {
+      role: 'HoD / Admin',
+      title: 'HoD / Department Auditor',
+      headline: 'Executive Governance Hub',
+      description: 'Department-wide hardware valuation, reliability distribution analytics, and immutable cryptographic audit trails.',
+      route: '/workspace/accountability/audit',
+      badge: 'GOVERNANCE CLEARANCE',
+      capabilities: ['Institutional asset valuation', 'NIST SP 800-53 audit ledger', 'System-wide policy configuration'],
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white font-inter selection:bg-[#a78b71] selection:text-black overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#09090b] text-white font-inter selection:bg-[#a78b71] selection:text-black overflow-x-hidden relative select-none">
       {/* ───────────────────────────────────────────────────────────────── */}
-      {/* RADIAL DOT GRID OVERLAY (32px spacing, white at 8% opacity)        */}
+      {/* AMBIENT LIGHTING & DOT GRID CANVAS                                */}
       {/* ───────────────────────────────────────────────────────────────── */}
-      <div className="absolute inset-0 bg-dots pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-dots pointer-events-none z-0 opacity-25" />
+
+      {/* Luminous Ambient Halos behind glass elements */}
+      <div className="absolute top-20 left-1/4 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#c9b8a0]/15 via-[#a78b71]/10 to-transparent blur-[140px] pointer-events-none -z-10" />
+      <div className="absolute top-96 right-1/4 translate-x-1/3 w-[700px] h-[700px] rounded-full bg-gradient-to-tl from-[#e8d5b7]/15 via-[#8a6845]/10 to-transparent blur-[160px] pointer-events-none -z-10" />
 
       {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 1. FIXED TOP NAVBAR (100% width, px-6 to px-12, Playfair logo)    */}
+      {/* 1. TOP FLOATING GLASS NAVIGATION BAR                              */}
       {/* ───────────────────────────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-50 h-20 px-6 lg:px-12 flex items-center justify-between bg-[#0a0a0a]/85 backdrop-blur-[10px] border-b border-white/10">
+      <header className="fixed top-0 left-0 right-0 z-50 h-20 px-6 lg:px-12 flex items-center justify-between bg-white/[0.02] backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
         {/* Brand Block */}
         <div
-          className="flex items-center space-x-3 cursor-pointer"
+          className="flex items-center space-x-3 cursor-pointer group"
           onClick={() => navigate('/hero')}
         >
-          <span className="font-playfair text-2xl lg:text-3xl font-bold tracking-tight text-white italic">
+          <span className="font-clash text-2xl lg:text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
             LabTrack
           </span>
-          <span className="w-2 h-2 rounded-full bg-[#a78b71] shadow-[0_0_10px_#a78b71]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_12px_#c9b8a0] group-hover:scale-125 transition-transform" />
         </div>
 
-        {/* Center-Aligned Links in Inter (11px, uppercase, tracking-wide) */}
-        <nav className="hidden lg:flex items-center space-x-8 text-[11px] font-inter font-medium uppercase tracking-[0.2em] text-zinc-300">
-          {[
-            { label: 'Inventory', path: '/workspace/inventory' },
-            { label: 'Custody Desk', path: '/workspace/custody' },
-            { label: 'Reliability Index', path: '/workspace/accountability' },
-            { label: 'Dispatch Terminal', path: '/workspace/operations/dispatch' },
-            { label: 'Research Projects', path: '/workspace/projects' },
-          ].map((item) => (
-            <button
-              key={item.label}
-              onClick={() => navigate(item.path)}
-              className="hover:text-[#c9b8a0] transition-neural"
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
+        {/* Center Live Status Pill */}
+        <div className="hidden lg:flex items-center space-x-3 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md text-xs">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-stone-300 font-mono text-[11px] tracking-wider uppercase">
+            1,420 HARDWARE NODES ONLINE
+          </span>
+          <span className="text-white/20">|</span>
+          <span className="text-[#c9b8a0] font-mono text-[11px]">
+            {activeUserRole.toUpperCase()} CLEARANCE
+          </span>
+        </div>
 
-        {/* Right Action Block */}
-        <div className="flex items-center space-x-4">
-          {/* Live Notification Pill */}
-          <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-full glass-neural text-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-emerald-400 font-bold text-[8px] tracking-wider uppercase">LIVE</span>
-            <span className="text-white text-[12px] font-medium font-inter">1,420 Hardware Nodes</span>
+        {/* Right Persona & Action Controls */}
+        <div className="flex items-center space-x-3">
+          {/* Active Persona Pill */}
+          <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 text-xs">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#c9b8a0]/30 to-[#a78b71]/20 flex items-center justify-center font-bold text-[#f5e6c8] text-[11px]">
+              {currentUser?.name ? currentUser.name.charAt(0) : 'U'}
+            </div>
+            <div className="text-left font-sans leading-tight">
+              <div className="text-[12px] font-medium text-white truncate max-w-[120px]">
+                {currentUser?.name || 'Rahul Sharma'}
+              </div>
+              <div className="text-[10px] text-[#c9b8a0]/70 font-mono">
+                {currentUser?.prn || '202401048'}
+              </div>
+            </div>
           </div>
 
-          {/* Quick Role Switcher Pill */}
-          <div className="hidden md:flex items-center space-x-1 p-1 rounded-full glass-neural text-[10px] font-inter uppercase tracking-wider">
-            {['Student', 'Faculty', 'Lab Assistant', 'HoD / Admin'].map((role) => (
-              <button
-                key={role}
-                onClick={() => setRole(role)}
-                className={`px-2.5 py-1 rounded-full transition-neural ${
-                  currentRole === role
-                    ? 'bg-[#a78b71] text-black font-bold'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                {role}
-              </button>
-            ))}
+          {/* Quick Role Switcher */}
+          <div className="hidden md:flex items-center space-x-1 p-1 rounded-xl bg-white/[0.03] border border-white/10 text-[11px]">
+            {['Student', 'Faculty', 'Lab Assistant', 'HoD / Admin'].map((r) => {
+              const isSelected = activeUserRole === r;
+              return (
+                <button
+                  key={r}
+                  onClick={() => switchRole(r)}
+                  className={`px-2.5 py-1 rounded-lg transition-all font-medium cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#c9b8a0]/25 text-[#f5e6c8] border border-[#f5e6c8]/40 shadow-[0_0_15px_rgba(201,184,160,0.2)]'
+                      : 'text-stone-400 hover:text-white hover:bg-white/[0.04]'
+                  }`}
+                >
+                  {r.split(' ')[0]}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Requisition Basket Shortcut */}
-          <button
-            onClick={() => setIsBasketOpen(true)}
-            className="relative p-2.5 rounded-full glass-neural hover:border-[#a78b71]/50 text-white transition-neural"
-            title="Requisition Basket"
-          >
-            <Boxes className="w-4 h-4 text-[#c9b8a0]" />
-            {basket?.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#a78b71] text-black text-[10px] font-bold flex items-center justify-center">
-                {basket.length}
-              </span>
-            )}
-          </button>
-
-          {/* Start Free Trial / Enter Workspace Pill Button */}
+          {/* Enter Workstation Shell Button */}
           <button
             onClick={() => navigate('/workspace/inventory')}
-            className="px-6 py-2.5 rounded-full bg-white text-black font-inter font-semibold text-xs uppercase tracking-wider hover:bg-[#e8d5b7] transition-neural shadow-md"
+            className="px-5 py-2 rounded-full text-black font-bold text-xs tracking-wide shadow-[0_4px_20px_rgba(167,139,113,0.35)] hover:shadow-[0_4px_25px_rgba(201,184,160,0.5)] transition-all cursor-pointer flex items-center space-x-1.5"
+            style={{
+              background: 'linear-gradient(to right, #a78b71 0%, #c9b8a0 50%, #e8d5b7 100%)',
+            }}
           >
-            Start Free Trial
+            <span>Workspace</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Sign Out Button */}
+          <button
+            onClick={() => {
+              logout();
+              navigate('/login');
+            }}
+            className="p-2 rounded-xl bg-white/[0.03] hover:bg-red-500/10 text-stone-400 hover:text-red-400 border border-white/10 hover:border-red-500/30 transition-all cursor-pointer"
+            title="Sign Out"
+          >
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </header>
 
       {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 2. HERO SECTION WITH CENTRAL INTERACTIVE NODE & 4 SATELLITES     */}
+      {/* 2. HERO VISION SECTION                                            */}
       {/* ───────────────────────────────────────────────────────────────── */}
-      <section
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        className="relative z-10 pt-36 pb-28 px-6 lg:px-12 flex flex-col items-center justify-center min-h-screen text-center"
-      >
-        {/* Glow backdrop behind central node */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[400px] bg-[#a78b71]/15 blur-[140px] rounded-full pointer-events-none" />
-
-        {/* Small uppercase eyebrow */}
-        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full glass-neural text-[11px] font-inter uppercase tracking-[0.25em] text-[#c9b8a0] mb-6">
-          <Sparkles className="w-3.5 h-3.5 text-[#a78b71]" />
-          <span>NEURAL NETWORK HARDWARE ORCHESTRATION</span>
+      <section className="relative z-10 pt-36 pb-20 px-6 lg:px-12 flex flex-col items-center justify-center text-center">
+        {/* Subtle Eyebrow */}
+        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-md text-[11px] font-mono uppercase tracking-[0.25em] text-[#c9b8a0] mb-6">
+          <Sparkles className="w-3.5 h-3.5 text-[#e8d5b7]" />
+          <span>PHYSICAL COMPUTING ARCHITECTURE</span>
         </div>
 
-        {/* Headline: Playfair Display Italic clamp(2.5rem, 8vw, 6rem) with words highlighted in #a78b71 */}
-        <h1 className="font-playfair text-[clamp(2.5rem,7.5vw,5.8rem)] font-normal italic leading-[1.05] tracking-tight max-w-5xl mx-auto mb-6 text-white">
-          Empirical Hardware Lifecycle <span className="text-[#a78b71]">Synthesized</span> Through{' '}
-          <span className="text-[#a78b71]">Neural</span> Rigor.
+        {/* Master Headline */}
+        <h1 className="font-clash text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white max-w-5xl mx-auto mb-6 leading-[1.08]">
+          Hardware Lifecycle Orchestrated with{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
+            Absolute Precision.
+          </span>
         </h1>
 
-        <p className="font-inter text-sm sm:text-base lg:text-lg text-zinc-400 font-light max-w-2xl mx-auto mb-10 leading-relaxed">
-          The collegiate hardware lifecycle unified. Enforce strict 2-tier inventory boundaries, cryptographic
-          faculty endorsements, and optical dispatch traceability in real time.
+        <p className="text-base sm:text-lg text-stone-400 font-normal max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
+          The collegiate hardware lifecycle unified. Eliminate manual notebook logs with verified component availability,
+          cryptographic faculty endorsements, optical counter dispatch, and real-time reliability scoring.
         </p>
 
-        {/* Dual-Button CTA Group: one bordered and one solid white */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
+        {/* Dual Primary Action Gateway */}
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-20">
           <button
             onClick={() => navigate('/workspace/inventory')}
-            className="px-8 py-3.5 rounded-full bg-white text-black font-inter font-bold text-xs uppercase tracking-[0.18em] hover:bg-[#e8d5b7] transition-neural shadow-xl"
+            className="px-8 py-3.5 rounded-full text-black font-bold text-xs uppercase tracking-wider hover:brightness-105 transition-all shadow-[0_4px_30px_rgba(167,139,113,0.4)] cursor-pointer flex items-center space-x-2"
+            style={{
+              background: 'linear-gradient(to right, #a78b71 0%, #c9b8a0 50%, #e8d5b7 100%)',
+            }}
           >
-            Enter Workstation Shell
+            <span>Launch Master Inventory</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
-          <button
-            onClick={() => navigate('/login')}
-            className="px-8 py-3.5 rounded-full border border-white/20 text-white font-inter font-semibold text-xs uppercase tracking-[0.18em] hover:border-[#a78b71] hover:text-[#c9b8a0] transition-neural"
+
+          <a
+            href="#lifecycle-flow"
+            className="px-8 py-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/15 text-stone-300 hover:text-white font-medium text-xs uppercase tracking-wider transition-all backdrop-blur-md cursor-pointer flex items-center space-x-2"
           >
-            Authenticate Persona
-          </button>
+            <span>Explore 5-Stage Lifecycle</span>
+            <ChevronRight className="w-4 h-4" />
+          </a>
         </div>
 
         {/* ───────────────────────────────────────────────────────────── */}
-        {/* CENTRAL INTERACTIVE NODE & 4 FLOATING SATELLITES (3D TILT)    */}
+        {/* CENTRAL INTERACTIVE SILICON NODE & 4 FLOATING GLASS SATELLITES  */}
         {/* ───────────────────────────────────────────────────────────── */}
-        <div className="relative w-full max-w-5xl mx-auto my-6 px-4">
-          {/* Dynamic SVG Bezier Curves Overlay connecting central node to all 4 satellites */}
+        <div
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          className="relative w-full max-w-5xl mx-auto my-4 px-4"
+        >
+          {/* Dynamic SVG Bezier Lines connecting central node to satellites */}
           <svg
-            className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible"
+            className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible hidden md:block"
             viewBox="0 0 1000 560"
             fill="none"
           >
             <defs>
               <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#c9b8a0" stopOpacity="0.95" />
-                <stop offset="100%" stopColor="#a78b71" stopOpacity="0.4" />
+                <stop offset="0%" stopColor="#c9b8a0" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#a78b71" stopOpacity="0.2" />
               </linearGradient>
             </defs>
-
-            {/* Neural Bezier Curve 1: To Satellite 1 (Top Left: Line Chart) */}
             <path
               d="M 500 280 C 350 200, 220 160, 120 100"
               stroke="url(#goldGradient)"
-              strokeWidth="2.5"
-              className="node-line pulsing-branch"
-            />
-            <path
-              d="M 500 280 C 350 200, 220 160, 120 100"
-              stroke="#e8d5b7"
-              strokeWidth="1.5"
-              className="node-dashed opacity-60"
-            />
-
-            {/* Neural Bezier Curve 2: To Satellite 2 (Top Right: Code Block) */}
-            <path
-              d="M 500 280 C 650 200, 780 160, 880 100"
-              stroke="url(#goldGradient)"
-              strokeWidth="2.5"
+              strokeWidth="2"
               className="node-line pulsing-branch"
             />
             <path
               d="M 500 280 C 650 200, 780 160, 880 100"
-              stroke="#e8d5b7"
-              strokeWidth="1.5"
-              className="node-dashed opacity-60"
-            />
-
-            {/* Neural Bezier Curve 3: To Satellite 3 (Bottom Left: Audio Visualizer) */}
-            <path
-              d="M 500 280 C 380 380, 240 440, 140 480"
               stroke="url(#goldGradient)"
-              strokeWidth="2.5"
+              strokeWidth="2"
               className="node-line pulsing-branch"
             />
             <path
               d="M 500 280 C 380 380, 240 440, 140 480"
-              stroke="#e8d5b7"
-              strokeWidth="1.5"
-              className="node-dashed opacity-60"
-            />
-
-            {/* Neural Bezier Curve 4: To Satellite 4 (Bottom Right: Prompt Input) */}
-            <path
-              d="M 500 280 C 620 380, 760 440, 860 480"
               stroke="url(#goldGradient)"
-              strokeWidth="2.5"
+              strokeWidth="2"
               className="node-line pulsing-branch"
             />
             <path
               d="M 500 280 C 620 380, 760 440, 860 480"
-              stroke="#e8d5b7"
-              strokeWidth="1.5"
-              className="node-dashed opacity-60"
+              stroke="url(#goldGradient)"
+              strokeWidth="2"
+              className="node-line pulsing-branch"
             />
           </svg>
 
-          {/* Central 16:9 Interactive Glass Card with Central Glow */}
-          <div className="relative z-20 aspect-video w-full rounded-[36px] glass-neural central-glow p-6 sm:p-10 flex flex-col justify-between overflow-hidden text-left border border-white/15">
+          {/* Central 16:9 Transparent Glass Card */}
+          <div className="relative z-20 aspect-video w-full rounded-3xl bg-white/[0.03] backdrop-blur-2xl p-6 sm:p-10 flex flex-col justify-between overflow-hidden text-left border border-white/20 shadow-[0_30px_90px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.35)]">
+            {/* Top Bar of Central Node */}
             <div className="flex items-center justify-between pb-4 border-b border-white/10">
               <div className="flex items-center space-x-3">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#a78b71] animate-pulse" />
-                <span className="text-xs font-inter font-bold tracking-[0.2em] uppercase text-[#c9b8a0]">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#c9b8a0] animate-pulse" />
+                <span className="text-xs font-mono font-bold tracking-[0.2em] uppercase text-[#c9b8a0]">
                   CENTRAL SILICON NODE // DSP-RIG-8840
                 </span>
               </div>
               <span className="text-[10px] font-mono px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
-                NIST SP 800-53 AUDITED
+                ACTIVE TELEMETRY • L2-CB4-R2
               </span>
             </div>
 
-            {/* Center Node Telemetry Grid */}
+            {/* Center Telemetry Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
               <div className="space-y-1">
-                <div className="text-[11px] font-inter text-zinc-500 uppercase tracking-wider">Active Device</div>
-                <div className="text-xl sm:text-2xl font-playfair font-bold text-white italic">Kintex-7 UltraScale+</div>
-                <div className="text-xs text-[#a78b71] font-mono">Location: L2-CB4-R2</div>
+                <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider">Device Architecture</div>
+                <div className="text-xl sm:text-2xl font-clash font-bold text-white">NVIDIA Jetson Orin Nano</div>
+                <div className="text-xs text-[#c9b8a0] font-mono">Serial: JET-ORIN-0104</div>
               </div>
               <div className="space-y-1">
-                <div className="text-[11px] font-inter text-zinc-500 uppercase tracking-wider">Thermal Load</div>
-                <div className="text-xl sm:text-2xl font-inter font-bold text-white">42.1°C / 50MHz</div>
-                <div className="text-xs text-emerald-400 font-mono">Emissivity: Normal</div>
+                <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider">Operating Telemetry</div>
+                <div className="text-xl sm:text-2xl font-mono font-bold text-white">38.4°C / 62.5MHz</div>
+                <div className="text-xs text-emerald-400 font-mono">Emissivity: Normal • 5V / 2.1A</div>
               </div>
               <div className="space-y-1">
-                <div className="text-[11px] font-inter text-zinc-500 uppercase tracking-wider">Custody State</div>
-                <div className="text-xl sm:text-2xl font-playfair font-bold text-[#c9b8a0] italic">Team Hyperion</div>
-                <div className="text-xs text-zinc-400 font-mono">Due: 04h 12m Remaining</div>
+                <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider">Custody State</div>
+                <div className="text-xl sm:text-2xl font-clash font-bold text-[#f5e6c8]">Active Academic Loan</div>
+                <div className="text-xs text-amber-400 font-mono">Due: 04h 12m Remaining</div>
               </div>
             </div>
 
-            {/* Bottom Node Bar */}
+            {/* Bottom Bar */}
             <div className="pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
-              <div className="flex items-center space-x-2 text-zinc-400 font-mono">
-                <Radio className="w-3.5 h-3.5 text-[#a78b71]" />
+              <div className="flex items-center space-x-2 text-stone-400 font-mono">
+                <Radio className="w-3.5 h-3.5 text-[#c9b8a0]" />
                 <span>RFID TAG: AT-ESP-0104 // 100% TELEMETRY SYNC</span>
               </div>
               <button
                 onClick={() => navigate('/workspace/inventory')}
-                className="px-5 py-2 rounded-full bg-[#a78b71]/20 hover:bg-[#a78b71] text-[#e8d5b7] hover:text-black font-inter font-semibold transition-neural flex items-center space-x-1.5"
+                className="px-4 py-1.5 rounded-full bg-white/[0.05] hover:bg-[#c9b8a0] text-[#f5e6c8] hover:text-black font-medium transition-all flex items-center space-x-1.5 border border-white/15 cursor-pointer"
               >
                 <span>Inspect Registry Node</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -315,40 +390,33 @@ export function HeroPage() {
           </div>
 
           {/* ───────────────────────────────────────────────────────────── */}
-          {/* 4 FLOATING SATELLITES WITH MICRO-PREVIEWS & 3D TILT           */}
+          {/* 4 FLOATING GLASS SATELLITES (3D Perspective Tilt)             */}
           {/* ───────────────────────────────────────────────────────────── */}
 
-          {/* SATELLITE 1 (Top Left): LINE CHART MICRO-PREVIEW */}
+          {/* SATELLITE 1: TELEMETRY SPARKLINE */}
           <div
             onClick={() => navigate('/workspace/custody')}
             style={{
-              transform: `perspective(1000px) rotateX(${-mousePos.y * 18}deg) rotateY(${mousePos.x * 18}deg) translateZ(20px)`,
+              transform: `perspective(1000px) rotateX(${-mousePos.y * 14}deg) rotateY(${mousePos.x * 14}deg) translateZ(15px)`,
             }}
-            className="satellite-card absolute -top-12 -left-8 z-30 w-72 glass-neural rounded-[24px] p-4 text-left cursor-pointer border border-white/15 hidden md:block"
+            className="satellite-card absolute -top-12 -left-8 z-30 w-72 bg-white/[0.04] backdrop-blur-2xl rounded-2xl p-4 text-left cursor-pointer border border-white/15 hidden md:block hover:border-[#c9b8a0]/50 transition-colors"
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="text-[10px] font-inter uppercase tracking-[0.2em] text-[#a78b71] font-bold">
-                TELEMETRY // LINE CHART
+              <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c9b8a0] font-bold">
+                TELEMETRY SPARKLINE
               </div>
               <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                2.4 GHz PEAK
+                STABLE
               </span>
             </div>
-            <div className="font-playfair text-base text-white font-bold italic mb-2">
+            <div className="font-clash text-base text-white font-bold mb-2">
               NVIDIA Jetson Nano
             </div>
-            {/* SVG Line Chart Sparkline */}
-            <div className="h-14 w-full bg-white/[0.02] rounded-xl border border-white/10 p-1 relative overflow-hidden flex items-end">
+            <div className="h-12 w-full bg-white/[0.02] rounded-xl border border-white/10 p-1 relative overflow-hidden flex items-end">
               <svg className="w-full h-full" viewBox="0 0 200 50" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#a78b71" stopOpacity="0.4" />
-                    <stop offset="100%" stopColor="#a78b71" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
                 <path
                   d="M 0 40 Q 30 15, 60 25 T 120 10 T 170 30 T 200 15 L 200 50 L 0 50 Z"
-                  fill="url(#chartGradient)"
+                  fill="rgba(201, 184, 160, 0.15)"
                 />
                 <path
                   d="M 0 40 Q 30 15, 60 25 T 120 10 T 170 30 T 200 15"
@@ -356,124 +424,115 @@ export function HeroPage() {
                   stroke="#c9b8a0"
                   strokeWidth="2"
                 />
-                <circle cx="120" cy="10" r="3" fill="#e8d5b7" />
-                <circle cx="200" cy="15" r="3" fill="#a78b71" />
               </svg>
             </div>
-            <div className="mt-2 text-[10px] text-zinc-400 font-mono flex items-center justify-between">
-              <span>Fluctuation: ±0.02%</span>
+            <div className="mt-2 text-[10px] text-stone-400 font-mono flex items-center justify-between">
+              <span>Drift: ±0.01%</span>
               <span className="text-amber-400 font-bold">4h left</span>
             </div>
           </div>
 
-          {/* SATELLITE 2 (Top Right): CODE BLOCK MICRO-PREVIEW */}
+          {/* SATELLITE 2: HARDWARE KERNEL */}
           <div
             onClick={() => navigate('/workspace/projects')}
             style={{
-              transform: `perspective(1000px) rotateX(${-mousePos.y * 18}deg) rotateY(${mousePos.x * 18}deg) translateZ(20px)`,
+              transform: `perspective(1000px) rotateX(${-mousePos.y * 14}deg) rotateY(${mousePos.x * 14}deg) translateZ(15px)`,
             }}
-            className="satellite-card absolute -top-12 -right-8 z-30 w-72 glass-neural rounded-[24px] p-4 text-left cursor-pointer border border-white/15 hidden md:block"
+            className="satellite-card absolute -top-12 -right-8 z-30 w-72 bg-white/[0.04] backdrop-blur-2xl rounded-2xl p-4 text-left cursor-pointer border border-white/15 hidden md:block hover:border-[#c9b8a0]/50 transition-colors"
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="text-[10px] font-inter uppercase tracking-[0.2em] text-[#a78b71] font-bold">
-                KERNEL // CODE BLOCK
+              <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c9b8a0] font-bold">
+                HARDWARE KERNEL
               </div>
               <div className="flex space-x-1">
-                <span className="w-2 h-2 rounded-full bg-rose-500/80" />
-                <span className="w-2 h-2 rounded-full bg-amber-500/80" />
-                <span className="w-2 h-2 rounded-full bg-emerald-500/80" />
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               </div>
             </div>
-            <div className="font-playfair text-base text-white font-bold italic mb-1.5">
-              neural_core.v
+            <div className="font-mono text-xs text-stone-300 font-semibold mb-1.5">
+              fpga_accelerator.v
             </div>
-            {/* Formatted Code Block */}
-            <div className="p-2.5 rounded-xl bg-black/50 border border-white/10 font-mono text-[10px] leading-relaxed text-zinc-300">
-              <div><span className="text-purple-400">module</span> <span className="text-[#e8d5b7]">accelerator</span> (</div>
-              <div className="pl-2 text-zinc-400">input <span className="text-blue-400">clk</span>, <span className="text-blue-400">rst_n</span>,</div>
-              <div className="pl-2 text-zinc-400">input [31:0] <span className="text-[#c9b8a0]">tensor_in</span>,</div>
-              <div className="pl-2 text-zinc-400">output [31:0] <span className="text-emerald-400">systolic_out</span></div>
+            <div className="p-2.5 rounded-xl bg-black/60 border border-white/10 font-mono text-[10px] leading-relaxed text-stone-300">
+              <div><span className="text-purple-400">module</span> <span className="text-[#f5e6c8]">accelerator</span> (</div>
+              <div className="pl-2 text-stone-400">input <span className="text-blue-400">clk</span>, <span className="text-blue-400">rst_n</span>,</div>
+              <div className="pl-2 text-stone-400">input [31:0] <span className="text-[#c9b8a0]">din</span></div>
               <div>);</div>
             </div>
-            <div className="mt-2 text-[10px] text-zinc-400 font-mono flex items-center justify-between">
-              <span>FPGA Synthesized</span>
-              <span className="text-[#c9b8a0]">Pipeline Ready</span>
+            <div className="mt-2 text-[10px] text-stone-400 font-mono flex items-center justify-between">
+              <span>Kintex-7 UltraScale+</span>
+              <span className="text-[#c9b8a0]">Ready</span>
             </div>
           </div>
 
-          {/* SATELLITE 3 (Bottom Left): AUDIO VISUALIZER MICRO-PREVIEW */}
+          {/* SATELLITE 3: OPTICAL SIGNAL BAY */}
           <div
             onClick={() => navigate('/workspace/operations/dispatch')}
             style={{
-              transform: `perspective(1000px) rotateX(${-mousePos.y * 18}deg) rotateY(${mousePos.x * 18}deg) translateZ(20px)`,
+              transform: `perspective(1000px) rotateX(${-mousePos.y * 14}deg) rotateY(${mousePos.x * 14}deg) translateZ(15px)`,
             }}
-            className="satellite-card absolute -bottom-10 -left-6 z-30 w-72 glass-neural rounded-[24px] p-4 text-left cursor-pointer border border-white/15 hidden md:block"
+            className="satellite-card absolute -bottom-10 -left-6 z-30 w-72 bg-white/[0.04] backdrop-blur-2xl rounded-2xl p-4 text-left cursor-pointer border border-white/15 hidden md:block hover:border-[#c9b8a0]/50 transition-colors"
           >
             <div className="flex items-center justify-between mb-1.5">
-              <div className="text-[10px] font-inter uppercase tracking-[0.2em] text-[#a78b71] font-bold">
-                SIGNAL // AUDIO VISUALIZER
+              <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c9b8a0] font-bold">
+                SIGNAL BENCH
               </div>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             </div>
-            <div className="font-playfair text-base text-white font-bold italic mb-2">
+            <div className="font-clash text-base text-white font-bold mb-2">
               Optical Solenoid Bay
             </div>
-            {/* Equalizer Bars Visualizer */}
-            <div className="h-12 w-full bg-black/40 rounded-xl border border-white/10 px-3 flex items-end justify-between py-1.5">
-              {[60, 90, 45, 100, 75, 30, 85, 95, 40, 70, 80, 50, 65, 88].map((h, i) => (
+            <div className="h-10 w-full bg-black/40 rounded-xl border border-white/10 px-3 flex items-end justify-between py-1.5">
+              {[40, 75, 45, 90, 65, 30, 85, 95, 40, 70, 80, 50, 65].map((h, i) => (
                 <div
                   key={i}
-                  style={{
-                    height: `${h}%`,
-                    animation: `pulse ${1 + (i % 5) * 0.3}s ease-in-out infinite alternate`,
-                  }}
-                  className="w-1.5 rounded-full bg-gradient-to-t from-[#a78b71] to-[#e8d5b7]"
+                  style={{ height: `${h}%` }}
+                  className="w-1.5 rounded-full bg-gradient-to-t from-[#a78b71] to-[#f5e6c8]"
                 />
               ))}
             </div>
-            <div className="mt-2 text-[10px] text-zinc-400 font-mono flex items-center justify-between">
+            <div className="mt-2 text-[10px] text-stone-400 font-mono flex items-center justify-between">
               <span>650nm Laser Latch</span>
               <span className="text-emerald-400 font-bold">LOCKED</span>
             </div>
           </div>
 
-          {/* SATELLITE 4 (Bottom Right): PROMPT INPUT MICRO-PREVIEW */}
+          {/* SATELLITE 4: DISPATCH CO-PILOT PROMPT */}
           <div
             style={{
-              transform: `perspective(1000px) rotateX(${-mousePos.y * 18}deg) rotateY(${mousePos.x * 18}deg) translateZ(20px)`,
+              transform: `perspective(1000px) rotateX(${-mousePos.y * 14}deg) rotateY(${mousePos.x * 14}deg) translateZ(15px)`,
             }}
-            className="satellite-card absolute -bottom-10 -right-6 z-30 w-80 glass-neural rounded-[24px] p-4 text-left border border-white/15 hidden md:block"
+            className="satellite-card absolute -bottom-10 -right-6 z-30 w-80 bg-white/[0.04] backdrop-blur-2xl rounded-2xl p-4 text-left border border-white/15 hidden md:block"
           >
             <div className="flex items-center justify-between mb-1.5">
-              <div className="text-[10px] font-inter uppercase tracking-[0.2em] text-[#a78b71] font-bold">
-                CO-PILOT // PROMPT INPUT
+              <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c9b8a0] font-bold">
+                CO-PILOT // PROMPT
               </div>
-              <Sparkles className="w-3.5 h-3.5 text-[#e8d5b7]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#f5e6c8]" />
             </div>
-            <div className="font-playfair text-base text-white font-bold italic mb-2">
-              Natural Dispatch Query
+            <div className="font-clash text-base text-white font-bold mb-2">
+              Natural Query Dispatch
             </div>
-            {/* Interactive Prompt Input Box */}
             <form onSubmit={handlePromptSubmit} className="relative flex items-center">
               <input
                 type="text"
                 value={promptText}
                 onChange={(e) => setPromptText(e.target.value)}
                 placeholder="Ask hardware co-pilot..."
-                className="w-full bg-black/60 border border-white/15 rounded-xl py-2 pl-3 pr-9 font-mono text-[10px] text-white placeholder-zinc-500 focus:outline-none focus:border-[#a78b71] transition-neural"
+                className="w-full bg-black/60 border border-white/15 rounded-xl py-2 pl-3 pr-8 font-mono text-[10px] text-white placeholder-stone-500 focus:outline-none focus:border-[#c9b8a0]"
               />
               <button
                 type="submit"
-                className="absolute right-1.5 p-1 rounded-lg bg-[#a78b71] hover:bg-[#c9b8a0] text-black transition-neural"
-                title="Execute hardware query"
+                className="absolute right-1.5 p-1 rounded-lg bg-[#c9b8a0] hover:bg-[#e8d5b7] text-black transition-colors cursor-pointer"
+                title="Execute query"
               >
                 <ArrowRight className="w-3 h-3" />
               </button>
             </form>
-            <div className="mt-2 text-[10px] text-zinc-400 font-mono flex items-center justify-between">
-              <span>NIST NLP Parser</span>
+            <div className="mt-2 text-[10px] text-stone-400 font-mono flex items-center justify-between">
+              <span>NLP Hardware Parser</span>
               <span className={promptSubmitted ? 'text-emerald-400 font-bold' : 'text-[#c9b8a0]'}>
-                {promptSubmitted ? 'Dispatched!' : 'Enter to Run'}
+                {promptSubmitted ? 'Query Dispatched!' : 'Press Enter'}
               </span>
             </div>
           </div>
@@ -481,478 +540,232 @@ export function HeroPage() {
       </section>
 
       {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 3. FEATURES GRID (4-COLUMN GLASSMORPHIC CARDS)                    */}
+      {/* 3. THE 5-STAGE HARDWARE LIFECYCLE ARCHITECTURE                     */}
       {/* ───────────────────────────────────────────────────────────────── */}
-      <section className="relative z-10 py-24 px-6 lg:px-12 max-w-7xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-          <div className="text-xs uppercase font-inter font-bold tracking-[0.25em] text-[#a78b71]">
-            CORE ARCHITECTURAL MODULES
+      <section id="lifecycle-flow" className="relative z-10 py-24 px-6 lg:px-12 max-w-6xl mx-auto">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] font-mono uppercase tracking-widest text-[#c9b8a0] mb-3">
+            <span>DIGITAL LIFECYCLE DISCIPLINE</span>
           </div>
-          <h2 className="font-playfair text-4xl sm:text-5xl font-normal italic text-white">
-            Engineered For Empirical Rigor.
+          <h2 className="font-clash text-3xl sm:text-5xl font-bold text-white tracking-tight mb-4">
+            From Manual Paper Notebooks to an Auditable Lifecycle.
           </h2>
-          <p className="text-sm font-inter text-zinc-400 font-light">
-            Discrete operational desks replacing spreadsheets with auditable digital governance.
+          <p className="text-sm sm:text-base text-stone-400 max-w-2xl mx-auto font-normal font-sans">
+            LabTrack eliminates manual notebooks, lost hardware, and unverified returns by turning physical lab handling into an immutable 5-stage workflow.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Card 1: Master Inventory */}
-          <div
-            onClick={() => navigate('/workspace/inventory')}
-            className="glass-neural rounded-[28px] p-8 hover:border-[#a78b71]/50 transition-neural group cursor-pointer flex flex-col justify-between border border-white/10"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-[#a78b71]/10 text-[#c9b8a0] flex items-center justify-center group-hover:scale-110 transition-neural mb-6">
-                <Cpu className="w-6 h-6" />
-              </div>
-              <h3 className="font-inter font-bold text-xl text-white mb-2">
-                2-Tier Registry
-              </h3>
-              <p className="font-inter text-sm text-zinc-400 leading-relaxed">
-                Absolute separation between Serialized Assets (discrete loans) and Depletable Consumables (batch issue).
-              </p>
-            </div>
-            <div className="pt-6 flex items-center space-x-1.5 text-xs font-inter font-bold uppercase tracking-wider text-[#c9b8a0]">
-              <span>Explore Catalog</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-
-          {/* Card 2: Custody Desk */}
-          <div
-            onClick={() => navigate('/workspace/custody')}
-            className="glass-neural rounded-[28px] p-8 hover:border-[#a78b71]/50 transition-neural group cursor-pointer flex flex-col justify-between border border-white/10"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-[#a78b71]/10 text-[#c9b8a0] flex items-center justify-center group-hover:scale-110 transition-neural mb-6">
-                <Activity className="w-6 h-6" />
-              </div>
-              <h3 className="font-inter font-bold text-xl text-white mb-2">
-                Custody & Loans
-              </h3>
-              <p className="font-inter text-sm text-zinc-400 leading-relaxed">
-                Real-time loan countdowns, overdue alerts, and permanent project consumable disbursement tracking.
-              </p>
-            </div>
-            <div className="pt-6 flex items-center space-x-1.5 text-xs font-inter font-bold uppercase tracking-wider text-[#c9b8a0]">
-              <span>Active Borrowings</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-
-          {/* Card 3: Reliability Scorecard */}
-          <div
-            onClick={() => navigate('/workspace/accountability')}
-            className="glass-neural rounded-[28px] p-8 hover:border-[#a78b71]/50 transition-neural group cursor-pointer flex flex-col justify-between border border-white/10"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-[#a78b71]/10 text-[#c9b8a0] flex items-center justify-center group-hover:scale-110 transition-neural mb-6">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <h3 className="font-inter font-bold text-xl text-white mb-2">
-                Reliability Index
-              </h3>
-              <p className="font-inter text-sm text-zinc-400 leading-relaxed">
-                Algorithmic 0–100 compliance rating rewards verified returns while controlling access to high-value silicon.
-              </p>
-            </div>
-            <div className="pt-6 flex items-center space-x-1.5 text-xs font-inter font-bold uppercase tracking-wider text-[#c9b8a0]">
-              <span>Audit Metrics</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-
-          {/* Card 4: Dispatch Terminal */}
-          <div
-            onClick={() => navigate('/workspace/operations/dispatch')}
-            className="glass-neural rounded-[28px] p-8 hover:border-[#a78b71]/50 transition-neural group cursor-pointer flex flex-col justify-between border border-white/10"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-[#a78b71]/10 text-[#c9b8a0] flex items-center justify-center group-hover:scale-110 transition-neural mb-6">
-                <ScanLine className="w-6 h-6" />
-              </div>
-              <h3 className="font-inter font-bold text-xl text-white mb-2">
-                Optical Dispatch
-              </h3>
-              <p className="font-inter text-sm text-zinc-400 leading-relaxed">
-                Single-second PRN lookup, verified mentor approvals, and solenoid locker unlatch for Lab Assistants.
-              </p>
-            </div>
-            <div className="pt-6 flex items-center space-x-1.5 text-xs font-inter font-bold uppercase tracking-wider text-[#c9b8a0]">
-              <span>Counter Desk</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 4. PRICING & TIER SECTION (THREE-TIERED LAYOUT WITH PRO HIGHLIGHT) */}
-      {/* ───────────────────────────────────────────────────────────────── */}
-      <section className="relative z-10 py-24 px-6 lg:px-12 max-w-7xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
-          <div className="text-xs uppercase font-inter font-bold tracking-[0.25em] text-[#a78b71]">
-            INSTITUTIONAL TIERING
-          </div>
-          <h2 className="font-playfair text-4xl sm:text-5xl font-normal italic text-white">
-            Structured Department Allocation.
-          </h2>
-          <p className="text-sm font-inter text-zinc-400 font-light">
-            Scalable governance whether managing a single capstone bench or an entire engineering school.
-          </p>
-
-          {/* Monthly / Annual Toggle Switch */}
-          <div className="pt-6 flex items-center justify-center">
-            <div className="p-1 rounded-full glass-neural flex items-center space-x-1">
+        {/* Stepper Tabs */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-8">
+          {lifecycleStages.map((stage, idx) => {
+            const isActive = activeStage === idx;
+            return (
               <button
-                onClick={() => setBillingCycle('monthly')}
-                className={`px-4 py-1.5 rounded-full text-xs font-inter font-semibold transition-neural ${
-                  billingCycle === 'monthly'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
+                key={stage.step}
+                onClick={() => setActiveStage(idx)}
+                className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer backdrop-blur-xl ${
+                  isActive
+                    ? 'bg-[#c9b8a0]/20 border-[#f5e6c8]/60 shadow-[0_0_20px_rgba(201,184,160,0.25)]'
+                    : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06] text-stone-400'
                 }`}
               >
-                Semester Cycle
+                <div className="text-[10px] font-mono text-[#c9b8a0] font-bold mb-1">
+                  STAGE {stage.step}
+                </div>
+                <div className={`font-clash text-sm font-bold truncate ${isActive ? 'text-white' : 'text-stone-300'}`}>
+                  {stage.title}
+                </div>
               </button>
-              <button
-                onClick={() => setBillingCycle('annual')}
-                className={`px-4 py-1.5 rounded-full text-xs font-inter font-semibold transition-neural ${
-                  billingCycle === 'annual'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                Annual License
-              </button>
-            </div>
-          </div>
+            );
+          })}
         </div>
 
-        {/* 3-Tier Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-          {/* Tier 1: Student / Project Cohort */}
-          <div className="glass-neural rounded-[32px] p-8 flex flex-col justify-between border border-white/10">
-            <div className="space-y-4">
-              <div className="text-xs font-inter uppercase font-bold tracking-widest text-zinc-400">
-                Student Cohort
+        {/* Active Stage Detailed Glass Card */}
+        <div className="rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-white/20 p-8 sm:p-12 shadow-[0_25px_60px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.3)]">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+            <div className="lg:col-span-2 space-y-4">
+              <div className="inline-flex items-center space-x-2 text-xs font-mono uppercase tracking-widest text-[#c9b8a0]">
+                <span>STAGE {lifecycleStages[activeStage].step} ARCHITECTURAL SPECIFICATION</span>
               </div>
-              <div className="font-playfair text-3xl font-bold italic text-white">Academic Free</div>
-              <div className="flex items-baseline space-x-1">
-                <span className="text-4xl sm:text-5xl font-bold text-white font-inter">$0</span>
-                <span className="text-xs text-zinc-400 uppercase tracking-wider font-mono">/ semester</span>
-              </div>
-              <p className="text-xs text-zinc-400 leading-relaxed pt-2">
-                Included for all enrolled engineering students with active institutional PRN.
-              </p>
-              <ul className="space-y-2.5 text-xs text-zinc-300 pt-4 border-t border-white/10">
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#a78b71]" />
-                  <span>Up to 3 concurrent serialized asset loans</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#a78b71]" />
-                  <span>Requisition basket queue integration</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#a78b71]" />
-                  <span>Personal reliability scorecard & history</span>
-                </li>
-              </ul>
-            </div>
-            <button
-              onClick={() => navigate('/workspace/inventory')}
-              className="mt-8 w-full py-3 rounded-full border border-white/20 hover:border-[#a78b71] text-white hover:text-[#c9b8a0] text-xs uppercase font-inter font-bold tracking-wider transition-neural"
-            >
-              Sign In With PRN
-            </button>
-          </div>
-
-          {/* Tier 2: Pro Department Lab (HIGHLIGHTED WITH #a78b71/40 & BADGE) */}
-          <div className="glass-neural rounded-[32px] p-8 flex flex-col justify-between border border-[#a78b71]/40 central-glow relative">
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#a78b71] text-black text-[10px] font-inter font-bold uppercase tracking-[0.2em] shadow-lg">
-              Most Popular
-            </div>
-
-            <div className="space-y-4 pt-2">
-              <div className="text-xs font-inter uppercase font-bold tracking-widest text-[#c9b8a0]">
-                Department Lab Pro
-              </div>
-              <div className="font-playfair text-3xl font-bold italic text-white">Full Lab Custody</div>
-              <div className="flex items-baseline space-x-1">
-                <span className="text-4xl sm:text-5xl font-bold text-white font-inter">
-                  {billingCycle === 'monthly' ? '$49' : '$39'}
+              <h3 className="font-clash text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                {lifecycleStages[activeStage].title} —{' '}
+                <span className="text-[#f5e6c8]">
+                  {lifecycleStages[activeStage].tagline}
                 </span>
-                <span className="text-xs text-zinc-400 uppercase tracking-wider font-mono">/ bench / mo</span>
-              </div>
-              <p className="text-xs text-zinc-300 leading-relaxed pt-2">
-                Full-scale hardware governance for faculty supervisors, lab technicians, and active capstones.
+              </h3>
+              <p className="text-sm sm:text-base text-stone-300 leading-relaxed font-normal">
+                {lifecycleStages[activeStage].description}
               </p>
-              <ul className="space-y-2.5 text-xs text-zinc-200 pt-4 border-t border-white/10">
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#a78b71]" />
-                  <span>Unlimited serialized assets & consumable tracking</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#a78b71]" />
-                  <span>Faculty supervisor approval queue dashboard</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#a78b71]" />
-                  <span>Optical barcode scanner dispatch terminal</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#a78b71]" />
-                  <span>Automated defect triage & quarantine workflow</span>
-                </li>
-              </ul>
-            </div>
-            <button
-              onClick={() => navigate('/workspace/inventory')}
-              className="mt-8 w-full py-3.5 rounded-full bg-white text-black font-inter font-bold text-xs uppercase tracking-wider hover:bg-[#e8d5b7] transition-neural shadow-xl"
-            >
-              Deploy Department Node
-            </button>
-          </div>
 
-          {/* Tier 3: Institutional Enterprise */}
-          <div className="glass-neural rounded-[32px] p-8 flex flex-col justify-between border border-white/10">
-            <div className="space-y-4">
-              <div className="text-xs font-inter uppercase font-bold tracking-widest text-zinc-400">
-                Dean / Executive
-              </div>
-              <div className="font-playfair text-3xl font-bold italic text-white">Enterprise Campus</div>
-              <div className="flex items-baseline space-x-1">
-                <span className="text-4xl sm:text-5xl font-bold text-white font-inter">
-                  {billingCycle === 'monthly' ? '$199' : '$159'}
-                </span>
-                <span className="text-xs text-zinc-400 uppercase tracking-wider font-mono">/ campus / mo</span>
-              </div>
-              <p className="text-xs text-zinc-400 leading-relaxed pt-2">
-                Cross-department hardware sharing, HoD policy threshold overrides, and accreditation audit reports.
-              </p>
-              <ul className="space-y-2.5 text-xs text-zinc-300 pt-4 border-t border-white/10">
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#a78b71]" />
-                  <span>Multi-department hardware federation</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#a78b71]" />
-                  <span>NIST SP 800-53 / ISO 17025 compliance export</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#a78b71]" />
-                  <span>Custom RBAC & SSO integration</span>
-                </li>
-              </ul>
-            </div>
-            <button
-              onClick={() => navigate('/workspace/accountability')}
-              className="mt-8 w-full py-3 rounded-full border border-white/20 hover:border-[#a78b71] text-white hover:text-[#c9b8a0] text-xs uppercase font-inter font-bold tracking-wider transition-neural"
-            >
-              Contact Accreditation Desk
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 5. TEAM SECTION (TWO-COLUMN 4:5 ASPECT RATIO CARDS)               */}
-      {/* ───────────────────────────────────────────────────────────────── */}
-      <section className="relative z-10 py-24 px-6 lg:px-12 max-w-6xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-          <div className="text-xs uppercase font-inter font-bold tracking-[0.25em] text-[#a78b71]">
-            FACULTY & CUSTODY SUPERVISION
-          </div>
-          <h2 className="font-playfair text-4xl sm:text-5xl font-normal italic text-white">
-            Lead Investigators & Custodians.
-          </h2>
-          <p className="text-sm font-inter text-zinc-400 font-light">
-            Every collegiate loan is authorized and inspected by accredited departmental faculty.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {/* Team Member 1: Dr. Anjali Dalvi */}
-          <div className="glass-neural rounded-[36px] p-6 group overflow-hidden border border-white/10 hover:border-[#a78b71]/50 transition-neural">
-            <div className="aspect-[4/5] rounded-[24px] overflow-hidden bg-zinc-900 relative">
-              <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80"
-                alt="Dr. Anjali Dalvi"
-                className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-neural group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="text-[10px] font-inter uppercase tracking-[0.3em] text-[#a78b71] font-semibold mb-1">
-                  FACULTY MENTOR // PRINCIPAL INVESTIGATOR
-                </div>
-                <h3 className="font-playfair text-3xl font-bold italic text-white">
-                  Dr. Anjali Dalvi
-                </h3>
-                <div className="text-xs font-mono text-zinc-400 mt-1">
-                  FAC-AI-019 • Dept. of AIML & Computing
-                </div>
+              <div className="pt-2 flex flex-wrap gap-2">
+                {lifecycleStages[activeStage].metrics.map((m) => (
+                  <span
+                    key={m}
+                    className="px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-[#f5e6c8]"
+                  >
+                    ✓ {m}
+                  </span>
+                ))}
               </div>
             </div>
-            <p className="text-xs font-inter text-zinc-400 leading-relaxed pt-5 px-2">
-              Overseeing 3 active research cohorts with cryptographic requisition sign-off authority. Specialist in
-              embedded neural acceleration on FPGA and Jetson architectures.
-            </p>
-          </div>
 
-          {/* Team Member 2: Ramesh Patil */}
-          <div className="glass-neural rounded-[36px] p-6 group overflow-hidden border border-white/10 hover:border-[#a78b71]/50 transition-neural">
-            <div className="aspect-[4/5] rounded-[24px] overflow-hidden bg-zinc-900 relative">
-              <img
-                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80"
-                alt="Ramesh Patil"
-                className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-neural group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="text-[10px] font-inter uppercase tracking-[0.3em] text-[#a78b71] font-semibold mb-1">
-                  CHIEF CUSTODIAN // DISPATCH CONTROLLER
-                </div>
-                <h3 className="font-playfair text-3xl font-bold italic text-white">
-                  Ramesh Patil
-                </h3>
-                <div className="text-xs font-mono text-zinc-400 mt-1">
-                  STAFF ID: LA-04 • Depot Lab 02
-                </div>
+            <div className="rounded-2xl bg-black/50 border border-white/10 p-6 space-y-4 text-left">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-stone-400">
+                GOVERNING AUTHORITY
               </div>
-            </div>
-            <p className="text-xs font-inter text-zinc-400 leading-relaxed pt-5 px-2">
-              Direct controller of the 3-bay modular storage dock and optical checkout scanner. Verifies returned
-              pin integrity, cable accessories, and NIST calibration timestamps.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 6. MULTI-COLUMN LUXURY FOOTER (5-COLUMN DESKTOP)                  */}
-      {/* ───────────────────────────────────────────────────────────────── */}
-      <footer className="relative z-10 bg-[#0a0a0a] border-t border-white/10 pt-20 pb-12 px-6 lg:px-12 text-zinc-400 text-xs font-inter">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-16 border-b border-white/10">
-          {/* Column 1: Logo & Social Icons */}
-          <div className="lg:col-span-1 space-y-4">
-            <div className="flex items-center space-x-2">
-              <span className="font-playfair text-2xl font-bold italic text-white">LabTrack</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#a78b71]" />
-            </div>
-            <p className="text-zinc-500 leading-relaxed text-[11px]">
-              High-end hardware lifecycle orchestration platform designed for institutional engineering rigor.
-            </p>
-            {/* Social Icons in circular bordered containers */}
-            <div className="flex items-center space-x-2 pt-2">
-              <a
-                href="#network"
-                className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:border-[#a78b71] transition-neural"
-                title="Global Hardware Network"
-              >
-                <Globe className="w-3.5 h-3.5" />
-              </a>
-              <a
-                href="#code"
-                className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:border-[#a78b71] transition-neural"
-                title="Telemetry API & Repository"
-              >
-                <Code className="w-3.5 h-3.5" />
-              </a>
-              <a
-                href="#share"
-                className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:border-[#a78b71] transition-neural"
-                title="Department Federation"
-              >
-                <Share2 className="w-3.5 h-3.5" />
-              </a>
-            </div>
-          </div>
-
-          {/* Column 2: Platform Modules */}
-          <div className="space-y-3">
-            <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#c9b8a0]">
-              Architecture
-            </div>
-            <ul className="space-y-2 text-[12px]">
-              <li>
-                <button onClick={() => navigate('/workspace/inventory')} className="hover:text-white transition-neural">
-                  Master Inventory
-                </button>
-              </li>
-              <li>
-                <button onClick={() => navigate('/workspace/custody')} className="hover:text-white transition-neural">
-                  Custody Circulation
-                </button>
-              </li>
-              <li>
-                <button onClick={() => navigate('/workspace/accountability')} className="hover:text-white transition-neural">
-                  Reliability Scores
-                </button>
-              </li>
-              <li>
-                <button onClick={() => navigate('/workspace/operations/dispatch')} className="hover:text-white transition-neural">
-                  Dispatch Terminal
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: Governance */}
-          <div className="space-y-3">
-            <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#c9b8a0]">
-              Governance
-            </div>
-            <ul className="space-y-2 text-[12px]">
-              <li>NIST SP 800-53 Audited</li>
-              <li>2-Tier Hardware Separation</li>
-              <li>Faculty Mentorship Sign-off</li>
-              <li>Defect Quarantine Policy</li>
-            </ul>
-          </div>
-
-          {/* Column 4: Institutional Resources */}
-          <div className="space-y-3">
-            <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#c9b8a0]">
-              Resources
-            </div>
-            <ul className="space-y-2 text-[12px]">
-              <li>Institutional PRN Verification</li>
-              <li>NIST Calibration TP1-TP32</li>
-              <li>System API Schema</li>
-              <li>Department Policy Docs</li>
-            </ul>
-          </div>
-
-          {/* Column 5: Join Digest Search Input */}
-          <div className="space-y-3">
-            <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#c9b8a0]">
-              Join Digest
-            </div>
-            <p className="text-zinc-500 text-[11px]">
-              Receive weekly telemetry bulletins on departmental hardware allocations.
-            </p>
-            <div className="relative flex items-center">
-              <input
-                type="email"
-                placeholder="faculty@institution.edu"
-                className="w-full bg-white/[0.04] border border-white/10 rounded-full py-2.5 pl-4 pr-10 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#a78b71] transition-neural"
-              />
+              <div className="text-base font-clash font-bold text-white">
+                {lifecycleStages[activeStage].responsibleRole}
+              </div>
+              <div className="h-[1px] bg-white/10" />
+              <div className="text-xs text-stone-400 font-mono leading-relaxed">
+                Automated notification webhooks trigger upon stage progression, updating global inventory locks in sub-100ms.
+              </div>
               <button
-                type="button"
-                className="absolute right-1 w-7 h-7 rounded-full bg-[#a78b71] hover:bg-[#c9b8a0] text-black flex items-center justify-center transition-neural"
+                onClick={() => navigate('/workspace/inventory')}
+                className="w-full py-2.5 rounded-xl bg-white/[0.05] hover:bg-[#c9b8a0] text-[#f5e6c8] hover:text-black font-medium text-xs transition-all border border-white/15 flex items-center justify-center space-x-1.5 cursor-pointer"
               >
+                <span>Simulate in Workspace</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         </div>
+      </section>
 
-        <div className="max-w-7xl mx-auto pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] text-zinc-500">
-          <div>© 2026 LABTRACK PLATFORM // DEPT. OF ARTIFICIAL INTELLIGENCE & MACHINE LEARNING</div>
-          <div className="mt-2 sm:mt-0 font-playfair italic text-zinc-400">
-            Crafted for academic rigor and physical computing excellence.
+      {/* ───────────────────────────────────────────────────────────────── */}
+      {/* 4. THE QUAD-PERSONA CLEARANCE MATRIX                              */}
+      {/* ───────────────────────────────────────────────────────────────── */}
+      <section className="relative z-10 py-20 px-6 lg:px-12 max-w-6xl mx-auto">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] font-mono uppercase tracking-widest text-[#c9b8a0] mb-3">
+            <span>INSTITUTIONAL ROLES</span>
           </div>
+          <h2 className="font-clash text-3xl sm:text-5xl font-bold text-white tracking-tight mb-4">
+            Engineered for Every Stakeholder in the Laboratory.
+          </h2>
+          <p className="text-sm sm:text-base text-stone-400 max-w-2xl mx-auto font-normal">
+            Four tailored operational views ensure students, faculty supervisors, lab technicians, and department auditors work in complete synchronization.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {personas.map((p) => {
+            const isCurrent = activeUserRole === p.role;
+            return (
+              <div
+                key={p.role}
+                className={`rounded-3xl p-6 flex flex-col justify-between transition-all backdrop-blur-2xl border ${
+                  isCurrent
+                    ? 'bg-[#c9b8a0]/15 border-[#f5e6c8]/60 shadow-[0_15px_40px_rgba(201,184,160,0.2)]'
+                    : 'bg-white/[0.03] border-white/10 hover:border-white/25 hover:bg-white/[0.05]'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-mono font-bold tracking-wider px-2.5 py-1 rounded-full bg-white/[0.05] border border-white/10 text-[#c9b8a0]">
+                      {p.badge}
+                    </span>
+                    {isCurrent && (
+                      <span className="text-[10px] font-mono text-emerald-400 font-bold flex items-center space-x-1">
+                        <Check className="w-3 h-3" />
+                        <span>ACTIVE</span>
+                      </span>
+                    )}
+                  </div>
+
+                  <h3 className="font-clash text-xl font-bold text-white mb-1">
+                    {p.title}
+                  </h3>
+                  <div className="text-xs text-[#c9b8a0] font-mono mb-3">
+                    {p.headline}
+                  </div>
+                  <p className="text-xs text-stone-400 leading-relaxed mb-6 font-normal">
+                    {p.description}
+                  </p>
+
+                  <div className="space-y-2 mb-6">
+                    {p.capabilities.map((cap) => (
+                      <div key={cap} className="flex items-start space-x-2 text-[11px] text-stone-300">
+                        <span className="text-[#c9b8a0] mt-0.5">•</span>
+                        <span>{cap}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    switchRole(p.role);
+                    navigate(p.route);
+                  }}
+                  className={`w-full py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center space-x-1.5 ${
+                    isCurrent
+                      ? 'bg-[#c9b8a0] text-black hover:bg-[#e8d5b7]'
+                      : 'bg-white/[0.05] hover:bg-white/[0.1] text-white border border-white/15'
+                  }`}
+                >
+                  <span>Launch {p.role.split(' ')[0]} Desk</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ───────────────────────────────────────────────────────────────── */}
+      {/* 5. EXECUTIVE WORKSTATION LAUNCHPAD                                */}
+      {/* ───────────────────────────────────────────────────────────────── */}
+      <section className="relative z-10 py-20 px-6 lg:px-12 max-w-6xl mx-auto">
+        <div className="rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-white/20 p-8 sm:p-12 shadow-[0_30px_90px_rgba(0,0,0,0.8)] text-center relative overflow-hidden">
+          <div className="relative z-10 max-w-3xl mx-auto space-y-6">
+            <h2 className="font-clash text-3xl sm:text-5xl font-bold text-white tracking-tight">
+              Ready to Explore the Live Workstation?
+            </h2>
+            <p className="text-sm sm:text-base text-stone-400 font-normal">
+              Enter the functional application environment. Query serialized hardware assets, build multi-item project requisitions, or test the optical return inspection station.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 text-left">
+              {[
+                { title: 'Master Registry', desc: 'Browse assets, FPGAs, and microcontrollers', path: '/workspace/inventory', icon: Boxes },
+                { title: 'Custody Desk', desc: 'Active loans, return timers, and extensions', path: '/workspace/custody', icon: Clock },
+                { title: 'Dispatch Terminal', desc: 'Optical barcode scan & return checklist', path: '/workspace/operations/dispatch', icon: Terminal },
+                { title: 'Reliability Index', desc: 'Vector scores & immutable audit logs', path: '/workspace/accountability', icon: ShieldCheck },
+              ].map((tile) => {
+                const IconComponent = tile.icon;
+                return (
+                  <div
+                    key={tile.title}
+                    onClick={() => navigate(tile.path)}
+                    className="p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-[#c9b8a0]/50 transition-all cursor-pointer group"
+                  >
+                    <IconComponent className="w-6 h-6 text-[#c9b8a0] mb-3 group-hover:scale-110 transition-transform" />
+                    <div className="font-clash text-base font-bold text-white mb-1">
+                      {tile.title}
+                    </div>
+                    <div className="text-xs text-stone-400 leading-tight">
+                      {tile.desc}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ───────────────────────────────────────────────────────────────── */}
+      {/* 6. APPLE-GRADE MINIMAL ENGINEERING FOOTER                        */}
+      {/* ───────────────────────────────────────────────────────────────── */}
+      <footer className="relative z-10 py-12 px-6 lg:px-12 border-t border-white/10 text-center text-xs text-stone-500 font-mono">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center space-x-2">
+            <span className="font-clash text-base font-bold text-stone-300">LabTrack</span>
+            <span>— Hardware Lifecycle Platform</span>
+          </div>
+          <div>Department of AIML • Symbiosis Institute of Technology</div>
+          <div className="text-stone-600">NIST SP 800-53 Audited</div>
         </div>
       </footer>
     </div>
