@@ -89,44 +89,44 @@ export function ReliabilityReportPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl mx-auto">
       {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full glass-neural text-[10px] font-inter uppercase tracking-[0.2em] text-[#c9b8a0] mb-2">
-            <Sparkles className="w-3 h-3 text-[#a78b71]" />
-            <span>ACCOUNTABILITY INTELLIGENCE</span>
+          <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2 mb-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+            ACCOUNTABILITY INTELLIGENCE • REPUTATION SCORE
           </div>
-          <h1 className="text-2xl font-playfair font-normal italic text-white flex items-center gap-2.5">
-            <ShieldCheck className="w-6 h-6 text-[#a78b71]" />
-            Accountability & Reliability Desk
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white flex items-center gap-2.5">
+            <ShieldCheck className="w-7 h-7 text-[#c9b8a0]" />
+            Reputation & Reliability Score
           </h1>
-          <p className="text-xs font-inter text-zinc-400 mt-1 max-w-2xl">
-            Algorithmic compliance scoring tracking hardware return punctuality, condition integrity, and FIFO priority tiers.
+          <p className="text-sm font-sans text-zinc-400 mt-1 max-w-2xl leading-relaxed">
+            Algorithmic student compliance score tracking hardware return punctuality, condition integrity, and borrowing priority tiers.
           </p>
         </div>
 
         {permissions.canAdjustThresholds && (
           <button
             onClick={() => setIsEditingThresholds(!isEditingThresholds)}
-            className="px-4 py-2 rounded-full glass-neural hover:border-[#a78b71]/50 text-xs font-inter text-[#c9b8a0] hover:text-white transition-neural flex items-center gap-2 self-start sm:self-auto"
+            className="px-4 py-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-sans text-[#c9b8a0] hover:text-white transition-all flex items-center gap-2 self-start sm:self-auto cursor-pointer flex-shrink-0"
           >
-            <Sliders className="w-3.5 h-3.5 text-[#a78b71]" />
-            {isEditingThresholds ? 'Close Policy Config' : 'Adjust Policy Thresholds'}
+            <Sliders className="w-3.5 h-3.5 text-[#c9b8a0]" />
+            <span>{isEditingThresholds ? 'Close Policy Config' : 'Adjust Policy Thresholds'}</span>
           </button>
         )}
       </div>
 
       {/* Admin Threshold Policy Editor */}
       {isEditingThresholds && permissions.canAdjustThresholds && (
-        <div className="glass-neural p-5 rounded-2xl border border-[#a78b71]/30 space-y-4 font-inter text-xs">
-          <div className="flex items-center gap-2 font-bold text-[#c9b8a0] uppercase tracking-wider">
-            <Sliders className="w-4 h-4 text-[#a78b71]" />
+        <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-[#c9b8a0]/30 rounded-3xl space-y-4 font-sans text-xs backdrop-blur-xl shadow-lg">
+          <div className="flex items-center gap-2 font-bold text-[#c9b8a0] uppercase tracking-wider text-xs">
+            <Sliders className="w-4 h-4 text-[#c9b8a0]" />
             Department Compliance Threshold Configuration (Auditor Mode)
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-1">
             <div>
-              <label className="block text-zinc-400 text-[11px] mb-2">
+              <label className="block text-zinc-400 text-xs mb-2">
                 High Compliance Tier Cutoff (Current: {highThreshold}+)
               </label>
               <input
@@ -135,11 +135,11 @@ export function ReliabilityReportPage() {
                 max="98"
                 value={highThreshold}
                 onChange={(e) => setHighThreshold(Number(e.target.value))}
-                className="w-full accent-[#a78b71]"
+                className="w-full accent-[#c9b8a0] cursor-pointer"
               />
             </div>
             <div>
-              <label className="block text-zinc-400 text-[11px] mb-2">
+              <label className="block text-zinc-400 text-xs mb-2">
                 Flagged / Restriction Cutoff (Current: &lt;{flaggedThreshold})
               </label>
               <input
@@ -148,11 +148,11 @@ export function ReliabilityReportPage() {
                 max="85"
                 value={flaggedThreshold}
                 onChange={(e) => setFlaggedThreshold(Number(e.target.value))}
-                className="w-full accent-rose-500"
+                className="w-full accent-rose-500 cursor-pointer"
               />
             </div>
           </div>
-          <p className="text-[11px] text-zinc-500">
+          <p className="text-[11px] text-zinc-500 pt-1 border-t border-white/5">
             Changes immediately take effect across all course sections and auto-restrict student counter dispatches.
           </p>
         </div>
@@ -161,59 +161,59 @@ export function ReliabilityReportPage() {
       {/* Primary Visual Element: Gauge and Key Metrics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Gauge (5 cols) */}
-        <div className="lg:col-span-5">
+        <div className="lg:col-span-5 p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl backdrop-blur-xl shadow-lg flex flex-col items-center justify-center">
           <ReliabilityGauge score={score} interactive={true} />
         </div>
 
         {/* Supporting Metric Cards (7 cols) */}
         <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="glass-neural p-5 rounded-2xl flex flex-col justify-between border border-white/10 hover:border-[#a78b71]/30 transition-neural">
-            <div className="flex items-center justify-between text-zinc-400 font-inter text-xs">
-              <span className="uppercase tracking-wider text-[11px]">Term Allocation History</span>
-              <TrendingUp className="w-4 h-4 text-[#a78b71]" />
+          <div className="p-5 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 hover:border-white/20 rounded-3xl backdrop-blur-xl shadow-lg flex flex-col justify-between transition-all">
+            <div className="flex items-center justify-between text-zinc-400 font-sans text-xs">
+              <span className="uppercase tracking-wider text-[11px] font-semibold text-zinc-400">Term Allocation History</span>
+              <TrendingUp className="w-4 h-4 text-[#c9b8a0]" />
             </div>
             <div className="mt-4">
-              <div className="text-3xl font-playfair font-bold italic text-white">14 Items</div>
-              <p className="text-xs text-zinc-400 font-inter mt-1">
+              <div className="text-3xl font-display font-bold text-white tracking-tight">14 Units</div>
+              <p className="text-xs text-zinc-400 font-sans mt-1">
                 Issued across 3 coursework cycles
               </p>
             </div>
           </div>
 
-          <div className="glass-neural p-5 rounded-2xl flex flex-col justify-between border border-white/10 hover:border-[#a78b71]/30 transition-neural">
-            <div className="flex items-center justify-between text-zinc-400 font-inter text-xs">
-              <span className="uppercase tracking-wider text-[11px]">On-Time Return Rate</span>
+          <div className="p-5 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 hover:border-white/20 rounded-3xl backdrop-blur-xl shadow-lg flex flex-col justify-between transition-all">
+            <div className="flex items-center justify-between text-zinc-400 font-sans text-xs">
+              <span className="uppercase tracking-wider text-[11px] font-semibold text-zinc-400">On-Time Return Rate</span>
               <Clock className="w-4 h-4 text-emerald-400" />
             </div>
             <div className="mt-4">
-              <div className="text-3xl font-display font-bold text-emerald-400">92.8%</div>
-              <p className="text-xs text-zinc-400 font-inter mt-1">
+              <div className="text-3xl font-display font-bold text-emerald-400 tracking-tight">92.8%</div>
+              <p className="text-xs text-zinc-400 font-sans mt-1">
                 13 on-time returns • 1 grace return
               </p>
             </div>
           </div>
 
-          <div className="glass-neural p-5 rounded-2xl flex flex-col justify-between border border-white/10 hover:border-[#a78b71]/30 transition-neural">
-            <div className="flex items-center justify-between text-zinc-400 font-inter text-xs">
-              <span className="uppercase tracking-wider text-[11px]">Damage / Defect Incidents</span>
+          <div className="p-5 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 hover:border-white/20 rounded-3xl backdrop-blur-xl shadow-lg flex flex-col justify-between transition-all">
+            <div className="flex items-center justify-between text-zinc-400 font-sans text-xs">
+              <span className="uppercase tracking-wider text-[11px] font-semibold text-zinc-400">Defect Incidents</span>
               <AlertOctagon className="w-4 h-4 text-zinc-500" />
             </div>
             <div className="mt-4">
-              <div className="text-3xl font-playfair font-bold italic text-white">0</div>
-              <p className="text-xs text-zinc-400 font-inter mt-1">
+              <div className="text-3xl font-display font-bold text-white tracking-tight">0 Incidents</div>
+              <p className="text-xs text-zinc-400 font-sans mt-1">
                 Zero technician-verified equipment defects
               </p>
             </div>
           </div>
 
-          <div className="glass-neural p-5 rounded-2xl flex flex-col justify-between border border-white/10 hover:border-[#a78b71]/30 transition-neural">
-            <div className="flex items-center justify-between text-zinc-400 font-inter text-xs">
-              <span className="uppercase tracking-wider text-[11px]">Active Custody Budget</span>
-              <CheckCircle className="w-4 h-4 text-[#a78b71]" />
+          <div className="p-5 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 hover:border-white/20 rounded-3xl backdrop-blur-xl shadow-lg flex flex-col justify-between transition-all">
+            <div className="flex items-center justify-between text-zinc-400 font-sans text-xs">
+              <span className="uppercase tracking-wider text-[11px] font-semibold text-zinc-400">Active Custody Budget</span>
+              <CheckCircle className="w-4 h-4 text-[#c9b8a0]" />
             </div>
             <div className="mt-4">
-              <div className="text-3xl font-display font-bold text-white">2 / 5 Items</div>
-              <p className="text-xs text-zinc-400 font-inter mt-1">
+              <div className="text-3xl font-display font-bold text-[#f5e6c8] tracking-tight">2 of 5 Units</div>
+              <p className="text-xs text-zinc-400 font-sans mt-1">
                 3 available custody allocations remaining
               </p>
             </div>
@@ -222,14 +222,14 @@ export function ReliabilityReportPage() {
       </div>
 
       {/* Incident Ledger Table */}
-      <div className="space-y-3">
+      <div className="space-y-3 pt-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold tracking-tight text-white flex items-center gap-2">
-            <FileSpreadsheet className="w-4 h-4 text-[#a78b71]" />
-            Chronological Incident & Return Ledger
+          <h2 className="text-base font-semibold tracking-tight text-white flex items-center gap-2 font-display">
+            <FileSpreadsheet className="w-4 h-4 text-[#c9b8a0]" />
+            <span>Chronological Incident & Return Ledger</span>
           </h2>
           <span className="text-xs font-sans text-zinc-400">
-            Immutable Audit Records: {incidentLedger.length}
+            Immutable Audit Records: <span className="text-white font-medium">{incidentLedger.length}</span>
           </span>
         </div>
 

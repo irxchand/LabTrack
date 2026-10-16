@@ -17,6 +17,7 @@ import {
   Terminal,
   Wrench,
   FileText,
+  ShieldCheck,
 } from 'lucide-react';
 
 export function TopHeader() {
@@ -194,6 +195,12 @@ export function TopHeader() {
             count: projects.length,
             isActive: (pathname) => pathname.includes('/projects'),
           },
+          {
+            label: 'Reputation',
+            to: '/workspace/accountability/reliability',
+            icon: ShieldCheck,
+            isActive: (pathname) => pathname.includes('/accountability/reliability'),
+          },
         ];
     }
   };
@@ -285,6 +292,22 @@ export function TopHeader() {
               </span>
             )}
           </button>
+
+          {/* Student Reputation / Repo Score Quick Badge */}
+          {role === 'Student' && (
+            <button
+              type="button"
+              onClick={() => navigate('/workspace/accountability/reliability')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-[#c9b8a0]/15 border border-white/10 hover:border-[#c9b8a0]/40 text-xs transition-all cursor-pointer shadow-sm group"
+              title="View Reputation & Reliability Score Dossier"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-[#c9b8a0] group-hover:scale-110 transition-transform" />
+              <span className="text-zinc-400 text-[11px] hidden lg:inline">Score:</span>
+              <span className="font-bold text-[#f5e6c8] text-xs">
+                {currentUser?.reliabilityScore || 94}%
+              </span>
+            </button>
+          )}
 
           <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
 
