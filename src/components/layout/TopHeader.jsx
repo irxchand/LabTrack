@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLabData } from '../../context/LabDataContext';
@@ -14,6 +14,8 @@ import {
   Wrench,
   FileText,
   BookmarkCheck,
+  ChevronDown,
+  Check,
 } from 'lucide-react';
 
 export function TopHeader() {
@@ -30,7 +32,35 @@ export function TopHeader() {
     defects,
     reservations,
     auditLogs,
+    selectedFacility,
+    setSelectedFacility,
+    facilities,
   } = useLabData();
+
+  const [isLabDropdownOpen, setIsLabDropdownOpen] = useState(false);
+  const labDropdownRef = useRef(null);
+
+  // Outside click listener for lab dropdown
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (labDropdownRef.current && !labDropdownRef.current.contains(e.target)) {
+        setIsLabDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsLabDropdownOpen(false);
+      }
+    };
+    if (isLabDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isLabDropdownOpen]);
 
 
 
@@ -214,10 +244,87 @@ export function TopHeader() {
             <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_10px_#c9b8a0]" />
           </div>
 
-          <div className="h-3.5 w-px bg-white/10 hidden xl:block" />
+          <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
 
-          <div className="hidden xl:flex items-center gap-1.5 text-xs text-zinc-400">
-            <span className="text-zinc-400 text-[10px] font-semibold tracking-[0.18em] uppercase">AIML LAB</span>
+          {/* Laboratory Facility Selector Dropdown */}
+          <div className="relative hidden sm:block" ref={labDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsLabDropdownOpen((prev) => !prev)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 transition-all cursor-pointer group shadow-sm select-none"
+              title="Switch Laboratory Facility"
+              aria-expanded={isLabDropdownOpen}
+              aria-haspopup="true"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_8px_#c9b8a0]" />
+              <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-zinc-300 group-hover:text-white transition-colors">
+                {selectedFacility || 'AIML LAB'}
+              </span>
+              <ChevronDown
+                className={`w-3 h-3 text-zinc-400 group-hover:text-zinc-200 transition-transform duration-200 ${
+                  isLabDropdownOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            {/* Dropdown Menu */}
+            {isLabDropdownOpen && (
+              <div
+                className="absolute left-0 top-full mt-2 w-72 rounded-2xl bg-[#0c0d12]/95 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150"
+                role="menu"
+              >
+                <div className="px-3 py-2 border-b border-white/5 flex items-center justify-between">
+                  <span className="text-[9px] font-sans font-semibold uppercase tracking-[0.15em] text-zinc-400">
+                    FACILITY REGISTRY
+                  </span>
+                  <span className="text-[9px] font-sans text-zinc-400">
+                    Dept. of AI & DS
+                  </span>
+                </div>
+                <div className="p-1 space-y-1">
+                  {(facilities || []).map((facility) => {
+                    const isSelected = (selectedFacility || 'AIML LAB') === facility.name;
+                    return (
+                      <button
+                        key={facility.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedFacility(facility.name);
+                          setIsLabDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-2.5 py-2 rounded-xl text-xs font-sans transition-all flex items-start justify-between group cursor-pointer ${
+                          isSelected
+                            ? 'bg-white/[0.08] text-white border border-white/10 shadow-sm'
+                            : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                        }`}
+                        role="menuitem"
+                      >
+                        <div className="flex flex-col pr-2">
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className={`font-semibold text-xs tracking-wide ${
+                                isSelected ? 'text-[#f5e6c8]' : 'text-zinc-200 group-hover:text-white'
+                              }`}
+                            >
+                              {facility.name}
+                            </span>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400 border border-white/5">
+                              {facility.room}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-zinc-400 font-normal mt-0.5 leading-snug">
+                            {facility.subTitle}
+                          </span>
+                        </div>
+                        {isSelected && (
+                          <Check className="w-3.5 h-3.5 text-[#c9b8a0] mt-0.5 flex-shrink-0" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

@@ -5,11 +5,59 @@ import { accountabilityApi } from '../api/accountability.api';
 import { useNotification } from './NotificationContext';
 import { useAuth } from './AuthContext';
 
+export const LAB_FACILITIES = [
+  {
+    id: 'AIML',
+    name: 'AIML LAB',
+    room: 'Lab 1 - AI',
+    subTitle: 'Room 402 • Dept. of AI & Data Science',
+    type: 'Core AI & Vision Systems',
+  },
+  {
+    id: 'IOT',
+    name: 'IOT LAB',
+    room: 'Lab 2 - IoT',
+    subTitle: 'Room 305 • Connected Sensors & Edge MCU',
+    type: 'IoT & Telemetry Depot',
+  },
+  {
+    id: 'EMBEDDED',
+    name: 'EMBEDDED LAB',
+    room: 'Lab 3 - Embedded',
+    subTitle: 'Room 214 • Robotics & Microcontrollers',
+    type: 'Robotics & Control Racks',
+  },
+  {
+    id: 'ALL',
+    name: 'ALL LABS',
+    room: 'All Labs',
+    subTitle: 'Central Hardware Depot • Integrated Overview',
+    type: 'Unified Registry',
+  },
+];
+
 const LabDataContext = createContext(null);
 
 export function LabDataProvider({ children }) {
   const { addToast } = useNotification();
   const { currentUser } = useAuth();
+
+  const [selectedFacility, setSelectedFacility] = useState(() => {
+    try {
+      return localStorage.getItem('labtrack_active_facility') || 'AIML LAB';
+    } catch {
+      return 'AIML LAB';
+    }
+  });
+
+  const changeFacility = (facility) => {
+    setSelectedFacility(facility);
+    try {
+      localStorage.setItem('labtrack_active_facility', facility);
+    } catch (e) {
+      console.error('Failed to save selected facility:', e);
+    }
+  };
 
   const [inventory, setInventory] = useState([]);
   const [activeLoans, setActiveLoans] = useState([]);
@@ -417,6 +465,10 @@ export function LabDataProvider({ children }) {
         retireAsset,
         addNewInventoryItem,
         createProject,
+        // Facility State
+        selectedFacility,
+        setSelectedFacility: changeFacility,
+        facilities: LAB_FACILITIES,
       }}
     >
       {children}

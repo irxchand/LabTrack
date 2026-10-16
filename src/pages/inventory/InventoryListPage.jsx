@@ -33,10 +33,9 @@ import {
 export function InventoryListPage({ initialClassification = null }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { inventory, addToBasket, joinWaitlist, addNewInventoryItem, setIsBasketOpen } = useLabData();
+  const { inventory, addToBasket, joinWaitlist, addNewInventoryItem, setIsBasketOpen, selectedFacility } = useLabData();
   const { role, permissions } = useAuth();
 
-  // Determine initial category from props or route
   // Determine initial category from props or route
   const routeClassification = useMemo(() => {
     if (initialClassification) return initialClassification;
@@ -52,6 +51,19 @@ export function InventoryListPage({ initialClassification = null }) {
   const [selectedLab, setSelectedLab] = useState('All Labs');
   const [inStockOnly, setInStockOnly] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // Default to Cupertino Component Widgets Grid
+
+  // Synchronize with global facility dropdown selector in TopHeader
+  useEffect(() => {
+    if (selectedFacility === 'AIML LAB') {
+      setSelectedLab('Lab 1 - AI');
+    } else if (selectedFacility === 'IOT LAB') {
+      setSelectedLab('Lab 2 - IoT');
+    } else if (selectedFacility === 'EMBEDDED LAB') {
+      setSelectedLab('Lab 3 - Embedded');
+    } else if (selectedFacility === 'ALL LABS') {
+      setSelectedLab('All Labs');
+    }
+  }, [selectedFacility]);
 
   // Keep state in sync if URL route changes directly
   useEffect(() => {
