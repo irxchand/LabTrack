@@ -272,86 +272,186 @@ export function InventoryListPage({ initialClassification = null }) {
     },
   ];
 
-  const renderHardwareWidget = (item) => (
-    <div
-      key={item.id}
-      onClick={() => setInspectedItem(item)}
-      className="group relative rounded-3xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] hover:from-white/[0.07] hover:to-white/[0.02] border border-white/[0.08] hover:border-white/20 p-7 transition-all duration-300 hover:shadow-[0_30px_70px_rgba(0,0,0,0.9)] flex flex-col justify-between cursor-pointer backdrop-blur-2xl"
-    >
-      {/* Specular hairline top rim */}
-      <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none rounded-t-3xl" />
+  const getCategoryStyle = (item) => {
+    const cat = (item.category || item.classification || '').toLowerCase();
+    const nom = (item.nomenclature || '').toLowerCase();
 
-      <div>
-        {/* Category & Tag Header */}
-        <div className="flex items-center justify-between text-xs mb-2">
-          <span className="text-[11px] font-semibold tracking-[0.18em] uppercase text-[#c9b8a0]">
-            {item.category || item.classification}
-          </span>
-          <span className="text-[11px] font-mono font-medium text-zinc-400 bg-white/[0.03] px-2.5 py-0.5 rounded-full border border-white/5">
-            {item.assetTag}
-          </span>
-        </div>
+    // 1. SBC & AI Edge: Deep Indigo / Electric Sapphire
+    if (cat.includes('ai edge') || cat.includes('sbc') || nom.includes('jetson') || nom.includes('raspberry')) {
+      return {
+        badgeBg: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
+        pedestalGlow: 'bg-indigo-500/25',
+        borderHover: 'hover:border-indigo-500/40',
+        cardBg: 'from-[#121422]/90 via-[#0e0f18]/85 to-[#08090f]/95',
+        tag: 'AI Compute & Edge',
+      };
+    }
 
-        {/* Product Hero Image (Clean Dark Floating Stage) */}
-        <div className="relative w-full h-52 sm:h-56 flex items-center justify-center my-3 overflow-hidden">
-          <img
-            src={item.image || '/images/hardware/raspberry-pi-5.jpg'}
-            alt={item.nomenclature}
-            className="max-h-full max-w-full object-contain drop-shadow-[0_24px_40px_rgba(0,0,0,0.95)] group-hover:scale-[1.03] transition-transform duration-500 ease-out"
-            onError={(e) => {
-              e.target.src = '/images/hardware/raspberry-pi-5.jpg';
-            }}
-          />
-        </div>
+    // 2. Microcontrollers: Electric Sky / Cyan
+    if (cat.includes('microcontroller') || nom.includes('arduino') || nom.includes('esp32')) {
+      return {
+        badgeBg: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
+        pedestalGlow: 'bg-sky-500/25',
+        borderHover: 'hover:border-sky-500/40',
+        cardBg: 'from-[#0e1622]/90 via-[#0a111a]/85 to-[#08090f]/95',
+        tag: 'Microcontroller',
+      };
+    }
 
-        {/* Product Title & Subtitle */}
-        <div className="space-y-1.5 mt-2">
-          <h3 className="text-[17px] font-semibold text-white tracking-[-0.015em] leading-snug group-hover:text-[#f5e6c8] transition-colors">
-            {item.nomenclature}
-          </h3>
-          <p className="text-[13px] text-zinc-400 font-normal line-clamp-2 leading-relaxed">
-            {item.subSpecs}
-          </p>
-        </div>
+    // 3. Sensors & Modules: Warm Amber / Sunset Bronze
+    if (cat.includes('sensor') || nom.includes('sensor') || nom.includes('imu') || nom.includes('oled') || nom.includes('bmp')) {
+      return {
+        badgeBg: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+        pedestalGlow: 'bg-amber-500/25',
+        borderHover: 'hover:border-amber-500/40',
+        cardBg: 'from-[#1a160e]/90 via-[#14100a]/85 to-[#08090f]/95',
+        tag: 'Sensor & Module',
+      };
+    }
 
-        {/* Location & Depot Strip */}
-        <div className="mt-4 flex items-center gap-2 text-xs">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-zinc-300 font-mono font-medium text-[11px]">
-            <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
-            <span>{item.coordinates}</span>
-          </div>
-          <span className="text-zinc-500 text-[12px]">{item.labRoom}</span>
-        </div>
-      </div>
+    // 4. Test Equipment / Oscilloscope: Radiant Purple / Violet
+    if (cat.includes('instrument') || nom.includes('oscilloscope') || nom.includes('analyzer')) {
+      return {
+        badgeBg: 'bg-purple-500/15 text-purple-300 border-purple-500/30',
+        pedestalGlow: 'bg-purple-500/25',
+        borderHover: 'hover:border-purple-500/40',
+        cardBg: 'from-[#191022]/90 via-[#130b1c]/85 to-[#08090f]/95',
+        tag: 'Test Instrument',
+      };
+    }
 
-      {/* Card Footer Actions */}
-      <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-4">
+    // 5. Consumables / Prototyping: Mint Emerald
+    return {
+      badgeBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+      pedestalGlow: 'bg-emerald-500/25',
+      borderHover: 'hover:border-emerald-500/40',
+      cardBg: 'from-[#0e1a16]/90 via-[#0a1411]/85 to-[#08090f]/95',
+      tag: item.category || 'Consumable & Dev',
+    };
+  };
+
+  const getSpecChips = (item) => {
+    const nom = (item.nomenclature || '').toLowerCase();
+    const specs = (item.subSpecs || '');
+    if (nom.includes('raspberry pi 5')) return ['Quad ARM A76', '8GB LPDDR4X', 'Dual 4Kp60'];
+    if (nom.includes('jetson nano')) return ['128-core Maxwell GPU', '4GB LPDDR4', '40-pin GPIO'];
+    if (nom.includes('arduino uno')) return ['ATmega328P', '14 Digital I/O', 'USB Type-B'];
+    if (nom.includes('esp32')) return ['Dual-Core 240MHz', 'Wi-Fi & BLE 4.2', '4MB Flash'];
+    if (nom.includes('oscilloscope')) return ['50MHz Bandwidth', '4 Channels', '1GSa/s'];
+    if (nom.includes('oled')) return ['0.96" Monochrome', '128x64 Pixels', 'I2C Interface'];
+    if (nom.includes('bmp280')) return ['Barometric & Temp', 'I2C / SPI Bus', 'High Accuracy'];
+    if (nom.includes('mpu-6050')) return ['6-Axis Gyro & Accel', 'Digital Motion', 'I2C Fast'];
+    if (nom.includes('jumper')) return ['120-Pin Ribbon', 'Male-to-Female', '20cm Length'];
+    if (nom.includes('breadboard')) return ['830 Tie-Points', 'Dual Power Rails', 'Nickel Plated'];
+    if (nom.includes('resistor')) return ['600pcs Assorted', '1/4W Metal Film', '1% Precision'];
+
+    if (specs) {
+      return specs.split(',').slice(0, 3).map((s) => s.trim()).filter(Boolean);
+    }
+    return ['Certified Laboratory Grade', 'Standard Kit'];
+  };
+
+  const renderHardwareWidget = (item) => {
+    const style = getCategoryStyle(item);
+    const specChips = getSpecChips(item);
+
+    return (
+      <div
+        key={item.id}
+        onClick={() => setInspectedItem(item)}
+        className={`group relative rounded-3xl bg-gradient-to-b ${style.cardBg} border border-white/10 ${style.borderHover} p-7 transition-all duration-300 hover:shadow-[0_24px_60px_rgba(0,0,0,0.85)] flex flex-col justify-between cursor-pointer backdrop-blur-2xl overflow-hidden`}
+      >
+        {/* Specular hairline top rim */}
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none rounded-t-3xl" />
+
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
-            <span className="text-[12px] text-white font-medium">
-              In Stock
+          {/* Category & Tag Header */}
+          <div className="flex items-center justify-between text-xs mb-2">
+            <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${style.badgeBg} shadow-sm tracking-wide`}>
+              {style.tag}
+            </span>
+            <span className="text-[11px] font-mono font-medium text-zinc-400 bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/10">
+              {item.assetTag}
             </span>
           </div>
-          <p className="text-[11px] text-zinc-500 mt-0.5 font-normal">
-            {item.availableStock} {item.availableStock === 1 ? 'unit' : 'units'} available
-          </p>
+
+          {/* Product Hero Image (Clean Showroom Floating Stage with Colored Ambient Glow) */}
+          <div className="relative w-full h-52 sm:h-56 flex items-center justify-center my-3 overflow-hidden">
+            {/* Showroom Ambient Light Pedestal Glow under hardware */}
+            <div className={`absolute bottom-3 w-40 h-10 rounded-full ${style.pedestalGlow} blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-125 opacity-70`} />
+
+            <img
+              src={item.image || '/images/hardware/raspberry-pi-5.jpg'}
+              alt={item.nomenclature}
+              className="max-h-full max-w-full object-contain drop-shadow-[0_24px_40px_rgba(0,0,0,0.95)] group-hover:scale-[1.04] transition-transform duration-500 ease-out z-10"
+              onError={(e) => {
+                e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+              }}
+            />
+          </div>
+
+          {/* Product Title & Subtitle */}
+          <div className="space-y-1.5 mt-2">
+            <h3 className="text-[17px] font-semibold text-white tracking-[-0.015em] leading-snug group-hover:text-white transition-colors">
+              {item.nomenclature}
+            </h3>
+            <p className="text-[13px] text-zinc-400 font-normal line-clamp-2 leading-relaxed">
+              {item.subSpecs}
+            </p>
+          </div>
+
+          {/* Technical Spec Chips (Dense, Professional Engineering Highlights) */}
+          <div className="flex flex-wrap gap-1.5 pt-3">
+            {specChips.map((chip, idx) => (
+              <span
+                key={idx}
+                className="px-2.5 py-0.5 rounded-md bg-white/[0.04] border border-white/5 text-[11px] text-zinc-300 font-sans font-medium"
+              >
+                {chip}
+              </span>
+            ))}
+          </div>
+
+          {/* Location & Depot Strip */}
+          <div className="mt-3.5 flex items-center gap-2 text-xs">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-zinc-300 font-mono font-medium text-[11px]">
+              <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
+              <span>{item.coordinates}</span>
+            </div>
+            <span className="text-zinc-500 text-[12px]">{item.labRoom}</span>
+          </div>
         </div>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            addToBasket(item, 1);
-          }}
-          className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-[13px] tracking-tight transition-all shadow-sm active:scale-95 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Requisition</span>
-        </button>
+        {/* Card Footer Actions */}
+        <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] flex-shrink-0" />
+              <span className="text-[12px] text-white font-medium">
+                In Stock
+              </span>
+              <span className="text-zinc-600">•</span>
+              <span className="text-[11px] text-zinc-400 font-normal">
+                {item.availableStock} of {item.totalStock} available
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              addToBasket(item, 1);
+            }}
+            className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-[13px] tracking-tight transition-all shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Requisition</span>
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="space-y-8 select-none font-sans max-w-7xl mx-auto">

@@ -235,7 +235,7 @@ export function ProjectDirectoryPage() {
             <div
               key={project.id}
               onClick={() => navigate(`/workspace/projects/${project.id}`)}
-              className="relative rounded-3xl p-6 sm:p-7 bg-gradient-to-b from-[#141417]/95 via-[#0e0e11]/90 to-[#0a0a0c]/95 border border-white/10 hover:border-white/20 transition-all duration-300 backdrop-blur-xl flex flex-col justify-between group cursor-pointer shadow-[0_10px_35px_rgba(0,0,0,0.6)] hover:shadow-[0_15px_45px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden"
+              className="relative rounded-3xl p-6 sm:p-7 bg-gradient-to-b from-[#121422]/90 via-[#0e0f18]/85 to-[#08090f]/95 border border-white/10 hover:border-indigo-500/30 transition-all duration-300 backdrop-blur-xl flex flex-col justify-between group cursor-pointer shadow-[0_12px_40px_rgba(0,0,0,0.7)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.9)] space-y-6 overflow-hidden"
             >
               {/* Specular Edge Highlight */}
               <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
@@ -278,7 +278,7 @@ export function ProjectDirectoryPage() {
               {/* Physical Hardware Showcase Pedestals */}
               <div className="pt-2 border-t border-white/5 space-y-3">
                 <div className="flex items-center justify-between text-[11px] font-sans">
-                  <span className="text-[10px] font-sans uppercase tracking-wider text-zinc-500 font-semibold flex items-center gap-1.5">
+                  <span className="text-[10px] font-sans uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-1.5">
                     <Cpu className="w-3.5 h-3.5 text-[#c9b8a0]" />
                     <span>Allocated Hardware Staging</span>
                   </span>
@@ -322,11 +322,11 @@ export function ProjectDirectoryPage() {
                   </div>
                 )}
 
-                {/* Quota Progress Bar */}
+                {/* Quota Progress Bar (Luminous Multi-Tone Gradient) */}
                 <div className="space-y-1 pt-1">
                   <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
                     <div
-                      className="bg-white h-full rounded-full transition-all duration-500"
+                      className="bg-gradient-to-r from-indigo-500 via-sky-400 to-teal-400 h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(56,189,248,0.5)]"
                       style={{ width: `${Math.min(100, quotaPercentage)}%` }}
                     />
                   </div>
@@ -338,15 +338,25 @@ export function ProjectDirectoryPage() {
                 {/* Team Avatar Stack */}
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="flex items-center -space-x-2 flex-shrink-0">
-                    {project.members?.map((member) => (
-                      <div
-                        key={member.prn}
-                        className="w-7 h-7 rounded-full bg-gradient-to-tr from-white/20 to-white/5 border-2 border-[#121316] text-white font-semibold text-[11px] flex items-center justify-center shadow-sm"
-                        title={`${member.name} (${member.role})`}
-                      >
-                        {member.name.charAt(0)}
-                      </div>
-                    ))}
+                    {project.members?.map((member, mIdx) => {
+                      const avatarColors = [
+                        'from-indigo-500/30 to-blue-500/20 text-indigo-200 border-indigo-500/40',
+                        'from-sky-500/30 to-cyan-500/20 text-sky-200 border-sky-500/40',
+                        'from-amber-500/30 to-orange-500/20 text-amber-200 border-amber-500/40',
+                        'from-emerald-500/30 to-teal-500/20 text-emerald-200 border-emerald-500/40',
+                        'from-purple-500/30 to-pink-500/20 text-purple-200 border-purple-500/40',
+                      ];
+                      const colorClass = avatarColors[mIdx % avatarColors.length];
+                      return (
+                        <div
+                          key={member.prn}
+                          className={`w-7 h-7 rounded-full bg-gradient-to-tr ${colorClass} border-2 border-[#0e101a] font-semibold text-[11px] flex items-center justify-center shadow-sm`}
+                          title={`${member.name} (${member.role})`}
+                        >
+                          {member.name.charAt(0)}
+                        </div>
+                      );
+                    })}
                   </div>
 
                   <div className="min-w-0">

@@ -202,7 +202,7 @@ export function TopHeader() {
 
   return (
     <>
-      <header className="h-16 bg-[#0a0a0c]/90 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 flex items-center justify-between z-40 relative">
+      <header className="h-16 bg-[#08090d]/80 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-6 flex items-center justify-between z-40 relative shadow-[0_4px_30px_rgba(0,0,0,0.4)]">
         {/* Left: Brand & Minimal Lab ID */}
         <div className="flex items-center gap-3.5 flex-shrink-0">
           <div
@@ -234,8 +234,8 @@ export function TopHeader() {
                 onClick={() => navigate(item.to)}
                 className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer ${
                   active
-                    ? 'bg-white text-black font-semibold shadow-[0_2px_10px_rgba(0,0,0,0.5)]'
-                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                    ? 'bg-gradient-to-b from-white to-zinc-200 text-black font-semibold shadow-[0_2px_12px_rgba(255,255,255,0.25)]'
+                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
                 <item.icon className={`w-3.5 h-3.5 ${active ? 'text-black' : 'text-zinc-400'}`} />

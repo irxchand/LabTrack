@@ -277,29 +277,101 @@ export function ActiveLoansPage() {
     },
   ];
 
+  const getCategoryStyle = (item) => {
+    const cat = (item?.category || item?.classification || '').toLowerCase();
+    const nom = (item?.nomenclature || '').toLowerCase();
+
+    if (cat.includes('ai edge') || cat.includes('sbc') || nom.includes('jetson') || nom.includes('raspberry')) {
+      return {
+        badgeBg: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
+        pedestalGlow: 'bg-indigo-500/25',
+        borderHover: 'hover:border-indigo-500/40',
+        cardBg: 'from-[#121422]/90 via-[#0e0f18]/85 to-[#08090f]/95',
+        tag: 'AI Compute & Edge',
+      };
+    }
+    if (cat.includes('microcontroller') || nom.includes('arduino') || nom.includes('esp32')) {
+      return {
+        badgeBg: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
+        pedestalGlow: 'bg-sky-500/25',
+        borderHover: 'hover:border-sky-500/40',
+        cardBg: 'from-[#0e1622]/90 via-[#0a111a]/85 to-[#08090f]/95',
+        tag: 'Microcontroller',
+      };
+    }
+    if (cat.includes('sensor') || nom.includes('sensor') || nom.includes('imu') || nom.includes('oled') || nom.includes('bmp')) {
+      return {
+        badgeBg: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+        pedestalGlow: 'bg-amber-500/25',
+        borderHover: 'hover:border-amber-500/40',
+        cardBg: 'from-[#1a160e]/90 via-[#14100a]/85 to-[#08090f]/95',
+        tag: 'Sensor & Module',
+      };
+    }
+    if (cat.includes('instrument') || nom.includes('oscilloscope') || nom.includes('analyzer')) {
+      return {
+        badgeBg: 'bg-purple-500/15 text-purple-300 border-purple-500/30',
+        pedestalGlow: 'bg-purple-500/25',
+        borderHover: 'hover:border-purple-500/40',
+        cardBg: 'from-[#191022]/90 via-[#130b1c]/85 to-[#08090f]/95',
+        tag: 'Test Instrument',
+      };
+    }
+    return {
+      badgeBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+      pedestalGlow: 'bg-emerald-500/25',
+      borderHover: 'hover:border-emerald-500/40',
+      cardBg: 'from-[#0e1a16]/90 via-[#0a1411]/85 to-[#08090f]/95',
+      tag: item?.category || 'Bench Hardware',
+    };
+  };
+
+  const getSpecChips = (item) => {
+    const nom = (item?.nomenclature || '').toLowerCase();
+    const specs = (item?.subSpecs || '');
+    if (nom.includes('raspberry pi 5')) return ['Quad ARM A76', '8GB LPDDR4X', 'Dual 4Kp60'];
+    if (nom.includes('jetson nano')) return ['128-core Maxwell GPU', '4GB LPDDR4', '40-pin GPIO'];
+    if (nom.includes('arduino uno')) return ['ATmega328P', '14 Digital I/O', 'USB Type-B'];
+    if (nom.includes('esp32')) return ['Dual-Core 240MHz', 'Wi-Fi & BLE 4.2', '4MB Flash'];
+    if (nom.includes('oscilloscope')) return ['50MHz Bandwidth', '4 Channels', '1GSa/s'];
+    if (nom.includes('oled')) return ['0.96" Monochrome', '128x64 Pixels', 'I2C Interface'];
+    if (nom.includes('bmp280')) return ['Barometric & Temp', 'I2C / SPI Bus', 'High Accuracy'];
+    if (nom.includes('mpu-6050')) return ['6-Axis Gyro & Accel', 'Digital Motion', 'I2C Fast'];
+    if (nom.includes('jumper')) return ['120-Pin Ribbon', 'Male-to-Female', '20cm Length'];
+    if (nom.includes('breadboard')) return ['830 Tie-Points', 'Dual Power Rails', 'Nickel Plated'];
+    if (nom.includes('resistor')) return ['600pcs Assorted', '1/4W Metal Film', '1% Precision'];
+
+    if (specs) {
+      return specs.split(',').slice(0, 3).map((s) => s.trim()).filter(Boolean);
+    }
+    return ['Certified Laboratory Grade', 'Active Loan'];
+  };
+
   // Render Cupertino Product Staging Card for Issued Hardware
   const renderHardwareCard = (loan) => {
     const invItem = getInventoryItem(loan.assetTag);
     const isBorrower = loan.borrowerPrn === currentUser?.prn;
     const isExtensionDisabled = userHasOverdue && isBorrower;
+    const style = getCategoryStyle(invItem);
+    const specChips = getSpecChips(invItem);
 
     return (
       <div
         key={loan.id}
         onClick={() => setInspectedLoan(loan)}
-        className="group relative rounded-3xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] hover:from-white/[0.07] hover:to-white/[0.02] border border-white/[0.08] hover:border-white/20 p-7 transition-all duration-300 hover:shadow-[0_30px_70px_rgba(0,0,0,0.9)] flex flex-col justify-between cursor-pointer backdrop-blur-2xl"
+        className={`group relative rounded-3xl bg-gradient-to-b ${style.cardBg} border border-white/10 ${style.borderHover} p-7 transition-all duration-300 hover:shadow-[0_24px_60px_rgba(0,0,0,0.85)] flex flex-col justify-between cursor-pointer backdrop-blur-2xl overflow-hidden`}
       >
         {/* Specular hairline top rim */}
-        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none rounded-t-3xl" />
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none rounded-t-3xl" />
 
         <div>
           {/* Category & Tag Header */}
           <div className="flex items-center justify-between text-xs mb-2">
-            <span className="text-[11px] font-semibold tracking-[0.18em] uppercase text-[#c9b8a0]">
-              {invItem.category || 'Bench Hardware'}
+            <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${style.badgeBg} shadow-sm tracking-wide`}>
+              {style.tag}
             </span>
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-mono font-medium text-zinc-400 bg-white/[0.03] px-2.5 py-0.5 rounded-full border border-white/5">
+              <span className="text-[11px] font-mono font-medium text-zinc-400 bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/10">
                 {loan.assetTag}
               </span>
               <span className="text-[10px] font-mono text-zinc-500">
@@ -308,12 +380,15 @@ export function ActiveLoansPage() {
             </div>
           </div>
 
-          {/* Product Hero Image (Clean Dark Floating Stage) */}
+          {/* Product Hero Image (Clean Dark Floating Stage with Studio Pedestal Glow) */}
           <div className="relative w-full h-52 sm:h-56 flex items-center justify-center my-3 overflow-hidden">
+            {/* Showroom Ambient Light Pedestal Glow under hardware */}
+            <div className={`absolute bottom-3 w-40 h-10 rounded-full ${style.pedestalGlow} blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-125 opacity-70`} />
+
             <img
-              src={invItem.image || '/images/hardware/raspberry-pi-5.jpg'}
+              src={invItem?.image || '/images/hardware/raspberry-pi-5.jpg'}
               alt={loan.nomenclature}
-              className="max-h-full max-w-full object-contain drop-shadow-[0_24px_40px_rgba(0,0,0,0.95)] group-hover:scale-[1.03] transition-transform duration-500 ease-out"
+              className="max-h-full max-w-full object-contain drop-shadow-[0_24px_40px_rgba(0,0,0,0.95)] group-hover:scale-[1.04] transition-transform duration-500 ease-out z-10"
               onError={(e) => {
                 e.target.src = '/images/hardware/raspberry-pi-5.jpg';
               }}
@@ -322,16 +397,28 @@ export function ActiveLoansPage() {
 
           {/* Product Title & Subtitle */}
           <div className="space-y-1.5 mt-2">
-            <h3 className="text-[17px] font-semibold text-white tracking-[-0.015em] leading-snug group-hover:text-[#f5e6c8] transition-colors">
+            <h3 className="text-[17px] font-semibold text-white tracking-[-0.015em] leading-snug group-hover:text-white transition-colors">
               {loan.nomenclature}
             </h3>
             <p className="text-[13px] text-zinc-400 font-normal line-clamp-2 leading-relaxed">
-              {invItem.subSpecs || 'Institutional lab hardware unit issued for project development.'}
+              {invItem?.subSpecs || 'Institutional lab hardware unit issued for project development.'}
             </p>
           </div>
 
+          {/* Technical Spec Chips (Dense, Professional Engineering Highlights) */}
+          <div className="flex flex-wrap gap-1.5 pt-3">
+            {specChips.map((chip, idx) => (
+              <span
+                key={idx}
+                className="px-2.5 py-0.5 rounded-md bg-white/[0.04] border border-white/5 text-[11px] text-zinc-300 font-sans font-medium"
+              >
+                {chip}
+              </span>
+            ))}
+          </div>
+
           {/* Origin Depot & Custody Strip */}
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+          <div className="mt-3.5 flex flex-wrap items-center gap-2 text-xs">
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-zinc-300 font-mono font-medium text-[11px]">
               <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
               <span>{loan.locationCoordinates}</span>
@@ -350,10 +437,10 @@ export function ActiveLoansPage() {
               <span
                 className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
                   loan.daysRemaining < 0
-                    ? 'bg-rose-400'
+                    ? 'bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.8)]'
                     : loan.daysRemaining <= 3
-                    ? 'bg-amber-400'
-                    : 'bg-emerald-400'
+                    ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]'
+                    : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]'
                 }`}
               />
               <span className="text-[13px] font-medium text-white truncate">
