@@ -86,7 +86,7 @@ export function App() {
                   <Route
                     path="audit-log"
                     element={
-                      <RoleGuard allowedRoles={['Lab Assistant', 'HoD / Admin']}>
+                      <RoleGuard allowedRoles={['Student', 'Faculty', 'Lab Assistant', 'HoD / Admin']}>
                         <AuditLogPage />
                       </RoleGuard>
                     }
@@ -122,7 +122,7 @@ export function App() {
                   <Route
                     path="defects"
                     element={
-                      <RoleGuard allowedRoles={['Faculty', 'Lab Assistant', 'HoD / Admin']}>
+                      <RoleGuard allowedRoles={['Student', 'Faculty', 'Lab Assistant', 'HoD / Admin']}>
                         <DefectManagementPage />
                       </RoleGuard>
                     }
