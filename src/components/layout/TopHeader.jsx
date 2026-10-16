@@ -235,8 +235,8 @@ export function TopHeader() {
         <div className="flex items-center gap-3 flex-shrink-0">
           <div
             className="flex items-center space-x-2 cursor-pointer group"
-            onClick={() => navigate('/workspace/inventory')}
-            title="Hardware Depot Overview"
+            onClick={() => navigate('/hero')}
+            title="LabTrack Flagship Showcase"
           >
             <span className="font-display text-xl sm:text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
               LabTrack

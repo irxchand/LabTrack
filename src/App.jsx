@@ -32,6 +32,8 @@ import { ApprovalsQueuePage } from './pages/operations/ApprovalsQueuePage';
 import { DispatchDeskPage } from './pages/operations/DispatchDeskPage';
 import { DefectManagementPage } from './pages/operations/DefectManagementPage';
 
+// Flagship Showcase Hero Page
+import { HeroPage } from './pages/HeroPage';
 
 export function App() {
   return (
@@ -46,9 +48,10 @@ export function App() {
               <Route path="/auth/login" element={<LoginPage />} />
               <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
-              {/* Hero routes redirect directly to workspace */}
-              <Route path="/hero" element={<Navigate to="/workspace" replace />} />
-              <Route path="/experience" element={<Navigate to="/workspace" replace />} />
+              {/* Flagship 3D Hero Showcase Page */}
+              <Route path="/hero" element={<HeroPage />} />
+              <Route path="/showcase" element={<HeroPage />} />
+              <Route path="/experience" element={<HeroPage />} />
 
               {/* Authenticated Workspace Shell */}
               <Route path="/workspace" element={<Shell />}>
