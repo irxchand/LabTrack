@@ -111,6 +111,12 @@ export function ProjectDetailPage() {
               <div className="font-mono text-sm font-bold text-white">
                 {project.currentAllocatedCount} / {project.hardwareBudgetCap} units
               </div>
+              <div className="w-full bg-white/10 rounded-full h-1 overflow-hidden mt-1.5">
+                <div
+                  className="bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(201,184,160,0.6)]"
+                  style={{ width: `${Math.min(100, (assignedLoans.length / (project.hardwareBudgetCap || 1)) * 100)}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>

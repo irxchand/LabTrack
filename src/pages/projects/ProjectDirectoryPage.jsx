@@ -322,11 +322,11 @@ export function ProjectDirectoryPage() {
                   </div>
                 )}
 
-                {/* Quota Progress Bar (Luminous Multi-Tone Gradient) */}
+                {/* Quota Progress Bar (Luxury Gold Matching Brand Design) */}
                 <div className="space-y-1 pt-1">
                   <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
                     <div
-                      className="bg-gradient-to-r from-indigo-500 via-sky-400 to-teal-400 h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(56,189,248,0.5)]"
+                      className="bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] h-full rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(201,184,160,0.6)]"
                       style={{ width: `${Math.min(100, quotaPercentage)}%` }}
                     />
                   </div>
