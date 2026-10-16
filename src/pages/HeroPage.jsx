@@ -358,7 +358,7 @@ export function HeroPage() {
           FOOTER (Clash Display Brand & Real LabTrack Navigation)
       ───────────────────────────────────────────────────────────────────────── */}
       <footer className="pt-20 pb-12 px-6 sm:px-12 border-t border-white/10 bg-[#080808] relative z-10">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-16">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-16">
           {/* Column 1: Logo & Socials */}
           <div className="lg:col-span-1 space-y-4">
             <div
@@ -434,47 +434,6 @@ export function HeroPage() {
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Defect Quarantine
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: Custody & Circulation */}
-          <div>
-            <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
-              CUSTODY
-            </div>
-            <ul className="space-y-2.5 text-xs text-neutral-400 font-normal font-sans">
-              <li>
-                <button
-                  onClick={() => navigate('/workspace/custody/active')}
-                  className="hover:text-white transition-colors text-left cursor-pointer"
-                >
-                  Active Benches
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => navigate('/workspace/custody/requests')}
-                  className="hover:text-white transition-colors text-left cursor-pointer"
-                >
-                  Requisition Queue
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => navigate('/workspace/custody/reservations')}
-                  className="hover:text-white transition-colors text-left cursor-pointer"
-                >
-                  Waitlist Reservations
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => navigate('/workspace/projects')}
-                  className="hover:text-white transition-colors text-left cursor-pointer"
-                >
-                  Capstone Projects
                 </button>
               </li>
             </ul>
