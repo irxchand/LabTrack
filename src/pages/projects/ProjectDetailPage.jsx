@@ -84,11 +84,16 @@ export function ProjectDetailPage() {
 
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-xs font-bold text-[#f5e6c8]">#{project.id}</span>
-              <span className="text-zinc-600">•</span>
-              <span className="px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/10 text-[11px] font-mono text-zinc-300">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[11px] font-sans font-medium text-zinc-300">
                 {project.courseCode}
+              </span>
+              <span className="text-xs font-sans text-zinc-400">
+                Project Group <span className="text-zinc-200 font-medium">{project.id}</span>
+              </span>
+              <span className="w-1 h-1 rounded-full bg-zinc-600" />
+              <span className="text-xs font-sans text-zinc-500">
+                {project.academicTerm || 'Autumn 2026'}
               </span>
             </div>
             <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1">

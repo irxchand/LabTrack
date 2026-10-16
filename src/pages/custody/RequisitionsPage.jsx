@@ -264,8 +264,8 @@ export function RequisitionsPage() {
                 {/* Top Status & SKU Strip */}
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-xs font-bold tracking-tight text-[#f5e6c8] group-hover:text-white transition-colors">
-                      #{req.id}
+                    <span className="text-xs font-sans font-semibold text-zinc-200 group-hover:text-white transition-colors">
+                      {req.id}
                     </span>
                     <span className="w-1 h-1 rounded-full bg-zinc-600" />
                     <span className="text-xs text-zinc-400 font-sans">

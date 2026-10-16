@@ -242,13 +242,12 @@ export function ProjectDirectoryPage() {
 
               {/* Top Strip */}
               <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <span className="font-mono text-xs font-bold tracking-tight text-[#f5e6c8] group-hover:text-white transition-colors">
-                    #{project.id}
-                  </span>
-                  <span className="w-1 h-1 rounded-full bg-zinc-600" />
-                  <span className="px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/10 text-[11px] font-mono text-zinc-300">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[11px] font-sans font-medium text-zinc-300">
                     {project.courseCode}
+                  </span>
+                  <span className="text-xs font-sans text-zinc-400 font-medium group-hover:text-zinc-200 transition-colors">
+                    {project.id}
                   </span>
                 </div>
 
