@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Activity,
@@ -28,6 +28,13 @@ export function HeroPage() {
   const [digestSubscribed, setDigestSubscribed] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const heroContainerRef = useRef(null);
+
+  // Auth gate: First is auth page, then hero page
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
 
   // Subtle interactive parallax coordinates
   const handleMouseMove = (e) => {

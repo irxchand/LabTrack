@@ -29,11 +29,6 @@ export function LoginPage() {
     setErrorMessage('');
   };
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/hero');
-    }
-  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
