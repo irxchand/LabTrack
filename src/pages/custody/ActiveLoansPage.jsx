@@ -76,6 +76,23 @@ export function ActiveLoansPage() {
     return { total, imminent, overdue, normal };
   }, [displayedLoans]);
 
+  // Friendly date formatter (e.g. Oct 24)
+  const formatFriendlyDate = (dateString) => {
+    if (!dateString) return '';
+    try {
+      const parts = dateString.split(' ')[0].split('-');
+      if (parts.length === 3) {
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const m = monthNames[parseInt(parts[1], 10) - 1] || parts[1];
+        const d = parseInt(parts[2], 10);
+        return `${m} ${d}`;
+      }
+      return dateString.split(' ')[0];
+    } catch {
+      return dateString.split(' ')[0];
+    }
+  };
+
   // Inventory lookup helper for rich photos & specs
   const getInventoryItem = (assetTag) => {
     return inventory.find((i) => i.assetTag === assetTag || i.id === assetTag) || {};
@@ -326,60 +343,51 @@ export function ActiveLoansPage() {
         </div>
 
         {/* Card Footer: Deadline Status & Actions */}
-        <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-3">
-          {/* Urgency Badge */}
-          <div className="flex items-center gap-2">
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                loan.daysRemaining < 0
-                  ? 'bg-rose-400'
-                  : loan.daysRemaining <= 3
-                  ? 'bg-amber-400'
-                  : 'bg-emerald-400'
-              }`}
-            />
-            <div className="text-xs">
-              <span className="font-medium text-white">
+        <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-4">
+          {/* Status info */}
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span
+                className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                  loan.daysRemaining < 0
+                    ? 'bg-rose-400'
+                    : loan.daysRemaining <= 3
+                    ? 'bg-amber-400'
+                    : 'bg-emerald-400'
+                }`}
+              />
+              <span className="text-xs font-medium text-white truncate">
                 {loan.daysRemaining < 0
                   ? `${Math.abs(loan.daysRemaining)} ${Math.abs(loan.daysRemaining) === 1 ? 'day' : 'days'} overdue`
                   : `${loan.daysRemaining} ${loan.daysRemaining === 1 ? 'day' : 'days'} remaining`}
               </span>
-              <span className="text-zinc-500 ml-1.5 text-[11px]">
-                · Due {loan.dueDate?.split(' ')[0]}
-              </span>
             </div>
+            <p className="text-[11px] text-zinc-500 mt-0.5 font-normal">
+              Due {formatFriendlyDate(loan.dueDate)}
+            </p>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              onClick={() => setInspectedLoan(loan)}
-              className="w-8 h-8 rounded-full border border-white/10 hover:border-white/30 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-              title="Technical Specifications"
-            >
-              <Eye className="w-3.5 h-3.5" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleOpenExtension(loan)}
-              disabled={isExtensionDisabled}
-              className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all shadow-sm active:scale-95 flex items-center gap-1.5 ${
-                isExtensionDisabled
-                  ? 'bg-white/[0.04] text-zinc-600 border border-white/5 cursor-not-allowed'
-                  : 'bg-white hover:bg-zinc-200 text-black cursor-pointer'
-              }`}
-              title={
-                isExtensionDisabled
-                  ? 'Extension locked: overdue item pending return'
-                  : 'Request Term Extension'
-              }
-            >
-              <CalendarPlus className="w-3.5 h-3.5" />
-              <span>Extend</span>
-            </button>
-          </div>
+          {/* Action Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenExtension(loan);
+            }}
+            disabled={isExtensionDisabled}
+            className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all shadow-sm active:scale-95 flex-shrink-0 cursor-pointer ${
+              isExtensionDisabled
+                ? 'bg-white/[0.04] text-zinc-600 border border-white/5 cursor-not-allowed'
+                : 'bg-white hover:bg-zinc-200 text-black'
+            }`}
+            title={
+              isExtensionDisabled
+                ? 'Extension locked: overdue item pending return'
+                : 'Request Term Extension'
+            }
+          >
+            Extend
+          </button>
         </div>
       </div>
     );

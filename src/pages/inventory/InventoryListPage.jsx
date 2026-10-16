@@ -325,39 +325,30 @@ export function InventoryListPage({ initialClassification = null }) {
       </div>
 
       {/* Card Footer Actions */}
-      <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
-          <span className="text-xs text-zinc-300 font-medium">
-            {item.availableStock} in stock
-          </span>
+      <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+            <span className="text-xs text-white font-medium">
+              In Stock
+            </span>
+          </div>
+          <p className="text-[11px] text-zinc-500 mt-0.5 font-normal">
+            {item.availableStock} {item.availableStock === 1 ? 'unit' : 'units'} available
+          </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setInspectedItem(item);
-            }}
-            className="w-8 h-8 rounded-full border border-white/10 hover:border-white/30 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-            title="Technical Specifications"
-          >
-            <Eye className="w-3.5 h-3.5" />
-          </button>
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              addToBasket(item, 1);
-            }}
-            className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-wide transition-all shadow-sm active:scale-95 flex items-center gap-1.5 cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Requisition</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            addToBasket(item, 1);
+          }}
+          className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-wide transition-all shadow-sm active:scale-95 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          <span>Requisition</span>
+        </button>
       </div>
     </div>
   );
