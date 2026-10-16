@@ -3,6 +3,7 @@ import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { TopHeader } from './TopHeader';
 import { RequisitionDrawer } from '../specialized/RequisitionDrawer';
+import { InteractiveWavesBackground } from '../canvas/InteractiveWavesBackground';
 
 export function Shell() {
   const { isAuthenticated } = useAuth();
@@ -14,6 +15,27 @@ export function Shell() {
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#08090d] text-white font-sans relative selection:bg-indigo-500/30 selection:text-white">
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* WHOLE-PAGE INTERACTIVE WAVES BACKGROUND (Workspace Canvas) */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <InteractiveWavesBackground
+          lineColor="rgba(201, 184, 160, 0.16)"
+          backgroundColor="transparent"
+          waveSpeedX={0.014}
+          waveSpeedY={0.006}
+          waveAmpX={32}
+          waveAmpY={15}
+          friction={0.925}
+          tension={0.007}
+          maxCursorMove={120}
+          xGap={14}
+          yGap={36}
+          cursorDotColor="rgba(232, 213, 183, 0.65)"
+          showCursorDot={true}
+        />
+      </div>
+
       {/* ───────────────────────────────────────────────────────────── */}
       {/* Multi-Stop Ambient Atmospheric Lighting Pools (Linear / Google) */}
       {/* ───────────────────────────────────────────────────────────── */}

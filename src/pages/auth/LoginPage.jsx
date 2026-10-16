@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { User, Lock, ArrowRight, Check, AlertCircle } from 'lucide-react';
+import { InteractiveWavesBackground } from '../../components/canvas/InteractiveWavesBackground';
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -55,6 +56,23 @@ export function LoginPage() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
         {/* Soft background tone */}
         <div className="absolute inset-0 bg-[#08080a]" />
+
+        {/* Interactive Waves Background */}
+        <InteractiveWavesBackground
+          lineColor="rgba(201, 184, 160, 0.22)"
+          backgroundColor="transparent"
+          waveSpeedX={0.016}
+          waveSpeedY={0.007}
+          waveAmpX={38}
+          waveAmpY={18}
+          friction={0.925}
+          tension={0.007}
+          maxCursorMove={120}
+          xGap={12}
+          yGap={34}
+          cursorDotColor="rgba(232, 213, 183, 0.85)"
+          showCursorDot={true}
+        />
 
         {/* Floating warm gold & champagne luminous orbs shining through the glass */}
         <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full bg-gradient-to-br from-[#c9b8a0]/25 via-[#a78b71]/15 to-transparent blur-[120px]" />
