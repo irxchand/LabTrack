@@ -66,18 +66,11 @@ export function TopHeader() {
   // Primary macOS Toolbar items - displaying ONLY the main things
   const mainNavItems = [
     {
-      label: 'Assets',
-      to: '/workspace/inventory/assets',
+      label: 'Workstation',
+      to: '/workspace/inventory',
       icon: Cpu,
-      count: inventory.filter((i) => i.classification === 'Asset').length,
-      isActive: (pathname) => pathname.includes('/assets'),
-    },
-    {
-      label: 'Consumables',
-      to: '/workspace/inventory/consumables',
-      icon: Package,
-      count: inventory.filter((i) => i.classification === 'Consumable').length,
-      isActive: (pathname) => pathname.includes('/consumables') || pathname.includes('/components'),
+      count: inventory.length,
+      isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
     },
     {
       label: 'Active Loans',

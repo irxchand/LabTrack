@@ -7,11 +7,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const { loginWithMySQL, isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/workspace', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
+
 
   const [username, setUsername] = useState('202401048');
   const [password, setPassword] = useState('password123');

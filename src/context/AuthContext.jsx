@@ -112,7 +112,7 @@ export function AuthProvider({ children }) {
   });
 
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('labtrack_is_auth') !== 'false';
+    return localStorage.getItem('labtrack_is_auth') === 'true';
   });
 
   // Active Database Provider ('mysql' | 'excel')
