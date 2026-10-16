@@ -5,9 +5,7 @@ import { useLabData } from '../../context/LabDataContext';
 import { CommandPalette } from '../common/CommandPalette';
 import {
   ShoppingBag,
-  ChevronDown,
   Search,
-  Check,
   LogOut,
   Cpu,
   Clock,
@@ -23,10 +21,9 @@ import {
 export function TopHeader() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser, role, switchRole, logout } = useAuth();
+  const { currentUser, role, logout } = useAuth();
   const { basket, setIsBasketOpen, inventory, activeLoans, requisitions, projects, defects } = useLabData();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
-  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
 
   // Keyboard shortcut: Cmd+K / Ctrl+K
   useEffect(() => {
@@ -40,32 +37,7 @@ export function TopHeader() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const demoRoles = [
-    {
-      role: 'Student',
-      label: 'Student (Requester)',
-      name: 'Rahul Sharma',
-      badge: '202401048 • DCDS-SY-AIML',
-    },
-    {
-      role: 'Faculty',
-      label: 'Faculty Mentor',
-      name: 'Dr. Anjali Dalvi',
-      badge: 'FAC-AI-019 • Dept of AIML',
-    },
-    {
-      role: 'Lab Assistant',
-      label: 'Lab Assistant',
-      name: 'Ramesh Patil',
-      badge: 'STAFF-LA-04 • Depot Lab 02',
-    },
-    {
-      role: 'HoD / Admin',
-      label: 'Department Auditor',
-      name: 'Dr. K. V. Ramanathan',
-      badge: 'HOD-AIML-001 • Executive Audit',
-    },
-  ];
+
 
   // Dynamic macOS Toolbar items tailored to active role
   const getMainNavItems = () => {
@@ -311,79 +283,26 @@ export function TopHeader() {
 
           <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
 
-          {/* Persona Switcher Dropdown */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-inter text-white transition-all cursor-pointer"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-              <span className="text-zinc-400 text-[11px] hidden sm:inline">Role:</span>
-              <span className="font-medium text-white">{role}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
-            </button>
-
-            {isRoleDropdownOpen && (
-              <>
-                <div
-                  className="fixed inset-0 z-40"
-                  onClick={() => setIsRoleDropdownOpen(false)}
-                />
-                <div className="absolute right-0 top-full mt-2 w-72 glass-neural rounded-2xl py-2 z-50 overflow-hidden border border-white/15 bg-[#0e0e11] shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
-                  <div className="px-4 py-2 text-[10px] font-inter uppercase tracking-widest text-[#c9b8a0] border-b border-white/10 flex items-center justify-between">
-                    <span>Institutional Persona</span>
-                    <span className="text-zinc-500">1-Click Switch</span>
-                  </div>
-
-                  <div className="p-1.5 space-y-1">
-                    {demoRoles.map((item) => (
-                      <button
-                        key={item.role}
-                        type="button"
-                        onClick={() => {
-                          switchRole(item.role);
-                          setIsRoleDropdownOpen(false);
-                        }}
-                        className={`w-full text-left p-2.5 rounded-xl text-xs flex items-center justify-between transition-all cursor-pointer ${
-                          role === item.role
-                            ? 'bg-[#c9b8a0]/15 text-white font-medium border border-[#c9b8a0]/30'
-                            : 'text-zinc-400 hover:bg-white/[0.04] hover:text-white'
-                        }`}
-                      >
-                        <div className="min-w-0">
-                          <div className="font-semibold text-white flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-                            {item.label}
-                          </div>
-                          <div className="text-[11px] font-sans text-zinc-400 truncate mt-0.5">
-                            {item.name} • {item.badge}
-                          </div>
-                        </div>
-                        {role === item.role && (
-                          <Check className="w-4 h-4 text-[#c9b8a0] flex-shrink-0 ml-2" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="px-3 py-2 border-t border-white/10 mt-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        logout();
-                        navigate('/login');
-                      }}
-                      className="w-full text-left px-2 py-1.5 text-xs text-rose-400 hover:text-rose-300 font-inter flex items-center gap-2 cursor-pointer"
-                    >
-                      <LogOut className="w-3.5 h-3.5" />
-                      <span>Log out</span>
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
+          {/* Current User Identity (Read-only) */}
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5 text-xs font-sans">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+            <span className="font-medium text-zinc-200">{currentUser?.name || role}</span>
+            <span className="text-[10px] text-zinc-500">({role})</span>
           </div>
+
+          {/* Direct Logout Action */}
+          <button
+            type="button"
+            onClick={() => {
+              logout();
+              navigate('/login');
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 text-xs font-sans text-zinc-300 hover:text-rose-300 transition-all cursor-pointer shadow-sm group"
+            title="Log out of LabTrack"
+          >
+            <LogOut className="w-3.5 h-3.5 text-zinc-400 group-hover:text-rose-400 transition-colors" />
+            <span className="font-medium text-xs">Log out</span>
+          </button>
         </div>
       </header>
 
