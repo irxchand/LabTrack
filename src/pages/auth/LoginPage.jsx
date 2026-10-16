@@ -29,6 +29,12 @@ export function LoginPage() {
     setErrorMessage('');
   };
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/hero');
+    }
+  }, [isAuthenticated, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
@@ -37,7 +43,7 @@ export function LoginPage() {
     try {
       const result = await loginWithMySQL(username, password, selectedRole);
       if (result.success) {
-        navigate('/workspace');
+        navigate('/hero');
       } else {
         setErrorMessage(result.error || 'Invalid credentials. Please verify your PRN and password.');
       }

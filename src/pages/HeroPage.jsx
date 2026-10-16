@@ -19,9 +19,11 @@ import {
   Zap,
 } from 'lucide-react';
 import { InteractiveWavesBackground } from '../components/canvas/InteractiveWavesBackground';
+import { useAuth } from '../context/AuthContext';
 
 export function HeroPage() {
   const navigate = useNavigate();
+  const { isAuthenticated, currentUser, logout } = useAuth();
   const [wavePreset, setWavePreset] = useState('harmonic'); // 'harmonic' | 'velocity' | 'calm'
   const [waveColorMode, setWaveColorMode] = useState('gold'); // 'gold' | 'emerald' | 'cyan'
   const [digestEmail, setDigestEmail] = useState('');
@@ -133,13 +135,32 @@ export function HeroPage() {
         </nav>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate('/login')}
-            className="text-[11px] font-medium uppercase tracking-[0.25em] text-[#c9b8a0] hover:text-white transition-colors px-3 py-1.5 hidden sm:inline-block cursor-pointer"
-          >
-            Sign In
-          </button>
+        <div className="flex items-center gap-3 sm:gap-4">
+          {isAuthenticated && currentUser ? (
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs text-[#e8d5b7]">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span className="font-medium text-white">{currentUser.name || currentUser.prn}</span>
+                <span className="text-[10px] uppercase tracking-wider text-[#a78b71]">({currentUser.role})</span>
+              </div>
+              <button
+                onClick={() => {
+                  logout();
+                  navigate('/login');
+                }}
+                className="text-[11px] font-medium uppercase tracking-[0.2em] text-[#c9b8a0] hover:text-rose-400 transition-colors px-2.5 py-1.5 cursor-pointer"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="text-[11px] font-medium uppercase tracking-[0.25em] text-[#c9b8a0] hover:text-white transition-colors px-3 py-1.5 hidden sm:inline-block cursor-pointer"
+            >
+              Sign In
+            </button>
+          )}
           {/* 'Enter Workspace' Pill Button */}
           <button
             onClick={() => navigate('/workspace')}
