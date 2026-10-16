@@ -257,200 +257,206 @@ export function RequisitionsPage() {
               <div
                 key={req.id}
                 onClick={() => setSelectedReq(req)}
-                className="relative rounded-3xl p-6 sm:p-7 bg-gradient-to-b from-[#141417]/95 via-[#0e0e11]/90 to-[#0a0a0c]/95 border border-white/10 hover:border-white/20 transition-all duration-300 backdrop-blur-xl flex flex-col justify-between group cursor-pointer shadow-[0_10px_35px_rgba(0,0,0,0.6)] hover:shadow-[0_15px_45px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden"
+                className="group relative rounded-3xl border border-white/10 hover:border-[#c9b8a0]/50 transition-all duration-500 hover:shadow-[0_24px_60px_rgba(0,0,0,0.95)] flex flex-col justify-between cursor-pointer overflow-hidden min-h-[500px]"
               >
-                {/* Specular Edge Highlight */}
-                <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
+                {/* Full Image Box Background - Picture fills 100% of the box edge-to-edge */}
+                <img
+                  src={primaryImage}
+                  alt={primaryItem.nomenclature}
+                  className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out z-0"
+                  onError={(e) => {
+                    e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+                  }}
+                />
 
-                {/* Top Status & SKU Strip */}
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-xs font-sans font-semibold text-zinc-200 group-hover:text-white transition-colors">
-                      {req.id}
-                    </span>
-                    <span className="w-1 h-1 rounded-full bg-zinc-600" />
-                    <span className="text-xs text-zinc-400 font-sans">
-                      Requested {formatHumanDate(req.requestDate)}
-                    </span>
-                  </div>
+                {/* Dark Cinematic Gradient Scrim for crisp text contrast over picture */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/45 to-black/95 pointer-events-none z-10" />
 
-                  {/* Vibrant Cupertino Status Pill */}
-                  {stageInfo.color === 'amber' && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/[0.08] text-amber-300 border border-amber-500/25 flex items-center gap-1.5 shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.6)] animate-pulse" />
-                      <span>{stageInfo.label}</span>
-                    </span>
-                  )}
-                  {stageInfo.color === 'emerald' && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/[0.08] text-emerald-300 border border-emerald-500/25 flex items-center gap-1.5 shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]" />
-                      <span>{stageInfo.label}</span>
-                    </span>
-                  )}
-                  {stageInfo.color === 'champagne' && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 flex items-center gap-1.5 shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8] shadow-[0_0_6px_rgba(245,230,200,0.6)]" />
-                      <span>{stageInfo.label}</span>
-                    </span>
-                  )}
-                  {stageInfo.color === 'white' && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/[0.08] text-white border border-white/15 flex items-center gap-1.5 shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                      <span>{stageInfo.label}</span>
-                    </span>
-                  )}
-                  {stageInfo.color === 'rose' && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-rose-500/[0.08] text-rose-300 border border-rose-500/25 flex items-center gap-1.5 shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-                      <span>{stageInfo.label}</span>
-                    </span>
-                  )}
-                </div>
+                {/* Specular hairline top rim */}
+                <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none rounded-t-3xl z-20" />
 
-                {/* Primary Hardware Showcase (Hero Staging with Studio Image) */}
-                <div className="flex items-center gap-5 pt-1">
-                  {/* Studio Hardware Thumbnail - Picture Fits 100% of the Box Edge-to-Edge */}
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border border-white/10 relative flex-shrink-0 shadow-lg group-hover:border-[#c9b8a0]/40 transition-all bg-black">
-                    <img
-                      src={primaryImage}
-                      alt={primaryItem.nomenclature}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
-                      onError={(e) => {
-                        e.target.src = '/images/hardware/raspberry-pi-5.jpg';
-                      }}
-                    />
-                    <span className="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-md text-white font-sans font-bold text-[10px] border border-white/20 shadow-md">
-                      {primaryItem.quantity}x
-                    </span>
-                  </div>
-
-                  {/* Component Metadata & Purpose */}
-                  <div className="min-w-0 flex-1 space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-sans text-[#c9b8a0] font-semibold uppercase tracking-wider">
-                        {primaryItem.type || 'Hardware Asset'}
+                {/* Details Layered Directly On Top of the Picture */}
+                <div className="relative z-20 p-6 sm:p-7 flex flex-col justify-between h-full min-h-[500px] space-y-6">
+                  {/* Top Status & SKU Strip */}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 shadow-lg">
+                      <span className="text-xs font-sans font-semibold text-zinc-200 group-hover:text-white transition-colors">
+                        {req.id}
                       </span>
-                      <span className="text-zinc-600">•</span>
-                      <span className="text-[11px] font-sans text-zinc-400">
+                      <span className="w-1 h-1 rounded-full bg-zinc-500" />
+                      <span className="text-xs text-zinc-300 font-sans">
+                        Requested {formatHumanDate(req.requestDate)}
+                      </span>
+                    </div>
+
+                    {/* Cupertino Status Pill */}
+                    {stageInfo.color === 'amber' && (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 backdrop-blur-md text-amber-300 border border-amber-500/40 flex items-center gap-1.5 shadow-lg">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)] animate-pulse" />
+                        <span>{stageInfo.label}</span>
+                      </span>
+                    )}
+                    {stageInfo.color === 'emerald' && (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 backdrop-blur-md text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 shadow-lg">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+                        <span>{stageInfo.label}</span>
+                      </span>
+                    )}
+                    {stageInfo.color === 'champagne' && (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#c9b8a0]/25 backdrop-blur-md text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1.5 shadow-lg">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8] shadow-[0_0_6px_rgba(245,230,200,0.8)]" />
+                        <span>{stageInfo.label}</span>
+                      </span>
+                    )}
+                    {stageInfo.color === 'white' && (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/20 backdrop-blur-md text-white border border-white/30 flex items-center gap-1.5 shadow-lg">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                        <span>{stageInfo.label}</span>
+                      </span>
+                    )}
+                    {stageInfo.color === 'rose' && (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-rose-500/20 backdrop-blur-md text-rose-300 border border-rose-500/40 flex items-center gap-1.5 shadow-lg">
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                        <span>{stageInfo.label}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Hardware Nomenclature & Purpose Details Overlaid on Picture */}
+                  <div className="space-y-3 pt-6">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-sans text-[#f5e6c8] font-semibold uppercase tracking-wider bg-black/60 backdrop-blur-md border border-white/15 shadow-sm">
+                        {primaryItem.type || 'Consumable'}
+                      </span>
+                      <span className="text-zinc-500">•</span>
+                      <span className="text-xs font-sans text-zinc-300 drop-shadow-sm">
                         Aiming for AIML Lab
                       </span>
                     </div>
 
-                    <h3 className="font-sans text-base sm:text-lg font-bold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors leading-snug">
-                      {primaryItem.nomenclature}
-                    </h3>
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="font-sans text-xl sm:text-2xl font-bold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors leading-snug drop-shadow-md">
+                        {primaryItem.nomenclature}
+                      </h3>
+                      <span className="px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-white font-sans font-bold text-xs border border-white/20 shadow-md flex-shrink-0">
+                        {primaryItem.quantity}x
+                      </span>
+                    </div>
 
                     {/* Stated Purpose */}
-                    <div className="mt-2 px-3 py-1.5 rounded-lg bg-white/[0.025] border border-white/5 text-xs text-zinc-300 font-sans leading-relaxed">
-                      <span className="text-zinc-400 font-normal">"{req.technicalPurpose}"</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Additional Requested Items Strip (If Any) */}
-                {additionalItems.length > 0 && (
-                  <div className="pt-2 border-t border-white/5 space-y-1.5">
-                    <div className="text-[10px] font-sans uppercase tracking-wider text-zinc-500 font-semibold flex items-center gap-1.5">
-                      <Layers className="w-3 h-3 text-[#c9b8a0]" />
-                      <span>Additional Staged Components ({additionalItems.length})</span>
+                    <div className="px-3.5 py-2.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/15 text-xs text-zinc-200 font-sans leading-relaxed shadow-sm">
+                      <span className="text-zinc-300 font-normal">"{req.technicalPurpose}"</span>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
-                      {additionalItems.map((subItem, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-white/[0.03] border border-white/10 text-xs text-zinc-300 font-sans shadow-sm"
-                        >
-                          <img
-                            src={getItemImage(subItem)}
-                            alt=""
-                            className="w-4 h-4 object-contain rounded flex-shrink-0"
-                          />
-                          <span className="font-sans font-bold text-white text-[11px]">{subItem.quantity}x</span>
-                          <span className="truncate max-w-[200px]">{subItem.nomenclature}</span>
+                    {/* Additional Requested Items Strip (If Any) */}
+                    {additionalItems.length > 0 && (
+                      <div className="pt-2 border-t border-white/10 space-y-1.5">
+                        <div className="text-[10px] font-sans uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-1.5">
+                          <Layers className="w-3 h-3 text-[#c9b8a0]" />
+                          <span>Additional Staged Components ({additionalItems.length})</span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
-                {/* Tactile Progression Stepper */}
-                {isRejected ? (
-                  <div className="px-4 py-2.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-sans flex items-center gap-2.5">
-                    <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
-                    <span>Supervisor Feedback: {req.supervisorNotes || 'Requisition declined during review.'}</span>
-                  </div>
-                ) : (
-                  <div className="pt-3 border-t border-white/5 space-y-2.5">
-                    <div className="flex items-center justify-between text-[11px] font-sans">
-                      <span className="text-zinc-500">Circulation Timeline</span>
-                      <span className="text-zinc-300 font-medium">Stage {stageInfo.index} of 4 • {stageInfo.label}</span>
-                    </div>
-
-                    {/* Apple Segmented Progress Bar */}
-                    <div className="grid grid-cols-4 gap-2">
-                      {stages.map((st) => {
-                        const isCompleted = st.num <= stageInfo.index;
-                        const isCurrent = st.num === stageInfo.index;
-
-                        return (
-                          <div key={st.name} className="space-y-1.5 text-center">
+                        <div className="flex flex-wrap gap-2">
+                          {additionalItems.map((subItem, idx) => (
                             <div
-                              className={`h-1.5 rounded-full transition-all duration-300 ${
-                                isCompleted
-                                  ? isCurrent
-                                    ? 'bg-[#c9b8a0] shadow-[0_0_12px_rgba(201,184,160,0.6)]'
-                                    : 'bg-white'
-                                  : 'bg-white/10'
-                              }`}
-                            />
-                            <span
-                              className={`text-[10px] font-sans block truncate ${
-                                isCurrent
-                                  ? 'text-[#f5e6c8] font-bold'
-                                  : isCompleted
-                                  ? 'text-zinc-400'
-                                  : 'text-zinc-600'
-                              }`}
+                              key={idx}
+                              className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-black/60 backdrop-blur-md border border-white/15 text-xs text-zinc-200 font-sans shadow-sm"
                             >
-                              {st.name}
-                            </span>
+                              <img
+                                src={getItemImage(subItem)}
+                                alt=""
+                                className="w-4 h-4 object-contain rounded flex-shrink-0"
+                              />
+                              <span className="font-sans font-bold text-white text-[11px]">{subItem.quantity}x</span>
+                              <span className="truncate max-w-[200px]">{subItem.nomenclature}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Circulation Timeline & Footer Area */}
+                  <div className="space-y-4">
+                    {/* Tactile Progression Stepper */}
+                    {isRejected ? (
+                      <div className="px-4 py-2.5 rounded-2xl bg-rose-500/20 backdrop-blur-md border border-rose-500/30 text-rose-200 text-xs font-sans flex items-center gap-2.5 shadow-sm">
+                        <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
+                        <span>Supervisor Feedback: {req.supervisorNotes || 'Requisition declined during review.'}</span>
+                      </div>
+                    ) : (
+                      <div className="pt-3 border-t border-white/10 space-y-2.5">
+                        <div className="flex items-center justify-between text-[11px] font-sans">
+                          <span className="text-zinc-400 font-medium drop-shadow-sm">Circulation Timeline</span>
+                          <span className="text-zinc-200 font-semibold drop-shadow-sm">Stage {stageInfo.index} of 4 • {stageInfo.label}</span>
+                        </div>
+
+                        {/* Apple Segmented Progress Bar */}
+                        <div className="grid grid-cols-4 gap-2">
+                          {stages.map((st) => {
+                            const isCompleted = st.num <= stageInfo.index;
+                            const isCurrent = st.num === stageInfo.index;
+
+                            return (
+                              <div key={st.name} className="space-y-1.5 text-center">
+                                <div
+                                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                                    isCompleted
+                                      ? isCurrent
+                                        ? 'bg-[#c9b8a0] shadow-[0_0_12px_rgba(201,184,160,0.8)]'
+                                        : 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.4)]'
+                                      : 'bg-white/15 backdrop-blur-sm'
+                                  }`}
+                                />
+                                <span
+                                  className={`text-[10px] font-sans block truncate drop-shadow-sm ${
+                                    isCurrent
+                                      ? 'text-[#f5e6c8] font-bold'
+                                      : isCompleted
+                                      ? 'text-zinc-300'
+                                      : 'text-zinc-500'
+                                  }`}
+                                >
+                                  {st.name}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Footer Strip with Mentor Monogram and Action */}
+                    <div className="flex items-center justify-between pt-3 border-t border-white/10 text-xs font-sans">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-full bg-[#c9b8a0]/25 border border-[#c9b8a0]/40 text-[#f5e6c8] font-bold text-xs flex items-center justify-center shadow-md backdrop-blur-md flex-shrink-0">
+                          {(req.mentorName?.replace('Dr. ', '').replace('Prof. ', '') || 'A').charAt(0)}
+                        </div>
+                        <div>
+                          <div className="text-white font-medium text-xs font-sans truncate max-w-[170px] sm:max-w-[220px] drop-shadow-sm">
+                            {req.mentorName}
                           </div>
-                        );
-                      })}
+                          <div className="text-zinc-300 font-sans text-[11px] flex items-center gap-1.5 mt-0.5 drop-shadow-sm">
+                            <span className="text-zinc-400 font-normal">Faculty Guide</span>
+                            <span className="w-1 h-1 rounded-full bg-zinc-600" />
+                            <span className="text-[#c9b8a0] font-semibold">Group {req.projectId}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedReq(req);
+                        }}
+                        className="px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-[#f5e6c8] text-black transition-all flex items-center gap-1.5 shadow-lg backdrop-blur-md cursor-pointer active:scale-95 flex-shrink-0"
+                      >
+                        <span>Order Dossier</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
-                )}
-
-                {/* Footer Strip with Mentor Monogram and Action */}
-                <div className="flex items-center justify-between pt-3 border-t border-white/10 text-xs font-sans">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-[#f5e6c8] font-bold text-xs flex items-center justify-center shadow-sm flex-shrink-0">
-                      {(req.mentorName?.replace('Dr. ', '').replace('Prof. ', '') || 'A').charAt(0)}
-                    </div>
-                    <div>
-                      <div className="text-white font-medium text-xs font-sans truncate max-w-[170px] sm:max-w-[220px]">
-                        {req.mentorName}
-                      </div>
-                      <div className="text-zinc-400 font-sans text-[11px] flex items-center gap-1.5 mt-0.5">
-                        <span className="text-zinc-500 font-normal">Faculty Guide</span>
-                        <span className="w-1 h-1 rounded-full bg-zinc-700" />
-                        <span className="text-[#c9b8a0] font-medium">Group {req.projectId}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedReq(req);
-                    }}
-                    className="px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-[#f5e6c8] text-black transition-all flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95 flex-shrink-0"
-                  >
-                    <span>Order Dossier</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
                 </div>
               </div>
             );
