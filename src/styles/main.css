@@ -11,14 +11,21 @@
 :root {
   --bg: #000000;
   --fg: #ffffff;
+  --font-display: 'Clash Display', 'Satoshi', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  --font-clash: 'Clash Display', 'Inter', -apple-system, sans-serif;
+  --font-sans: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
 }
 
 .font-display {
-  font-family: var(--font-display, 'Clash Display', 'Satoshi', sans-serif);
+  font-family: 'Clash Display', 'Satoshi', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+}
+
+.font-clash {
+  font-family: 'Clash Display', 'Inter', -apple-system, sans-serif;
 }
 
 .font-sans {
-  font-family: var(--font-sans, 'Satoshi', 'Inter', sans-serif);
+  font-family: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
 }
 
 .font-mono {

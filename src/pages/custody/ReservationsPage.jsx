@@ -27,7 +27,7 @@ export function ReservationsPage() {
       accessor: 'nomenclature',
       render: (row) => (
         <div>
-          <div className="font-medium text-white">{row.nomenclature}</div>
+          <div className="font-display font-semibold text-white">{row.nomenclature}</div>
           <div className="font-sans text-[11px] text-zinc-400 mt-0.5">Asset Tag: {row.itemId}</div>
         </div>
       ),
@@ -89,15 +89,14 @@ export function ReservationsPage() {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
         <div>
-          <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2 mb-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-            CIRCULATION FIFO QUEUE
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2">
-            Hardware Reservations & FIFO Backlog Queue
+          <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
+            Circulation FIFO Queue
+          </span>
+          <h1 className="text-3xl font-bold tracking-[-0.025em] text-white mt-1 font-display">
+            Waitlist
           </h1>
-          <p className="text-xs font-sans text-zinc-400 mt-1 max-w-xl">
-            Automated queue sequencing for allocated or out-of-stock collegiate equipment.
+          <p className="text-[13px] text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">
+            Automated queue sequencing and live reservation tracking for allocated collegiate equipment.
           </p>
         </div>
 

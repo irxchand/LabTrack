@@ -24,8 +24,6 @@ import { useAuth } from '../context/AuthContext';
 export function HeroPage() {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, logout } = useAuth();
-  const [wavePreset, setWavePreset] = useState('harmonic'); // 'harmonic' | 'velocity' | 'calm'
-  const [waveColorMode, setWaveColorMode] = useState('gold'); // 'gold' | 'emerald' | 'cyan'
   const [digestEmail, setDigestEmail] = useState('');
   const [digestSubscribed, setDigestSubscribed] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -58,38 +56,18 @@ export function HeroPage() {
       ───────────────────────────────────────────────────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <InteractiveWavesBackground
-          lineColor={
-            waveColorMode === 'gold'
-              ? 'rgba(201, 184, 160, 0.22)'
-              : waveColorMode === 'emerald'
-              ? 'rgba(98, 192, 115, 0.24)'
-              : 'rgba(82, 168, 255, 0.24)'
-          }
+          lineColor="rgba(201, 184, 160, 0.2)"
           backgroundColor="transparent"
-          waveSpeedX={
-            wavePreset === 'velocity' ? 0.032 : wavePreset === 'calm' ? 0.007 : 0.015
-          }
-          waveSpeedY={
-            wavePreset === 'velocity' ? 0.014 : wavePreset === 'calm' ? 0.003 : 0.006
-          }
-          waveAmpX={
-            wavePreset === 'velocity' ? 48 : wavePreset === 'calm' ? 22 : 36
-          }
-          waveAmpY={
-            wavePreset === 'velocity' ? 24 : wavePreset === 'calm' ? 10 : 16
-          }
+          waveSpeedX={0.015}
+          waveSpeedY={0.007}
+          waveAmpX={36}
+          waveAmpY={16}
           friction={0.925}
           tension={0.007}
           maxCursorMove={120}
-          xGap={wavePreset === 'velocity' ? 12 : wavePreset === 'calm' ? 16 : 14}
-          yGap={wavePreset === 'velocity' ? 32 : wavePreset === 'calm' ? 40 : 36}
-          cursorDotColor={
-            waveColorMode === 'gold'
-              ? 'rgba(232, 213, 183, 0.85)'
-              : waveColorMode === 'emerald'
-              ? 'rgba(98, 192, 115, 0.85)'
-              : 'rgba(82, 168, 255, 0.85)'
-          }
+          xGap={14}
+          yGap={36}
+          cursorDotColor="rgba(232, 213, 183, 0.85)"
           showCursorDot={true}
         />
       </div>
@@ -201,7 +179,7 @@ export function HeroPage() {
         </p>
 
         {/* Dual-Button CTA Group */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-20">
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-12 sm:mb-16">
           {/* Solid White CTA */}
           <button
             onClick={() => navigate('/workspace')}
@@ -219,107 +197,6 @@ export function HeroPage() {
             <span>Browse Capabilities</span>
             <ChevronDown className="w-4 h-4 text-[#a78b71] group-hover:translate-y-0.5 transition-transform" />
           </a>
-        </div>
-
-        {/* ─────────────────────────────────────────────────────────────────────
-            FLOATING TELEMETRY CONTROL DOCK (Real-Time Whole-Page Wave Modulation)
-        ───────────────────────────────────────────────────────────────────── */}
-        <div className="relative z-10 w-full max-w-4xl mx-auto mt-4 px-4">
-          <div className="gold-glass-card rounded-2xl sm:rounded-full p-3 sm:px-6 sm:py-3.5 border border-white/10 shadow-[0_0_60px_rgba(167,139,113,0.12)] flex flex-wrap items-center justify-between gap-4 backdrop-blur-xl">
-            {/* Left: Status with pulsing dot */}
-            <div className="flex items-center gap-3">
-              <div className="relative flex items-center justify-center w-2.5 h-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c9b8a0] opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#e8d5b7]" />
-              </div>
-              <div className="text-[11px] font-mono text-neutral-300">
-                <span className="text-[#a78b71] font-semibold">SIGNAL MESH //</span> Move cursor anywhere to distort waves
-              </div>
-            </div>
-
-            {/* Center: Presets */}
-            <div className="flex items-center gap-1 bg-black/50 p-1 rounded-full border border-white/10 text-[10px] font-mono">
-              <button
-                onClick={() => setWavePreset('harmonic')}
-                className={`px-3 py-1 rounded-full transition-all cursor-pointer font-medium ${
-                  wavePreset === 'harmonic'
-                    ? 'bg-[#a78b71] text-black font-semibold shadow-[0_0_10px_rgba(167,139,113,0.5)]'
-                    : 'text-neutral-400 hover:text-white'
-                }`}
-              >
-                HARMONIC
-              </button>
-              <button
-                onClick={() => setWavePreset('velocity')}
-                className={`px-3 py-1 rounded-full transition-all cursor-pointer font-medium ${
-                  wavePreset === 'velocity'
-                    ? 'bg-[#a78b71] text-black font-semibold shadow-[0_0_10px_rgba(167,139,113,0.5)]'
-                    : 'text-neutral-400 hover:text-white'
-                }`}
-              >
-                VELOCITY
-              </button>
-              <button
-                onClick={() => setWavePreset('calm')}
-                className={`px-3 py-1 rounded-full transition-all cursor-pointer font-medium ${
-                  wavePreset === 'calm'
-                    ? 'bg-[#a78b71] text-black font-semibold shadow-[0_0_10px_rgba(167,139,113,0.5)]'
-                    : 'text-neutral-400 hover:text-white'
-                }`}
-              >
-                CALM
-              </button>
-            </div>
-
-            {/* Right: Palette Switcher */}
-            <div className="flex items-center gap-2 text-[10px] font-mono">
-              <span className="text-neutral-500 hidden md:inline">TINT:</span>
-              <button
-                onClick={() => setWaveColorMode('gold')}
-                title="Champagne Gold"
-                className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
-                  waveColorMode === 'gold'
-                    ? 'border-[#e8d5b7] bg-[#a78b71]/30 shadow-[0_0_8px_#c9b8a0]'
-                    : 'border-white/10 hover:border-white/30'
-                }`}
-              >
-                <span className="w-2 h-2 rounded-full bg-[#c9b8a0]" />
-              </button>
-              <button
-                onClick={() => setWaveColorMode('emerald')}
-                title="Emerald Wave"
-                className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
-                  waveColorMode === 'emerald'
-                    ? 'border-emerald-400 bg-emerald-400/30 shadow-[0_0_8px_#62c073]'
-                    : 'border-white/10 hover:border-white/30'
-                }`}
-              >
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              </button>
-              <button
-                onClick={() => setWaveColorMode('cyan')}
-                title="Cyber Cyan"
-                className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
-                  waveColorMode === 'cyan'
-                    ? 'border-blue-400 bg-blue-400/30 shadow-[0_0_8px_#52a8ff]'
-                    : 'border-white/10 hover:border-white/30'
-                }`}
-              >
-                <span className="w-2 h-2 rounded-full bg-blue-400" />
-              </button>
-            </div>
-          </div>
-
-          {/* Quick telemetry readout line */}
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-6 text-[10px] font-mono text-neutral-500">
-            <span>FREQ: 144.02 MHz</span>
-            <span className="hidden sm:inline">•</span>
-            <span>SAMPLING: 2.50 GSa/s</span>
-            <span className="hidden sm:inline">•</span>
-            <span>PHYSICS: 2D PERLIN FLUID</span>
-            <span className="hidden sm:inline">•</span>
-            <span className="text-emerald-400/80">LATENCY: &lt;1ms</span>
-          </div>
         </div>
       </section>
 
