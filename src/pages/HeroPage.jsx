@@ -8,6 +8,7 @@ import {
   Cpu,
   Globe,
   Lock,
+  Radio,
   Server,
   Shield,
   Terminal,
@@ -16,7 +17,7 @@ import {
 
 export function HeroPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('neural'); // 'neural' | 'telemetry' | 'custody'
+  const [activeTab, setActiveTab] = useState('dispatch'); // 'dispatch' | 'telemetry' | 'custody'
   const [digestEmail, setDigestEmail] = useState('');
   const [digestSubscribed, setDigestSubscribed] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -67,36 +68,42 @@ export function HeroPage() {
           <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_10px_#c9b8a0]" />
         </div>
 
-        {/* Center: Links in 'Inter' / 'Satoshi' (11px, uppercase, tracking-wide) */}
+        {/* Center: Real LabTrack Navigation Links */}
         <nav className="hidden md:flex items-center gap-8 text-[11px] font-medium tracking-[0.25em] text-white/70 uppercase">
           <a
-            href="#neural-mesh"
+            href="#hardware-mesh"
             className="hover:text-[#e8d5b7] transition-colors duration-200"
           >
-            Neural Mesh
+            Hardware Mesh
           </a>
           <a
-            href="#features"
+            href="#capabilities"
             className="hover:text-[#e8d5b7] transition-colors duration-200"
           >
             Capabilities
           </a>
+          <button
+            onClick={() => navigate('/workspace/inventory')}
+            className="hover:text-[#e8d5b7] transition-colors duration-200 text-left cursor-pointer"
+          >
+            Registry
+          </button>
         </nav>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-4">
           <button
-            onClick={() => navigate('/workspace')}
+            onClick={() => navigate('/login')}
             className="text-[11px] font-medium uppercase tracking-[0.25em] text-[#c9b8a0] hover:text-white transition-colors px-3 py-1.5 hidden sm:inline-block cursor-pointer"
           >
-            Workspace
+            Sign In
           </button>
-          {/* 'Start Free Trial' Pill Button */}
+          {/* 'Enter Workspace' Pill Button */}
           <button
             onClick={() => navigate('/workspace')}
             className="bg-white text-black font-semibold text-xs tracking-wider uppercase px-5 py-2.5 rounded-full hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.18)] hover:shadow-[0_0_30px_rgba(232,213,183,0.4)] cursor-pointer"
           >
-            Start Free Trial
+            Enter Workspace
           </button>
         </div>
       </header>
@@ -105,7 +112,7 @@ export function HeroPage() {
           HERO SECTION
       ───────────────────────────────────────────────────────────────────────── */}
       <section
-        id="neural-mesh"
+        id="hardware-mesh"
         ref={heroContainerRef}
         onMouseMove={handleMouseMove}
         className="relative pt-36 pb-28 px-6 sm:px-12 flex flex-col items-center z-10 min-h-screen"
@@ -118,7 +125,7 @@ export function HeroPage() {
           </span>
           <span className="w-px h-3 bg-white/10" />
           <span className="text-white/90 text-[12px] font-light tracking-wide font-sans">
-            Synapse Mesh v4.9 Active • 8,420 Lab Telemetry Nodes Synchronized
+            AIML & IoT Labs Synchronized • 248 Active Benches • 1,420 Instruments in Custody
           </span>
         </div>
 
@@ -127,21 +134,17 @@ export function HeroPage() {
           className="font-display font-bold tracking-tight text-white leading-[1.04] text-center max-w-5xl mx-auto mb-6"
           style={{ fontSize: 'clamp(2.5rem, 6.5vw, 5.5rem)' }}
         >
-          The Architecture of{' '}
+          Autonomous Hardware Custody &{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
-            Autonomous Synthesis
-          </span>{' '}
-          &{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0]">
-            Tactile Precision
+            Lab Telemetry
           </span>
         </h1>
 
         {/* Subtext */}
         <p className="text-gray-400 text-base sm:text-lg font-normal text-center max-w-2xl mx-auto mb-10 leading-relaxed tracking-wide font-sans">
-          Harness real-time neural instrument streaming, zero-latency physical
-          telemetry custody, and cryogenic FPGA synchronization engineered for
-          high-throughput laboratories.
+          The unified operating system for academic laboratories. Real-time instrument
+          tracking, student capstone requisitions, bench custody countdowns, and
+          zero-trust hardware dispatch.
         </p>
 
         {/* Dual-Button CTA Group */}
@@ -151,16 +154,16 @@ export function HeroPage() {
             onClick={() => navigate('/workspace')}
             className="bg-white text-[#0a0a0a] px-8 py-3.5 rounded-full font-semibold text-sm tracking-wider uppercase hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_35px_rgba(255,255,255,0.22)] hover:shadow-[0_0_40px_rgba(232,213,183,0.45)] flex items-center gap-2 cursor-pointer group"
           >
-            <span>Launch Workspace</span>
+            <span>Enter Lab Workspace</span>
             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </button>
 
           {/* Bordered CTA */}
           <a
-            href="#features"
+            href="#capabilities"
             className="border border-white/20 hover:border-[#a78b71] bg-white/[0.02] text-white px-8 py-3.5 rounded-full font-medium text-sm tracking-wider uppercase hover:text-[#e8d5b7] transition-all duration-300 backdrop-blur-[10px] flex items-center gap-2 cursor-pointer group"
           >
-            <span>Explore Architecture</span>
+            <span>Browse Capabilities</span>
             <ChevronDown className="w-4 h-4 text-[#a78b71] group-hover:translate-y-0.5 transition-transform" />
           </a>
         </div>
@@ -169,7 +172,7 @@ export function HeroPage() {
             NEURAL NETWORK CONNECTIVITY & SATELLITE SYSTEM
         ───────────────────────────────────────────────────────────────────── */}
         <div className="relative w-full max-w-6xl mx-auto mt-6 flex flex-col items-center justify-center">
-          {/* SVG Neural Connection Lines Overlay */}
+          {/* SVG Connection Lines Overlay */}
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none z-0 hidden lg:block"
             viewBox="0 0 1152 700"
@@ -260,20 +263,20 @@ export function HeroPage() {
               <div className="rounded-[14px] overflow-hidden aspect-video relative mb-3 bg-neutral-900 border border-white/5">
                 <img
                   src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80"
-                  alt="Quantum Silicon Node"
+                  alt="Xilinx Artix-7 FPGA"
                   className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
                 />
                 <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[9px] font-mono text-[#c9b8a0]">
-                  SYNAPSE // 01
+                  BENCH 04 // FPGA
                 </div>
               </div>
               <div className="px-1">
                 <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-neutral-400 uppercase mb-1">
-                  <span>Quantum Silicon</span>
-                  <span className="text-emerald-400">99.8%</span>
+                  <span>Xilinx Artix-7</span>
+                  <span className="text-emerald-400">DISPATCHED</span>
                 </div>
                 <div className="text-xs font-semibold text-white group-hover:text-[#e8d5b7] transition-colors truncate">
-                  Cryogenic Micro-Bus
+                  100T CSG324 • PRN 202401048
                 </div>
               </div>
             </div>
@@ -288,20 +291,20 @@ export function HeroPage() {
               <div className="rounded-[14px] overflow-hidden aspect-video relative mb-3 bg-neutral-900 border border-white/5">
                 <img
                   src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=600&q=80"
-                  alt="Photonic Telemetry Stream"
+                  alt="Rigol Digital Oscilloscope"
                   className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
                 />
                 <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[9px] font-mono text-[#c9b8a0]">
-                  TELEMETRY // 02
+                  TELEMETRY // RIGOL
                 </div>
               </div>
               <div className="px-1">
                 <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-neutral-400 uppercase mb-1">
-                  <span>Photonic Laser</span>
-                  <span className="text-[#a78b71]">0.02ms</span>
+                  <span>DS1054Z 4-Ch</span>
+                  <span className="text-[#a78b71]">100 MHz</span>
                 </div>
                 <div className="text-xs font-semibold text-white group-hover:text-[#e8d5b7] transition-colors truncate">
-                  Interferometry Harmonic
+                  Live SCPI Channel Stream
                 </div>
               </div>
             </div>
@@ -322,10 +325,10 @@ export function HeroPage() {
                   <div className="w-3 h-3 rounded-full bg-[#a78b71] animate-ping" />
                   <div>
                     <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#a78b71]">
-                      CORE NODE // 00
+                      AIML LAB // DISPATCH DESK
                     </div>
                     <div className="text-sm font-semibold tracking-wide text-white font-display">
-                      Neural Runtime Hypervisor
+                      Hardware Custody & Telemetry Console
                     </div>
                   </div>
                 </div>
@@ -333,14 +336,14 @@ export function HeroPage() {
                 {/* Sub-node tabs */}
                 <div className="flex items-center bg-black/40 p-1 rounded-full border border-white/10 text-[10px] font-mono">
                   <button
-                    onClick={() => setActiveTab('neural')}
+                    onClick={() => setActiveTab('dispatch')}
                     className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
-                      activeTab === 'neural'
+                      activeTab === 'dispatch'
                         ? 'bg-[#a78b71] text-black font-semibold'
                         : 'text-neutral-400 hover:text-white'
                     }`}
                   >
-                    SYNAPSE
+                    DISPATCH
                   </button>
                   <button
                     onClick={() => setActiveTab('telemetry')}
@@ -367,69 +370,32 @@ export function HeroPage() {
 
               {/* Node Center Interactive Canvas / Telemetry Display */}
               <div className="my-auto py-4 relative z-10">
-                {activeTab === 'neural' && (
-                  <div className="flex flex-col items-center justify-center">
-                    {/* SVG Interactive Synapse Ring */}
-                    <svg className="w-56 h-36 mx-auto" viewBox="0 0 240 140">
-                      <circle
-                        cx="120"
-                        cy="70"
-                        r="55"
-                        stroke="#a78b71"
-                        strokeWidth="1"
-                        strokeDasharray="4 6"
-                        fill="none"
-                        className="animate-spin"
-                        style={{ animationDuration: '30s' }}
-                      />
-                      <circle
-                        cx="120"
-                        cy="70"
-                        r="35"
-                        stroke="#c9b8a0"
-                        strokeWidth="1.5"
-                        strokeDasharray="8 8"
-                        fill="none"
-                        className="animate-spin"
-                        style={{
-                          animationDuration: '18s',
-                          animationDirection: 'reverse',
-                        }}
-                      />
-                      <circle
-                        cx="120"
-                        cy="70"
-                        r="12"
-                        fill="#a78b71"
-                        className="shadow-[0_0_20px_#a78b71]"
-                      />
-                      {/* Radiating Synapse Points */}
-                      <circle cx="65" cy="70" r="4" fill="#e8d5b7" />
-                      <circle cx="175" cy="70" r="4" fill="#e8d5b7" />
-                      <circle cx="120" cy="15" r="4" fill="#e8d5b7" />
-                      <circle cx="120" cy="125" r="4" fill="#e8d5b7" />
-                      <line
-                        x1="65"
-                        y1="70"
-                        x2="175"
-                        y2="70"
-                        stroke="#a78b71"
-                        strokeWidth="0.75"
-                        strokeOpacity="0.6"
-                      />
-                      <line
-                        x1="120"
-                        y1="15"
-                        x2="120"
-                        y2="125"
-                        stroke="#a78b71"
-                        strokeWidth="0.75"
-                        strokeOpacity="0.6"
-                      />
-                    </svg>
-                    <div className="text-center font-mono text-[11px] text-neutral-300 tracking-wider">
-                      NEURAL SYNCHRONY: <span className="text-[#a78b71]">99.984%</span> • JITTER:{' '}
-                      <span className="text-emerald-400">0.08 ps</span>
+                {activeTab === 'dispatch' && (
+                  <div className="space-y-2.5 font-mono text-xs">
+                    <div className="bg-black/40 p-3 rounded-xl border border-white/5 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Cpu className="w-4 h-4 text-[#a78b71]" />
+                        <div>
+                          <div className="text-white font-medium">Xilinx Artix-7 XC7A100T</div>
+                          <div className="text-[10px] text-neutral-400">Bench #04 • PRN: 202401048 (Rahul Sharma)</div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 px-2.5 py-0.5 rounded-full font-semibold">
+                        DISPATCHED
+                      </span>
+                    </div>
+
+                    <div className="bg-black/40 p-3 rounded-xl border border-white/5 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Activity className="w-4 h-4 text-[#c9b8a0]" />
+                        <div>
+                          <div className="text-white font-medium">Keysight DSOX1204G 4-Ch</div>
+                          <div className="text-[10px] text-neutral-400">Bench #12 • PRN: 202401072 (Deepak Nair)</div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] bg-[#a78b71]/15 text-[#e8d5b7] border border-[#a78b71]/30 px-2.5 py-0.5 rounded-full font-semibold">
+                        ACTIVE BENCH
+                      </span>
                     </div>
                   </div>
                 )}
@@ -471,22 +437,22 @@ export function HeroPage() {
                       <div className="flex items-center gap-2">
                         <Lock className="w-3.5 h-3.5 text-[#a78b71]" />
                         <span className="text-neutral-300">
-                          FPGA-XILINX-A7 #04
+                          FACULTY GUIDE: DR. ANJALI DALVI
                         </span>
                       </div>
-                      <span className="text-[10px] bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 px-2 py-0.5 rounded-full">
-                        CUSTODY LOCKED
+                      <span className="text-[10px] bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 px-2 py-0.5 rounded-full font-semibold">
+                        VERIFIED APPROVED
                       </span>
                     </div>
                     <div className="bg-black/40 p-2.5 rounded-xl border border-white/5 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Shield className="w-3.5 h-3.5 text-[#c9b8a0]" />
                         <span className="text-neutral-300">
-                          GEN-ANOMALY-DETECTOR
+                          RETURN WINDOW: 17:30 IST
                         </span>
                       </div>
                       <span className="text-[10px] bg-[#a78b71]/15 text-[#e8d5b7] border border-[#a78b71]/30 px-2 py-0.5 rounded-full">
-                        ACTIVE BENCH
+                        0 STRIKES ACCRUED
                       </span>
                     </div>
                   </div>
@@ -497,9 +463,9 @@ export function HeroPage() {
               <div className="flex items-center justify-between border-t border-white/10 pt-4 text-[10px] font-mono text-neutral-400 relative z-10">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  <span>CLUSTER STATUS: SECURE</span>
+                  <span>FACILITY: AIML LAB (ROOM 402)</span>
                 </div>
-                <div className="text-[#a78b71]">128-BIT QUANTUM SIGNED</div>
+                <div className="text-[#a78b71]">ZERO-TRUST HARDWARE LEDGER</div>
               </div>
             </div>
 
@@ -513,20 +479,20 @@ export function HeroPage() {
               <div className="rounded-[14px] overflow-hidden aspect-video relative mb-3 bg-neutral-900 border border-white/5">
                 <img
                   src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=600&q=80"
-                  alt="Autonomous Robotics Arm"
+                  alt="NVIDIA Jetson Orin Nano"
                   className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
                 />
                 <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[9px] font-mono text-[#c9b8a0]">
-                  DISPATCH // 03
+                  DISPATCH // JETSON ORIN
                 </div>
               </div>
               <div className="px-1">
                 <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-neutral-400 uppercase mb-1">
-                  <span>Micro-Actuator</span>
-                  <span className="text-emerald-400">ACTIVE</span>
+                  <span>Robotics Capstone</span>
+                  <span className="text-emerald-400">BENCH #08</span>
                 </div>
                 <div className="text-xs font-semibold text-white group-hover:text-[#e8d5b7] transition-colors truncate">
-                  Robotic Bench Sentry
+                  Autonomous Unit Requisition
                 </div>
               </div>
             </div>
@@ -541,20 +507,20 @@ export function HeroPage() {
               <div className="rounded-[14px] overflow-hidden aspect-video relative mb-3 bg-neutral-900 border border-white/5">
                 <img
                   src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80"
-                  alt="Cryogenic Sensor Core"
+                  alt="Keysight Waveform Generator"
                   className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
                 />
                 <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[9px] font-mono text-[#c9b8a0]">
-                  CRYOGENIC // 04
+                  CALIBRATED // BENCH RIG
                 </div>
               </div>
               <div className="px-1">
                 <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-neutral-400 uppercase mb-1">
-                  <span>Sensor Core</span>
-                  <span className="text-[#a78b71]">-269°C</span>
+                  <span>Keysight 33600A</span>
+                  <span className="text-[#a78b71]">100% HEALTH</span>
                 </div>
                 <div className="text-xs font-semibold text-white group-hover:text-[#e8d5b7] transition-colors truncate">
-                  Superconducting Trunk
+                  Waveform Generator Rig
                 </div>
               </div>
             </div>
@@ -566,15 +532,15 @@ export function HeroPage() {
           FEATURES GRID (4 Columns, Clash Display Headings)
       ───────────────────────────────────────────────────────────────────────── */}
       <section
-        id="features"
+        id="capabilities"
         className="py-28 px-6 sm:px-12 max-w-7xl mx-auto relative z-10 border-t border-white/5"
       >
         <div className="text-center mb-16">
           <div className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#a78b71] mb-3">
-            TACTILE CAPABILITIES
+            ACADEMIC CAPABILITIES
           </div>
           <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight text-white">
-            Engineered for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] to-[#a78b71]">Extreme R&D</span>
+            Engineered for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] to-[#a78b71]">Hardware Excellence</span>
           </h2>
         </div>
 
@@ -586,15 +552,14 @@ export function HeroPage() {
                 <Cpu className="w-6 h-6" />
               </div>
               <h3 className="font-display font-bold text-xl text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
-                Neural Instrument Mesh
+                Multi-Tier Requisitions
               </h3>
               <p className="text-sm text-gray-400 font-normal leading-relaxed font-sans">
-                Microsecond streaming telemetry connecting oscilloscopes, RF
-                analyzers, and FPGA benches across high-throughput physical buses.
+                Students assemble project component baskets; faculty guides approve with one tap; lab assistants dispatch instantly with barcode verification.
               </p>
             </div>
             <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#a78b71]">
-              <span>IEEE-488 / SCPI</span>
+              <span>CAPSTONES & MINIS</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
@@ -606,15 +571,14 @@ export function HeroPage() {
                 <Shield className="w-6 h-6" />
               </div>
               <h3 className="font-display font-bold text-xl text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
-                Autonomous Custody Ledger
+                Chain of Custody Ledger
               </h3>
               <p className="text-sm text-gray-400 font-normal leading-relaxed font-sans">
-                Cryptographically signed hardware dispatch, tamper-proof state
-                hashes, and custody verification with zero manual friction.
+                Track complete physical asset lifecycle with custody countdown timers, tamper-proof state hashes, and automated overdue penalty tracking.
               </p>
             </div>
             <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#a78b71]">
-              <span>SHA-256 LEDGER</span>
+              <span>TAMPER-PROOF LEDGER</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
@@ -626,15 +590,14 @@ export function HeroPage() {
                 <Activity className="w-6 h-6" />
               </div>
               <h3 className="font-display font-bold text-xl text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
-                Predictive Defect Mitigation
+                Live Instrument Telemetry
               </h3>
               <p className="text-sm text-gray-400 font-normal leading-relaxed font-sans">
-                Deep generative anomaly detection diagnosing component thermal
-                fatigue, harmonic jitter, and calibration drift before failure.
+                Microsecond SCPI telemetry streaming connecting oscilloscopes, logic analyzers, and DC power rails directly into student workstation views.
               </p>
             </div>
             <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#a78b71]">
-              <span>AI ANOMALY V2</span>
+              <span>SCPI / IEEE-488</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
@@ -646,25 +609,22 @@ export function HeroPage() {
                 <Zap className="w-6 h-6" />
               </div>
               <h3 className="font-display font-bold text-xl text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
-                Sub-Millisecond Synapse Sync
+                Predictive Defect Triage
               </h3>
               <p className="text-sm text-gray-400 font-normal leading-relaxed font-sans">
-                Distributed peer-to-peer event mesh streaming multi-gigabit
-                sensor vectors with deterministic latency guarantees.
+                Automated fault reporting identifying damaged GPIOs, blown fuses, and calibration drift before equipment is returned to active circulation.
               </p>
             </div>
             <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#a78b71]">
-              <span>&lt; 0.8ms P99</span>
+              <span>AUTO-QUARANTINE</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </div>
       </section>
 
-
-
       {/* ─────────────────────────────────────────────────────────────────────────
-          FOOTER (Clash Display Brand & Monogram)
+          FOOTER (Clash Display Brand & Real LabTrack Navigation)
       ───────────────────────────────────────────────────────────────────────── */}
       <footer className="pt-20 pb-12 px-6 sm:px-12 border-t border-white/10 bg-[#080808] relative z-10">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-16">
@@ -680,77 +640,80 @@ export function HeroPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
             </div>
             <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
-              High-throughput neural instrument mesh and verifiable physical
-              custody architecture.
+              The unified operating system for academic laboratories, hardware lifecycle, and instrument custody.
             </p>
             <div className="flex items-center gap-3 pt-2">
               <a
-                href="#neural-mesh"
+                href="#hardware-mesh"
                 className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/70 hover:text-[#e8d5b7] hover:border-[#a78b71] transition-all cursor-pointer"
-                title="Neural Mesh"
+                title="Hardware Mesh"
               >
                 <Globe className="w-4 h-4" />
               </a>
               <button
                 onClick={() => navigate('/workspace')}
                 className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/70 hover:text-[#e8d5b7] hover:border-[#a78b71] transition-all cursor-pointer"
-                title="Terminal Workspace"
+                title="Workspace Console"
               >
                 <Terminal className="w-4 h-4" />
               </button>
               <a
-                href="#features"
+                href="#capabilities"
                 className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/70 hover:text-[#e8d5b7] hover:border-[#a78b71] transition-all cursor-pointer"
-                title="Cluster Architecture"
+                title="Lab Facilities"
               >
                 <Server className="w-4 h-4" />
               </a>
             </div>
           </div>
 
-          {/* Column 2: Architecture */}
+          {/* Column 2: Hardware Telemetry */}
           <div>
             <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
-              ARCHITECTURE
-            </div>
-            <ul className="space-y-2.5 text-xs text-neutral-400 font-normal font-sans">
-              <li>
-                <a href="#neural-mesh" className="hover:text-white transition-colors">
-                  Synapse Mesh
-                </a>
-              </li>
-              <li>
-                <a href="#features" className="hover:text-white transition-colors">
-                  SCPI Waveforms
-                </a>
-              </li>
-              <li>
-                <a href="#features" className="hover:text-white transition-colors">
-                  Cryo Bus Protocol
-                </a>
-              </li>
-              <li>
-                <a href="#features" className="hover:text-white transition-colors">
-                  FPGA Ring Buffers
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: Capabilities */}
-          <div>
-            <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
-              CAPABILITIES
+              HARDWARE
             </div>
             <ul className="space-y-2.5 text-xs text-neutral-400 font-normal font-sans">
               <li>
                 <button
-                  onClick={() => navigate('/workspace/inventory')}
+                  onClick={() => navigate('/workspace/inventory/assets')}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
-                  Asset Custody
+                  Instruments & Assets
                 </button>
               </li>
+              <li>
+                <button
+                  onClick={() => navigate('/workspace/inventory/components')}
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  FPGAs & Microcontrollers
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/workspace/inventory/consumables')}
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  Sensors & IC Components
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/workspace/operations/defects')}
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  Defect Quarantine
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Custody & Circulation */}
+          <div>
+            <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
+              CUSTODY
+            </div>
+            <ul className="space-y-2.5 text-xs text-neutral-400 font-normal font-sans">
               <li>
                 <button
                   onClick={() => navigate('/workspace/custody/active')}
@@ -761,29 +724,53 @@ export function HeroPage() {
               </li>
               <li>
                 <button
-                  onClick={() => navigate('/workspace/projects')}
+                  onClick={() => navigate('/workspace/custody/requests')}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
-                  Project Telemetry
+                  Requisition Queue
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => navigate('/workspace/operations/defects')}
+                  onClick={() => navigate('/workspace/custody/reservations')}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
-                  Predictive Defect Log
+                  Waitlist Reservations
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/workspace/projects')}
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  Capstone Projects
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Column 4: Governance */}
+          {/* Column 4: Operations & Governance */}
           <div>
             <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
-              GOVERNANCE
+              OPERATIONS
             </div>
             <ul className="space-y-2.5 text-xs text-neutral-400 font-normal font-sans">
+              <li>
+                <button
+                  onClick={() => navigate('/workspace/operations/dispatch')}
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  Dispatch Desk
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/workspace/operations/approvals')}
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  Faculty Approvals
+                </button>
+              </li>
               <li>
                 <button
                   onClick={() => navigate('/workspace/accountability/reliability')}
@@ -800,33 +787,16 @@ export function HeroPage() {
                   Verifiable Audit Log
                 </button>
               </li>
-              <li>
-                <button
-                  onClick={() => navigate('/workspace/operations/approvals')}
-                  className="hover:text-white transition-colors text-left cursor-pointer"
-                >
-                  Faculty Approvals
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => navigate('/workspace/operations/dispatch')}
-                  className="hover:text-white transition-colors text-left cursor-pointer"
-                >
-                  Dispatch Desk
-                </button>
-              </li>
             </ul>
           </div>
 
-          {/* Column 5: Join Digest */}
+          {/* Column 5: Lab Circular Digest */}
           <div className="space-y-4">
             <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase">
-              JOIN DIGEST
+              LAB CIRCULAR
             </div>
             <p className="text-xs text-gray-400 font-normal font-sans">
-              Quarterly briefings on neural instrument protocols and physical
-              computing.
+              Subscribe for equipment availability, maintenance schedules, and lab facility notices.
             </p>
             {/* Low-opacity search bar with circular arrow-submit button */}
             <form
@@ -835,7 +805,7 @@ export function HeroPage() {
             >
               <input
                 type="email"
-                placeholder="lab@institute.edu"
+                placeholder="student@institute.edu"
                 value={digestEmail}
                 onChange={(e) => setDigestEmail(e.target.value)}
                 required
@@ -844,14 +814,14 @@ export function HeroPage() {
               <button
                 type="submit"
                 className="w-8 h-8 rounded-full bg-[#a78b71] text-black flex items-center justify-center hover:bg-[#e8d5b7] transition-colors flex-shrink-0 cursor-pointer shadow-md"
-                title="Subscribe to Digest"
+                title="Subscribe to Circular"
               >
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
             {digestSubscribed && (
               <div className="text-[10px] font-mono text-emerald-400 tracking-wide animate-fadeIn">
-                ✓ Digest dispatched to subscription buffer.
+                ✓ Enrolled into LabTrack Maintenance Circular.
               </div>
             )}
           </div>
@@ -860,15 +830,14 @@ export function HeroPage() {
         {/* Bottom Bar */}
         <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-neutral-500 gap-4">
           <div>
-            © {new Date().getFullYear()} LABTRACK SYSTEMS INC. ALL TELEMETRY
-            SECURED.
+            © {new Date().getFullYear()} LABTRACK ACADEMIC HARDWARE OS. ALL RIGHTS RESERVED.
           </div>
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>RUNTIME 0.04ms</span>
+              <span>LAB CLUSTERS NOMINAL</span>
             </span>
-            <span>ENCRYPTED END-TO-END</span>
+            <span>ZERO-TRUST VERIFIED</span>
           </div>
         </div>
       </footer>
