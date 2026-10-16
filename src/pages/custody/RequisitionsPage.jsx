@@ -115,7 +115,7 @@ export function RequisitionsPage() {
   const getStageInfo = (status) => {
     switch (status) {
       case 'Submitted':
-        return { index: 1, label: 'Awaiting Faculty Review', color: 'amber' };
+        return { index: 1, label: 'Awaiting Faculty Review', color: 'champagne' };
       case 'Faculty Endorsed':
         return { index: 2, label: 'Faculty Endorsed • Staging', color: 'emerald' };
       case 'Ready for Counter Pickup':
@@ -290,21 +290,15 @@ export function RequisitionsPage() {
                     </div>
 
                     {/* Cupertino Status Pill */}
-                    {stageInfo.color === 'amber' && (
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 backdrop-blur-md text-amber-300 border border-amber-500/40 flex items-center gap-1.5 shadow-lg">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)] animate-pulse" />
+                    {(stageInfo.color === 'champagne' || stageInfo.color === 'amber') && (
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#c9b8a0]/15 backdrop-blur-md text-[#f5e6c8] border border-[#c9b8a0]/35 flex items-center gap-1.5 shadow-[0_0_12px_rgba(201,184,160,0.25)]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8] shadow-[0_0_8px_rgba(245,230,200,0.95)] animate-pulse" />
                         <span>{stageInfo.label}</span>
                       </span>
                     )}
                     {stageInfo.color === 'emerald' && (
                       <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 backdrop-blur-md text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 shadow-lg">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
-                        <span>{stageInfo.label}</span>
-                      </span>
-                    )}
-                    {stageInfo.color === 'champagne' && (
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#c9b8a0]/25 backdrop-blur-md text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1.5 shadow-lg">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8] shadow-[0_0_6px_rgba(245,230,200,0.8)]" />
                         <span>{stageInfo.label}</span>
                       </span>
                     )}
