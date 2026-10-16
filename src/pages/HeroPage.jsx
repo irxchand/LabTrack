@@ -4,9 +4,13 @@ import {
   Activity,
   ArrowRight,
   ArrowUpRight,
+  BookmarkCheck,
   ChevronDown,
+  Clock,
   Cpu,
+  FolderGit2,
   Globe,
+  Inbox,
   Lock,
   Radio,
   Server,
@@ -529,7 +533,7 @@ export function HeroPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────
-          FEATURES GRID (4 Columns, Clash Display Headings)
+          ACADEMIC FLOW // ALL 5 CARDS (5-Column Responsive Grid, Clash Display)
       ───────────────────────────────────────────────────────────────────────── */}
       <section
         id="capabilities"
@@ -537,86 +541,138 @@ export function HeroPage() {
       >
         <div className="text-center mb-16">
           <div className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#a78b71] mb-3">
-            ACADEMIC CAPABILITIES
+            ACADEMIC LIFECYCLE // 5 PHASES
           </div>
           <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight text-white">
-            Engineered for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] to-[#a78b71]">Hardware Excellence</span>
+            From Project Proposal to{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] to-[#a78b71]">
+              Active Bench Custody
+            </span>
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Card 1 */}
-          <div className="gold-glass-card rounded-[28px] p-7 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+          {/* Card 1: Projects */}
+          <div
+            onClick={() => navigate('/workspace/projects')}
+            className="gold-glass-card rounded-[24px] p-6 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between hover:-translate-y-1"
+          >
             <div>
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-6 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
-                <Cpu className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
+                <FolderGit2 className="w-5 h-5" />
               </div>
-              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
-                Multi-Tier Requisitions
+              <div className="text-[10px] font-mono tracking-[0.2em] text-[#a78b71] mb-1.5 uppercase">
+                PHASE 01
+              </div>
+              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
+                Projects
               </h3>
-              <p className="text-sm text-gray-400 font-normal leading-relaxed font-sans">
-                Students assemble project component baskets; faculty guides approve with one tap; lab assistants dispatch instantly with barcode verification.
+              <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
+                Form Capstone and Mini Project teams, assemble collaborative rosters, and compile required hardware Bills of Materials.
               </p>
             </div>
-            <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#a78b71]">
-              <span>CAPSTONES & MINIS</span>
+            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-[#a78b71]">
+              <span>CAPSTONES & BOM</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
-          {/* Card 2 */}
-          <div className="gold-glass-card rounded-[28px] p-7 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between">
+          {/* Card 2: Workstation */}
+          <div
+            onClick={() => navigate('/workspace/inventory')}
+            className="gold-glass-card rounded-[24px] p-6 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between hover:-translate-y-1"
+          >
             <div>
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-6 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
-                <Shield className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
+                <Cpu className="w-5 h-5" />
               </div>
-              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
-                Chain of Custody Ledger
+              <div className="text-[10px] font-mono tracking-[0.2em] text-[#a78b71] mb-1.5 uppercase">
+                PHASE 02
+              </div>
+              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
+                Workstation
               </h3>
-              <p className="text-sm text-gray-400 font-normal leading-relaxed font-sans">
-                Track complete physical asset lifecycle with custody countdown timers, tamper-proof state hashes, and automated overdue penalty tracking.
+              <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
+                Search real-time inventory across AIML, IoT, and Embedded labs for available FPGAs, microcontrollers, sensors, and instruments.
               </p>
             </div>
-            <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#a78b71]">
-              <span>TAMPER-PROOF LEDGER</span>
+            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-[#a78b71]">
+              <span>LAB INVENTORY</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
-          {/* Card 3 */}
-          <div className="gold-glass-card rounded-[28px] p-7 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between">
+          {/* Card 3: Requisitions */}
+          <div
+            onClick={() => navigate('/workspace/custody/requests')}
+            className="gold-glass-card rounded-[24px] p-6 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between hover:-translate-y-1"
+          >
             <div>
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-6 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
-                <Activity className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
+                <Inbox className="w-5 h-5" />
               </div>
-              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
-                Live Instrument Telemetry
+              <div className="text-[10px] font-mono tracking-[0.2em] text-[#a78b71] mb-1.5 uppercase">
+                PHASE 03
+              </div>
+              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
+                Requisitions
               </h3>
-              <p className="text-sm text-gray-400 font-normal leading-relaxed font-sans">
-                Microsecond SCPI telemetry streaming connecting oscilloscopes, logic analyzers, and DC power rails directly into student workstation views.
+              <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
+                Submit component baskets for faculty guide review, track one-tap approvals, and route approved items to the dispatch desk.
               </p>
             </div>
-            <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#a78b71]">
-              <span>SCPI / IEEE-488</span>
+            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-[#a78b71]">
+              <span>FACULTY APPROVALS</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
-          {/* Card 4 */}
-          <div className="gold-glass-card rounded-[28px] p-7 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between">
+          {/* Card 4: Waitlist */}
+          <div
+            onClick={() => navigate('/workspace/custody/reservations')}
+            className="gold-glass-card rounded-[24px] p-6 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between hover:-translate-y-1"
+          >
             <div>
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-6 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
-                <Zap className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
+                <BookmarkCheck className="w-5 h-5" />
               </div>
-              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
-                Predictive Defect Triage
+              <div className="text-[10px] font-mono tracking-[0.2em] text-[#a78b71] mb-1.5 uppercase">
+                PHASE 04
+              </div>
+              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
+                Waitlist
               </h3>
-              <p className="text-sm text-gray-400 font-normal leading-relaxed font-sans">
-                Automated fault reporting identifying damaged GPIOs, blown fuses, and calibration drift before equipment is returned to active circulation.
+              <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
+                Reserve high-demand equipment, monitor live queue positioning, and automatically claim available instruments upon check-in.
               </p>
             </div>
-            <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#a78b71]">
-              <span>AUTO-QUARANTINE</span>
+            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-[#a78b71]">
+              <span>EQUIPMENT QUEUE</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          {/* Card 5: My Bench */}
+          <div
+            onClick={() => navigate('/workspace/custody/active')}
+            className="gold-glass-card rounded-[24px] p-6 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between hover:-translate-y-1"
+          >
+            <div>
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
+                <Clock className="w-5 h-5" />
+              </div>
+              <div className="text-[10px] font-mono tracking-[0.2em] text-[#a78b71] mb-1.5 uppercase">
+                PHASE 05
+              </div>
+              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
+                My Bench
+              </h3>
+              <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
+                Monitor active equipment custody, observe real-time countdown return timers, and report component defects with zero penalty strikes.
+              </p>
+            </div>
+            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-[#a78b71]">
+              <span>ACTIVE CUSTODY</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
