@@ -1,29 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Activity,
   ArrowRight,
   ArrowUpRight,
-  Check,
   ChevronDown,
   Cpu,
-  Database,
   Globe,
-  Layers,
   Lock,
-  Radio,
-  RefreshCw,
-  Search,
   Server,
   Shield,
-  Sparkles,
   Terminal,
   Zap,
 } from 'lucide-react';
 
 export function HeroPage() {
   const navigate = useNavigate();
-  const [billingCycle, setBillingCycle] = useState('annual'); // 'monthly' | 'annual'
   const [activeTab, setActiveTab] = useState('neural'); // 'neural' | 'telemetry' | 'custody'
   const [digestEmail, setDigestEmail] = useState('');
   const [digestSubscribed, setDigestSubscribed] = useState(false);
@@ -61,21 +53,21 @@ export function HeroPage() {
       <div className="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[#a78b71]/[0.035] blur-[150px] pointer-events-none z-0" />
 
       {/* ─────────────────────────────────────────────────────────────────────────
-          FIXED TOP NAVBAR
+          FIXED TOP NAVBAR (Matching LabTrack Brand Typography)
       ───────────────────────────────────────────────────────────────────────── */}
       <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-[10px] bg-[#0a0a0a]/80 border-b border-white/10 px-6 sm:px-12 h-20 flex items-center justify-between transition-all duration-300">
-        {/* Left: Text Logo in 'Playfair Display' (Bold Italic) */}
+        {/* Left: Brand Monogram in Clash Display with Champagne Gold Gradient */}
         <div
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="flex items-center gap-2 cursor-pointer group select-none"
         >
-          <span className="font-serif italic font-bold text-2xl tracking-tight text-white group-hover:text-[#e8d5b7] transition-colors">
+          <span className="font-display font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
             LabTrack
           </span>
-          <span className="w-1.5 h-1.5 rounded-full bg-[#a78b71] shadow-[0_0_12px_#a78b71]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_10px_#c9b8a0]" />
         </div>
 
-        {/* Center: Links in 'Inter' (11px, uppercase, tracking-wide) */}
+        {/* Center: Links in 'Inter' / 'Satoshi' (11px, uppercase, tracking-wide) */}
         <nav className="hidden md:flex items-center gap-8 text-[11px] font-medium tracking-[0.25em] text-white/70 uppercase">
           <a
             href="#neural-mesh"
@@ -90,12 +82,6 @@ export function HeroPage() {
             Capabilities
           </a>
           <a
-            href="#pricing"
-            className="hover:text-[#e8d5b7] transition-colors duration-200"
-          >
-            Pricing
-          </a>
-          <a
             href="#syndicate"
             className="hover:text-[#e8d5b7] transition-colors duration-200"
           >
@@ -107,11 +93,11 @@ export function HeroPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/workspace')}
-            className="text-[11px] font-medium uppercase tracking-[0.25em] text-[#c9b8a0] hover:text-white transition-colors px-3 py-1.5 hidden sm:inline-block"
+            className="text-[11px] font-medium uppercase tracking-[0.25em] text-[#c9b8a0] hover:text-white transition-colors px-3 py-1.5 hidden sm:inline-block cursor-pointer"
           >
             Workspace
           </button>
-          {/* 'Start Free Trial' Pill Button (white background, black text, rounded-full) */}
+          {/* 'Start Free Trial' Pill Button */}
           <button
             onClick={() => navigate('/workspace')}
             className="bg-white text-black font-semibold text-xs tracking-wider uppercase px-5 py-2.5 rounded-full hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.18)] hover:shadow-[0_0_30px_rgba(232,213,183,0.4)] cursor-pointer"
@@ -133,32 +119,35 @@ export function HeroPage() {
         {/* Live Notification Pill */}
         <div className="pill-glass-card rounded-full px-4 py-1.5 inline-flex items-center gap-2.5 mb-8 border border-white/10 bg-white/[0.03] backdrop-blur-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.4)] animate-fadeIn">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]" />
-          <span className="text-emerald-400 font-bold text-[8px] tracking-[0.25em]">
+          <span className="text-emerald-400 font-bold text-[8px] tracking-[0.25em] font-mono">
             LIVE
           </span>
           <span className="w-px h-3 bg-white/10" />
-          <span className="text-white/90 text-[12px] font-light tracking-wide">
+          <span className="text-white/90 text-[12px] font-light tracking-wide font-sans">
             Synapse Mesh v4.9 Active • 8,420 Lab Telemetry Nodes Synchronized
           </span>
         </div>
 
-        {/* Headline: 'Playfair Display Italic' at clamp(2.5rem, 8vw, 6rem) */}
+        {/* Headline: Matched to Clash Display (Website Font DNA) */}
         <h1
-          className="font-serif italic font-normal tracking-tight text-white leading-[1.06] text-center max-w-5xl mx-auto mb-6"
-          style={{ fontSize: 'clamp(2.5rem, 6.8vw, 5.8rem)' }}
+          className="font-display font-bold tracking-tight text-white leading-[1.04] text-center max-w-5xl mx-auto mb-6"
+          style={{ fontSize: 'clamp(2.5rem, 6.5vw, 5.5rem)' }}
         >
           The Architecture of{' '}
-          <span className="text-[#a78b71] font-semibold not-italic">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
             Autonomous Synthesis
           </span>{' '}
-          & <span className="text-[#c9b8a0]">Tactile Precision</span>
+          &{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0]">
+            Tactile Precision
+          </span>
         </h1>
 
-        {/* Subtext: refined Inter */}
-        <p className="text-gray-400 text-base sm:text-lg font-light text-center max-w-2xl mx-auto mb-10 leading-relaxed tracking-wide">
+        {/* Subtext */}
+        <p className="text-gray-400 text-base sm:text-lg font-normal text-center max-w-2xl mx-auto mb-10 leading-relaxed tracking-wide font-sans">
           Harness real-time neural instrument streaming, zero-latency physical
           telemetry custody, and cryogenic FPGA synchronization engineered for
-          the world's most demanding laboratories.
+          high-throughput laboratories.
         </p>
 
         {/* Dual-Button CTA Group */}
@@ -166,7 +155,7 @@ export function HeroPage() {
           {/* Solid White CTA */}
           <button
             onClick={() => navigate('/workspace')}
-            className="bg-white text-[#0a0a0a] px-8 py-3.5 rounded-full font-medium text-sm tracking-wider uppercase hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_35px_rgba(255,255,255,0.22)] hover:shadow-[0_0_40px_rgba(232,213,183,0.45)] flex items-center gap-2 cursor-pointer group"
+            className="bg-white text-[#0a0a0a] px-8 py-3.5 rounded-full font-semibold text-sm tracking-wider uppercase hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_35px_rgba(255,255,255,0.22)] hover:shadow-[0_0_40px_rgba(232,213,183,0.45)] flex items-center gap-2 cursor-pointer group"
           >
             <span>Launch Workspace</span>
             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -341,7 +330,7 @@ export function HeroPage() {
                     <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#a78b71]">
                       CORE NODE // 00
                     </div>
-                    <div className="text-sm font-semibold tracking-wide text-white">
+                    <div className="text-sm font-semibold tracking-wide text-white font-display">
                       Neural Runtime Hypervisor
                     </div>
                   </div>
@@ -580,7 +569,7 @@ export function HeroPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────
-          FEATURES GRID (4 Columns)
+          FEATURES GRID (4 Columns, Clash Display Headings)
       ───────────────────────────────────────────────────────────────────────── */}
       <section
         id="features"
@@ -590,8 +579,8 @@ export function HeroPage() {
           <div className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#a78b71] mb-3">
             TACTILE CAPABILITIES
           </div>
-          <h2 className="font-serif italic text-3xl sm:text-5xl font-normal text-white">
-            Engineered for <span className="text-[#c9b8a0]">Extreme R&D</span>
+          <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight text-white">
+            Engineered for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] to-[#a78b71]">Extreme R&D</span>
           </h2>
         </div>
 
@@ -602,10 +591,10 @@ export function HeroPage() {
               <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-6 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
                 <Cpu className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
+              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
                 Neural Instrument Mesh
               </h3>
-              <p className="text-sm text-gray-400 font-light leading-relaxed">
+              <p className="text-sm text-gray-400 font-normal leading-relaxed font-sans">
                 Microsecond streaming telemetry connecting oscilloscopes, RF
                 analyzers, and FPGA benches across high-throughput physical buses.
               </p>
@@ -622,10 +611,10 @@ export function HeroPage() {
               <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-6 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
                 <Shield className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
+              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
                 Autonomous Custody Ledger
               </h3>
-              <p className="text-sm text-gray-400 font-light leading-relaxed">
+              <p className="text-sm text-gray-400 font-normal leading-relaxed font-sans">
                 Cryptographically signed hardware dispatch, tamper-proof state
                 hashes, and custody verification with zero manual friction.
               </p>
@@ -642,10 +631,10 @@ export function HeroPage() {
               <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-6 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
                 <Activity className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
+              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
                 Predictive Defect Mitigation
               </h3>
-              <p className="text-sm text-gray-400 font-light leading-relaxed">
+              <p className="text-sm text-gray-400 font-normal leading-relaxed font-sans">
                 Deep generative anomaly detection diagnosing component thermal
                 fatigue, harmonic jitter, and calibration drift before failure.
               </p>
@@ -662,10 +651,10 @@ export function HeroPage() {
               <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-6 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
                 <Zap className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
+              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
                 Sub-Millisecond Synapse Sync
               </h3>
-              <p className="text-sm text-gray-400 font-light leading-relaxed">
+              <p className="text-sm text-gray-400 font-normal leading-relaxed font-sans">
                 Distributed peer-to-peer event mesh streaming multi-gigabit
                 sensor vectors with deterministic latency guarantees.
               </p>
@@ -679,208 +668,7 @@ export function HeroPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────
-          PRICING SECTION (Three-Tiered Layout)
-      ───────────────────────────────────────────────────────────────────────── */}
-      <section
-        id="pricing"
-        className="py-28 px-6 sm:px-12 max-w-7xl mx-auto relative z-10 border-t border-white/5"
-      >
-        <div className="text-center mb-12">
-          <div className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#a78b71] mb-3">
-            DEPLOYMENT TIERS
-          </div>
-          <h2 className="font-serif italic text-3xl sm:text-5xl font-normal text-white mb-6">
-            Predictable Scaling for <span className="text-[#a78b71]">Pioneers</span>
-          </h2>
-
-          {/* Monthly / Annual Pill Toggle */}
-          <div className="inline-flex items-center rounded-full bg-white/[0.06] p-1 border border-white/10 backdrop-blur-md">
-            <button
-              onClick={() => setBillingCycle('monthly')}
-              className={`px-5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all cursor-pointer ${
-                billingCycle === 'monthly'
-                  ? 'bg-white text-black font-semibold shadow-sm'
-                  : 'text-neutral-400 hover:text-white'
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingCycle('annual')}
-              className={`px-5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all cursor-pointer flex items-center gap-1.5 ${
-                billingCycle === 'annual'
-                  ? 'bg-white text-black font-semibold shadow-sm'
-                  : 'text-neutral-400 hover:text-white'
-              }`}
-            >
-              <span>Annual</span>
-              <span className="text-[10px] bg-[#a78b71]/20 text-[#a78b71] px-1.5 py-0.2 rounded-full font-mono">
-                -20%
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {/* 3-Tier Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center pt-6">
-          {/* Tier 1: Academic Sandbox */}
-          <div className="gold-glass-card rounded-[28px] p-8 sm:p-10 flex flex-col justify-between h-full border-white/10">
-            <div>
-              <div className="text-[11px] font-mono tracking-[0.25em] text-neutral-400 uppercase mb-2">
-                ACADEMIC SANDBOX
-              </div>
-              <div className="text-xl font-bold text-white mb-4">
-                Student & Researcher
-              </div>
-              <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-5xl font-bold text-white tracking-tight">
-                  $0
-                </span>
-                <span className="text-xs font-mono text-neutral-400">/mo</span>
-              </div>
-              <p className="text-sm text-gray-400 font-light mb-8 leading-relaxed">
-                Ideal for university coursework, student capstone teams, and
-                open research labs.
-              </p>
-
-              <div className="space-y-3 font-light text-sm text-neutral-300 mb-8">
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>Up to 15 Active Hardware Loans</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>Basic SCPI & Rigol Telemetry</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>Project Waitlist Queuing</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>Community Discord Support</span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => navigate('/workspace')}
-              className="w-full py-3 rounded-full border border-white/20 text-white font-medium text-xs tracking-wider uppercase hover:border-[#a78b71] hover:text-[#e8d5b7] transition-all cursor-pointer"
-            >
-              Get Started Free
-            </button>
-          </div>
-
-          {/* Tier 2: Pro Research (Center, Highlighted) */}
-          <div className="gold-glass-card rounded-[32px] p-8 sm:p-10 flex flex-col justify-between h-full border-[#a78b71]/40 shadow-[0_0_60px_rgba(167,139,113,0.18)] relative lg:scale-105 z-10 bg-white/[0.04]">
-            {/* Top-Centered 'Most Popular' Badge */}
-            <div className="bg-[#a78b71] text-black font-semibold text-[10px] uppercase tracking-[0.25em] px-4 py-1.5 rounded-full absolute -top-3.5 left-1/2 -translate-x-1/2 shadow-lg">
-              Most Popular
-            </div>
-
-            <div>
-              <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-2">
-                PRO RESEARCH
-              </div>
-              <div className="text-xl font-bold text-white mb-4">
-                Advanced Institute
-              </div>
-              <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-5xl font-bold text-white tracking-tight">
-                  {billingCycle === 'annual' ? '$180' : '$220'}
-                </span>
-                <span className="text-xs font-mono text-neutral-400">
-                  /seat/mo
-                </span>
-              </div>
-              <p className="text-sm text-gray-300 font-light mb-8 leading-relaxed">
-                Full-featured neural instrumentation and custody orchestration
-                for departmental research labs.
-              </p>
-
-              <div className="space-y-3 font-light text-sm text-white mb-8">
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>Unlimited Instrument Telemetry</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>Cryptographic Hardware Custody Ledger</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>AI Predictive Defect Early Warning</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>Multi-Facility Synchronization</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>Sub-Millisecond Synapse Streaming</span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => navigate('/workspace')}
-              className="w-full py-3.5 rounded-full bg-white text-black font-semibold text-xs tracking-wider uppercase hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_25px_rgba(255,255,255,0.2)] cursor-pointer"
-            >
-              Deploy Pro Node
-            </button>
-          </div>
-
-          {/* Tier 3: Enterprise Syndicate */}
-          <div className="gold-glass-card rounded-[28px] p-8 sm:p-10 flex flex-col justify-between h-full border-white/10">
-            <div>
-              <div className="text-[11px] font-mono tracking-[0.25em] text-neutral-400 uppercase mb-2">
-                ENTERPRISE SYNDICATE
-              </div>
-              <div className="text-xl font-bold text-white mb-4">
-                National Consortium
-              </div>
-              <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-5xl font-bold text-white tracking-tight">
-                  Custom
-                </span>
-              </div>
-              <p className="text-sm text-gray-400 font-light mb-8 leading-relaxed">
-                Tailored for national cleanrooms, semiconductor fabs, and
-                aerospace testing rigs.
-              </p>
-
-              <div className="space-y-3 font-light text-sm text-neutral-300 mb-8">
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>Dedicated On-Premise Air-Gapped Mesh</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>Custom Hardware FPGA Drivers</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>24/7 Priority Field Engineering SLA</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-[#a78b71]" />
-                  <span>Continuous Compliance & FedRAMP Audits</span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => navigate('/workspace')}
-              className="w-full py-3 rounded-full border border-white/20 text-white font-medium text-xs tracking-wider uppercase hover:border-[#a78b71] hover:text-[#e8d5b7] transition-all cursor-pointer"
-            >
-              Contact Syndicate
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────────────────
-          TEAM SECTION (Two-Column Layout, 4:5 Aspect Ratio)
+          TEAM SECTION (Two-Column Layout, 4:5 Aspect Ratio, Clash Display)
       ───────────────────────────────────────────────────────────────────────── */}
       <section
         id="syndicate"
@@ -890,8 +678,8 @@ export function HeroPage() {
           <div className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#a78b71] mb-3">
             ARCHITECTURAL STEWARDSHIP
           </div>
-          <h2 className="font-serif italic text-3xl sm:text-5xl font-normal text-white">
-            Led by <span className="text-[#c9b8a0]">Hardware Visionaries</span>
+          <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight text-white">
+            Led by <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] to-[#a78b71]">Hardware Visionaries</span>
           </h2>
         </div>
 
@@ -905,13 +693,13 @@ export function HeroPage() {
                 className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/65 to-transparent flex flex-col justify-end p-8 sm:p-10">
-                <h3 className="font-serif italic text-3xl sm:text-4xl font-medium text-white group-hover:text-[#e8d5b7] transition-colors">
+                <h3 className="font-display font-bold text-2xl sm:text-3xl text-white group-hover:text-[#e8d5b7] transition-colors tracking-tight">
                   Dr. Elena Vance
                 </h3>
-                <div className="text-[#a78b71] text-xs font-light tracking-[0.3em] uppercase mt-1.5 mb-3">
+                <div className="text-[#a78b71] font-mono text-[11px] font-normal tracking-[0.25em] uppercase mt-1 mb-3">
                   HEAD OF NEURAL HARDWARE ARCHITECTURE
                 </div>
-                <p className="text-sm text-gray-300 font-light leading-relaxed max-w-md">
+                <p className="text-sm text-gray-300 font-normal leading-relaxed max-w-md font-sans">
                   Pioneered sub-picosecond telemetry synchronization for
                   superconducting quantum testbeds at CERN and MIT Lincoln
                   Laboratory.
@@ -929,13 +717,13 @@ export function HeroPage() {
                 className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/65 to-transparent flex flex-col justify-end p-8 sm:p-10">
-                <h3 className="font-serif italic text-3xl sm:text-4xl font-medium text-white group-hover:text-[#e8d5b7] transition-colors">
+                <h3 className="font-display font-bold text-2xl sm:text-3xl text-white group-hover:text-[#e8d5b7] transition-colors tracking-tight">
                   Julian Thorne
                 </h3>
-                <div className="text-[#a78b71] text-xs font-light tracking-[0.3em] uppercase mt-1.5 mb-3">
+                <div className="text-[#a78b71] font-mono text-[11px] font-normal tracking-[0.25em] uppercase mt-1 mb-3">
                   DIRECTOR OF DISTRIBUTED TELEMETRY SYSTEMS
                 </div>
-                <p className="text-sm text-gray-300 font-light leading-relaxed max-w-md">
+                <p className="text-sm text-gray-300 font-normal leading-relaxed max-w-md font-sans">
                   Architect of zero-trust laboratory custody protocols and
                   real-time physical instrument validation engines across Tier-1
                   cleanrooms.
@@ -947,7 +735,7 @@ export function HeroPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────
-          FOOTER (5 Columns)
+          FOOTER (Clash Display Brand & Monogram)
       ───────────────────────────────────────────────────────────────────────── */}
       <footer className="pt-20 pb-12 px-6 sm:px-12 border-t border-white/10 bg-[#080808] relative z-10">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-16">
@@ -957,12 +745,12 @@ export function HeroPage() {
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="flex items-center gap-2 cursor-pointer group select-none"
             >
-              <span className="font-serif italic font-bold text-2xl tracking-tight text-white group-hover:text-[#e8d5b7] transition-colors">
+              <span className="font-display font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0]">
                 LabTrack
               </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#a78b71]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
             </div>
-            <p className="text-xs text-gray-400 font-light leading-relaxed">
+            <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
               High-throughput neural instrument mesh and verifiable physical
               custody architecture.
             </p>
@@ -996,7 +784,7 @@ export function HeroPage() {
             <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
               ARCHITECTURE
             </div>
-            <ul className="space-y-2.5 text-xs text-neutral-400 font-light">
+            <ul className="space-y-2.5 text-xs text-neutral-400 font-normal font-sans">
               <li>
                 <a href="#neural-mesh" className="hover:text-white transition-colors">
                   Synapse Mesh
@@ -1025,11 +813,11 @@ export function HeroPage() {
             <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
               CAPABILITIES
             </div>
-            <ul className="space-y-2.5 text-xs text-neutral-400 font-light">
+            <ul className="space-y-2.5 text-xs text-neutral-400 font-normal font-sans">
               <li>
                 <button
                   onClick={() => navigate('/workspace/inventory')}
-                  className="hover:text-white transition-colors text-left"
+                  className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Asset Custody
                 </button>
@@ -1037,7 +825,7 @@ export function HeroPage() {
               <li>
                 <button
                   onClick={() => navigate('/workspace/custody/active')}
-                  className="hover:text-white transition-colors text-left"
+                  className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Active Benches
                 </button>
@@ -1045,7 +833,7 @@ export function HeroPage() {
               <li>
                 <button
                   onClick={() => navigate('/workspace/projects')}
-                  className="hover:text-white transition-colors text-left"
+                  className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Project Telemetry
                 </button>
@@ -1053,7 +841,7 @@ export function HeroPage() {
               <li>
                 <button
                   onClick={() => navigate('/workspace/operations/defects')}
-                  className="hover:text-white transition-colors text-left"
+                  className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Predictive Defect Log
                 </button>
@@ -1061,17 +849,12 @@ export function HeroPage() {
             </ul>
           </div>
 
-          {/* Column 4: Syndicate */}
+          {/* Column 4: Syndicate Governance */}
           <div>
             <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
               GOVERNANCE
             </div>
-            <ul className="space-y-2.5 text-xs text-neutral-400 font-light">
-              <li>
-                <a href="#pricing" className="hover:text-white transition-colors">
-                  Institute Tiers
-                </a>
-              </li>
+            <ul className="space-y-2.5 text-xs text-neutral-400 font-normal font-sans">
               <li>
                 <a href="#syndicate" className="hover:text-white transition-colors">
                   Research Council
@@ -1087,6 +870,11 @@ export function HeroPage() {
                   Verifiable Logs
                 </a>
               </li>
+              <li>
+                <a href="#syndicate" className="hover:text-white transition-colors">
+                  Hardware Standards
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -1095,7 +883,7 @@ export function HeroPage() {
             <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase">
               JOIN DIGEST
             </div>
-            <p className="text-xs text-gray-400 font-light">
+            <p className="text-xs text-gray-400 font-normal font-sans">
               Quarterly briefings on neural instrument protocols and physical
               computing.
             </p>
