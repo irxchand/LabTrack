@@ -21,7 +21,70 @@
 }
 
 .font-mono {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-family: 'Geist Mono', 'JetBrains Mono', monospace;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DARK TECH BRUTALIST SPEC
+───────────────────────────────────────────────────────────────────────────── */
+.font-inter-display {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
+}
+
+.font-geist-mono {
+  font-family: 'Geist Mono', 'JetBrains Mono', monospace;
+}
+
+.headline-fluid {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
+  font-size: clamp(32px, 5.5vw, 60px);
+  letter-spacing: clamp(-3.36px, -0.05em, -1px);
+  line-height: 1.04;
+  color: #ffffff;
+  max-width: 752px;
+}
+
+.btn-square {
+  border-radius: 0px !important;
+  background-color: #ffffff;
+  color: #121212;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.btn-square:hover {
+  background-color: #ededed;
+}
+
+.v-chip {
+  display: inline-flex;
+  align-items: center;
+  background-color: #1f1f1f;
+  border-radius: 100px;
+  padding: 4px 10px;
+  gap: 6px;
+  font-family: 'Geist Mono', 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #999999;
+  text-transform: uppercase;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.spec-card {
+  background-color: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.145);
+  border-radius: 0px;
+}
+
+.scrim-hero {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.76) 0%, rgba(0, 0, 0, 0) 93.785%);
 }
 
 .liquid-glass {
