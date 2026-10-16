@@ -22,9 +22,24 @@ export function LabDataProvider({ children }) {
   const [incidentLedger, setIncidentLedger] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Requisition basket state for batch project requests
-  const [basket, setBasket] = useState([]);
+  // Requisition basket state for batch project requests (persisted in localStorage)
+  const [basket, setBasket] = useState(() => {
+    try {
+      const saved = localStorage.getItem('labtrack_requisition_basket');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [isBasketOpen, setIsBasketOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('labtrack_requisition_basket', JSON.stringify(basket));
+    } catch (e) {
+      console.error('Failed to persist basket to localStorage:', e);
+    }
+  }, [basket]);
 
   // Load all initial data
   const loadData = useCallback(async () => {

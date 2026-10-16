@@ -623,124 +623,73 @@ export function InventoryListPage({ initialClassification = null }) {
       )}
 
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* 5. SLIDE-OVER DETAIL INSPECTOR                                */}
+      {/* 5. COMPONENT QUICK SPECS MODAL (Centered Apple Dialog)        */}
       {/* ───────────────────────────────────────────────────────────── */}
       {inspectedItem && (
-        <div className="fixed inset-0 z-50 overflow-hidden">
-          <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-md transition-opacity"
-            onClick={() => setInspectedItem(null)}
-          />
+        <Modal
+          isOpen={!!inspectedItem}
+          onClose={() => setInspectedItem(null)}
+          title={inspectedItem.nomenclature}
+          subtitle={`${inspectedItem.manufacturer} • ${inspectedItem.assetTag}`}
+          maxWidth="max-w-xl"
+        >
+          <div className="space-y-4 text-xs font-sans text-white">
+            {/* Component Picture Container */}
+            <div className="w-full h-48 rounded-2xl bg-black/50 border border-white/10 p-3 flex items-center justify-center overflow-hidden">
+              <img
+                src={inspectedItem.image || '/images/hardware/raspberry-pi-5.jpg'}
+                alt={inspectedItem.nomenclature}
+                className="h-full object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.8)]"
+                onError={(e) => {
+                  e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+                }}
+              />
+            </div>
 
-          <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-lg bg-[#0a0a0c] border-l border-white/15 shadow-2xl flex flex-col">
-              {/* Header */}
-              <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
-                <div className="flex items-center gap-2 font-mono text-xs">
-                  <span className="text-[#c9b8a0] font-bold">{inspectedItem.assetTag}</span>
-                  <span className="text-zinc-600">•</span>
-                  <StatusBadge status={inspectedItem.stockStatus} type="stock" size="xs" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => navigate(`/workspace/inventory/${inspectedItem.id}`)}
-                    className="p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
-                    title="Open Full Dossier"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setInspectedItem(null)}
-                    className="p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
+            {/* Storage Bay & Stock Status */}
+            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-[#c9b8a0]" />
+                <span className="font-semibold text-white">{inspectedItem.coordinates}</span>
+                <span className="text-zinc-600">•</span>
+                <span className="text-zinc-400">{inspectedItem.labRoom}</span>
               </div>
+              <span className="text-zinc-300 font-medium">
+                {inspectedItem.availableStock} of {inspectedItem.totalStock} in stock
+              </span>
+            </div>
 
-              {/* Inspector Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                {/* Large Component Picture in Inspector */}
-                <div className="w-full aspect-video rounded-2xl bg-gradient-to-b from-[#18181b] to-[#0c0c0e] border border-white/10 p-4 flex items-center justify-center overflow-hidden">
-                  <img
-                    src={inspectedItem.image || '/images/hardware/raspberry-pi-5.jpg'}
-                    alt={inspectedItem.nomenclature}
-                    className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]"
-                    onError={(e) => {
-                      e.target.src = '/images/hardware/raspberry-pi-5.jpg';
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <h2 className="text-xl font-bold text-white tracking-tight">
-                    {inspectedItem.nomenclature}
-                  </h2>
-                  <div className="text-xs font-mono text-zinc-400 mt-1">
-                    {inspectedItem.manufacturer} • SKU: {inspectedItem.sku}
-                  </div>
-                </div>
-
-                {/* Storage Bay Coordinates */}
-                <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
-                  <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-[#a78b71]" />
-                    Storage Coordinates & Location
-                  </div>
-                  <div className="text-2xl font-mono font-bold text-[#f5e6c8]">
-                    {inspectedItem.coordinates}
-                  </div>
-                  <div className="text-xs text-zinc-400 font-sans">
-                    {inspectedItem.labRoom} • Depository Section
-                  </div>
-                </div>
-
-                {/* Technical Specs */}
-                <div className="space-y-2">
-                  <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
-                    Technical Specifications
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 font-mono text-xs text-zinc-300 leading-relaxed">
-                    {inspectedItem.subSpecs}
-                  </div>
-                </div>
-
-                {/* Stock Availability */}
-                <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2 text-xs">
-                  <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    Depot Availability
-                  </div>
-                  <div className="text-emerald-400 font-semibold">
-                    {inspectedItem.availableStock} of {inspectedItem.totalStock} units available for immediate lab requisition.
-                  </div>
-                </div>
-              </div>
-
-              {/* Inspector Footer */}
-              <div className="p-5 border-t border-white/10 bg-white/[0.02] flex items-center justify-between gap-3">
-                <button
-                  onClick={() => navigate(`/workspace/inventory/${inspectedItem.id}`)}
-                  className="px-4 py-2.5 rounded-full border border-white/10 text-xs text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  Full Dossier
-                </button>
-
-                <button
-                  onClick={() => {
-                    addToBasket(inspectedItem, 1);
-                    setInspectedItem(null);
-                  }}
-                  className="flex-1 py-2.5 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-inter text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer"
-                >
-                  <ShoppingBag className="w-3.5 h-3.5" />
-                  <span>Requisition Component</span>
-                </button>
+            {/* Technical Sub-Specifications */}
+            <div className="space-y-1.5">
+              <div className="font-medium text-zinc-300">Technical Specifications</div>
+              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10 text-xs text-zinc-300 leading-relaxed font-sans">
+                {inspectedItem.subSpecs}
               </div>
             </div>
+
+            {/* Modal Actions */}
+            <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setInspectedItem(null)}
+                className="px-4 py-2.5 rounded-full border border-white/10 text-xs font-medium text-zinc-400 hover:text-white transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  addToBasket(inspectedItem, 1);
+                  setInspectedItem(null);
+                }}
+                className="py-2.5 px-5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs tracking-wide transition-all shadow-sm flex items-center gap-2 cursor-pointer active:scale-[0.99]"
+              >
+                <ShoppingBag className="w-3.5 h-3.5" />
+                <span>Add to Requisition Kit</span>
+              </button>
+            </div>
           </div>
-        </div>
+        </Modal>
       )}
 
       {/* ───────────────────────────────────────────────────────────── */}
