@@ -40,7 +40,7 @@ export function CommandPalette({ isOpen, onClose }) {
   const navigationActions = [
     { id: 'nav-inv', label: 'Go to Master Inventory Registry', icon: Boxes, category: 'Navigation', shortcut: 'G I', run: () => navigate('/workspace/inventory') },
     { id: 'nav-assets', label: 'Go to Serialized Assets (MCUs & Test Gear)', icon: Cpu, category: 'Navigation', shortcut: 'G A', run: () => navigate('/workspace/inventory/assets') },
-    { id: 'nav-loans', label: 'Go to Active Loans & Custody', icon: Clock, category: 'Navigation', shortcut: 'G L', run: () => navigate('/workspace/custody/active') },
+    { id: 'nav-loans', label: 'Go to My Bench (Active Custody & Hardware)', icon: Clock, category: 'Navigation', shortcut: 'G B', run: () => navigate('/workspace/custody/active') },
     { id: 'nav-reqs', label: 'Go to Pending Requisitions & Status', icon: Inbox, category: 'Navigation', shortcut: 'G R', run: () => navigate('/workspace/custody/requests') },
     { id: 'nav-fifo', label: 'Go to FIFO Reservation Waitlist', icon: BookmarkCheck, category: 'Navigation', shortcut: 'G Q', run: () => navigate('/workspace/custody/reservations') },
     { id: 'nav-rel', label: 'Go to Accountability & Reliability Scorecard', icon: ShieldCheck, category: 'Navigation', shortcut: 'G S', run: () => navigate('/workspace/accountability/reliability') },

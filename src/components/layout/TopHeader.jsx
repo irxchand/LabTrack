@@ -73,11 +73,11 @@ export function TopHeader() {
       isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
     },
     {
-      label: 'Active Loans',
+      label: 'My Bench',
       to: '/workspace/custody/active',
       icon: Clock,
       count: activeLoans.length,
-      isActive: (pathname) => pathname.includes('/custody/active'),
+      isActive: (pathname) => pathname.includes('/custody/active') || pathname.includes('/custody/bench'),
     },
     {
       label: 'Requisitions',
