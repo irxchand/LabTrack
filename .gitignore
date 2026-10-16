@@ -49,3 +49,9 @@ desktop.ini
 *.swo
 *~
 *.log
+.local/
+.artifacts/
+*.egg-info/
+coverage.xml
+test-results/
+playwright-report/

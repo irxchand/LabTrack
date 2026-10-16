@@ -1,0 +1,43 @@
+presentation-
+hardware availability and the tracking part
+how the data is being stored
+explained the prototype
+()
+roles(final approval is verified by hod(for almost all the components)
+approval flow
+faculty mentor lab incharge (mentor entity)
+lab incharge is there for 1 or nax 2
+hod is the only one with over write access
+asset and consumable for component entity
+assests are bar coded
+sensors are consumables (consumables are basically cheap stuff)
+actuators are comsumanles 
+assests are generally not issued to students
+
+robotic arm, plc, intel depth camera are assets
+assest verification is more imp
+display the category of components
+comsumables are qty maintained
+consumables bad items can be tracked or not
+tlt consumable count includes good and bad
+email racking and reminder system (5 days before,  everyday after due)
+Components are sometimes left in the project
+repeated offenders feature is a go
+AI feature is not a priority but okay
+posgres to MySQL
+auth from IT admin
+master data is for everyone (faculty id numbers exsist)
+t(5digits) for teachers
+n(5digits)for staff
+lab assisntant can have multiple labs
+consumables should have classes (sensor, MC, micro processor, motors, misc, communication module, battery)
+it is important to track from which lab the component was issued.
+assest -> lab incharge faculty
+consumable -> central
+asset use and asset issuance are two permissions
+sensor:decrirption, brand, range 
+no need for consumable details. Description of consumables is required if the variety is more.
+bill number annotations availability is a good add on extra benefit (CPR number, bill or purchase number)
+bill tracking if possibele
+
+

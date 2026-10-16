@@ -1,0 +1,138 @@
+{
+  "state": "SDD_APPROVED",
+  "approval_state": "SDD_APPROVED",
+  "approved": true,
+  "canonical": true,
+  "version": "0.1",
+  "created_at": "2026-10-16T00:32:23+05:30",
+  "approved_at": "2026-10-16T03:44:36+05:30",
+  "approved_by": "User / project lead",
+  "approval_evidence": {
+    "user_message": "IT IS APPROVED",
+    "context": "Direct user reply immediately after SDD approval status and execution/presentation handoff",
+    "received_at": "2026-10-16T03:44:36+05:30",
+    "scope": "SDD design and understanding as represented, including explicit OPEN/CONFLICTED/DEFERRED boundaries; no unresolved alternative or institutional rollout inferred"
+  },
+  "authoring_authorization": "Latest user direction: BRUH WORK ON THE PPTS LATER, FIRST DO SDD",
+  "gate_1_status": "UNDERSTANDING_VALIDATED as represented in approved SDD",
+  "source_hashes": {
+    "docs/ASTRA/ASTRA_MASTER_PROMPT.txt": "d11e8b8ead18eedd5495ffe3fb039d24dde7ce1dc38431d61a932acfd859b5e0",
+    "docs/architecture/LabTrack_MASTER_CONTEXT.md": "b522046dc97bab0e8a04bd7716acdffae88397bd59a3370c6b9d2d4767e36b33",
+    "docs/architecture/LabTrack_SDD_DETERMINISTIC_TEMPLATE.md": "930579fc3b30c715d6ebeaa1f0d58bd099836d7a1f97824d5a6064d0dc5b1149",
+    "docs/ASTRA/00_SOURCE_MANIFEST.md": "0185c06bd7ca38f8411f7c538b8fa88b9ece183cfb46527a0304a979031bbd6f",
+    "docs/ASTRA/01_REFERENCE_GRAPH.md": "55342e604f5ec13a7b2ff3d3c4da5aaf589055c211c43a3143ffdd5a98269172",
+    "docs/ASTRA/02_REQUIREMENT_LEDGER.md": "6b7aa20305ba3aa2f66eb6d03caacfbdb057eb8dc1f7f8d23a408cece88a19ce",
+    "docs/ASTRA/03_RECONCILIATION_REPORT.md": "8c119848527346b98e20f534c7434dfc42d031ad672f3b55e59224c07d102049",
+    "docs/ASTRA/04_CONTEXT_REVIEW.md": "ee426b9e3f434c438be77036e2815f3faefe714b5c543b973341c11bd476d95e",
+    "docs/ASTRA/05_OPEN_DECISIONS.md": "a43dfd8e19445d8ef2c5e0a65c05e3c9390cf3ba9ce1b38e5f439e995697987d",
+    "docs/ASTRA/APPROVAL_GATE.yaml": "5a82c9f81bb048466e44db5c11a8deb9301085c53b772845b86053d9a00960d8",
+    "docs/ASTRA/EXECUTION_AUTHORIZATION.md": "e7d957ba3691aabeaf4d754ae3369132d59f8f0a9abba852a1c563e5ca30c7bb",
+    "docs/execution/EXECUTION_DECISIONS.md": "b36b2ba2a9e521eb280094e059e11a14e33a57a6e404d6eac553321bc7b43ed0",
+    "contracts/openapi.yaml": "16a1e761a56d6fbdb24b29b66b929bd9dc534cd918e59791b650f605f0c77f08",
+    "docs/ASTRA/SDD_AUTHORING_AUTHORIZATION.md": "0c7ee9875a7def9092ed11336a5cf889b1aae92910fbbe0ac8e17ac36a7b5500"
+  },
+  "requirement_ledger_version": "1.0 / 85 stable IDs; whole-request clarification in EXECUTION_AUTHORIZATION.md",
+  "sdd_path": "docs/architecture/LabTrack_SDD.md",
+  "sdd_sha256": "b00c08352665e7c255233641816fa98e4c573ddc1d8c147f2ca7f81a29c76b6c",
+  "review_path": "docs/ASTRA/SDD_REVIEW.md",
+  "review_sha256": "e8d695ac92d9ee3677c251c61747be9c282347eaa30bfbf75d12d42b138eacc0",
+  "audit": {
+    "baseline_sections": 43,
+    "baseline_headings": 101,
+    "requirements_mapped": 85,
+    "operation_families": 20,
+    "operation_fields_each": 33,
+    "mechanical_pass": true
+  },
+  "unresolved_decisions_reference": "docs/architecture/LabTrack_SDD.md section38; docs/ASTRA/05_OPEN_DECISIONS.md",
+  "implementation_work": "AUTHORIZED within defined scope; OPEN branches blocked",
+  "presentation_work": "AUTHORIZED; current deliverables completed",
+  "validated_source_set": [
+    {
+      "path": "docs/ASTRA/ASTRA_MASTER_PROMPT.txt",
+      "sha256": "d11e8b8ead18eedd5495ffe3fb039d24dde7ce1dc38431d61a932acfd859b5e0"
+    },
+    {
+      "path": "docs/architecture/LabTrack_MASTER_CONTEXT.md",
+      "sha256": "b522046dc97bab0e8a04bd7716acdffae88397bd59a3370c6b9d2d4767e36b33"
+    },
+    {
+      "path": "docs/architecture/LabTrack_SDD_DETERMINISTIC_TEMPLATE.md",
+      "sha256": "930579fc3b30c715d6ebeaa1f0d58bd099836d7a1f97824d5a6064d0dc5b1149"
+    },
+    {
+      "path": "docs/ASTRA/00_SOURCE_MANIFEST.md",
+      "sha256": "0185c06bd7ca38f8411f7c538b8fa88b9ece183cfb46527a0304a979031bbd6f"
+    },
+    {
+      "path": "docs/ASTRA/01_REFERENCE_GRAPH.md",
+      "sha256": "55342e604f5ec13a7b2ff3d3c4da5aaf589055c211c43a3143ffdd5a98269172"
+    },
+    {
+      "path": "docs/ASTRA/02_REQUIREMENT_LEDGER.md",
+      "sha256": "6b7aa20305ba3aa2f66eb6d03caacfbdb057eb8dc1f7f8d23a408cece88a19ce"
+    },
+    {
+      "path": "docs/ASTRA/03_RECONCILIATION_REPORT.md",
+      "sha256": "8c119848527346b98e20f534c7434dfc42d031ad672f3b55e59224c07d102049"
+    },
+    {
+      "path": "docs/ASTRA/04_CONTEXT_REVIEW.md",
+      "sha256": "ee426b9e3f434c438be77036e2815f3faefe714b5c543b973341c11bd476d95e"
+    },
+    {
+      "path": "docs/ASTRA/05_OPEN_DECISIONS.md",
+      "sha256": "a43dfd8e19445d8ef2c5e0a65c05e3c9390cf3ba9ce1b38e5f439e995697987d"
+    },
+    {
+      "path": "docs/ASTRA/APPROVAL_GATE.yaml",
+      "sha256": "5a82c9f81bb048466e44db5c11a8deb9301085c53b772845b86053d9a00960d8"
+    },
+    {
+      "path": "docs/ASTRA/EXECUTION_AUTHORIZATION.md",
+      "sha256": "e7d957ba3691aabeaf4d754ae3369132d59f8f0a9abba852a1c563e5ca30c7bb"
+    },
+    {
+      "path": "docs/execution/EXECUTION_DECISIONS.md",
+      "sha256": "b36b2ba2a9e521eb280094e059e11a14e33a57a6e404d6eac553321bc7b43ed0"
+    },
+    {
+      "path": "contracts/openapi.yaml",
+      "sha256": "16a1e761a56d6fbdb24b29b66b929bd9dc534cd918e59791b650f605f0c77f08"
+    },
+    {
+      "path": "docs/ASTRA/SDD_AUTHORING_AUTHORIZATION.md",
+      "sha256": "0c7ee9875a7def9092ed11336a5cf889b1aae92910fbbe0ac8e17ac36a7b5500"
+    }
+  ],
+  "validated_artifact_set": [
+    {
+      "path": "docs/architecture/LabTrack_SDD.md",
+      "sha256": "b00c08352665e7c255233641816fa98e4c573ddc1d8c147f2ca7f81a29c76b6c"
+    },
+    {
+      "path": "docs/ASTRA/SDD_REVIEW.md",
+      "sha256": "e8d695ac92d9ee3677c251c61747be9c282347eaa30bfbf75d12d42b138eacc0"
+    }
+  ],
+  "approval_scope": "SDD design and understanding as represented, including explicit OPEN/CONFLICTED/DEFERRED boundaries; no unresolved alternative or institutional rollout inferred",
+  "reviewed_draft_sha256": "2cace409a0f1f437a41be193693355cdc4289013d51b1f6fa113c3225dff4528",
+  "reviewed_draft_path": "docs/ASTRA/approvals/LabTrack_SDD_v0.1_REVIEWED.md",
+  "authoring_source_hashes": {
+    "docs/ASTRA/ASTRA_MASTER_PROMPT.txt": "d11e8b8ead18eedd5495ffe3fb039d24dde7ce1dc38431d61a932acfd859b5e0",
+    "docs/architecture/LabTrack_MASTER_CONTEXT.md": "b522046dc97bab0e8a04bd7716acdffae88397bd59a3370c6b9d2d4767e36b33",
+    "docs/architecture/LabTrack_SDD_DETERMINISTIC_TEMPLATE.md": "930579fc3b30c715d6ebeaa1f0d58bd099836d7a1f97824d5a6064d0dc5b1149",
+    "docs/ASTRA/00_SOURCE_MANIFEST.md": "0185c06bd7ca38f8411f7c538b8fa88b9ece183cfb46527a0304a979031bbd6f",
+    "docs/ASTRA/01_REFERENCE_GRAPH.md": "55342e604f5ec13a7b2ff3d3c4da5aaf589055c211c43a3143ffdd5a98269172",
+    "docs/ASTRA/02_REQUIREMENT_LEDGER.md": "6b7aa20305ba3aa2f66eb6d03caacfbdb057eb8dc1f7f8d23a408cece88a19ce",
+    "docs/ASTRA/03_RECONCILIATION_REPORT.md": "8c119848527346b98e20f534c7434dfc42d031ad672f3b55e59224c07d102049",
+    "docs/ASTRA/04_CONTEXT_REVIEW.md": "ee426b9e3f434c438be77036e2815f3faefe714b5c543b973341c11bd476d95e",
+    "docs/ASTRA/05_OPEN_DECISIONS.md": "a43dfd8e19445d8ef2c5e0a65c05e3c9390cf3ba9ce1b38e5f439e995697987d",
+    "docs/ASTRA/APPROVAL_GATE.yaml": "bb0b2527e6ed4bad306fcba1184cf4cd9277875b72a53ae5b1eaa1471a5a8fdd",
+    "docs/ASTRA/EXECUTION_AUTHORIZATION.md": "305f59eefec34aba4aa073a296e2a3b7292cf8e56596d41878f4976150fa202b",
+    "docs/execution/EXECUTION_DECISIONS.md": "cd25285da0312bb0bda786e272803fd8666ac4a4b3d12fb912bbf468a7b7b16f",
+    "contracts/openapi.yaml": "16a1e761a56d6fbdb24b29b66b929bd9dc534cd918e59791b650f605f0c77f08",
+    "docs/ASTRA/SDD_AUTHORING_AUTHORIZATION.md": "0c7ee9875a7def9092ed11336a5cf889b1aae92910fbbe0ac8e17ac36a7b5500"
+  },
+  "change_note": "Reorganized documentation structure into category subfolders (architecture/, execution/, guides/, academic/, ASTRA/) with master docs/README.md hub. Preserved exact canonical hashes and approval status."
+}
