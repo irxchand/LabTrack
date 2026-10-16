@@ -81,12 +81,6 @@ export function HeroPage() {
           >
             Capabilities
           </a>
-          <a
-            href="#syndicate"
-            className="hover:text-[#e8d5b7] transition-colors duration-200"
-          >
-            Syndicate
-          </a>
         </nav>
 
         {/* Right: Actions */}
@@ -667,72 +661,7 @@ export function HeroPage() {
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────────────────────────────────
-          TEAM SECTION (Two-Column Layout, 4:5 Aspect Ratio, Clash Display)
-      ───────────────────────────────────────────────────────────────────────── */}
-      <section
-        id="syndicate"
-        className="py-28 px-6 sm:px-12 max-w-6xl mx-auto relative z-10 border-t border-white/5"
-      >
-        <div className="text-center mb-16">
-          <div className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#a78b71] mb-3">
-            ARCHITECTURAL STEWARDSHIP
-          </div>
-          <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight text-white">
-            Led by <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] to-[#a78b71]">Hardware Visionaries</span>
-          </h2>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Team Member 1 */}
-          <div className="gold-glass-card rounded-[32px] overflow-hidden group cursor-pointer border border-white/10 hover:border-[#a78b71]/50 transition-all duration-700">
-            <div className="aspect-[4/5] relative overflow-hidden bg-neutral-900">
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80"
-                alt="Dr. Elena Vance"
-                className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/65 to-transparent flex flex-col justify-end p-8 sm:p-10">
-                <h3 className="font-display font-bold text-2xl sm:text-3xl text-white group-hover:text-[#e8d5b7] transition-colors tracking-tight">
-                  Dr. Elena Vance
-                </h3>
-                <div className="text-[#a78b71] font-mono text-[11px] font-normal tracking-[0.25em] uppercase mt-1 mb-3">
-                  HEAD OF NEURAL HARDWARE ARCHITECTURE
-                </div>
-                <p className="text-sm text-gray-300 font-normal leading-relaxed max-w-md font-sans">
-                  Pioneered sub-picosecond telemetry synchronization for
-                  superconducting quantum testbeds at CERN and MIT Lincoln
-                  Laboratory.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Team Member 2 */}
-          <div className="gold-glass-card rounded-[32px] overflow-hidden group cursor-pointer border border-white/10 hover:border-[#a78b71]/50 transition-all duration-700">
-            <div className="aspect-[4/5] relative overflow-hidden bg-neutral-900">
-              <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80"
-                alt="Julian Thorne"
-                className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/65 to-transparent flex flex-col justify-end p-8 sm:p-10">
-                <h3 className="font-display font-bold text-2xl sm:text-3xl text-white group-hover:text-[#e8d5b7] transition-colors tracking-tight">
-                  Julian Thorne
-                </h3>
-                <div className="text-[#a78b71] font-mono text-[11px] font-normal tracking-[0.25em] uppercase mt-1 mb-3">
-                  DIRECTOR OF DISTRIBUTED TELEMETRY SYSTEMS
-                </div>
-                <p className="text-sm text-gray-300 font-normal leading-relaxed max-w-md font-sans">
-                  Architect of zero-trust laboratory custody protocols and
-                  real-time physical instrument validation engines across Tier-1
-                  cleanrooms.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────
           FOOTER (Clash Display Brand & Monogram)
@@ -756,23 +685,23 @@ export function HeroPage() {
             </p>
             <div className="flex items-center gap-3 pt-2">
               <a
-                href="#syndicate"
+                href="#neural-mesh"
                 className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/70 hover:text-[#e8d5b7] hover:border-[#a78b71] transition-all cursor-pointer"
-                title="Global Node"
+                title="Neural Mesh"
               >
                 <Globe className="w-4 h-4" />
               </a>
-              <a
-                href="#syndicate"
+              <button
+                onClick={() => navigate('/workspace')}
                 className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/70 hover:text-[#e8d5b7] hover:border-[#a78b71] transition-all cursor-pointer"
-                title="Terminal API"
+                title="Terminal Workspace"
               >
                 <Terminal className="w-4 h-4" />
-              </a>
+              </button>
               <a
-                href="#syndicate"
+                href="#features"
                 className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/70 hover:text-[#e8d5b7] hover:border-[#a78b71] transition-all cursor-pointer"
-                title="Cluster Server"
+                title="Cluster Architecture"
               >
                 <Server className="w-4 h-4" />
               </a>
@@ -849,31 +778,43 @@ export function HeroPage() {
             </ul>
           </div>
 
-          {/* Column 4: Syndicate Governance */}
+          {/* Column 4: Governance */}
           <div>
             <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
               GOVERNANCE
             </div>
             <ul className="space-y-2.5 text-xs text-neutral-400 font-normal font-sans">
               <li>
-                <a href="#syndicate" className="hover:text-white transition-colors">
-                  Research Council
-                </a>
+                <button
+                  onClick={() => navigate('/workspace/accountability/reliability')}
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  Reliability Metrics
+                </button>
               </li>
               <li>
-                <a href="#syndicate" className="hover:text-white transition-colors">
-                  Security Audits
-                </a>
+                <button
+                  onClick={() => navigate('/workspace/accountability/audit-log')}
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  Verifiable Audit Log
+                </button>
               </li>
               <li>
-                <a href="#syndicate" className="hover:text-white transition-colors">
-                  Verifiable Logs
-                </a>
+                <button
+                  onClick={() => navigate('/workspace/operations/approvals')}
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  Faculty Approvals
+                </button>
               </li>
               <li>
-                <a href="#syndicate" className="hover:text-white transition-colors">
-                  Hardware Standards
-                </a>
+                <button
+                  onClick={() => navigate('/workspace/operations/dispatch')}
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  Dispatch Desk
+                </button>
               </li>
             </ul>
           </div>
