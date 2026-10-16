@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLabData } from '../../context/LabDataContext';
 import { CommandPalette } from '../common/CommandPalette';
@@ -7,16 +7,20 @@ import {
   ShoppingBag,
   ChevronDown,
   Search,
-  Sparkles,
   Check,
   LogOut,
-  Radio,
+  Cpu,
+  Package,
+  Clock,
+  Inbox,
+  CheckSquare,
 } from 'lucide-react';
 
 export function TopHeader() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentUser, role, switchRole, logout } = useAuth();
-  const { basket, setIsBasketOpen } = useLabData();
+  const { basket, setIsBasketOpen, inventory, activeLoans, requisitions } = useLabData();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
 
@@ -59,14 +63,57 @@ export function TopHeader() {
     },
   ];
 
+  // Primary macOS Toolbar items - displaying ONLY the main things
+  const mainNavItems = [
+    {
+      label: 'Assets',
+      to: '/workspace/inventory/assets',
+      icon: Cpu,
+      count: inventory.filter((i) => i.classification === 'Asset').length,
+      isActive: (pathname) => pathname.includes('/assets'),
+    },
+    {
+      label: 'Consumables',
+      to: '/workspace/inventory/consumables',
+      icon: Package,
+      count: inventory.filter((i) => i.classification === 'Consumable').length,
+      isActive: (pathname) => pathname.includes('/consumables') || pathname.includes('/components'),
+    },
+    {
+      label: 'Active Loans',
+      to: '/workspace/custody/active',
+      icon: Clock,
+      count: activeLoans.length,
+      isActive: (pathname) => pathname.includes('/custody/active'),
+    },
+    {
+      label: 'Requisitions',
+      to: '/workspace/custody/requests',
+      icon: Inbox,
+      count: requisitions.length,
+      isActive: (pathname) => pathname.includes('/custody/requests'),
+    },
+  ];
+
+  if (role === 'Faculty' || role === 'HoD / Admin') {
+    mainNavItems.push({
+      label: 'Approvals',
+      to: '/workspace/operations/approvals',
+      icon: CheckSquare,
+      count: requisitions.filter((r) => r.status === 'Pending').length,
+      isActive: (pathname) => pathname.includes('/operations/approvals'),
+    });
+  }
+
   return (
     <>
-      <header className="h-16 bg-[#0a0a0a]/90 backdrop-blur-[10px] border-b border-white/10 px-6 flex items-center justify-between z-40 relative">
-        {/* Left: Brand & Institutional Context */}
-        <div className="flex items-center gap-4">
+      <header className="h-16 bg-[#0a0a0c]/90 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 flex items-center justify-between z-40 relative">
+        {/* Left: Brand & Minimal Lab ID */}
+        <div className="flex items-center gap-3.5 flex-shrink-0">
           <div
             className="flex items-center space-x-2.5 cursor-pointer group"
-            onClick={() => navigate('/workspace')}
+            onClick={() => navigate('/workspace/inventory')}
+            title="Hardware Depot Overview"
           >
             <span className="font-clash text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
               LabTrack
@@ -74,68 +121,88 @@ export function TopHeader() {
             <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_10px_#c9b8a0]" />
           </div>
 
-          <div className="h-3.5 w-px bg-white/10 hidden md:block" />
-
-          <div className="hidden md:flex items-center gap-2 text-xs font-inter text-zinc-400">
-            <span>DEPT:</span>
-            <span className="text-zinc-200 font-medium">Artificial Intelligence & Machine Learning</span>
-          </div>
-
           <div className="h-3.5 w-px bg-white/10 hidden lg:block" />
 
-          {/* Identity Tag (PRN / Staff ID) */}
-          <div className="hidden lg:flex items-center font-mono text-xs text-[#c9b8a0]">
-            {role === 'Student' && <span>PRN: {currentUser?.prn || '202401048'}</span>}
-            {role === 'Faculty' && <span>FACULTY: Dr. A. Dalvi</span>}
-            {role === 'Lab Assistant' && <span>STAFF ID: LA-04</span>}
-            {role === 'HoD / Admin' && <span>AUDITOR: HOD-AIML-001</span>}
+          <div className="hidden lg:flex items-center gap-2 text-xs font-inter text-zinc-400">
+            <span className="text-zinc-500 text-[11px]">AIML LAB</span>
           </div>
         </div>
 
-        {/* Center: Command Palette Trigger */}
-        <div className="flex-1 max-w-md mx-4 hidden sm:block">
-          <button
-            onClick={() => setIsCommandOpen(true)}
-            className="w-full flex items-center justify-between px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs text-zinc-400 hover:text-white transition-neural group"
-          >
-            <div className="flex items-center gap-2">
-              <Search className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#a78b71] transition-colors" />
-              <span>Search hardware, PRNs, or type a command...</span>
-            </div>
-            <div className="flex items-center gap-1 font-mono text-[10px] text-zinc-500">
-              <span className="px-1.5 py-0.5 rounded bg-white/10 text-zinc-300">⌘K</span>
-            </div>
-          </button>
-        </div>
+        {/* Center: Apple macOS Segmented Navigation Bar */}
+        <nav className="hidden md:flex items-center p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)]">
+          {mainNavItems.map((item) => {
+            const active = item.isActive(location.pathname);
+            return (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => navigate(item.to)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer ${
+                  active
+                    ? 'bg-white text-black font-semibold shadow-[0_2px_10px_rgba(0,0,0,0.5)]'
+                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                }`}
+              >
+                <item.icon className={`w-3.5 h-3.5 ${active ? 'text-black' : 'text-zinc-400'}`} />
+                <span>{item.label}</span>
+                {typeof item.count === 'number' && (
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono leading-tight ${
+                      active
+                        ? 'bg-black/10 text-black font-bold'
+                        : 'bg-white/10 text-zinc-300'
+                    }`}
+                  >
+                    {item.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
 
-        {/* Right: Quick Role Switcher, Basket */}
-        <div className="flex items-center gap-3">
+        {/* Right: Search, Requisition Basket, Persona Switcher */}
+        <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+          {/* Quick Search Trigger */}
+          <button
+            type="button"
+            onClick={() => setIsCommandOpen(true)}
+            className="p-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-400 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
+            title="Search hardware or commands (⌘K)"
+          >
+            <Search className="w-4 h-4 text-zinc-400" />
+            <span className="hidden xl:inline text-[10px] font-mono text-zinc-500 bg-white/5 px-1.5 py-0.5 rounded border border-white/5">
+              ⌘K
+            </span>
+          </button>
 
           {/* Requisition Basket Shortcut */}
           <button
+            type="button"
             onClick={() => setIsBasketOpen(true)}
-            className="relative p-2 rounded-full glass-neural hover:border-[#a78b71]/50 text-white transition-neural"
-            title="Open Requisition Basket"
+            className="relative p-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white transition-all cursor-pointer"
+            title="Open Requisition Kit"
           >
             <ShoppingBag className="w-4 h-4 text-[#c9b8a0]" />
             {basket.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#a78b71] text-black text-[10px] font-bold flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#f5e6c8] text-black text-[10px] font-bold flex items-center justify-center shadow-sm">
                 {basket.length}
               </span>
             )}
           </button>
 
-          <div className="h-3.5 w-px bg-white/10" />
+          <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
 
           {/* Persona Switcher Dropdown */}
           <div className="relative">
             <button
+              type="button"
               onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-neural hover:border-[#a78b71]/40 text-xs font-inter text-white transition-neural"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-inter text-white transition-all cursor-pointer"
             >
-              <span className="w-2 h-2 rounded-full bg-[#a78b71] animate-pulse" />
-              <span className="text-zinc-400 text-[11px] uppercase tracking-wider">Role:</span>
-              <span className="font-semibold text-white">{role}</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+              <span className="text-zinc-400 text-[11px] hidden sm:inline">Role:</span>
+              <span className="font-medium text-white">{role}</span>
               <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
             </button>
 
@@ -145,29 +212,30 @@ export function TopHeader() {
                   className="fixed inset-0 z-40"
                   onClick={() => setIsRoleDropdownOpen(false)}
                 />
-                <div className="absolute right-0 top-full mt-2 w-72 glass-neural central-glow rounded-2xl py-2 z-50 overflow-hidden border border-white/15 bg-[#0a0a0a]">
+                <div className="absolute right-0 top-full mt-2 w-72 glass-neural rounded-2xl py-2 z-50 overflow-hidden border border-white/15 bg-[#0e0e11] shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
                   <div className="px-4 py-2 text-[10px] font-inter uppercase tracking-widest text-[#c9b8a0] border-b border-white/10 flex items-center justify-between">
                     <span>Institutional Persona</span>
-                    <span className="text-[#a78b71]">1-Click Switch</span>
+                    <span className="text-zinc-500">1-Click Switch</span>
                   </div>
 
                   <div className="p-1.5 space-y-1">
                     {demoRoles.map((item) => (
                       <button
                         key={item.role}
+                        type="button"
                         onClick={() => {
                           switchRole(item.role);
                           setIsRoleDropdownOpen(false);
                         }}
-                        className={`w-full text-left p-2.5 rounded-xl text-xs flex items-center justify-between transition-neural ${
+                        className={`w-full text-left p-2.5 rounded-xl text-xs flex items-center justify-between transition-all cursor-pointer ${
                           role === item.role
-                            ? 'bg-[#a78b71]/20 text-white font-medium border border-[#a78b71]/30'
+                            ? 'bg-[#c9b8a0]/15 text-white font-medium border border-[#c9b8a0]/30'
                             : 'text-zinc-400 hover:bg-white/[0.04] hover:text-white'
                         }`}
                       >
                         <div className="min-w-0">
                           <div className="font-semibold text-white flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#a78b71]" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
                             {item.label}
                           </div>
                           <div className="text-[11px] font-mono text-zinc-500 truncate mt-0.5">
@@ -175,7 +243,7 @@ export function TopHeader() {
                           </div>
                         </div>
                         {role === item.role && (
-                          <Check className="w-4 h-4 text-[#a78b71] flex-shrink-0 ml-2" />
+                          <Check className="w-4 h-4 text-[#c9b8a0] flex-shrink-0 ml-2" />
                         )}
                       </button>
                     ))}
@@ -183,14 +251,15 @@ export function TopHeader() {
 
                   <div className="px-3 py-2 border-t border-white/10 mt-1">
                     <button
+                      type="button"
                       onClick={() => {
                         logout();
                         navigate('/login');
                       }}
-                      className="w-full text-left px-2 py-1.5 text-xs text-rose-400 hover:text-rose-300 font-inter flex items-center gap-2"
+                      className="w-full text-left px-2 py-1.5 text-xs text-rose-400 hover:text-rose-300 font-inter flex items-center gap-2 cursor-pointer"
                     >
                       <LogOut className="w-3.5 h-3.5" />
-                      <span>Log out to Persona Select</span>
+                      <span>Log out</span>
                     </button>
                   </div>
                 </div>
@@ -199,6 +268,31 @@ export function TopHeader() {
           </div>
         </div>
       </header>
+
+      {/* Mobile Sub-Bar */}
+      <div className="md:hidden flex items-center px-4 py-2 border-b border-white/10 bg-[#0a0a0c] overflow-x-auto no-scrollbar gap-2">
+        {mainNavItems.map((item) => {
+          const active = item.isActive(location.pathname);
+          return (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => navigate(item.to)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
+                active
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-zinc-400 hover:text-white bg-white/[0.04]'
+              }`}
+            >
+              <item.icon className="w-3 h-3" />
+              <span>{item.label}</span>
+              {typeof item.count === 'number' && (
+                <span className="text-[10px] opacity-75">({item.count})</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
 
       {/* Command Palette Modal */}
       <CommandPalette

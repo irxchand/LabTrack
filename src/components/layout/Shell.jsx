@@ -2,7 +2,6 @@ import React from 'react';
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { TopHeader } from './TopHeader';
-import { NavigationRail } from './NavigationRail';
 import { RequisitionDrawer } from '../specialized/RequisitionDrawer';
 
 export function Shell() {
@@ -18,22 +17,20 @@ export function Shell() {
       {/* Radial dot grid overlay */}
       <div className="absolute inset-0 bg-dots pointer-events-none z-0 opacity-40" />
 
-      {/* Top Header */}
+      {/* Top Header with Integrated macOS Main Bar */}
       <TopHeader />
 
-      {/* Main Workspace Frame */}
-      <div className="flex flex-1 overflow-hidden z-10 relative">
-        {/* Collapsible Left Rail */}
-        <NavigationRail />
-
-        {/* Primary Content View Surface */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+      {/* Primary Content View Surface - Full Width Apple Luxury */}
+      <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 z-10 relative">
+        <div className="max-w-7xl mx-auto w-full">
           <Outlet />
-        </main>
-      </div>
+        </div>
+      </main>
 
       {/* Global Slide-Out Requisition Drawer */}
       <RequisitionDrawer />
     </div>
   );
 }
+
+export default Shell;

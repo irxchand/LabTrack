@@ -54,10 +54,19 @@ export function InventoryListPage({ initialClassification = null }) {
 
   // Keep state in sync if URL route changes directly
   useEffect(() => {
-    if (routeClassification) {
-      setSelectedCategory(routeClassification);
-    }
+    setSelectedCategory(routeClassification);
   }, [routeClassification]);
+
+  const handleSelectCategory = (cat) => {
+    setSelectedCategory(cat);
+    if (cat === 'Asset') {
+      navigate('/workspace/inventory/assets');
+    } else if (cat === 'Consumable') {
+      navigate('/workspace/inventory/consumables');
+    } else {
+      navigate('/workspace/inventory');
+    }
+  };
 
   // Slide-over preview inspector
   const [inspectedItem, setInspectedItem] = useState(null);
@@ -317,7 +326,7 @@ export function InventoryListPage({ initialClassification = null }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
             {/* OPTION 1: ASSETS */}
             <div
-              onClick={() => setSelectedCategory('Asset')}
+              onClick={() => handleSelectCategory('Asset')}
               className="group relative rounded-3xl p-8 bg-white/[0.02] hover:bg-white/[0.04] border border-white/15 hover:border-[#c9b8a0]/60 transition-all duration-300 cursor-pointer shadow-[0_20px_60px_rgba(0,0,0,0.7)] flex flex-col justify-between overflow-hidden"
             >
               {/* Top ambient highlight */}
@@ -377,7 +386,7 @@ export function InventoryListPage({ initialClassification = null }) {
 
             {/* OPTION 2: CONSUMABLES */}
             <div
-              onClick={() => setSelectedCategory('Consumable')}
+              onClick={() => handleSelectCategory('Consumable')}
               className="group relative rounded-3xl p-8 bg-white/[0.02] hover:bg-white/[0.04] border border-white/15 hover:border-[#c9b8a0]/60 transition-all duration-300 cursor-pointer shadow-[0_20px_60px_rgba(0,0,0,0.7)] flex flex-col justify-between overflow-hidden"
             >
               {/* Top ambient highlight */}
@@ -441,44 +450,29 @@ export function InventoryListPage({ initialClassification = null }) {
         /* 3. SECTION CATALOG VIEW (Assets or Consumables with Widgets)   */
         /* ───────────────────────────────────────────────────────────── */
         <div className="space-y-6">
-          {/* Apple Segmented Bar & Filter Surface */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 glass-neural p-3 rounded-2xl border border-white/10">
-            {/* Left: Back button & Segmented Switcher */}
+          {/* Apple View Header & Filter Surface */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 glass-neural p-3.5 rounded-2xl border border-white/10">
+            {/* Left: Return to Sections & Category Title */}
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setSelectedCategory(null)}
-                className="px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] text-xs text-zinc-300 hover:text-white flex items-center gap-1.5 transition-all cursor-pointer"
+                type="button"
+                onClick={() => handleSelectCategory(null)}
+                className="px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] text-xs text-zinc-300 hover:text-white flex items-center gap-1.5 transition-all cursor-pointer group"
                 title="Return to Section Selection"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Sections</span>
+                <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+                <span>All Sections</span>
               </button>
 
-              {/* Apple Segmented Control */}
-              <div className="flex items-center bg-black/40 p-1 rounded-full border border-white/10">
-                <button
-                  onClick={() => setSelectedCategory('Asset')}
-                  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
-                    selectedCategory === 'Asset'
-                      ? 'bg-white text-black font-semibold shadow-md'
-                      : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  <Cpu className="w-3.5 h-3.5" />
-                  <span>Assets ({assetsCount})</span>
-                </button>
+              <div className="h-4 w-px bg-white/10" />
 
-                <button
-                  onClick={() => setSelectedCategory('Consumable')}
-                  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
-                    selectedCategory === 'Consumable'
-                      ? 'bg-white text-black font-semibold shadow-md'
-                      : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  <Package className="w-3.5 h-3.5" />
-                  <span>Consumables ({consumablesCount})</span>
-                </button>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-white tracking-tight">
+                  {selectedCategory === 'Asset' ? 'Serialized Assets' : 'Consumables & Components'}
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-white/[0.06] text-xs font-mono text-zinc-400 border border-white/5">
+                  {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
+                </span>
               </div>
             </div>
 
