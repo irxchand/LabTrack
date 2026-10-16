@@ -284,10 +284,10 @@ export function InventoryListPage({ initialClassification = null }) {
       <div>
         {/* Category & Tag Header */}
         <div className="flex items-center justify-between text-xs mb-2">
-          <span className="text-[11px] font-semibold tracking-wider uppercase text-[#c9b8a0]">
+          <span className="text-[11px] font-semibold tracking-[0.18em] uppercase text-[#c9b8a0]">
             {item.category || item.classification}
           </span>
-          <span className="text-[11px] font-mono text-zinc-500 bg-white/[0.03] px-2.5 py-0.5 rounded-full border border-white/5">
+          <span className="text-[11px] font-mono font-medium text-zinc-400 bg-white/[0.03] px-2.5 py-0.5 rounded-full border border-white/5">
             {item.assetTag}
           </span>
         </div>
@@ -306,21 +306,21 @@ export function InventoryListPage({ initialClassification = null }) {
 
         {/* Product Title & Subtitle */}
         <div className="space-y-1.5 mt-2">
-          <h3 className="text-lg font-semibold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors">
+          <h3 className="text-[17px] font-semibold text-white tracking-[-0.015em] leading-snug group-hover:text-[#f5e6c8] transition-colors">
             {item.nomenclature}
           </h3>
-          <p className="text-xs text-zinc-400 font-normal line-clamp-2 leading-relaxed">
+          <p className="text-[13px] text-zinc-400 font-normal line-clamp-2 leading-relaxed">
             {item.subSpecs}
           </p>
         </div>
 
         {/* Location & Depot Strip */}
         <div className="mt-4 flex items-center gap-2 text-xs">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-zinc-300 font-mono text-[11px]">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-zinc-300 font-mono font-medium text-[11px]">
             <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
             <span>{item.coordinates}</span>
           </div>
-          <span className="text-zinc-500 text-xs">{item.labRoom}</span>
+          <span className="text-zinc-500 text-[12px]">{item.labRoom}</span>
         </div>
       </div>
 
@@ -329,7 +329,7 @@ export function InventoryListPage({ initialClassification = null }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
-            <span className="text-xs text-white font-medium">
+            <span className="text-[12px] text-white font-medium">
               In Stock
             </span>
           </div>
@@ -344,7 +344,7 @@ export function InventoryListPage({ initialClassification = null }) {
             e.stopPropagation();
             addToBasket(item, 1);
           }}
-          className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-wide transition-all shadow-sm active:scale-95 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
+          className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-[13px] tracking-tight transition-all shadow-sm active:scale-95 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Requisition</span>
@@ -360,13 +360,13 @@ export function InventoryListPage({ initialClassification = null }) {
       {/* ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
-          <span className="text-[11px] font-medium tracking-[0.2em] uppercase text-[#c9b8a0]">
+          <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
             AIML Hardware Depot
           </span>
-          <h1 className="text-3xl font-bold tracking-tight text-white mt-1">
+          <h1 className="text-3xl font-bold tracking-[-0.025em] text-white mt-1 font-display">
             Hardware Workstation
           </h1>
-          <p className="text-xs text-zinc-400 mt-1.5 max-w-xl font-normal">
+          <p className="text-[13px] text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">
             Browse laboratory computing modules, developer boards, and prototyping stock. Stage components directly into your requisition kit.
           </p>
         </div>
@@ -376,7 +376,7 @@ export function InventoryListPage({ initialClassification = null }) {
           {permissions.canAddInventory && (
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="px-4 py-2 rounded-full border border-white/10 hover:border-white/20 bg-white/[0.04] text-white font-inter text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-full border border-white/10 hover:border-white/20 bg-white/[0.04] text-white text-[13px] font-medium flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 text-[#c9b8a0]" />
               <span>Register Hardware</span>
@@ -394,7 +394,7 @@ export function InventoryListPage({ initialClassification = null }) {
           <button
             type="button"
             onClick={() => handleSelectCategory('all')}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
               selectedCategory === 'all'
                 ? 'bg-white text-black font-semibold shadow-md'
                 : 'text-zinc-400 hover:text-white'
@@ -406,7 +406,7 @@ export function InventoryListPage({ initialClassification = null }) {
           <button
             type="button"
             onClick={() => handleSelectCategory('Asset')}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
               selectedCategory === 'Asset'
                 ? 'bg-white text-black font-semibold shadow-md'
                 : 'text-zinc-400 hover:text-white'
@@ -418,7 +418,7 @@ export function InventoryListPage({ initialClassification = null }) {
           <button
             type="button"
             onClick={() => handleSelectCategory('Consumable')}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
               selectedCategory === 'Consumable'
                 ? 'bg-white text-black font-semibold shadow-md'
                 : 'text-zinc-400 hover:text-white'

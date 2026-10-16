@@ -1,14 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
 @import "tailwindcss";
 @import "./tokens.css";
+
+@theme {
+  --font-sans: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  --font-display: 'Clash Display', 'Satoshi', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
 
 :root {
   --bg: #000000;
   --fg: #ffffff;
 }
 
-.font-serif-instrument {
-  font-family: 'Instrument Serif', Georgia, serif;
+.font-display {
+  font-family: var(--font-display, 'Clash Display', 'Satoshi', sans-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans, 'Satoshi', 'Inter', sans-serif);
+}
+
+.font-mono {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
 }
 
 .liquid-glass {

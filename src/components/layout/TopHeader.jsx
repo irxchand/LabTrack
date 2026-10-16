@@ -108,7 +108,7 @@ export function TopHeader() {
             onClick={() => navigate('/workspace/inventory')}
             title="Hardware Depot Overview"
           >
-            <span className="font-clash text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
+            <span className="font-display text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
               LabTrack
             </span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_10px_#c9b8a0]" />
@@ -116,8 +116,8 @@ export function TopHeader() {
 
           <div className="h-3.5 w-px bg-white/10 hidden lg:block" />
 
-          <div className="hidden lg:flex items-center gap-2 text-xs font-inter text-zinc-400">
-            <span className="text-zinc-500 text-[11px]">AIML LAB</span>
+          <div className="hidden lg:flex items-center gap-2 text-xs text-zinc-400">
+            <span className="text-zinc-400 text-[11px] font-semibold tracking-[0.18em] uppercase">AIML LAB</span>
           </div>
         </div>
 
@@ -130,7 +130,7 @@ export function TopHeader() {
                 key={item.label}
                 type="button"
                 onClick={() => navigate(item.to)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer ${
                   active
                     ? 'bg-white text-black font-semibold shadow-[0_2px_10px_rgba(0,0,0,0.5)]'
                     : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
@@ -140,7 +140,7 @@ export function TopHeader() {
                 <span>{item.label}</span>
                 {typeof item.count === 'number' && (
                   <span
-                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono leading-tight ${
+                    className={`px-1.5 py-0.5 rounded-full text-[11px] font-mono font-medium leading-none ${
                       active
                         ? 'bg-black/10 text-black font-bold'
                         : 'bg-white/10 text-zinc-300'

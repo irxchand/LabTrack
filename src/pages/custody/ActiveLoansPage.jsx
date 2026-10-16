@@ -295,11 +295,11 @@ export function ActiveLoansPage() {
         <div>
           {/* Category & Tag Header */}
           <div className="flex items-center justify-between text-xs mb-2">
-            <span className="text-[11px] font-semibold tracking-wider uppercase text-[#c9b8a0]">
+            <span className="text-[11px] font-semibold tracking-[0.18em] uppercase text-[#c9b8a0]">
               {invItem.category || 'Bench Hardware'}
             </span>
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-mono text-zinc-400 bg-white/[0.03] px-2.5 py-0.5 rounded-full border border-white/5">
+              <span className="text-[11px] font-mono font-medium text-zinc-400 bg-white/[0.03] px-2.5 py-0.5 rounded-full border border-white/5">
                 {loan.assetTag}
               </span>
               <span className="text-[10px] font-mono text-zinc-500">
@@ -322,21 +322,21 @@ export function ActiveLoansPage() {
 
           {/* Product Title & Subtitle */}
           <div className="space-y-1.5 mt-2">
-            <h3 className="text-lg font-semibold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors">
+            <h3 className="text-[17px] font-semibold text-white tracking-[-0.015em] leading-snug group-hover:text-[#f5e6c8] transition-colors">
               {loan.nomenclature}
             </h3>
-            <p className="text-xs text-zinc-400 font-normal line-clamp-2 leading-relaxed">
+            <p className="text-[13px] text-zinc-400 font-normal line-clamp-2 leading-relaxed">
               {invItem.subSpecs || 'Institutional lab hardware unit issued for project development.'}
             </p>
           </div>
 
           {/* Origin Depot & Custody Strip */}
           <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-zinc-300 font-mono text-[11px]">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-zinc-300 font-mono font-medium text-[11px]">
               <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
               <span>{loan.locationCoordinates}</span>
             </div>
-            <span className="text-zinc-500 text-xs">
+            <span className="text-zinc-500 text-[12px]">
               Held by {loan.borrowerName?.split(' ')[0]} ({loan.borrowerPrn})
             </span>
           </div>
@@ -356,7 +356,7 @@ export function ActiveLoansPage() {
                     : 'bg-emerald-400'
                 }`}
               />
-              <span className="text-xs font-medium text-white truncate">
+              <span className="text-[13px] font-medium text-white truncate">
                 {loan.daysRemaining < 0
                   ? `${Math.abs(loan.daysRemaining)} ${Math.abs(loan.daysRemaining) === 1 ? 'day' : 'days'} overdue`
                   : `${loan.daysRemaining} ${loan.daysRemaining === 1 ? 'day' : 'days'} remaining`}
@@ -375,7 +375,7 @@ export function ActiveLoansPage() {
               handleOpenExtension(loan);
             }}
             disabled={isExtensionDisabled}
-            className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all shadow-sm active:scale-95 flex-shrink-0 cursor-pointer ${
+            className={`px-4 py-2 rounded-full text-[13px] font-semibold tracking-tight transition-all shadow-sm active:scale-95 flex-shrink-0 cursor-pointer ${
               isExtensionDisabled
                 ? 'bg-white/[0.04] text-zinc-600 border border-white/5 cursor-not-allowed'
                 : 'bg-white hover:bg-zinc-200 text-black'
@@ -400,13 +400,13 @@ export function ActiveLoansPage() {
       {/* ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
-          <span className="text-[11px] font-medium tracking-[0.2em] uppercase text-[#c9b8a0]">
+          <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
             Station & Field Deployments
           </span>
-          <h1 className="text-3xl font-bold tracking-tight text-white mt-1">
+          <h1 className="text-3xl font-bold tracking-[-0.025em] text-white mt-1 font-display">
             My Bench
           </h1>
-          <p className="text-xs text-zinc-400 mt-1.5 max-w-xl font-normal">
+          <p className="text-[13px] text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">
             Hardware modules and bench instrumentation currently in your possession.
           </p>
         </div>
@@ -419,7 +419,7 @@ export function ActiveLoansPage() {
         <div className="px-5 py-3.5 rounded-2xl bg-white/[0.03] border border-rose-500/20 backdrop-blur-xl flex items-center justify-between text-xs">
           <div className="flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse flex-shrink-0" />
-            <span className="text-zinc-300">
+            <span className="text-zinc-300 text-[12px]">
               One or more items are overdue. Please surrender the equipment at Lab 1 Counter (Desk 2).
             </span>
           </div>
@@ -438,7 +438,7 @@ export function ActiveLoansPage() {
           <button
             type="button"
             onClick={() => setStatusFilter('all')}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
               statusFilter === 'all'
                 ? 'bg-white text-black font-semibold shadow-md'
                 : 'text-zinc-400 hover:text-white'
@@ -450,7 +450,7 @@ export function ActiveLoansPage() {
           <button
             type="button"
             onClick={() => setStatusFilter('Normal')}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
               statusFilter === 'Normal'
                 ? 'bg-white text-black font-semibold shadow-md'
                 : 'text-zinc-400 hover:text-white'
@@ -463,7 +463,7 @@ export function ActiveLoansPage() {
             <button
               type="button"
               onClick={() => setStatusFilter('Imminent')}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
                 statusFilter === 'Imminent'
                   ? 'bg-white text-black font-semibold shadow-md'
                   : 'text-zinc-400 hover:text-white'
@@ -477,7 +477,7 @@ export function ActiveLoansPage() {
             <button
               type="button"
               onClick={() => setStatusFilter('Overdue')}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
                 statusFilter === 'Overdue'
                   ? 'bg-white text-black font-semibold shadow-md'
                   : 'text-zinc-400 hover:text-white'
