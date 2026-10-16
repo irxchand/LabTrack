@@ -214,11 +214,11 @@ export function HeroPage() {
         id="capabilities"
         className="py-28 px-6 sm:px-12 max-w-7xl mx-auto relative z-10 border-t border-white/5"
       >
-        <div className="text-center mb-16">
-          <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight text-white">
-            From Project Proposal to{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] to-[#a78b71]">
-              Active Bench Custody
+        <div className="text-center mb-20 max-w-3xl mx-auto px-4">
+          <h2 className="font-display font-semibold text-3xl sm:text-4xl lg:text-[44px] text-white leading-[1.25] tracking-[-0.01em]">
+            From Project Proposal{' '}
+            <span className="block mt-1.5 text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
+              to Active Bench Custody
             </span>
           </h2>
         </div>
