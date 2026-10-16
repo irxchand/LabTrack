@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLabData } from '../../context/LabDataContext';
-import { CommandPalette } from '../common/CommandPalette';
 import {
   ShoppingBag,
-  Search,
   LogOut,
   Cpu,
   Clock,
@@ -15,7 +13,6 @@ import {
   Terminal,
   Wrench,
   FileText,
-  ShieldCheck,
   BookmarkCheck,
 } from 'lucide-react';
 
@@ -34,19 +31,6 @@ export function TopHeader() {
     reservations,
     auditLogs,
   } = useLabData();
-  const [isCommandOpen, setIsCommandOpen] = useState(false);
-
-  // Keyboard shortcut: Cmd+K / Ctrl+K
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setIsCommandOpen((prev) => !prev);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
 
 
@@ -171,7 +155,7 @@ export function TopHeader() {
 
       case 'Student':
       default:
-        // Student Primary macOS Toolbar: Workstation, My Bench, Requisitions, Waitlist, Projects, Reputation
+        // Student Primary macOS Toolbar: Workstation, My Bench, Requisitions, Waitlist, Projects
         return [
           {
             label: 'Workstation',
@@ -207,12 +191,6 @@ export function TopHeader() {
             icon: FolderGit2,
             count: projects.length,
             isActive: (pathname) => pathname.includes('/projects'),
-          },
-          {
-            label: 'Reputation',
-            to: '/workspace/accountability/reliability',
-            icon: ShieldCheck,
-            isActive: (pathname) => pathname.includes('/accountability/reliability'),
           },
         ];
     }
@@ -276,21 +254,8 @@ export function TopHeader() {
           })}
         </nav>
 
-        {/* Right: Search, Requisition Basket, Persona Switcher */}
+        {/* Right: Requisition Basket, User Identity, Direct Logout */}
         <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
-          {/* Quick Search Trigger */}
-          <button
-            type="button"
-            onClick={() => setIsCommandOpen(true)}
-            className="p-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-400 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
-            title="Search hardware or commands (⌘K)"
-          >
-            <Search className="w-4 h-4 text-zinc-400" />
-            <span className="hidden xl:inline text-[10px] font-mono text-zinc-500 bg-white/5 px-1.5 py-0.5 rounded border border-white/5">
-              ⌘K
-            </span>
-          </button>
-
           {/* Requisition Basket Shortcut */}
           <button
             type="button"
@@ -305,22 +270,6 @@ export function TopHeader() {
               </span>
             )}
           </button>
-
-          {/* Student Reputation / Repo Score Quick Badge */}
-          {role === 'Student' && (
-            <button
-              type="button"
-              onClick={() => navigate('/workspace/accountability/reliability')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-[#c9b8a0]/15 border border-white/10 hover:border-[#c9b8a0]/40 text-xs transition-all cursor-pointer shadow-sm group"
-              title="View Reputation & Reliability Score Dossier"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-[#c9b8a0] group-hover:scale-110 transition-transform" />
-              <span className="text-zinc-400 text-[11px] hidden lg:inline">Score:</span>
-              <span className="font-bold text-[#f5e6c8] text-xs">
-                {currentUser?.reliabilityScore || 94}%
-              </span>
-            </button>
-          )}
 
           <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
 
@@ -371,12 +320,6 @@ export function TopHeader() {
           );
         })}
       </div>
-
-      {/* Command Palette Modal */}
-      <CommandPalette
-        isOpen={isCommandOpen}
-        onClose={() => setIsCommandOpen(false)}
-      />
     </>
   );
 }
