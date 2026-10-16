@@ -108,7 +108,7 @@ export function ProjectDetailPage() {
             </div>
             <div className="px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-right backdrop-blur-md">
               <div className="text-zinc-500 text-[10px] font-sans uppercase tracking-wider">Custody Quota</div>
-              <div className="font-mono text-sm font-bold text-white">
+              <div className="font-sans text-sm font-semibold text-white">
                 {project.currentAllocatedCount} / {project.hardwareBudgetCap} units
               </div>
               <div className="w-full bg-white/10 rounded-full h-1 overflow-hidden mt-1.5">
@@ -140,7 +140,7 @@ export function ProjectDetailPage() {
                 <Cpu className="w-4 h-4 text-[#c9b8a0]" />
                 Active Hardware Borrowings ({assignedLoans.length})
               </span>
-              <span className="text-zinc-400 font-mono text-xs">
+              <span className="text-zinc-400 font-sans text-xs">
                 Remaining Quota: {project.hardwareBudgetCap - assignedLoans.length}
               </span>
             </div>
@@ -162,7 +162,7 @@ export function ProjectDetailPage() {
                       </div>
                       <div className="min-w-0">
                         <div className="text-white font-semibold font-sans text-sm truncate">{loan.nomenclature}</div>
-                        <div className="text-[#c9b8a0] font-mono text-xs mt-0.5">{loan.assetTag}</div>
+                        <div className="text-[#c9b8a0] font-sans font-medium text-xs mt-0.5">{loan.assetTag}</div>
                       </div>
                     </div>
 
@@ -196,7 +196,10 @@ export function ProjectDetailPage() {
                 <div className="text-zinc-400 text-xs font-sans">{project.department}</div>
               </div>
             </div>
-            <div className="text-zinc-500 text-[11px] font-mono pt-1">Academic Term: {project.academicTerm}</div>
+            <div className="text-zinc-400 text-xs font-sans pt-1 flex items-center gap-1.5">
+              <span className="text-zinc-500">Academic Term:</span>
+              <span className="text-zinc-300 font-medium">{project.academicTerm}</span>
+            </div>
           </div>
 
           {/* Members List */}
@@ -219,7 +222,7 @@ export function ProjectDetailPage() {
                     </div>
                   </div>
 
-                  <span className="text-zinc-400 text-[11px] font-mono px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/10 flex-shrink-0">
+                  <span className="text-zinc-300 text-xs font-sans font-medium px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/10 flex-shrink-0">
                     {member.prn}
                   </span>
                 </div>

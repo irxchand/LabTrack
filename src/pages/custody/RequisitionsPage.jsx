@@ -174,7 +174,7 @@ export function RequisitionsPage() {
           }`}
         >
           <span>All</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${activeFilter === 'all' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'all' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
             {counts.all}
           </span>
         </button>
@@ -189,7 +189,7 @@ export function RequisitionsPage() {
           }`}
         >
           <span>Awaiting Review</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${activeFilter === 'submitted' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'submitted' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
             {counts.submitted}
           </span>
         </button>
@@ -204,7 +204,7 @@ export function RequisitionsPage() {
           }`}
         >
           <span>Ready for Pickup</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${activeFilter === 'ready' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'ready' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
             {counts.ready}
           </span>
         </button>
@@ -219,7 +219,7 @@ export function RequisitionsPage() {
           }`}
         >
           <span>Dispatched</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${activeFilter === 'dispatched' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'dispatched' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
             {counts.dispatched}
           </span>
         </button>
@@ -318,7 +318,7 @@ export function RequisitionsPage() {
                         e.target.src = '/images/hardware/raspberry-pi-5.jpg';
                       }}
                     />
-                    <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-white text-black font-mono font-bold text-[10px] shadow-md">
+                    <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-white text-black font-sans font-bold text-[10px] shadow-md">
                       {primaryItem.quantity}x
                     </span>
                   </div>
@@ -326,7 +326,7 @@ export function RequisitionsPage() {
                   {/* Component Metadata & Purpose */}
                   <div className="min-w-0 flex-1 space-y-1.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-mono text-[#c9b8a0] font-semibold uppercase tracking-wider">
+                      <span className="text-[11px] font-sans text-[#c9b8a0] font-semibold uppercase tracking-wider">
                         {primaryItem.type || 'Hardware Asset'}
                       </span>
                       <span className="text-zinc-600">•</span>
@@ -365,7 +365,7 @@ export function RequisitionsPage() {
                             alt=""
                             className="w-4 h-4 object-contain rounded flex-shrink-0"
                           />
-                          <span className="font-mono font-bold text-white text-[11px]">{subItem.quantity}x</span>
+                          <span className="font-sans font-bold text-white text-[11px]">{subItem.quantity}x</span>
                           <span className="truncate max-w-[200px]">{subItem.nomenclature}</span>
                         </div>
                       ))}
@@ -478,7 +478,7 @@ export function RequisitionsPage() {
                 <span>Endorsing Faculty:</span>
                 <span className="text-white font-medium">{selectedReq.mentorName}</span>
                 <span className="text-zinc-600">•</span>
-                <span className="font-mono text-zinc-500">{selectedReq.courseCode}</span>
+                <span className="font-sans text-zinc-400">{selectedReq.courseCode}</span>
               </div>
             </div>
 
@@ -503,11 +503,11 @@ export function RequisitionsPage() {
                       </div>
                       <div className="min-w-0">
                         <div className="text-white font-semibold text-sm truncate">{item.nomenclature}</div>
-                        <div className="text-zinc-500 font-mono text-[11px] mt-0.5">Classification: {item.type}</div>
+                        <div className="text-zinc-400 font-sans text-xs mt-0.5">Classification: {item.type}</div>
                       </div>
                     </div>
 
-                    <span className="px-3 py-1 rounded-full bg-white text-black font-mono font-bold text-xs shadow-sm flex-shrink-0">
+                    <span className="px-3 py-1 rounded-full bg-white text-black font-sans font-semibold text-xs shadow-sm flex-shrink-0">
                       {item.quantity} Unit(s)
                     </span>
                   </div>

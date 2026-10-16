@@ -169,8 +169,8 @@ export function ActiveLoansPage() {
               }}
             />
             <div>
-              <div className="font-mono text-xs font-semibold text-white">{row.assetTag}</div>
-              <div className="font-mono text-[10px] text-zinc-500">{row.id}</div>
+              <div className="font-sans text-xs font-semibold text-white">{row.assetTag}</div>
+              <div className="font-sans text-[11px] text-zinc-500">{row.id}</div>
             </div>
           </div>
         );
@@ -196,7 +196,7 @@ export function ActiveLoansPage() {
       render: (row) => (
         <div className="text-xs">
           <div className="text-white font-medium">{row.borrowerName}</div>
-          <div className="text-zinc-500 text-[11px] font-mono">{row.borrowerPrn} • {row.courseCode}</div>
+          <div className="text-zinc-500 text-[11px] font-sans">{row.borrowerPrn} • {row.courseCode}</div>
         </div>
       ),
     },
@@ -205,7 +205,7 @@ export function ActiveLoansPage() {
       accessor: 'checkedOutDate',
       width: '130px',
       render: (row) => (
-        <span className="font-mono text-xs text-zinc-400">
+        <span className="font-sans text-xs text-zinc-400">
           {row.checkedOutDate?.split(' ')[0]}
         </span>
       ),
@@ -216,7 +216,7 @@ export function ActiveLoansPage() {
       width: '170px',
       render: (row) => (
         <div className="text-xs">
-          <div className="text-white font-mono font-medium">{row.dueDate?.split(' ')[0]}</div>
+          <div className="text-white font-sans font-medium">{row.dueDate?.split(' ')[0]}</div>
           <div
             className={`text-[11px] font-medium flex items-center gap-1.5 mt-0.5 ${
               row.daysRemaining < 0
@@ -371,10 +371,10 @@ export function ActiveLoansPage() {
               {style.tag}
             </span>
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-mono font-medium text-zinc-400 bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/10">
+              <span className="text-[11px] font-sans font-medium text-zinc-400 bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/10">
                 {loan.assetTag}
               </span>
-              <span className="text-[10px] font-mono text-zinc-500">
+              <span className="text-[10px] font-sans text-zinc-500">
                 {loan.id}
               </span>
             </div>
@@ -419,7 +419,7 @@ export function ActiveLoansPage() {
 
           {/* Origin Depot & Custody Strip */}
           <div className="mt-3.5 flex flex-wrap items-center gap-2 text-xs">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-zinc-300 font-mono font-medium text-[11px]">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-zinc-300 font-sans font-medium text-[11px]">
               <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
               <span>{loan.locationCoordinates}</span>
             </div>
@@ -510,7 +510,7 @@ export function ActiveLoansPage() {
               One or more items are overdue. Please surrender the equipment at Lab 1 Counter (Desk 2).
             </span>
           </div>
-          <span className="text-[11px] font-mono text-zinc-500 hidden sm:inline">
+          <span className="text-[11px] font-sans text-zinc-400 font-medium hidden sm:inline">
             Extensions Locked
           </span>
         </div>
@@ -670,12 +670,12 @@ export function ActiveLoansPage() {
                 <div className="font-semibold text-white truncate text-sm">
                   {selectedLoan.nomenclature}
                 </div>
-                <div className="font-mono text-zinc-400 text-[11px] mt-0.5">
+                <div className="font-sans text-zinc-400 text-xs mt-0.5">
                   {selectedLoan.assetTag} • {selectedLoan.id}
                 </div>
-                <div className="flex items-center gap-2 mt-1 text-[11px]">
+                <div className="flex items-center gap-2 mt-1 text-xs">
                   <span className="text-zinc-500">Current Due:</span>
-                  <span className="text-amber-400 font-mono font-medium">
+                  <span className="text-amber-400 font-sans font-medium">
                     {selectedLoan.dueDate?.split(' ')[0]}
                   </span>
                 </div>
@@ -719,7 +719,7 @@ export function ActiveLoansPage() {
             {/* Live Date Preview Pill */}
             <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/10 flex items-center justify-between text-xs">
               <span className="text-zinc-400">New Scheduled Return Date:</span>
-              <span className="font-mono font-semibold text-[#f5e6c8] text-sm">
+              <span className="font-sans font-semibold text-[#f5e6c8] text-sm">
                 {calculatedNewDueDate}
               </span>
             </div>
@@ -806,7 +806,7 @@ export function ActiveLoansPage() {
                 <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
                   <div className="flex justify-between">
                     <span className="text-zinc-500">Origin Depot Coordinates:</span>
-                    <span className="font-mono text-white font-medium">
+                    <span className="font-sans text-white font-medium">
                       {inspectedLoan.locationCoordinates}
                     </span>
                   </div>
@@ -818,13 +818,13 @@ export function ActiveLoansPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-zinc-500">Checked Out Date:</span>
-                    <span className="font-mono text-zinc-300">
+                    <span className="font-sans text-zinc-300">
                       {inspectedLoan.checkedOutDate}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-zinc-500">Scheduled Due:</span>
-                    <span className="font-mono text-[#f5e6c8] font-semibold">
+                    <span className="font-sans text-[#f5e6c8] font-semibold">
                       {inspectedLoan.dueDate}
                     </span>
                   </div>

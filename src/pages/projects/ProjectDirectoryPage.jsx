@@ -189,7 +189,7 @@ export function ProjectDirectoryPage() {
           }`}
         >
           <span>All Projects</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${activeFilter === 'all' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'all' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
             {counts.all}
           </span>
         </button>
@@ -204,7 +204,7 @@ export function ProjectDirectoryPage() {
           }`}
         >
           <span>My Capstone Team</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${activeFilter === 'myTeam' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'myTeam' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
             {counts.myTeam}
           </span>
         </button>
@@ -219,7 +219,7 @@ export function ProjectDirectoryPage() {
           }`}
         >
           <span>AIML Department</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${activeFilter === 'aiml' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'aiml' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
             {counts.aiml}
           </span>
         </button>
@@ -282,7 +282,7 @@ export function ProjectDirectoryPage() {
                     <Cpu className="w-3.5 h-3.5 text-[#c9b8a0]" />
                     <span>Allocated Hardware Staging</span>
                   </span>
-                  <span className="text-zinc-400 font-mono text-[11px]">
+                  <span className="text-zinc-400 font-sans text-xs">
                     {project.currentAllocatedCount} of {project.hardwareBudgetCap} Units Used
                   </span>
                 </div>
@@ -308,7 +308,7 @@ export function ProjectDirectoryPage() {
                           <div className="text-white text-xs font-semibold truncate font-sans">
                             {item.nomenclature}
                           </div>
-                          <div className="text-[10px] font-mono text-[#c9b8a0] truncate mt-0.5">
+                          <div className="text-[11px] font-sans font-medium text-[#c9b8a0] truncate mt-0.5">
                             {item.assetTag}
                           </div>
                         </div>
@@ -453,7 +453,7 @@ export function ProjectDirectoryPage() {
                 <Users className="w-3.5 h-3.5 text-[#c9b8a0]" />
                 <span>Team Roster Builder (Add Friends)</span>
               </div>
-              <span className="text-[11px] text-zinc-500 font-mono">
+              <span className="text-xs text-zinc-400 font-sans font-medium">
                 {1 + friends.length} Members
               </span>
             </div>
@@ -466,7 +466,7 @@ export function ProjectDirectoryPage() {
                 </div>
                 <div>
                   <div className="text-white text-xs font-semibold">{currentUser?.name || 'Rahul Sharma'}</div>
-                  <div className="text-[10px] font-mono text-zinc-500">{currentUser?.prn || '202401048'}</div>
+                  <div className="text-[11px] font-sans text-zinc-400">{currentUser?.prn || '202401048'}</div>
                 </div>
               </div>
               <span className="px-2.5 py-0.5 rounded-full bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/30 text-[10px] font-semibold">
@@ -490,7 +490,7 @@ export function ProjectDirectoryPage() {
                         </div>
                         <div>
                           <span className="text-white font-medium">{friend.name}</span>
-                          <span className="text-zinc-500 font-mono text-[10px] ml-1.5">({friend.prn})</span>
+                          <span className="text-zinc-400 font-sans text-[11px] ml-1.5">({friend.prn})</span>
                         </div>
                       </div>
 
@@ -545,7 +545,7 @@ export function ProjectDirectoryPage() {
                     value={friendPrn}
                     onChange={(e) => setFriendPrn(e.target.value)}
                     placeholder="e.g. 202401052"
-                    className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 text-xs font-mono focus:outline-none focus:border-[#c9b8a0] transition-colors"
+                    className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 text-xs font-sans focus:outline-none focus:border-[#c9b8a0] transition-colors"
                   />
                 </div>
               </div>

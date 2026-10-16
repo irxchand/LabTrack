@@ -165,7 +165,7 @@ export function InventoryListPage({ initialClassification = null }) {
       accessor: 'assetTag',
       width: '140px',
       render: (row) => (
-        <div className="flex items-center gap-1.5 font-mono text-xs">
+        <div className="flex items-center gap-1.5 font-sans text-xs">
           <span className="font-semibold text-[#c9b8a0]">{row.assetTag}</span>
           <button
             onClick={(e) => handleCopyTag(row.assetTag, e)}
@@ -199,11 +199,11 @@ export function InventoryListPage({ initialClassification = null }) {
           <div className="space-y-0.5">
             <div className="font-semibold text-white text-xs flex items-center gap-2">
               <span>{row.nomenclature}</span>
-              <span className="text-[10px] font-mono text-zinc-500 font-normal">
+              <span className="text-[10px] font-sans text-zinc-400 font-normal">
                 {row.manufacturer}
               </span>
             </div>
-            <div className="text-[11px] text-zinc-400 font-mono line-clamp-1">
+            <div className="text-[11px] text-zinc-400 font-sans line-clamp-1">
               {row.subSpecs}
             </div>
           </div>
@@ -221,7 +221,7 @@ export function InventoryListPage({ initialClassification = null }) {
       accessor: 'coordinates',
       width: '130px',
       render: (row) => (
-        <div className="inline-flex items-center gap-1 font-mono text-[11px] px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300">
+        <div className="inline-flex items-center gap-1 font-sans text-[11px] px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300">
           <MapPin className="w-3 h-3 text-[#a78b71]" />
           <span>{row.coordinates}</span>
         </div>
@@ -239,7 +239,7 @@ export function InventoryListPage({ initialClassification = null }) {
       width: '100px',
       align: 'center',
       render: (row) => (
-        <span className="font-mono text-xs text-white font-semibold">
+        <span className="font-sans text-xs text-white font-semibold">
           {row.availableStock} {row.classification === 'Consumable' ? 'Units' : 'Unit'}
         </span>
       ),
@@ -370,7 +370,7 @@ export function InventoryListPage({ initialClassification = null }) {
             <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${style.badgeBg} shadow-sm tracking-wide`}>
               {style.tag}
             </span>
-            <span className="text-[11px] font-mono font-medium text-zinc-400 bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/10">
+            <span className="text-[11px] font-sans font-medium text-zinc-400 bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/10">
               {item.assetTag}
             </span>
           </div>
@@ -414,7 +414,7 @@ export function InventoryListPage({ initialClassification = null }) {
 
           {/* Location & Depot Strip */}
           <div className="mt-3.5 flex items-center gap-2 text-xs">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-zinc-300 font-mono font-medium text-[11px]">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-zinc-300 font-sans font-medium text-[11px]">
               <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
               <span>{item.coordinates}</span>
             </div>
@@ -684,7 +684,7 @@ export function InventoryListPage({ initialClassification = null }) {
         <form onSubmit={handleAddNewItem} className="space-y-4 text-xs font-sans">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
+              <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
                 Asset Tag / SKU <span className="text-rose-400">*</span>
               </label>
               <input
@@ -693,12 +693,12 @@ export function InventoryListPage({ initialClassification = null }) {
                 value={newItemData.assetTag}
                 onChange={(e) => setNewItemData({ ...newItemData, assetTag: e.target.value })}
                 placeholder="e.g. AT-ESP-0205"
-                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded font-mono text-white"
+                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded font-sans text-white text-xs"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
+              <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
                 Manufacturer / Brand
               </label>
               <input
@@ -706,13 +706,13 @@ export function InventoryListPage({ initialClassification = null }) {
                 value={newItemData.manufacturer}
                 onChange={(e) => setNewItemData({ ...newItemData, manufacturer: e.target.value })}
                 placeholder="e.g. Espressif Systems"
-                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white"
+                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white text-xs font-sans"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
+            <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
               Component Name <span className="text-rose-400">*</span>
             </label>
             <input
@@ -721,19 +721,19 @@ export function InventoryListPage({ initialClassification = null }) {
               value={newItemData.nomenclature}
               onChange={(e) => setNewItemData({ ...newItemData, nomenclature: e.target.value })}
               placeholder="e.g. ESP32-WROOM-32D DevBoard"
-              className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white"
+              className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white text-xs font-sans"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
+              <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
                 Classification
               </label>
               <select
                 value={newItemData.classification}
                 onChange={(e) => setNewItemData({ ...newItemData, classification: e.target.value })}
-                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white"
+                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white text-xs font-sans"
               >
                 <option value="Asset">Asset (Serialized)</option>
                 <option value="Consumable">Consumable (Bulk)</option>
@@ -741,13 +741,13 @@ export function InventoryListPage({ initialClassification = null }) {
             </div>
 
             <div>
-              <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
+              <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
                 Laboratory Location
               </label>
               <select
                 value={newItemData.labRoom}
                 onChange={(e) => setNewItemData({ ...newItemData, labRoom: e.target.value })}
-                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white"
+                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white text-xs font-sans"
               >
                 <option value="Lab 1 - AI">Lab 1 - AI</option>
                 <option value="Lab 2 - IoT">Lab 2 - IoT</option>
@@ -758,7 +758,7 @@ export function InventoryListPage({ initialClassification = null }) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
+              <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
                 Storage Coordinates
               </label>
               <input
@@ -766,12 +766,12 @@ export function InventoryListPage({ initialClassification = null }) {
                 value={newItemData.coordinates}
                 onChange={(e) => setNewItemData({ ...newItemData, coordinates: e.target.value })}
                 placeholder="e.g. L2-CB1-R1"
-                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded font-mono text-white"
+                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded font-sans text-white text-xs"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
+              <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
                 Available Stock Count
               </label>
               <input
@@ -785,13 +785,13 @@ export function InventoryListPage({ initialClassification = null }) {
                     totalStock: parseInt(e.target.value) || 1,
                   })
                 }
-                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded font-mono text-white"
+                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded font-sans text-white text-xs"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
+            <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
               Technical Sub-Specifications
             </label>
             <textarea
@@ -799,7 +799,7 @@ export function InventoryListPage({ initialClassification = null }) {
               value={newItemData.subSpecs}
               onChange={(e) => setNewItemData({ ...newItemData, subSpecs: e.target.value })}
               placeholder="Processor clock, interface bus, pin count, operating voltages..."
-              className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white font-mono text-[11px]"
+              className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white font-sans text-xs"
             />
           </div>
 
