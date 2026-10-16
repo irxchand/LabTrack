@@ -1,29 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import { useLabData } from '../../context/LabDataContext';
 import {
   Search,
   Cpu,
-  Boxes,
-  Clock,
-  Inbox,
-  BookmarkCheck,
-  ShieldCheck,
-  FileText,
-  CheckSquare,
-  Terminal,
-  Wrench,
-  UserCheck,
-  ShoppingBag,
   ArrowRight,
+  Plus,
+  MapPin,
   Sparkles,
 } from 'lucide-react';
 
 export function CommandPalette({ isOpen, onClose }) {
   const navigate = useNavigate();
-  const { role, switchRole } = useAuth();
-  const { inventory, setIsBasketOpen } = useLabData();
+  const { inventory, addToBasket } = useLabData();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
@@ -36,51 +25,37 @@ export function CommandPalette({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
-  // Command items
-  const navigationActions = [
-    { id: 'nav-inv', label: 'Go to Master Inventory Registry', icon: Boxes, category: 'Navigation', shortcut: 'G I', run: () => navigate('/workspace/inventory') },
-    { id: 'nav-assets', label: 'Go to Serialized Assets (MCUs & Test Gear)', icon: Cpu, category: 'Navigation', shortcut: 'G A', run: () => navigate('/workspace/inventory/assets') },
-    { id: 'nav-loans', label: 'Go to My Bench (Active Custody & Hardware)', icon: Clock, category: 'Navigation', shortcut: 'G B', run: () => navigate('/workspace/custody/active') },
-    { id: 'nav-reqs', label: 'Go to Pending Requisitions & Status', icon: Inbox, category: 'Navigation', shortcut: 'G R', run: () => navigate('/workspace/custody/requests') },
-    { id: 'nav-fifo', label: 'Go to FIFO Reservation Waitlist', icon: BookmarkCheck, category: 'Navigation', shortcut: 'G Q', run: () => navigate('/workspace/custody/reservations') },
-    { id: 'nav-rel', label: 'Go to Accountability & Reliability Scorecard', icon: ShieldCheck, category: 'Navigation', shortcut: 'G S', run: () => navigate('/workspace/accountability/reliability') },
-    { id: 'nav-audit', label: 'Go to Immutable Audit Log', icon: FileText, category: 'Navigation', run: () => navigate('/workspace/accountability/audit-log') },
-    { id: 'nav-approvals', label: 'Go to Faculty Supervisor Review Desk', icon: CheckSquare, category: 'Navigation', run: () => navigate('/workspace/operations/approvals') },
-    { id: 'nav-dispatch', label: 'Go to Lab Assistant Dispatch Terminal', icon: Terminal, category: 'Navigation', run: () => navigate('/workspace/operations/dispatch') },
-    { id: 'nav-defects', label: 'Go to Defect Triage & Repair Bench', icon: Wrench, category: 'Navigation', run: () => navigate('/workspace/operations/defects') },
-  ];
+  // Reliable hardware image resolution
+  const getItemImage = (item) => {
+    if (item?.image) return item.image;
+    const nom = (item?.nomenclature || '').toLowerCase();
+    if (nom.includes('oled') || nom.includes('display')) return '/images/hardware/oled-display.jpg';
+    if (nom.includes('jetson') || nom.includes('orin') || nom.includes('nano')) return '/images/hardware/jetson-nano.jpg';
+    if (nom.includes('arduino') || nom.includes('uno')) return '/images/hardware/arduino-uno-r3.jpg';
+    if (nom.includes('esp32') || nom.includes('micro') || nom.includes('mcu')) return '/images/hardware/esp32-wroom.jpg';
+    if (nom.includes('oscilloscope') || nom.includes('rigol')) return '/images/hardware/oscilloscope.jpg';
+    if (nom.includes('jumper') || nom.includes('wire') || nom.includes('ribbon')) return '/images/hardware/jumper-wires.jpg';
+    if (nom.includes('breadboard')) return '/images/hardware/breadboard-830.jpg';
+    if (nom.includes('sensor') || nom.includes('imu') || nom.includes('mpu') || nom.includes('bmp')) return '/images/hardware/bmp280-sensor.jpg';
+    if (nom.includes('resistor')) return '/images/hardware/resistors-pack.jpg';
+    return '/images/hardware/raspberry-pi-5.jpg';
+  };
 
-  const roleActions = [
-    { id: 'role-student', label: 'Switch Role to Student (Aryan Sharma • 202401048)', icon: UserCheck, category: 'Role Switcher', run: () => switchRole('Student') },
-    { id: 'role-faculty', label: 'Switch Role to Faculty Mentor (Prof. Sneha Kulkarni)', icon: UserCheck, category: 'Role Switcher', run: () => switchRole('Faculty') },
-    { id: 'role-assistant', label: 'Switch Role to Lab Assistant (Ramesh Patil)', icon: UserCheck, category: 'Role Switcher', run: () => switchRole('Lab Assistant') },
-    { id: 'role-admin', label: 'Switch Role to HoD / Admin (Dr. K. V. Ramanathan)', icon: UserCheck, category: 'Role Switcher', run: () => switchRole('HoD / Admin') },
-  ];
-
-  const quickActions = [
-    { id: 'act-basket', label: 'Open Requisition Basket Drawer', icon: ShoppingBag, category: 'Actions', shortcut: 'B', run: () => setIsBasketOpen(true) },
-  ];
-
-  // Asset search items
-  const assetItems = inventory.map((item) => ({
-    id: `asset-${item.id}`,
-    label: `${item.nomenclature} (${item.assetTag})`,
-    sub: `${item.coordinates} • ${item.stockStatus} • ${item.manufacturer}`,
-    icon: Cpu,
-    category: 'Hardware Assets',
-    run: () => navigate(`/workspace/inventory/${item.id}`),
-  }));
-
-  const allItems = [...quickActions, ...navigationActions, ...roleActions, ...assetItems];
-
+  // Pure hardware catalog search (Zero route-dumping, zero role switching)
   const filteredItems = query.trim()
-    ? allItems.filter(
-        (item) =>
-          item.label.toLowerCase().includes(query.toLowerCase()) ||
-          item.category.toLowerCase().includes(query.toLowerCase()) ||
-          (item.sub && item.sub.toLowerCase().includes(query.toLowerCase()))
-      )
-    : allItems.slice(0, 16);
+    ? inventory.filter((item) => {
+        const q = query.toLowerCase();
+        return (
+          item.nomenclature?.toLowerCase().includes(q) ||
+          item.assetTag?.toLowerCase().includes(q) ||
+          item.category?.toLowerCase().includes(q) ||
+          item.classification?.toLowerCase().includes(q) ||
+          item.coordinates?.toLowerCase().includes(q) ||
+          item.manufacturer?.toLowerCase().includes(q) ||
+          item.subSpecs?.toLowerCase().includes(q)
+        );
+      })
+    : inventory.slice(0, 8); // Top featured depot items when empty
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -95,7 +70,7 @@ export function CommandPalette({ isOpen, onClose }) {
       } else if (e.key === 'Enter') {
         e.preventDefault();
         if (filteredItems[selectedIndex]) {
-          filteredItems[selectedIndex].run();
+          navigate(`/workspace/inventory/${filteredItems[selectedIndex].id}`);
           onClose();
         }
       } else if (e.key === 'Escape') {
@@ -105,23 +80,23 @@ export function CommandPalette({ isOpen, onClose }) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, selectedIndex, filteredItems, onClose]);
+  }, [isOpen, selectedIndex, filteredItems, onClose, navigate]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-20 px-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/75 backdrop-blur-md transition-opacity"
+        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"
         onClick={onClose}
       />
 
       {/* Spotlight Window */}
-      <div className="relative w-full max-w-2xl bg-[#0a0a0a] border border-white/15 rounded-3xl central-glow shadow-2xl overflow-hidden z-10 flex flex-col max-h-[580px]">
+      <div className="relative w-full max-w-2xl bg-[#0c0d11] border border-white/15 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden z-10 flex flex-col max-h-[620px]">
         {/* Search Input Bar */}
         <div className="flex items-center px-5 py-4 border-b border-white/10 bg-white/[0.02]">
-          <Search className="w-5 h-5 text-[#a78b71] mr-3 flex-shrink-0" />
+          <Search className="w-5 h-5 text-[#c9b8a0] mr-3.5 flex-shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -130,70 +105,105 @@ export function CommandPalette({ isOpen, onClose }) {
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            placeholder="Type a command or search hardware inventory..."
-            className="w-full bg-transparent text-sm text-white placeholder:text-zinc-600 focus:outline-none font-inter"
+            placeholder="Search chips, sensors, dev boards, bin coordinates, or asset tags..."
+            className="w-full bg-transparent text-sm text-white placeholder:text-zinc-500 focus:outline-none font-sans"
           />
           <div className="flex items-center gap-1.5 ml-2">
             <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/10 text-zinc-400">ESC</span>
           </div>
         </div>
 
+        {/* Section Header */}
+        <div className="px-5 py-2.5 bg-white/[0.015] border-b border-white/5 flex items-center justify-between text-[11px] font-sans text-zinc-400">
+          <span>{query.trim() ? `Search Results (${filteredItems.length})` : 'Featured Hardware Inventory'}</span>
+          <span className="text-[#c9b8a0] font-medium">AIML Hardware Depot</span>
+        </div>
+
         {/* Results List */}
-        <div className="overflow-y-auto p-2 divide-y divide-white/[0.04]">
+        <div className="overflow-y-auto p-2.5 divide-y divide-white/[0.04] space-y-1">
           {filteredItems.length === 0 ? (
-            <div className="py-12 text-center text-xs font-inter text-zinc-500">
-              No commands or hardware items match "{query}".
+            <div className="py-14 text-center text-xs font-sans text-zinc-400 space-y-1">
+              <p className="text-white font-semibold">No hardware found matching "{query}"</p>
+              <p className="text-zinc-500">Try searching by chip model (e.g. ESP32), sensor (e.g. BMP280), or asset tag.</p>
             </div>
           ) : (
             filteredItems.map((item, idx) => {
-              const Icon = item.icon;
               const isSelected = idx === selectedIndex;
+              const inStock = (item.availableStock ?? 1) > 0;
 
               return (
                 <div
                   key={item.id}
                   onClick={() => {
-                    item.run();
+                    navigate(`/workspace/inventory/${item.id}`);
                     onClose();
                   }}
                   onMouseEnter={() => setSelectedIndex(idx)}
-                  className={`flex items-center justify-between px-3.5 py-3 rounded-2xl cursor-pointer transition-neural ${
+                  className={`flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all ${
                     isSelected
-                      ? 'bg-[#a78b71]/15 text-white border border-[#a78b71]/30 shadow-sm'
-                      : 'text-zinc-400 hover:bg-white/[0.04]'
+                      ? 'bg-[#c9b8a0]/15 text-white border border-[#c9b8a0]/30 shadow-md'
+                      : 'text-zinc-300 hover:bg-white/[0.04] border border-transparent'
                   }`}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div
-                      className={`p-2 rounded-xl transition-neural ${
-                        isSelected
-                          ? 'bg-[#a78b71] text-black shadow-sm'
-                          : 'bg-white/[0.06] text-zinc-400'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
+                  {/* Left: Thumbnail & Nomenclature */}
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-black/60 border border-white/10 flex-shrink-0 relative shadow-sm">
+                      <img
+                        src={getItemImage(item)}
+                        alt={item.nomenclature}
+                        className="w-full h-full object-cover object-center"
+                        onError={(e) => {
+                          e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+                        }}
+                      />
                     </div>
                     <div className="min-w-0">
-                      <div className="text-xs font-semibold text-white truncate font-inter">
-                        {item.label}
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-white truncate font-sans group-hover:text-[#f5e6c8]">
+                          {item.nomenclature}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-sans font-medium bg-black/60 border border-white/10 text-[#c9b8a0] flex-shrink-0">
+                          {item.assetTag}
+                        </span>
                       </div>
-                      {item.sub && (
-                        <div className="text-[11px] font-sans text-zinc-400 truncate mt-0.5">
-                          {item.sub}
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2 text-[11px] font-sans text-zinc-400 mt-1">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-[#c9b8a0]" />
+                          <span>{item.coordinates}</span>
+                        </span>
+                        <span>•</span>
+                        <span className={inStock ? 'text-emerald-400 font-medium' : 'text-amber-400 font-medium'}>
+                          {inStock
+                            ? `${item.availableStock || 1} of ${item.totalStock || 1} available`
+                            : 'All Units Loaned (Join Waitlist)'}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                    <span className="text-[10px] font-inter uppercase tracking-wider text-zinc-500">
-                      {item.category}
+                  {/* Right: Quick CTA & Category */}
+                  <div className="flex items-center gap-2.5 flex-shrink-0 ml-3">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-sans font-medium uppercase tracking-wider bg-white/[0.04] border border-white/5 text-zinc-400 hidden sm:inline">
+                      {item.classification || item.category}
                     </span>
-                    {item.shortcut && (
-                      <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-zinc-300">{item.shortcut}</span>
+
+                    {inStock && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToBasket(item, 1);
+                        }}
+                        className="px-3 py-1.5 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-all shadow-sm active:scale-95 flex items-center gap-1 cursor-pointer"
+                        title="Add to Requisition Basket"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>Requisition</span>
+                      </button>
                     )}
+
                     {isSelected && (
-                      <ArrowRight className="w-3.5 h-3.5 text-[#a78b71]" />
+                      <ArrowRight className="w-4 h-4 text-[#c9b8a0]" />
                     )}
                   </div>
                 </div>
@@ -203,22 +213,24 @@ export function CommandPalette({ isOpen, onClose }) {
         </div>
 
         {/* Footer Navigation Hints */}
-        <div className="px-5 py-3 border-t border-white/10 bg-white/[0.01] flex items-center justify-between text-[11px] font-inter text-zinc-500">
+        <div className="px-5 py-3 border-t border-white/10 bg-white/[0.015] flex items-center justify-between text-[11px] font-sans text-zinc-400">
           <div className="flex items-center gap-3">
             <span>
-              <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono mr-1">↑</kbd>
-              <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono mr-1">↓</kbd> to navigate
+              <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono mr-1 text-zinc-300">↑</kbd>
+              <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono mr-1 text-zinc-300">↓</kbd> to navigate
             </span>
             <span>
-              <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono mr-1">↵</kbd> to select
+              <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono mr-1 text-zinc-300">↵</kbd> to inspect
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-[#c9b8a0]">
-            <Sparkles className="w-3 h-3 text-[#a78b71]" />
-            <span>LabTrack Command Matrix</span>
+            <Sparkles className="w-3.5 h-3.5 text-[#c9b8a0]" />
+            <span className="font-medium text-xs">Hardware Catalog Spotlight</span>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+export default CommandPalette;
