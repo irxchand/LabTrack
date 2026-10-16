@@ -145,7 +145,7 @@ export function RequisitionsPage() {
             <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
             ORDERS & ALLOCATIONS
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1">
+          <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-white mt-1">
             Requisitions
           </h1>
           <p className="text-sm font-sans text-zinc-400 mt-1 max-w-xl">
@@ -232,7 +232,7 @@ export function RequisitionsPage() {
           <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto text-zinc-500 shadow-inner">
             <Inbox className="w-7 h-7 stroke-[1.5]" />
           </div>
-          <h3 className="font-display text-lg font-semibold text-white">No Requisitions Found</h3>
+          <h3 className="font-sans text-lg font-bold text-white">No Requisitions Found</h3>
           <p className="text-xs text-zinc-400 max-w-sm mx-auto font-sans leading-relaxed">
             No hardware orders match the selected filter. Browse the Workstation catalog to stage components into your requisition kit.
           </p>
@@ -276,20 +276,20 @@ export function RequisitionsPage() {
 
                   {/* Vibrant Cupertino Status Pill */}
                   {stageInfo.color === 'amber' && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-300 border border-amber-500/25 flex items-center gap-1.5 shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/[0.08] text-amber-300 border border-amber-500/25 flex items-center gap-1.5 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.6)] animate-pulse" />
                       <span>{stageInfo.label}</span>
                     </span>
                   )}
                   {stageInfo.color === 'emerald' && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/[0.08] text-white border border-white/15 flex items-center gap-1.5 shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/[0.08] text-emerald-300 border border-emerald-500/25 flex items-center gap-1.5 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]" />
                       <span>{stageInfo.label}</span>
                     </span>
                   )}
                   {stageInfo.color === 'champagne' && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1.5 shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8] animate-ping" />
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 flex items-center gap-1.5 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8] shadow-[0_0_6px_rgba(245,230,200,0.6)]" />
                       <span>{stageInfo.label}</span>
                     </span>
                   )}
@@ -300,7 +300,7 @@ export function RequisitionsPage() {
                     </span>
                   )}
                   {stageInfo.color === 'rose' && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-rose-500/15 text-rose-300 border border-rose-500/30 flex items-center gap-1.5 shadow-sm">
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-rose-500/[0.08] text-rose-300 border border-rose-500/25 flex items-center gap-1.5 shadow-sm">
                       <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
                       <span>{stageInfo.label}</span>
                     </span>
@@ -309,17 +309,17 @@ export function RequisitionsPage() {
 
                 {/* Primary Hardware Showcase (Hero Staging with Studio Image) */}
                 <div className="flex items-center gap-5 pt-1">
-                  {/* Studio Hardware Pedestal */}
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-black/60 border border-white/10 p-3 flex items-center justify-center relative flex-shrink-0 shadow-inner group-hover:border-white/25 transition-all">
+                  {/* Studio Hardware Thumbnail - Picture Fits 100% of the Box Edge-to-Edge */}
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border border-white/10 relative flex-shrink-0 shadow-lg group-hover:border-[#c9b8a0]/40 transition-all bg-black">
                     <img
                       src={primaryImage}
                       alt={primaryItem.nomenclature}
-                      className="max-h-full max-w-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.9)] group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
                       onError={(e) => {
                         e.target.src = '/images/hardware/raspberry-pi-5.jpg';
                       }}
                     />
-                    <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-white text-black font-sans font-bold text-[10px] shadow-md">
+                    <span className="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-md text-white font-sans font-bold text-[10px] border border-white/20 shadow-md">
                       {primaryItem.quantity}x
                     </span>
                   </div>
@@ -336,13 +336,13 @@ export function RequisitionsPage() {
                       </span>
                     </div>
 
-                    <h3 className="font-display text-base sm:text-lg font-semibold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors leading-snug">
+                    <h3 className="font-sans text-base sm:text-lg font-bold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors leading-snug">
                       {primaryItem.nomenclature}
                     </h3>
 
-                    {/* Stated Purpose in Refined Glass Badge */}
-                    <div className="mt-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/5 text-xs text-zinc-300 font-sans italic leading-relaxed">
-                      "{req.technicalPurpose}"
+                    {/* Stated Purpose */}
+                    <div className="mt-2 px-3 py-1.5 rounded-lg bg-white/[0.025] border border-white/5 text-xs text-zinc-300 font-sans leading-relaxed">
+                      <span className="text-zinc-400 font-normal">"{req.technicalPurpose}"</span>
                     </div>
                   </div>
                 </div>
@@ -407,7 +407,7 @@ export function RequisitionsPage() {
                             <span
                               className={`text-[10px] font-sans block truncate ${
                                 isCurrent
-                                  ? 'text-white font-semibold'
+                                  ? 'text-[#f5e6c8] font-bold'
                                   : isCompleted
                                   ? 'text-zinc-400'
                                   : 'text-zinc-600'
@@ -425,7 +425,7 @@ export function RequisitionsPage() {
                 {/* Footer Strip with Mentor Monogram and Action */}
                 <div className="flex items-center justify-between pt-3 border-t border-white/10 text-xs font-sans">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500/25 to-blue-500/15 border border-indigo-500/30 text-indigo-200 font-semibold text-xs flex items-center justify-center shadow-sm flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-[#f5e6c8] font-bold text-xs flex items-center justify-center shadow-sm flex-shrink-0">
                       {(req.mentorName?.replace('Dr. ', '').replace('Prof. ', '') || 'A').charAt(0)}
                     </div>
                     <div>
@@ -435,7 +435,7 @@ export function RequisitionsPage() {
                       <div className="text-zinc-400 font-sans text-[11px] flex items-center gap-1.5 mt-0.5">
                         <span className="text-zinc-500 font-normal">Faculty Guide</span>
                         <span className="w-1 h-1 rounded-full bg-zinc-700" />
-                        <span className="text-zinc-300 font-medium">Group {req.projectId}</span>
+                        <span className="text-[#c9b8a0] font-medium">Group {req.projectId}</span>
                       </div>
                     </div>
                   </div>
@@ -492,11 +492,11 @@ export function RequisitionsPage() {
                 {selectedReq.componentsRequested.map((item, idx) => (
                   <div key={idx} className="py-3 flex items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-12 h-12 rounded-xl bg-black/60 border border-white/10 p-1.5 flex items-center justify-center flex-shrink-0 shadow-inner">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/10 relative flex-shrink-0 bg-black shadow-sm">
                         <img
                           src={getItemImage(item)}
                           alt={item.nomenclature}
-                          className="max-h-full max-w-full object-contain"
+                          className="w-full h-full object-cover object-center"
                           onError={(e) => {
                             e.target.src = '/images/hardware/raspberry-pi-5.jpg';
                           }}
