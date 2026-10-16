@@ -97,27 +97,6 @@ export function HeroPage() {
           <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_10px_#c9b8a0]" />
         </div>
 
-        {/* Center: Real LabTrack Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8 text-[11px] font-medium tracking-[0.25em] text-white/70 uppercase">
-          <a
-            href="#hardware-mesh"
-            className="hover:text-[#e8d5b7] transition-colors duration-200"
-          >
-            Hardware Mesh
-          </a>
-          <a
-            href="#capabilities"
-            className="hover:text-[#e8d5b7] transition-colors duration-200"
-          >
-            Capabilities
-          </a>
-          <button
-            onClick={() => navigate('/workspace/inventory')}
-            className="hover:text-[#e8d5b7] transition-colors duration-200 text-left cursor-pointer"
-          >
-            Registry
-          </button>
-        </nav>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-3 sm:gap-4">
