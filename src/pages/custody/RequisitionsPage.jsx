@@ -424,15 +424,17 @@ export function RequisitionsPage() {
                 {/* Footer Strip with Mentor Monogram and Action */}
                 <div className="flex items-center justify-between pt-3 border-t border-white/10 text-xs font-sans">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-white/20 to-white/5 border border-white/10 text-white font-semibold text-xs flex items-center justify-center shadow-sm">
-                      {(req.mentorName || 'F').charAt(0)}
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500/25 to-blue-500/15 border border-indigo-500/30 text-indigo-200 font-semibold text-xs flex items-center justify-center shadow-sm flex-shrink-0">
+                      {(req.mentorName?.replace('Dr. ', '').replace('Prof. ', '') || 'A').charAt(0)}
                     </div>
                     <div>
-                      <div className="text-white font-medium truncate max-w-[170px] sm:max-w-[220px]">
+                      <div className="text-white font-medium text-xs font-sans truncate max-w-[170px] sm:max-w-[220px]">
                         {req.mentorName}
                       </div>
-                      <div className="font-mono text-zinc-500 text-[11px]">
-                        {req.projectId}
+                      <div className="text-zinc-400 font-sans text-[11px] flex items-center gap-1.5 mt-0.5">
+                        <span className="text-zinc-500 font-normal">Faculty Guide</span>
+                        <span className="w-1 h-1 rounded-full bg-zinc-700" />
+                        <span className="text-zinc-300 font-medium">Group {req.projectId}</span>
                       </div>
                     </div>
                   </div>
@@ -459,8 +461,8 @@ export function RequisitionsPage() {
       <Modal
         isOpen={!!selectedReq}
         onClose={() => setSelectedReq(null)}
-        title={`Requisition Dossier: #${selectedReq?.id}`}
-        subtitle={`Submitted by ${selectedReq?.studentName} • ${selectedReq?.projectId}`}
+        title={`Requisition Dossier: ${selectedReq?.id}`}
+        subtitle={`Submitted by ${selectedReq?.studentName} • Group ${selectedReq?.projectId}`}
       >
         {selectedReq && (
           <div className="space-y-6 text-xs font-sans">
