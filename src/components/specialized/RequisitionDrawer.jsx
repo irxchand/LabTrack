@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   X,
   Trash2,
@@ -10,6 +10,7 @@ import {
   Check,
   Copy,
   AlertCircle,
+  FolderGit2,
 } from 'lucide-react';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
@@ -23,8 +24,34 @@ export function RequisitionDrawer() {
     updateBasketQuantity,
     clearBasket,
     submitBasketRequisition,
+    projects,
+    activeLoans,
   } = useLabData();
   const { currentUser } = useAuth();
+
+  const userProjects = useMemo(() => {
+    if (!projects || projects.length === 0) return [];
+    const myPrn = currentUser?.prn || '202401048';
+    const filtered = projects.filter(
+      (p) =>
+        p.teamLeaderPrn === myPrn ||
+        p.members?.some((m) => m.prn === myPrn) ||
+        p.id === currentUser?.projectId
+    );
+    return filtered.length > 0 ? filtered : projects;
+  }, [projects, currentUser]);
+
+  const [selectedProjectId, setSelectedProjectId] = useState(
+    currentUser?.projectId || 'PRJ-AIML-08'
+  );
+
+  const activeSelectedProject = useMemo(() => {
+    return (
+      userProjects.find((p) => p.id === selectedProjectId) ||
+      userProjects[0] ||
+      null
+    );
+  }, [userProjects, selectedProjectId]);
 
   const [purpose, setPurpose] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,7 +81,8 @@ export function RequisitionDrawer() {
     setError('');
     setIsSubmitting(true);
     try {
-      const ok = await submitBasketRequisition(purpose);
+      const targetId = activeSelectedProject?.id || selectedProjectId;
+      const ok = await submitBasketRequisition(purpose, targetId);
       if (ok) {
         setPurpose('');
       }
@@ -241,6 +269,53 @@ export function RequisitionDrawer() {
           {/* ───────────────────────────────────────────────────────── */}
           {basket.length > 0 && (
             <form onSubmit={handleSubmit} className="p-6 border-t border-white/10 bg-[#0e0e11] space-y-4">
+              {/* Target Project Group Selector */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-zinc-200 flex items-center gap-1.5">
+                    <FolderGit2 className="w-3.5 h-3.5 text-[#c9b8a0]" />
+                    <span>Target Academic Project Group</span>
+                  </label>
+                  {activeSelectedProject && (
+                    <span className="text-[10px] text-zinc-400 font-mono">
+                      Mentor: {activeSelectedProject.mentorName}
+                    </span>
+                  )}
+                </div>
+
+                <div className="relative">
+                  <select
+                    value={activeSelectedProject?.id || selectedProjectId}
+                    onChange={(e) => setSelectedProjectId(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/15 rounded-xl text-xs text-white focus:outline-none focus:border-[#c9b8a0] transition-all cursor-pointer font-sans appearance-none pr-8"
+                  >
+                    {userProjects.map((p) => {
+                      const assignedCount = (activeLoans || []).filter((l) => l.projectId === p.id).length;
+                      return (
+                        <option key={p.id} value={p.id} className="bg-[#141417] text-white py-1">
+                          {p.id} • {p.title} ({assignedCount}/{p.hardwareBudgetCap} units active)
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500 text-[10px]">
+                    ▼
+                  </div>
+                </div>
+
+                {activeSelectedProject && (
+                  <div className="flex items-center justify-between text-[11px] text-zinc-500 px-0.5 pt-0.5">
+                    <span>Course: {activeSelectedProject.courseCode}</span>
+                    <span className="text-zinc-400">
+                      Remaining Quota:{' '}
+                      {activeSelectedProject.hardwareBudgetCap -
+                        (activeLoans || []).filter((l) => l.projectId === activeSelectedProject.id).length}{' '}
+                      units
+                    </span>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-medium text-zinc-200">

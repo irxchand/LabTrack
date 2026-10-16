@@ -503,41 +503,66 @@ export function ProjectDirectoryPage() {
             )}
 
             {/* Inline Form to Add a Friend */}
-            <div className="pt-2 border-t border-white/5 space-y-2">
-              <div className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
-                Invite Teammate / Friend
+            <div className="pt-3 border-t border-white/5 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+                  Invite Teammate / Friend
+                </span>
+                <span className="text-[10px] text-zinc-500 font-sans">
+                  Enter student details & assign responsibility
+                </span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <input
-                  type="text"
-                  value={friendName}
-                  onChange={(e) => setFriendName(e.target.value)}
-                  placeholder="Friend Name (e.g. Priya Nair)"
-                  className="px-3 py-2 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-[#c9b8a0]"
-                />
-                <input
-                  type="text"
-                  value={friendPrn}
-                  onChange={(e) => setFriendPrn(e.target.value)}
-                  placeholder="PRN (e.g. 202401052)"
-                  className="px-3 py-2 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 text-xs font-mono focus:outline-none focus:border-[#c9b8a0]"
-                />
-                <div className="flex items-center gap-1.5">
+
+              {/* Row 1: Teammate Name & PRN */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div>
+                  <label className="text-[10px] text-zinc-400 font-medium block mb-1">
+                    Teammate Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={friendName}
+                    onChange={(e) => setFriendName(e.target.value)}
+                    placeholder="e.g. Priya Nair"
+                    className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-[#c9b8a0] transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-zinc-400 font-medium block mb-1">
+                    University PRN / Roll
+                  </label>
+                  <input
+                    type="text"
+                    value={friendPrn}
+                    onChange={(e) => setFriendPrn(e.target.value)}
+                    placeholder="e.g. 202401052"
+                    className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 text-xs font-mono focus:outline-none focus:border-[#c9b8a0] transition-colors"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Role Assignment & Add Button */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-2.5">
+                <div className="flex-1">
+                  <label className="text-[10px] text-zinc-400 font-medium block mb-1">
+                    Project Role Assignment
+                  </label>
                   <input
                     type="text"
                     value={friendRole}
                     onChange={(e) => setFriendRole(e.target.value)}
-                    placeholder="Role (e.g. Telemetry Lead)"
-                    className="flex-1 px-3 py-2 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-[#c9b8a0]"
+                    placeholder="e.g. Firmware & Sensors Lead"
+                    className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-[#c9b8a0] transition-colors"
                   />
-                  <button
-                    type="button"
-                    onClick={handleAddFriend}
-                    className="px-3 py-2 rounded-xl bg-white/[0.08] hover:bg-white text-zinc-200 hover:text-black font-semibold text-xs border border-white/15 transition-all cursor-pointer whitespace-nowrap"
-                  >
-                    + Add
-                  </button>
                 </div>
+                <button
+                  type="button"
+                  onClick={handleAddFriend}
+                  className="h-[38px] px-4 rounded-xl bg-white/[0.08] hover:bg-white text-zinc-200 hover:text-black font-semibold text-xs border border-white/15 transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-sm"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>Add Teammate</span>
+                </button>
               </div>
             </div>
           </div>

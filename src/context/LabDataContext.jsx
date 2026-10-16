@@ -115,7 +115,7 @@ export function LabDataProvider({ children }) {
   };
 
   // Submit batch requisition
-  const submitBasketRequisition = async (technicalPurpose) => {
+  const submitBasketRequisition = async (technicalPurpose, targetProjectId) => {
     if (basket.length === 0) return false;
     const componentsRequested = basket.map((item) => ({
       itemId: item.id,
@@ -124,13 +124,19 @@ export function LabDataProvider({ children }) {
       type: item.classification,
     }));
 
+    // Find the targeted project if specified, or match to current user
+    const selectedProject =
+      projects.find((p) => p.id === targetProjectId) ||
+      projects.find((p) => p.id === currentUser?.projectId) ||
+      projects[0];
+
     const res = await custodyApi.submitRequisition({
       studentPrn: currentUser?.prn || '202401048',
-      studentName: currentUser?.name || 'Aryan Sharma',
-      projectId: currentUser?.projectId || 'PRJ-AIML-08',
-      courseCode: currentUser?.courseCode || 'DCDS-SY-AIML',
-      mentorId: currentUser?.mentorId || 'FAC-AI-019',
-      mentorName: currentUser?.mentorName || 'Prof. Sneha Kulkarni',
+      studentName: currentUser?.name || 'Rahul Sharma',
+      projectId: selectedProject?.id || currentUser?.projectId || 'PRJ-AIML-08',
+      courseCode: selectedProject?.courseCode || currentUser?.courseCode || 'DCDS-SY-AIML',
+      mentorId: selectedProject?.mentorId || currentUser?.mentorId || 'FAC-AI-019',
+      mentorName: selectedProject?.mentorName || currentUser?.mentorName || 'Dr. Anjali Dalvi',
       technicalPurpose,
       componentsRequested,
     });
@@ -141,7 +147,7 @@ export function LabDataProvider({ children }) {
       await loadData();
       addToast({
         title: 'Requisition Submitted',
-        message: `Order #${res.data.id} has been transmitted to faculty mentor for endorsement.`,
+        message: `Order #${res.data.id} bound to ${selectedProject?.id || 'Project'}. Forwarded to ${selectedProject?.mentorName || 'Faculty'} for endorsement.`,
         type: 'success',
       });
       return true;
