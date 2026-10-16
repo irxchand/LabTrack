@@ -125,12 +125,23 @@ export function App() {
                   <Route
                     path="defects"
                     element={
-                      <RoleGuard allowedRoles={['Student', 'Faculty', 'Lab Assistant', 'HoD / Admin']}>
+                      <RoleGuard allowedRoles={['Faculty', 'Lab Assistant', 'HoD / Admin']}>
+                        <DefectManagementPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="quarantine"
+                    element={
+                      <RoleGuard allowedRoles={['Faculty', 'Lab Assistant', 'HoD / Admin']}>
                         <DefectManagementPage />
                       </RoleGuard>
                     }
                   />
                 </Route>
+
+                {/* Direct Quarantine Alias */}
+                <Route path="quarantine" element={<Navigate to="operations/defects" replace />} />
 
                 {/* 404 Fallback */}
                 <Route path="*" element={<Navigate to="/workspace/inventory" replace />} />
