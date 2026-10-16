@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { User, Lock, ArrowRight, Check, AlertCircle } from 'lucide-react';
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { loginWithMySQL } = useAuth();
+  const { loginWithMySQL, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/workspace', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const [username, setUsername] = useState('202401048');
   const [password, setPassword] = useState('password123');

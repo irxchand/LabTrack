@@ -66,7 +66,7 @@ export function TopHeader() {
         <div className="flex items-center gap-4">
           <div
             className="flex items-center gap-2 cursor-pointer"
-            onClick={() => navigate('/hero')}
+            onClick={() => navigate('/workspace')}
           >
             <span className="font-playfair text-xl font-bold italic text-white tracking-tight">
               LabTrack

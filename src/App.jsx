@@ -32,7 +32,6 @@ import { ApprovalsQueuePage } from './pages/operations/ApprovalsQueuePage';
 import { DispatchDeskPage } from './pages/operations/DispatchDeskPage';
 import { DefectManagementPage } from './pages/operations/DefectManagementPage';
 
-import { HeroPage } from './pages/HeroPage';
 
 export function App() {
   return (
@@ -47,9 +46,9 @@ export function App() {
               <Route path="/auth/login" element={<LoginPage />} />
               <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
-              {/* THEN: The Hero Page in which different sections are showed */}
-              <Route path="/hero" element={<HeroPage />} />
-              <Route path="/experience" element={<HeroPage />} />
+              {/* Hero routes redirect directly to workspace */}
+              <Route path="/hero" element={<Navigate to="/workspace" replace />} />
+              <Route path="/experience" element={<Navigate to="/workspace" replace />} />
 
               {/* Authenticated Workspace Shell */}
               <Route path="/workspace" element={<Shell />}>
