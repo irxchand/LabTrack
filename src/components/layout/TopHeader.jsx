@@ -65,13 +65,13 @@ export function TopHeader() {
         {/* Left: Brand & Institutional Context */}
         <div className="flex items-center gap-4">
           <div
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center space-x-2.5 cursor-pointer group"
             onClick={() => navigate('/workspace')}
           >
-            <span className="font-playfair text-xl font-bold italic text-white tracking-tight">
+            <span className="font-clash text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
               LabTrack
             </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#a78b71] shadow-[0_0_8px_#a78b71]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_10px_#c9b8a0]" />
           </div>
 
           <div className="h-3.5 w-px bg-white/10 hidden md:block" />

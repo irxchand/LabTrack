@@ -378,15 +378,15 @@ export function InventoryListPage({ initialClassification = null }) {
             {/* OPTION 2: CONSUMABLES */}
             <div
               onClick={() => setSelectedCategory('Consumable')}
-              className="group relative rounded-3xl p-8 bg-white/[0.02] hover:bg-white/[0.04] border border-white/15 hover:border-emerald-500/50 transition-all duration-300 cursor-pointer shadow-[0_20px_60px_rgba(0,0,0,0.7)] flex flex-col justify-between overflow-hidden"
+              className="group relative rounded-3xl p-8 bg-white/[0.02] hover:bg-white/[0.04] border border-white/15 hover:border-[#c9b8a0]/60 transition-all duration-300 cursor-pointer shadow-[0_20px_60px_rgba(0,0,0,0.7)] flex flex-col justify-between overflow-hidden"
             >
               {/* Top ambient highlight */}
-              <div className="absolute -top-24 -right-24 w-60 h-60 rounded-full bg-emerald-500/10 blur-[70px] pointer-events-none group-hover:bg-emerald-500/20 transition-all" />
+              <div className="absolute -top-24 -right-24 w-60 h-60 rounded-full bg-[#c9b8a0]/15 blur-[70px] pointer-events-none group-hover:bg-[#c9b8a0]/25 transition-all" />
 
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="px-3 py-1 rounded-full bg-white/[0.06] border border-white/10 text-xs font-mono text-emerald-300 flex items-center gap-1.5">
-                    <Package className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="px-3 py-1 rounded-full bg-white/[0.06] border border-white/10 text-xs font-sans text-[#f5e6c8] flex items-center gap-1.5">
+                    <Package className="w-3.5 h-3.5 text-[#c9b8a0]" />
                     <span>{consumablesCount} Component Lines</span>
                   </span>
                   <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-all">
@@ -394,7 +394,7 @@ export function InventoryListPage({ initialClassification = null }) {
                   </div>
                 </div>
 
-                <h3 className="text-2xl font-bold text-white tracking-tight group-hover:text-emerald-300 transition-colors">
+                <h3 className="text-2xl font-bold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors">
                   Consumables
                 </h3>
                 <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
@@ -426,10 +426,10 @@ export function InventoryListPage({ initialClassification = null }) {
               </div>
 
               <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                <span className="text-zinc-400 font-mono text-[11px]">
-                  Includes: OLED Displays, BMP280, Breadboards, Cables, Resistors
+                <span className="text-zinc-400 font-sans text-xs">
+                  OLED Displays, BMP280, Breadboards, Cables, Resistors
                 </span>
-                <span className="font-semibold text-emerald-300 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                <span className="font-semibold text-[#f5e6c8] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                   Browse Consumables →
                 </span>
               </div>
