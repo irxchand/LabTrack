@@ -14,8 +14,8 @@ export function Shell() {
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#0a0a0a] text-white font-inter relative">
-      {/* Radial dot grid overlay */}
-      <div className="absolute inset-0 bg-dots pointer-events-none z-0 opacity-40" />
+      {/* Subtle ambient specular atmosphere */}
+      <div className="absolute inset-x-0 top-0 h-96 bg-gradient-to-b from-[#1f1f28]/25 via-transparent to-transparent pointer-events-none z-0" />
 
       {/* Top Header with Integrated macOS Main Bar */}
       <TopHeader />

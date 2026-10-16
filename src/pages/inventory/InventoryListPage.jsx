@@ -276,95 +276,107 @@ export function InventoryListPage({ initialClassification = null }) {
     <div
       key={item.id}
       onClick={() => setInspectedItem(item)}
-      className="group relative rounded-3xl bg-white/[0.025] hover:bg-white/[0.05] border border-white/10 hover:border-[#c9b8a0]/60 p-4 transition-all duration-300 hover:shadow-[0_20px_45px_rgba(0,0,0,0.7)] flex flex-col justify-between cursor-pointer backdrop-blur-xl"
+      className="group relative rounded-3xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] hover:from-white/[0.07] hover:to-white/[0.02] border border-white/[0.08] hover:border-white/20 p-7 transition-all duration-300 hover:shadow-[0_30px_70px_rgba(0,0,0,0.9)] flex flex-col justify-between cursor-pointer backdrop-blur-2xl"
     >
+      {/* Specular hairline top rim */}
+      <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none rounded-t-3xl" />
+
       <div>
-        {/* Component Picture Container */}
-        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gradient-to-b from-[#18181b] to-[#0c0c0e] border border-white/10 mb-4 flex items-center justify-center p-3">
+        {/* Category & Tag Header */}
+        <div className="flex items-center justify-between text-xs mb-2">
+          <span className="text-[11px] font-semibold tracking-wider uppercase text-[#c9b8a0]">
+            {item.category || item.classification}
+          </span>
+          <span className="text-[11px] font-mono text-zinc-500 bg-white/[0.03] px-2.5 py-0.5 rounded-full border border-white/5">
+            {item.assetTag}
+          </span>
+        </div>
+
+        {/* Product Hero Image (Clean Dark Floating Stage) */}
+        <div className="relative w-full h-52 sm:h-56 flex items-center justify-center my-3 overflow-hidden">
           <img
             src={item.image || '/images/hardware/raspberry-pi-5.jpg'}
             alt={item.nomenclature}
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]"
+            className="max-h-full max-w-full object-contain drop-shadow-[0_24px_40px_rgba(0,0,0,0.95)] group-hover:scale-[1.03] transition-transform duration-500 ease-out"
             onError={(e) => {
               e.target.src = '/images/hardware/raspberry-pi-5.jpg';
             }}
           />
-
-          {/* Stock Status Badge Floating */}
-          <div className="absolute top-2.5 left-2.5">
-            <StatusBadge status={item.stockStatus} type="stock" size="xs" />
-          </div>
-
-          {/* Tag Chip Floating */}
-          <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-[#c9b8a0]">
-            {item.assetTag}
-          </div>
         </div>
 
-        {/* Component Name */}
-        <div>
-          <h3 className="text-sm font-semibold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors line-clamp-1">
+        {/* Product Title & Subtitle */}
+        <div className="space-y-1.5 mt-2">
+          <h3 className="text-lg font-semibold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors">
             {item.nomenclature}
           </h3>
-          <p className="text-xs text-zinc-400 font-mono line-clamp-2 mt-1 leading-relaxed">
+          <p className="text-xs text-zinc-400 font-normal line-clamp-2 leading-relaxed">
             {item.subSpecs}
           </p>
         </div>
 
-        {/* Physical Location Coordinates */}
-        <div className="mt-3 flex items-center gap-1.5 text-xs font-mono text-zinc-300 bg-white/[0.03] px-2.5 py-1 rounded-xl border border-white/5 w-fit">
-          <MapPin className="w-3.5 h-3.5 text-[#c9b8a0] flex-shrink-0" />
-          <span className="text-[#c9b8a0] font-semibold">{item.coordinates}</span>
-          <span className="text-zinc-600">•</span>
-          <span className="text-[11px] text-zinc-400 truncate">{item.labRoom}</span>
+        {/* Location & Depot Strip */}
+        <div className="mt-4 flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-zinc-300 font-mono text-[11px]">
+            <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
+            <span>{item.coordinates}</span>
+          </div>
+          <span className="text-zinc-500 text-xs">{item.labRoom}</span>
         </div>
       </div>
 
-      {/* Requisition Button */}
-      <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            addToBasket(item, 1);
-          }}
-          className="flex-1 py-2 px-3 rounded-xl bg-white hover:bg-[#e8d5b7] text-black font-inter text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-98 cursor-pointer"
-        >
-          <ShoppingBag className="w-3.5 h-3.5" />
-          <span>Requisition</span>
-        </button>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setInspectedItem(item);
-          }}
-          className="p-2 rounded-xl border border-white/10 hover:border-white/30 text-zinc-400 hover:text-white transition-colors cursor-pointer"
-          title="Inspect Specs"
-        >
-          <Eye className="w-3.5 h-3.5" />
-        </button>
+      {/* Card Footer Actions */}
+      <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
+          <span className="text-xs text-zinc-300 font-medium">
+            {item.availableStock} in stock
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setInspectedItem(item);
+            }}
+            className="w-8 h-8 rounded-full border border-white/10 hover:border-white/30 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            title="Technical Specifications"
+          >
+            <Eye className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              addToBasket(item, 1);
+            }}
+            className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-wide transition-all shadow-sm active:scale-95 flex items-center gap-1.5 cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Requisition</span>
+          </button>
+        </div>
       </div>
     </div>
   );
 
   return (
-    <div className="space-y-6 select-none font-sans max-w-7xl mx-auto">
+    <div className="space-y-8 select-none font-sans max-w-7xl mx-auto">
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* 1. TOP HEADER & CONTROLS                                      */}
+      {/* 1. TOP HEADER & WORKSPACE CONTEXT                             */}
       {/* ───────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/10">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-              <span>Hardware Workstation</span>
-            </h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/10 text-[#f5e6c8] text-xs font-mono font-medium">
-              {filteredItems.length} Components Available
-            </span>
-          </div>
-          <p className="text-xs text-zinc-400 mt-1 font-normal">
-            Department of AIML hardware depot. Browse serialized assets and consumable prototyping stock.
+          <span className="text-[11px] font-medium tracking-[0.2em] uppercase text-[#c9b8a0]">
+            AIML Hardware Depot
+          </span>
+          <h1 className="text-3xl font-bold tracking-tight text-white mt-1">
+            Hardware Workstation
+          </h1>
+          <p className="text-xs text-zinc-400 mt-1.5 max-w-xl font-normal">
+            Browse laboratory computing modules, developer boards, and prototyping stock. Stage components directly into your requisition kit.
           </p>
         </div>
 
@@ -373,88 +385,72 @@ export function InventoryListPage({ initialClassification = null }) {
           {permissions.canAddInventory && (
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="px-4 py-2 rounded-full glass-neural hover:border-[#a78b71]/50 text-white font-inter text-xs font-semibold flex items-center gap-1.5 transition-neural cursor-pointer"
+              className="px-4 py-2 rounded-full border border-white/10 hover:border-white/20 bg-white/[0.04] text-white font-inter text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5 text-[#a78b71]" />
+              <Plus className="w-3.5 h-3.5 text-[#c9b8a0]" />
               <span>Register Hardware</span>
             </button>
           )}
-
-          <button
-            onClick={() => setIsBasketOpen(true)}
-            className="px-4 py-2 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-inter text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
-          >
-            <ShoppingBag className="w-3.5 h-3.5" />
-            <span>Requisition Kit</span>
-            {inventory.length > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full bg-black/10 text-black text-[11px] font-bold">
-                {assetsCount + consumablesCount}
-              </span>
-            )}
-          </button>
         </div>
       </div>
 
       {/* ───────────────────────────────────────────────────────────── */}
       {/* 2. APPLE SEGMENTED CONTROL & FILTER TOOLBAR                   */}
       {/* ───────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 glass-neural p-3 rounded-2xl border border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* Segmented Category Filter */}
-        <div className="flex items-center bg-black/40 p-1 rounded-full border border-white/10">
+        <div className="inline-flex p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl">
           <button
             type="button"
             onClick={() => handleSelectCategory('all')}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               selectedCategory === 'all'
                 ? 'bg-white text-black font-semibold shadow-md'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
-            <Boxes className="w-3.5 h-3.5" />
-            <span>All Items ({assetsCount + consumablesCount})</span>
+            All Items ({assetsCount + consumablesCount})
           </button>
 
           <button
             type="button"
             onClick={() => handleSelectCategory('Asset')}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               selectedCategory === 'Asset'
                 ? 'bg-white text-black font-semibold shadow-md'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
-            <Cpu className="w-3.5 h-3.5" />
-            <span>Assets ({assetsCount})</span>
+            Assets ({assetsCount})
           </button>
 
           <button
             type="button"
             onClick={() => handleSelectCategory('Consumable')}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               selectedCategory === 'Consumable'
                 ? 'bg-white text-black font-semibold shadow-md'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
-            <Package className="w-3.5 h-3.5" />
-            <span>Consumables ({consumablesCount})</span>
+            Consumables ({consumablesCount})
           </button>
         </div>
 
         {/* Right: Search, Lab filter, View Switcher */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-3">
           <div className="w-64">
             <SearchInput
               value={searchQuery}
               onChange={setSearchQuery}
-              placeholder="Filter by name or SKU..."
+              placeholder="Search components or specs..."
             />
           </div>
 
           <select
             value={selectedLab}
             onChange={(e) => setSelectedLab(e.target.value)}
-            className="bg-white/[0.04] border border-white/10 rounded-full px-3.5 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-[#a78b71] transition-all cursor-pointer"
+            className="bg-white/[0.04] border border-white/10 rounded-full px-3.5 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-[#c9b8a0] transition-all cursor-pointer"
           >
             <option value="All Labs" className="bg-[#0a0a0a]">All Labs</option>
             <option value="Lab 1 - AI" className="bg-[#0a0a0a]">Lab 1 - AI</option>
@@ -468,7 +464,7 @@ export function InventoryListPage({ initialClassification = null }) {
               onClick={() => setViewMode('grid')}
               className={`p-1.5 rounded-full transition-all cursor-pointer ${
                 viewMode === 'grid'
-                  ? 'bg-white text-black font-bold shadow-sm'
+                  ? 'bg-white text-black shadow-sm'
                   : 'text-zinc-400 hover:text-white'
               }`}
               title="Widget Cards Grid"
@@ -479,7 +475,7 @@ export function InventoryListPage({ initialClassification = null }) {
               onClick={() => setViewMode('table')}
               className={`p-1.5 rounded-full transition-all cursor-pointer ${
                 viewMode === 'table'
-                  ? 'bg-white text-black font-bold shadow-sm'
+                  ? 'bg-white text-black shadow-sm'
                   : 'text-zinc-400 hover:text-white'
               }`}
               title="Dense Table View"
@@ -491,72 +487,20 @@ export function InventoryListPage({ initialClassification = null }) {
       </div>
 
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* 3. HARDWARE COMPONENTS GRID (Direct, Whole-Thing Display)      */}
+      {/* 3. HARDWARE COMPONENTS GRID (Single Unified Apple-Grade Grid) */}
       {/* ───────────────────────────────────────────────────────────── */}
       {viewMode === 'grid' ? (
-        <div className="space-y-8">
-          {/* Section 1: Serialized Assets */}
-          {assetItems.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-[#c9b8a0]">
-                    <Cpu className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-semibold text-white tracking-tight">
-                      Serialized Assets
-                    </h2>
-                    <p className="text-[11px] text-zinc-400">
-                      Capital computing boards, AI accelerators & bench instrumentation
-                    </p>
-                  </div>
-                </div>
-                <span className="px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-zinc-400">
-                  {assetItems.length} units
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-                {assetItems.map(renderHardwareWidget)}
-              </div>
-            </div>
-          )}
-
-          {/* Section 2: Consumables & Stock */}
-          {consumableItems.length > 0 && (
-            <div className={assetItems.length > 0 ? 'pt-6 border-t border-white/10' : ''}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-[#c9b8a0]">
-                    <Package className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-semibold text-white tracking-tight">
-                      Consumables & Prototyping Stock
-                    </h2>
-                    <p className="text-[11px] text-zinc-400">
-                      Modular sensor breakouts, OLED displays, solderless breadboards & components
-                    </p>
-                  </div>
-                </div>
-                <span className="px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-zinc-400">
-                  {consumableItems.length} lines
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-                {consumableItems.map(renderHardwareWidget)}
-              </div>
-            </div>
-          )}
-
-          {filteredItems.length === 0 && (
-            <div className="text-center py-12 text-zinc-500 text-sm bg-white/[0.02] border border-white/10 rounded-3xl">
-              No components match the current filter or search criteria.
-            </div>
-          )}
-        </div>
+        filteredItems.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredItems.map(renderHardwareWidget)}
+          </div>
+        ) : (
+          <div className="text-center py-20 text-zinc-400 text-sm bg-white/[0.02] border border-white/[0.08] rounded-3xl backdrop-blur-xl">
+            <Boxes className="w-8 h-8 text-zinc-500 mx-auto mb-3" />
+            <p className="font-medium text-white">No components found</p>
+            <p className="text-xs text-zinc-500 mt-1">Try adjusting your category filter or search keywords.</p>
+          </div>
+        )
       ) : (
         <DataTable
           columns={tableColumns}
