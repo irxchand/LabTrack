@@ -1,12 +1,20 @@
 import React, { useState, useMemo } from 'react';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
-import { StatusBadge } from '../../components/common/StatusBadge';
 import { Modal } from '../../components/common/Modal';
-import { Inbox, ShoppingBag, ArrowRight, Check, AlertCircle } from 'lucide-react';
+import {
+  Inbox,
+  ShoppingBag,
+  ArrowRight,
+  Check,
+  AlertCircle,
+  Clock,
+  Sparkles,
+  Layers,
+} from 'lucide-react';
 
 export function RequisitionsPage() {
-  const { requisitions, setIsBasketOpen } = useLabData();
+  const { requisitions, setIsBasketOpen, inventory } = useLabData();
   const { currentUser, role } = useAuth();
   const [selectedReq, setSelectedReq] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -36,6 +44,35 @@ export function RequisitionsPage() {
     } catch {
       return dateStr;
     }
+  };
+
+  // Resolve authentic hardware image from inventory or fallback catalog
+  const getItemImage = (comp) => {
+    if (!comp) return '/images/hardware/raspberry-pi-5.jpg';
+    if (comp.image) return comp.image;
+
+    const match = inventory?.find(
+      (i) =>
+        i.id === comp.itemId ||
+        i.assetTag === comp.itemId ||
+        (i.nomenclature && comp.nomenclature && (
+          i.nomenclature.toLowerCase().includes(comp.nomenclature.toLowerCase()) ||
+          comp.nomenclature.toLowerCase().includes(i.nomenclature.toLowerCase())
+        ))
+    );
+    if (match?.image) return match.image;
+
+    const nom = comp.nomenclature?.toLowerCase() || '';
+    if (nom.includes('oled') || nom.includes('display')) return '/images/hardware/oled-display.jpg';
+    if (nom.includes('jetson') || nom.includes('orin') || nom.includes('nano')) return '/images/hardware/jetson-nano.jpg';
+    if (nom.includes('arduino') || nom.includes('uno')) return '/images/hardware/arduino-uno-r3.jpg';
+    if (nom.includes('esp32') || nom.includes('micro') || nom.includes('mcu')) return '/images/hardware/esp32-wroom.jpg';
+    if (nom.includes('oscilloscope') || nom.includes('rigol')) return '/images/hardware/oscilloscope.jpg';
+    if (nom.includes('jumper') || nom.includes('wire') || nom.includes('ribbon')) return '/images/hardware/jumper-wires.jpg';
+    if (nom.includes('breadboard')) return '/images/hardware/breadboard-830.jpg';
+    if (nom.includes('sensor') || nom.includes('imu') || nom.includes('mpu') || nom.includes('bmp')) return '/images/hardware/bmp280-sensor.jpg';
+    if (nom.includes('resistor')) return '/images/hardware/resistors-pack.jpg';
+    return '/images/hardware/raspberry-pi-5.jpg';
   };
 
   // Filter based on role
@@ -75,22 +112,29 @@ export function RequisitionsPage() {
     return roleRequisitions;
   }, [roleRequisitions, activeFilter]);
 
-  const getStageIndex = (status) => {
+  const getStageInfo = (status) => {
     switch (status) {
       case 'Submitted':
-        return 1;
+        return { index: 1, label: 'Awaiting Faculty Review', color: 'amber' };
       case 'Faculty Endorsed':
-        return 2;
+        return { index: 2, label: 'Faculty Endorsed • Staging', color: 'emerald' };
       case 'Ready for Counter Pickup':
-        return 3;
+        return { index: 3, label: 'Ready for Pickup (Desk 2)', color: 'champagne' };
       case 'Dispatched':
-        return 4;
+        return { index: 4, label: 'Dispatched & In Custody', color: 'white' };
+      case 'Rejected':
+        return { index: 0, label: 'Rejected by Supervisor', color: 'rose' };
       default:
-        return 1;
+        return { index: 1, label: status, color: 'zinc' };
     }
   };
 
-  const stages = ['Submitted', 'Endorsed', 'Staged', 'Dispatched'];
+  const stages = [
+    { num: 1, name: 'Submitted' },
+    { num: 2, name: 'Endorsed' },
+    { num: 3, name: 'Staged' },
+    { num: 4, name: 'Dispatched' },
+  ];
 
   return (
     <div className="space-y-6">
@@ -98,7 +142,7 @@ export function RequisitionsPage() {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-white/10">
         <div>
           <div className="text-[11px] font-sans font-medium text-zinc-400 tracking-wide uppercase">
-            ORDERS & ENDORSEMENTS
+            ORDERS & ALLOCATIONS
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1">
             Requisitions
@@ -181,11 +225,11 @@ export function RequisitionsPage() {
         </button>
       </div>
 
-      {/* Orders Grid */}
+      {/* Apple Store Orders Grid */}
       {filteredRequisitions.length === 0 ? (
         <div className="py-20 text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto text-zinc-500">
-            <Inbox className="w-6 h-6 stroke-[1.5]" />
+          <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto text-zinc-500 shadow-inner">
+            <Inbox className="w-7 h-7 stroke-[1.5]" />
           </div>
           <h3 className="font-display text-lg font-semibold text-white">No Requisitions Found</h3>
           <p className="text-xs text-zinc-400 max-w-sm mx-auto font-sans leading-relaxed">
@@ -200,83 +244,161 @@ export function RequisitionsPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filteredRequisitions.map((req) => {
-            const currentStage = getStageIndex(req.status);
+            const stageInfo = getStageInfo(req.status);
             const isRejected = req.status === 'Rejected';
+            const primaryItem = req.componentsRequested?.[0] || { nomenclature: 'Hardware Component', quantity: 1, type: 'Asset' };
+            const additionalItems = req.componentsRequested?.slice(1) || [];
+            const primaryImage = getItemImage(primaryItem);
 
             return (
               <div
                 key={req.id}
                 onClick={() => setSelectedReq(req)}
-                className="rounded-2xl p-6 bg-white/[0.025] hover:bg-white/[0.04] border border-white/10 transition-all backdrop-blur-md flex flex-col justify-between group cursor-pointer shadow-sm space-y-5"
+                className="relative rounded-3xl p-6 sm:p-7 bg-gradient-to-b from-[#141417]/95 via-[#0e0e11]/90 to-[#0a0a0c]/95 border border-white/10 hover:border-white/20 transition-all duration-300 backdrop-blur-xl flex flex-col justify-between group cursor-pointer shadow-[0_10px_35px_rgba(0,0,0,0.6)] hover:shadow-[0_15px_45px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden"
               >
-                {/* Header Row */}
+                {/* Specular Edge Highlight */}
+                <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
+
+                {/* Top Status & SKU Strip */}
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-semibold text-white group-hover:text-[#f5e6c8] transition-colors">
-                      {req.id}
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-mono text-xs font-bold tracking-tight text-[#f5e6c8] group-hover:text-white transition-colors">
+                      #{req.id}
                     </span>
-                    <span className="text-zinc-600">•</span>
+                    <span className="w-1 h-1 rounded-full bg-zinc-600" />
                     <span className="text-xs text-zinc-400 font-sans">
                       Requested {formatHumanDate(req.requestDate)}
                     </span>
                   </div>
 
-                  <StatusBadge status={req.status} type="requisition" size="sm" />
+                  {/* Vibrant Cupertino Status Pill */}
+                  {stageInfo.color === 'amber' && (
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-300 border border-amber-500/25 flex items-center gap-1.5 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                      <span>{stageInfo.label}</span>
+                    </span>
+                  )}
+                  {stageInfo.color === 'emerald' && (
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/25 flex items-center gap-1.5 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <span>{stageInfo.label}</span>
+                    </span>
+                  )}
+                  {stageInfo.color === 'champagne' && (
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1.5 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8] animate-ping" />
+                      <span>{stageInfo.label}</span>
+                    </span>
+                  )}
+                  {stageInfo.color === 'white' && (
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/[0.08] text-white border border-white/15 flex items-center gap-1.5 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                      <span>{stageInfo.label}</span>
+                    </span>
+                  )}
+                  {stageInfo.color === 'rose' && (
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-rose-500/15 text-rose-300 border border-rose-500/30 flex items-center gap-1.5 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                      <span>{stageInfo.label}</span>
+                    </span>
+                  )}
                 </div>
 
-                {/* Stated Purpose */}
-                <p className="text-sm font-sans text-zinc-300 leading-relaxed italic line-clamp-2">
-                  "{req.technicalPurpose}"
-                </p>
+                {/* Primary Hardware Showcase (Hero Staging with Studio Image) */}
+                <div className="flex items-center gap-5 pt-1">
+                  {/* Studio Hardware Pedestal */}
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-black/60 border border-white/10 p-3 flex items-center justify-center relative flex-shrink-0 shadow-inner group-hover:border-white/25 transition-all">
+                    <img
+                      src={primaryImage}
+                      alt={primaryItem.nomenclature}
+                      className="max-h-full max-w-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.9)] group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+                      }}
+                    />
+                    <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-white text-black font-mono font-bold text-[10px] shadow-md">
+                      {primaryItem.quantity}x
+                    </span>
+                  </div>
 
-                {/* Manifest Component Chips */}
-                <div className="space-y-2">
-                  <div className="text-[10px] font-sans uppercase tracking-wider text-zinc-500 font-semibold">
-                    Requested Manifest ({req.componentsRequested.length} {req.componentsRequested.length === 1 ? 'item' : 'items'})
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {req.componentsRequested.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="px-2.5 py-1 rounded-xl bg-white/[0.03] border border-white/10 text-xs font-sans text-zinc-300 flex items-center gap-1.5"
-                      >
-                        <span className="font-mono font-bold text-white text-[11px]">
-                          {item.quantity}x
-                        </span>
-                        <span className="truncate max-w-[190px]">{item.nomenclature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Progression Stepper */}
-                {isRejected ? (
-                  <div className="px-3.5 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-sans flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    <span>Order rejected by supervisor: {req.supervisorNotes || 'Review feedback required.'}</span>
-                  </div>
-                ) : (
-                  <div className="pt-2 border-t border-white/5 space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-sans text-zinc-500">
-                      <span>Order Progression</span>
-                      <span className="text-zinc-400 font-medium">Stage {currentStage} of 4</span>
+                  {/* Component Metadata & Purpose */}
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-mono text-[#c9b8a0] font-semibold uppercase tracking-wider">
+                        {primaryItem.type || 'Hardware Asset'}
+                      </span>
+                      <span className="text-zinc-600">•</span>
+                      <span className="text-[11px] font-sans text-zinc-400">
+                        Aiming for AIML Lab
+                      </span>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-2 items-center">
-                      {stages.map((stageName, idx) => {
-                        const stageNumber = idx + 1;
-                        const isCompleted = stageNumber <= currentStage;
-                        const isCurrent = stageNumber === currentStage;
+                    <h3 className="font-display text-base sm:text-lg font-semibold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors leading-snug">
+                      {primaryItem.nomenclature}
+                    </h3>
+
+                    {/* Stated Purpose in Refined Glass Badge */}
+                    <div className="mt-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/5 text-xs text-zinc-300 font-sans italic leading-relaxed">
+                      "{req.technicalPurpose}"
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Requested Items Strip (If Any) */}
+                {additionalItems.length > 0 && (
+                  <div className="pt-2 border-t border-white/5 space-y-1.5">
+                    <div className="text-[10px] font-sans uppercase tracking-wider text-zinc-500 font-semibold flex items-center gap-1.5">
+                      <Layers className="w-3 h-3 text-[#c9b8a0]" />
+                      <span>Additional Staged Components ({additionalItems.length})</span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {additionalItems.map((subItem, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-white/[0.03] border border-white/10 text-xs text-zinc-300 font-sans shadow-sm"
+                        >
+                          <img
+                            src={getItemImage(subItem)}
+                            alt=""
+                            className="w-4 h-4 object-contain rounded flex-shrink-0"
+                          />
+                          <span className="font-mono font-bold text-white text-[11px]">{subItem.quantity}x</span>
+                          <span className="truncate max-w-[200px]">{subItem.nomenclature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tactile Progression Stepper */}
+                {isRejected ? (
+                  <div className="px-4 py-2.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-sans flex items-center gap-2.5">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
+                    <span>Supervisor Feedback: {req.supervisorNotes || 'Requisition declined during review.'}</span>
+                  </div>
+                ) : (
+                  <div className="pt-3 border-t border-white/5 space-y-2.5">
+                    <div className="flex items-center justify-between text-[11px] font-sans">
+                      <span className="text-zinc-500">Circulation Timeline</span>
+                      <span className="text-zinc-300 font-medium">Stage {stageInfo.index} of 4 • {stageInfo.label}</span>
+                    </div>
+
+                    {/* Apple Segmented Progress Bar */}
+                    <div className="grid grid-cols-4 gap-2">
+                      {stages.map((st) => {
+                        const isCompleted = st.num <= stageInfo.index;
+                        const isCurrent = st.num === stageInfo.index;
 
                         return (
-                          <div key={stageName} className="space-y-1 text-center">
+                          <div key={st.name} className="space-y-1.5 text-center">
                             <div
-                              className={`h-1 rounded-full transition-all duration-300 ${
+                              className={`h-1.5 rounded-full transition-all duration-300 ${
                                 isCompleted
                                   ? isCurrent
-                                    ? 'bg-[#c9b8a0]'
+                                    ? 'bg-[#c9b8a0] shadow-[0_0_12px_rgba(201,184,160,0.6)]'
                                     : 'bg-white'
                                   : 'bg-white/10'
                               }`}
@@ -284,13 +406,13 @@ export function RequisitionsPage() {
                             <span
                               className={`text-[10px] font-sans block truncate ${
                                 isCurrent
-                                  ? 'text-white font-medium'
+                                  ? 'text-white font-semibold'
                                   : isCompleted
                                   ? 'text-zinc-400'
                                   : 'text-zinc-600'
                               }`}
                             >
-                              {stageName}
+                              {st.name}
                             </span>
                           </div>
                         );
@@ -299,12 +421,20 @@ export function RequisitionsPage() {
                   </div>
                 )}
 
-                {/* Footer Strip */}
-                <div className="flex items-center justify-between pt-2 border-t border-white/10 text-xs font-sans">
-                  <div className="text-zinc-400 truncate max-w-[220px]">
-                    <span className="text-white font-medium">{req.mentorName}</span>
-                    <span className="text-zinc-600 mx-1.5">•</span>
-                    <span className="font-mono text-zinc-500 text-[11px]">{req.projectId}</span>
+                {/* Footer Strip with Mentor Monogram and Action */}
+                <div className="flex items-center justify-between pt-3 border-t border-white/10 text-xs font-sans">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-white/20 to-white/5 border border-white/10 text-white font-semibold text-xs flex items-center justify-center shadow-sm">
+                      {(req.mentorName || 'F').charAt(0)}
+                    </div>
+                    <div>
+                      <div className="text-white font-medium truncate max-w-[170px] sm:max-w-[220px]">
+                        {req.mentorName}
+                      </div>
+                      <div className="font-mono text-zinc-500 text-[11px]">
+                        {req.projectId}
+                      </div>
+                    </div>
                   </div>
 
                   <button
@@ -313,9 +443,9 @@ export function RequisitionsPage() {
                       e.stopPropagation();
                       setSelectedReq(req);
                     }}
-                    className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white/[0.04] group-hover:bg-white text-zinc-300 group-hover:text-black border border-white/10 transition-all flex items-center gap-1.5 shadow-sm"
+                    className="px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-[#f5e6c8] text-black transition-all flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95 flex-shrink-0"
                   >
-                    <span>Dossier</span>
+                    <span>Order Dossier</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -329,13 +459,13 @@ export function RequisitionsPage() {
       <Modal
         isOpen={!!selectedReq}
         onClose={() => setSelectedReq(null)}
-        title={`Requisition Dossier: ${selectedReq?.id}`}
+        title={`Requisition Dossier: #${selectedReq?.id}`}
         subtitle={`Submitted by ${selectedReq?.studentName} • ${selectedReq?.projectId}`}
       >
         {selectedReq && (
-          <div className="space-y-5 text-xs font-sans">
+          <div className="space-y-6 text-xs font-sans">
             {/* Stated Purpose */}
-            <div className="p-4 bg-white/[0.02] rounded-2xl border border-white/10 space-y-1.5">
+            <div className="p-5 bg-white/[0.02] rounded-2xl border border-white/10 space-y-2">
               <div className="text-[10px] font-sans uppercase tracking-wider text-zinc-500 font-semibold">
                 Stated Technical Purpose
               </div>
@@ -350,19 +480,32 @@ export function RequisitionsPage() {
               </div>
             </div>
 
-            {/* Hardware Manifest */}
-            <div className="p-4 bg-white/[0.02] rounded-2xl border border-white/10 space-y-3">
+            {/* Hardware Manifest with Real Thumbnails */}
+            <div className="p-5 bg-white/[0.02] rounded-2xl border border-white/10 space-y-3">
               <div className="text-[10px] font-sans uppercase tracking-wider text-zinc-500 font-semibold">
-                Authorized Hardware Manifest
+                Authorized Hardware Manifest ({selectedReq.componentsRequested.length} items)
               </div>
               <div className="divide-y divide-white/5">
                 {selectedReq.componentsRequested.map((item, idx) => (
-                  <div key={idx} className="py-2.5 flex items-center justify-between text-xs">
-                    <div>
-                      <div className="text-white font-medium">{item.nomenclature}</div>
-                      <div className="text-zinc-500 font-mono text-[11px] mt-0.5">Classification: {item.type}</div>
+                  <div key={idx} className="py-3 flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-12 h-12 rounded-xl bg-black/60 border border-white/10 p-1.5 flex items-center justify-center flex-shrink-0 shadow-inner">
+                        <img
+                          src={getItemImage(item)}
+                          alt={item.nomenclature}
+                          className="max-h-full max-w-full object-contain"
+                          onError={(e) => {
+                            e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+                          }}
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-white font-semibold text-sm truncate">{item.nomenclature}</div>
+                        <div className="text-zinc-500 font-mono text-[11px] mt-0.5">Classification: {item.type}</div>
+                      </div>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full bg-white/[0.05] border border-white/10 font-mono text-white font-semibold">
+
+                    <span className="px-3 py-1 rounded-full bg-white text-black font-mono font-bold text-xs shadow-sm flex-shrink-0">
                       {item.quantity} Unit(s)
                     </span>
                   </div>
@@ -376,10 +519,10 @@ export function RequisitionsPage() {
                 Audit Timeline Progression
               </div>
 
-              <div className="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/10">
+              <div className="relative pl-7 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/10">
                 {selectedReq.timeline.map((step, idx) => (
                   <div key={idx} className="relative space-y-1">
-                    <span className="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-[#c9b8a0] text-black flex items-center justify-center text-[10px] font-bold">
+                    <span className="absolute -left-7 top-0.5 w-5 h-5 rounded-full bg-[#c9b8a0] text-black flex items-center justify-center text-[10px] font-bold shadow-md">
                       {idx + 1}
                     </span>
                     <div className="flex items-center gap-2">
@@ -388,7 +531,7 @@ export function RequisitionsPage() {
                     </div>
                     <div className="text-[11px] text-zinc-400 font-sans">Recorded by: {step.actor}</div>
                     {step.note && (
-                      <div className="text-zinc-300 bg-white/[0.03] p-2.5 rounded-xl border border-white/10 mt-1 text-xs leading-relaxed">
+                      <div className="text-zinc-300 bg-white/[0.03] p-3 rounded-xl border border-white/10 mt-1 text-xs leading-relaxed">
                         "{step.note}"
                       </div>
                     )}
@@ -401,7 +544,7 @@ export function RequisitionsPage() {
               <button
                 type="button"
                 onClick={() => setSelectedReq(null)}
-                className="px-5 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black text-xs font-semibold transition-all cursor-pointer shadow-sm"
+                className="px-6 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-95"
               >
                 Done
               </button>
