@@ -380,15 +380,15 @@ export function ActiveLoansPage() {
             </div>
           </div>
 
-          {/* Product Hero Image (Clean Dark Floating Stage with Studio Pedestal Glow) */}
-          <div className="relative w-full h-52 sm:h-56 flex items-center justify-center my-3 overflow-hidden">
+          {/* Product Hero Image (Clean Showroom Framed Box with Full-Bleed Fitting) */}
+          <div className="relative w-full h-56 sm:h-60 rounded-2xl overflow-hidden my-3.5 bg-black/50 border border-white/10 flex items-center justify-center">
             {/* Showroom Ambient Light Pedestal Glow under hardware */}
-            <div className={`absolute bottom-3 w-40 h-10 rounded-full ${style.pedestalGlow} blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-125 opacity-70`} />
+            <div className={`absolute inset-0 ${style.pedestalGlow} blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-110 opacity-30`} />
 
             <img
               src={invItem?.image || '/images/hardware/raspberry-pi-5.jpg'}
               alt={loan.nomenclature}
-              className="max-h-full max-w-full object-contain drop-shadow-[0_24px_40px_rgba(0,0,0,0.95)] group-hover:scale-[1.04] transition-transform duration-500 ease-out z-10"
+              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out z-10"
               onError={(e) => {
                 e.target.src = '/images/hardware/raspberry-pi-5.jpg';
               }}

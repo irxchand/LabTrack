@@ -174,11 +174,11 @@ export function RequisitionDrawer() {
                   className="rounded-2xl p-4 bg-white/[0.025] hover:bg-white/[0.04] border border-white/10 transition-all flex items-center gap-4 group"
                 >
                   {/* Crisp Studio Thumbnail */}
-                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-black/50 border border-white/10 flex-shrink-0 flex items-center justify-center p-1.5 shadow-sm">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-black/50 border border-white/10 flex-shrink-0 relative shadow-sm">
                     <img
                       src={item.image || '/images/hardware/raspberry-pi-5.jpg'}
                       alt={item.nomenclature}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover object-center"
                       onError={(e) => {
                         e.target.src = '/images/hardware/raspberry-pi-5.jpg';
                       }}

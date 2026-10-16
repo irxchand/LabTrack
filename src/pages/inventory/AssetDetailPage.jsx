@@ -110,12 +110,12 @@ export function AssetDetailPage() {
         {/* Left 2 Columns: Technical Dossier */}
         <div className="lg:col-span-2 space-y-6">
           {/* Hardware Photo Pedestal */}
-          <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl backdrop-blur-xl shadow-lg flex items-center justify-center h-64 overflow-hidden relative">
+          <div className="p-2 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl backdrop-blur-xl shadow-lg flex items-center justify-center h-72 sm:h-80 overflow-hidden relative">
             <div className="absolute inset-0 bg-radial from-[#c9b8a0]/10 via-transparent to-transparent pointer-events-none" />
             <img
               src={getItemImage(item)}
               alt={item.nomenclature}
-              className="max-h-full max-w-full object-contain filter drop-shadow-[0_20px_35px_rgba(0,0,0,0.9)] z-10"
+              className="w-full h-full object-cover object-center rounded-2xl z-10"
               onError={(e) => {
                 e.target.src = '/images/hardware/raspberry-pi-5.jpg';
               }}
