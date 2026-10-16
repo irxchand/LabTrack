@@ -66,7 +66,7 @@ export function ProjectDetailPage() {
   if (!project) {
     return (
       <div className="p-16 text-center space-y-4 max-w-md mx-auto">
-        <h2 className="font-display text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0]">
+        <h2 className="font-display text-xl font-semibold text-white">
           Project Not Found
         </h2>
         <p className="text-sm font-sans text-zinc-400">
@@ -90,7 +90,7 @@ export function ProjectDetailPage() {
         <div className="w-14 h-14 rounded-full bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 flex items-center justify-center mx-auto text-[#f5e6c8] shadow-[0_0_20px_rgba(201,184,160,0.2)]">
           <ShieldAlert className="w-7 h-7" />
         </div>
-        <h2 className="font-display text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0]">
+        <h2 className="font-display text-2xl font-semibold text-white">
           Restricted Project Dossier
         </h2>
         <p className="text-sm font-sans text-zinc-400 leading-relaxed">
@@ -135,7 +135,7 @@ export function ProjectDetailPage() {
                 {project.academicTerm || 'Autumn 2026'}
               </span>
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] mt-1">
+            <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1">
               {project.title}
             </h1>
           </div>

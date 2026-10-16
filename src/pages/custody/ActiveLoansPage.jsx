@@ -397,7 +397,7 @@ export function ActiveLoansPage() {
 
           {/* Product Title & Subtitle */}
           <div className="space-y-1.5 mt-2">
-            <h3 className="text-[17px] font-semibold text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] tracking-[-0.015em] leading-snug group-hover:from-[#f5e6c8] group-hover:to-[#c9b8a0] transition-all">
+            <h3 className="text-[17px] font-semibold text-white tracking-[-0.015em] leading-snug group-hover:text-[#f5e6c8] transition-colors">
               {loan.nomenclature}
             </h3>
             <p className="text-[13px] text-zinc-400 font-normal line-clamp-2 leading-relaxed">
@@ -490,7 +490,7 @@ export function ActiveLoansPage() {
           <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
             Station & Field Deployments
           </span>
-          <h1 className="text-3xl font-bold tracking-[-0.025em] text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] mt-1 font-display">
+          <h1 className="text-3xl font-bold tracking-[-0.025em] text-white mt-1 font-display">
             My Bench
           </h1>
           <p className="text-[13px] text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">

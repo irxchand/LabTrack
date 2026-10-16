@@ -42,7 +42,7 @@ export function Modal({ isOpen, onClose, title, subtitle, children, maxWidth = '
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.02]">
           <div>
-            <h3 className="text-base font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] tracking-tight font-display">{title}</h3>
+            <h3 className="text-base font-semibold text-white tracking-tight font-display">{title}</h3>
             {subtitle && <p className="text-xs text-zinc-400 mt-0.5 font-normal">{subtitle}</p>}
           </div>
           <button

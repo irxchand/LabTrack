@@ -198,7 +198,7 @@ export function ProjectDirectoryPage() {
             <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
             STUDENT ACADEMIC PORTAL • COLLABORATIVE HARDWARE POOLS
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] mt-1.5">
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1.5">
             My Academic Projects
           </h1>
           <p className="text-sm font-sans text-zinc-400 mt-1 max-w-xl">
@@ -323,7 +323,7 @@ export function ProjectDirectoryPage() {
           <div className="w-12 h-12 rounded-full bg-[#c9b8a0]/10 border border-[#c9b8a0]/20 flex items-center justify-center mx-auto text-[#f5e6c8]">
             <Users className="w-6 h-6" />
           </div>
-          <h3 className="font-display text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0]">
+          <h3 className="font-display text-lg font-semibold text-white">
             No Project Groups Found
           </h3>
           <p className="text-xs text-zinc-400 font-sans leading-relaxed">
@@ -389,7 +389,7 @@ export function ProjectDirectoryPage() {
 
                 {/* Title & Technical Abstract */}
                 <div className="space-y-2">
-                  <h3 className="font-display text-lg sm:text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] tracking-tight group-hover:brightness-110 transition-all leading-snug">
+                  <h3 className="font-display text-lg sm:text-xl font-semibold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors leading-snug">
                     {project.title}
                   </h3>
                   <p className="text-xs text-zinc-300 font-sans leading-relaxed line-clamp-2">

@@ -145,7 +145,7 @@ export function RequisitionsPage() {
             <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
             ORDERS & ALLOCATIONS
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] mt-1">
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1">
             Requisitions
           </h1>
           <p className="text-sm font-sans text-zinc-400 mt-1 max-w-xl">
@@ -232,7 +232,7 @@ export function RequisitionsPage() {
           <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto text-zinc-500 shadow-inner">
             <Inbox className="w-7 h-7 stroke-[1.5]" />
           </div>
-          <h3 className="font-display text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0]">No Requisitions Found</h3>
+          <h3 className="font-display text-lg font-semibold text-white">No Requisitions Found</h3>
           <p className="text-xs text-zinc-400 max-w-sm mx-auto font-sans leading-relaxed">
             No hardware orders match the selected filter. Browse the Workstation catalog to stage components into your requisition kit.
           </p>
@@ -336,7 +336,7 @@ export function RequisitionsPage() {
                       </span>
                     </div>
 
-                    <h3 className="font-display text-base sm:text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] tracking-tight group-hover:from-[#f5e6c8] group-hover:to-[#c9b8a0] transition-colors leading-snug">
+                    <h3 className="font-display text-base sm:text-lg font-semibold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors leading-snug">
                       {primaryItem.nomenclature}
                     </h3>
 

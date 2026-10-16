@@ -89,7 +89,7 @@ export function ReservationsPage() {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-zinc-800/80">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] flex items-center gap-2">
+          <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
             <BookmarkCheck className="w-5 h-5 text-[#c9b8a0]" />
             Hardware Reservations & FIFO Backlog Queue
           </h1>
