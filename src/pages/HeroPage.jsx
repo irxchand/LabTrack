@@ -208,16 +208,13 @@ export function HeroPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────
-          ACADEMIC FLOW // ALL 5 CARDS (5-Column Responsive Grid, Clash Display)
+          Capabilities & Workflow Cards (5-Column Responsive Grid, Clash Display)
       ───────────────────────────────────────────────────────────────────────── */}
       <section
         id="capabilities"
         className="py-28 px-6 sm:px-12 max-w-7xl mx-auto relative z-10 border-t border-white/5"
       >
         <div className="text-center mb-16">
-          <div className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#a78b71] mb-3">
-            ACADEMIC LIFECYCLE // 5 PHASES
-          </div>
           <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight text-white">
             From Project Proposal to{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] to-[#a78b71]">
@@ -235,9 +232,6 @@ export function HeroPage() {
             <div>
               <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
                 <FolderGit2 className="w-5 h-5" />
-              </div>
-              <div className="text-[10px] font-mono tracking-[0.2em] text-[#a78b71] mb-1.5 uppercase">
-                PHASE 01
               </div>
               <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
                 Projects
@@ -261,9 +255,6 @@ export function HeroPage() {
               <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
                 <Cpu className="w-5 h-5" />
               </div>
-              <div className="text-[10px] font-mono tracking-[0.2em] text-[#a78b71] mb-1.5 uppercase">
-                PHASE 02
-              </div>
               <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
                 Workstation
               </h3>
@@ -285,9 +276,6 @@ export function HeroPage() {
             <div>
               <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
                 <Inbox className="w-5 h-5" />
-              </div>
-              <div className="text-[10px] font-mono tracking-[0.2em] text-[#a78b71] mb-1.5 uppercase">
-                PHASE 03
               </div>
               <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
                 Requisitions
@@ -311,9 +299,6 @@ export function HeroPage() {
               <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
                 <BookmarkCheck className="w-5 h-5" />
               </div>
-              <div className="text-[10px] font-mono tracking-[0.2em] text-[#a78b71] mb-1.5 uppercase">
-                PHASE 04
-              </div>
               <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
                 Waitlist
               </h3>
@@ -335,9 +320,6 @@ export function HeroPage() {
             <div>
               <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
                 <Clock className="w-5 h-5" />
-              </div>
-              <div className="text-[10px] font-mono tracking-[0.2em] text-[#a78b71] mb-1.5 uppercase">
-                PHASE 05
               </div>
               <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
                 My Bench
