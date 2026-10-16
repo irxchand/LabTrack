@@ -56,6 +56,15 @@ export function HeroPage() {
     }
   };
 
+  const getUserInitials = (name) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return parts[0].slice(0, 2).toUpperCase();
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#a78b71] selection:text-black overflow-x-hidden relative font-sans">
       {/* ─────────────────────────────────────────────────────────────────────────
@@ -102,10 +111,16 @@ export function HeroPage() {
         <div className="flex items-center gap-3 sm:gap-4">
           {isAuthenticated && currentUser ? (
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs text-[#e8d5b7]">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                <span className="font-medium text-white">{currentUser.name || currentUser.prn}</span>
-                <span className="text-[10px] uppercase tracking-wider text-[#a78b71]">({currentUser.role})</span>
+              <div className="hidden md:flex items-center gap-2.5 pl-1.5 pr-2.5 py-1 rounded-full bg-white/[0.03] border border-white/10 hover:border-[#a78b71]/40 transition-all backdrop-blur-md shadow-sm">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#a78b71]/35 to-[#e8d5b7]/20 border border-[#c9b8a0]/30 flex items-center justify-center text-[10px] font-semibold text-[#f5e6c8] tracking-tight select-none">
+                  {getUserInitials(currentUser.name || currentUser.prn)}
+                </div>
+                <span className="font-medium text-white/90 text-xs tracking-tight">
+                  {currentUser.name || currentUser.prn}
+                </span>
+                <span className="text-[10px] font-medium text-[#c9b8a0] bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/10">
+                  {currentUser.role}
+                </span>
               </div>
               <button
                 onClick={() => {
