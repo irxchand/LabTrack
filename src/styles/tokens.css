@@ -1,0 +1,87 @@
+:root {
+  /* Linear & Supabase Dark Enterprise Palette */
+  --bg-app: #08090b;
+  --bg-sidebar: #0c0d10;
+  --bg-surface: #121317;
+  --bg-surface-elevated: #181920;
+  --bg-surface-hover: #1e2028;
+  --bg-surface-active: #252833;
+  --bg-input: #0e0f13;
+  --bg-overlay: rgba(8, 9, 11, 0.88);
+
+  /* Linear Precision 1px Borders */
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-muted: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  --border-focus: #5e6ad2;
+
+  /* Typography / High Contrast Neutral Hierarchy */
+  --text-primary: #f7f8f9;
+  --text-secondary: #9da1ad;
+  --text-muted: #6b7080;
+  --text-faint: #444754;
+
+  /* Accent Glows & Semantics */
+  --accent-linear: #5e6ad2;
+  --accent-linear-hover: #6875e5;
+  --accent-linear-glow: rgba(94, 106, 210, 0.25);
+
+  --accent-supabase: #3ecf8e;
+  --accent-supabase-glow: rgba(62, 207, 142, 0.25);
+
+  --status-available: #3ecf8e;
+  --status-available-bg: rgba(62, 207, 142, 0.1);
+  --status-allocated: #5e6ad2;
+  --status-allocated-bg: rgba(94, 106, 210, 0.12);
+  --status-low: #f59e0b;
+  --status-low-bg: rgba(245, 158, 11, 0.12);
+  --status-maintenance: #f43f5e;
+  --status-maintenance-bg: rgba(244, 63, 94, 0.12);
+  --status-overdue: #ef4444;
+  --status-overdue-bg: rgba(239, 68, 68, 0.18);
+
+  --accent-brass: #c8963e;
+  --accent-brass-glow: rgba(200, 150, 62, 0.25);
+  --accent-maroon: #8b1d2c;
+  --accent-maroon-glow: rgba(139, 29, 44, 0.3);
+  --accent-phosphor: #10b981;
+  --accent-phosphor-glow: rgba(16, 185, 129, 0.25);
+
+  /* Authentic Oryzo (Lusion) Palette Tokens */
+  --oryzo-cream: #FFEDD6;
+  --oryzo-sand: #FDE9CE;
+  --oryzo-orange: #FF6B00;
+  --oryzo-black: #060607;
+  --oryzo-surface: #0e0e11;
+  --oryzo-border: rgba(255, 237, 214, 0.12);
+  --oryzo-muted: #8E857B;
+
+  /* Geometry & Typography */
+  --font-sans: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-clash: 'Clash Display', 'Inter', -apple-system, sans-serif;
+  --font-satoshi: 'Satoshi', -apple-system, sans-serif;
+  --font-serif-italic: 'Newsreader', Georgia, serif;
+
+  /* Swiss Minimalist Luxury-Brutalist Palette */
+  --bg-swiss: #f2f2f2;
+  --text-swiss: #111111;
+  --gray-echo-1: #bfbfbf;
+  --gray-echo-2: #c9c9c9;
+  --gray-echo-3: #d1d1d1;
+  --gray-echo-4: #d9d9d9;
+  --gray-muted: #b6b5b5;
+  --gray-secondary: #838282;
+  --border-swiss: rgba(30, 30, 30, 0.1);
+  --dark-footer: #1e1e1e;
+
+  /* Luxury Dark Gold Neural Palette */
+  --bg-dark-neural: #0a0a0a;
+  --gold-base: #a78b71;
+  --gold-light: #c9b8a0;
+  --gold-hover: #e8d5b7;
+  --gold-glow: rgba(167, 139, 113, 0.2);
+  --gold-shadow: rgba(167, 139, 113, 0.3);
+  --font-serif-editorial: 'Playfair Display', Georgia, serif;
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}

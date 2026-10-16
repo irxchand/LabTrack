@@ -4,6 +4,33 @@ This file is a high-density, chronological record of decisions, file reorganizat
 
 ---
 
+## 2026-10-16 — State 1: Authentication Engine & Dual Storage (Excel & MySQL) Verification
+
+**Summary**
+Implemented Stage 1 dedicated authentication entry point for LabTrack (`/` and `/login`) with true luxury transparent glassmorphism, pure typographic branding (NO microchip/circuit graphics), and dual-backend compatibility supporting both Excel (`.xlsx`) sheet rosters and relational MySQL database storage with automated smoke test suites.
+
+**Decisions**
+- Implemented pure typographic LabTrack luxury branding with warm ambient radial gold diffusion (zero microchips, zero circuit boards per design contract).
+- Engineered transparent glassmorphic UI (`bg-white/[0.03]` with `backdrop-blur-2xl`, specular rim highlights, and atmospheric backlighting).
+- Built dual storage engine compatibility:
+  - Excel Service: `xlsx` (SheetJS) parser with `public/data/labtrack_auth_roster.xlsx` and Excel audit log exporter.
+  - MySQL Service: `mysql2` client with relational schema (`scripts/schema.sql`), parameterized queries, SQL injection immunity, and relational audit logging.
+- Retained fast 4-role switcher (Student, Faculty, Lab Assistant, HoD / Admin) for zero-latency testing across personas.
+- Built automated standalone smoke test suites for both Excel (11/11 tests passing) and MySQL (10/10 tests passing).
+
+**Changes**
+- Created `src/pages/auth/LoginPage.jsx` (luxury transparent glassmorphic auth interface).
+- Created `src/services/mysqlAuthService.js` and `src/services/excelAuthService.js`.
+- Configured `src/context/AuthContext.jsx` with dual `loginWithMySQL` and `loginWithExcel` providers.
+- Added `scripts/schema.sql` (relational DDL for `users` and `auth_audit_logs`).
+- Added `scripts/smoke-test-mysql-auth.cjs` and `scripts/smoke-test-excel-auth.cjs`.
+- Verified production build (`npm run build`) passing with zero errors.
+
+**Next Context**
+- Stage 1 authentication verified and pushed to branch `feat-raghu`.
+
+---
+
 ## 2026-10-05 — LabTrack Pitch Deck V1.1 Release
 
 **Summary**
