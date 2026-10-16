@@ -159,7 +159,7 @@ export function DispatchDeskPage() {
                   value={dispatchSearchPrn}
                   onChange={(e) => setDispatchSearchPrn(e.target.value)}
                   placeholder="Type student PRN (e.g. 202401048) or Project ID..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl font-mono text-xs text-white focus:outline-none focus:border-[#a78b71] transition-neural"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl font-sans text-xs text-white focus:outline-none focus:border-[#a78b71] transition-neural"
                 />
               </div>
               <p className="text-[11px] text-zinc-500 font-inter">
@@ -187,7 +187,7 @@ export function DispatchDeskPage() {
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-bold font-mono text-[#c9b8a0]">{req.id}</span>
+                        <span className="font-bold font-sans text-[#c9b8a0]">{req.id}</span>
                         <StatusBadge status={req.status} type="requisition" size="xs" />
                       </div>
 
@@ -196,7 +196,7 @@ export function DispatchDeskPage() {
                         <div className="text-zinc-500 text-[11px]">{req.projectId} • Mentor: {req.mentorName}</div>
                       </div>
 
-                      <div className="mt-3 pt-2 border-t border-white/10 flex flex-wrap gap-1.5 font-mono">
+                      <div className="mt-3 pt-2 border-t border-white/10 flex flex-wrap gap-1.5 font-sans">
                         {req.componentsRequested.map((c, i) => (
                           <span key={i} className="px-2.5 py-0.5 rounded-full bg-white/[0.06] text-white border border-white/10 text-[11px]">
                             {c.quantity}x {c.nomenclature}
@@ -226,7 +226,7 @@ export function DispatchDeskPage() {
                 <form onSubmit={handleExecuteDispatch} className="space-y-4">
                   <div className="p-4 bg-white/[0.03] rounded-xl border border-white/10 space-y-1.5">
                     <div className="text-zinc-500 text-[11px]">Selected Order:</div>
-                    <div className="text-white font-bold font-mono text-sm">{selectedRequisition.id}</div>
+                    <div className="text-white font-bold font-sans text-sm">{selectedRequisition.id}</div>
                     <div className="text-zinc-400 text-[11px]">
                       Requester: {selectedRequisition.studentName} • {selectedRequisition.projectId}
                     </div>
@@ -239,7 +239,7 @@ export function DispatchDeskPage() {
                     <select
                       value={selectedAssetTag}
                       onChange={(e) => setSelectedAssetTag(e.target.value)}
-                      className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2.5 font-mono text-xs text-white focus:outline-none focus:border-[#a78b71] transition-neural"
+                      className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2.5 font-sans text-xs text-white focus:outline-none focus:border-[#a78b71] transition-neural"
                     >
                       <option value="" className="bg-[#0a0a0a]">-- Choose verified bench hardware --</option>
                       {availableSerializedAssets.map((asset) => (
@@ -257,7 +257,7 @@ export function DispatchDeskPage() {
                     <select
                       value={dueDateDays}
                       onChange={(e) => setDueDateDays(e.target.value)}
-                      className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2.5 font-mono text-xs text-white focus:outline-none focus:border-[#a78b71] transition-neural"
+                      className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2.5 font-sans text-xs text-white focus:outline-none focus:border-[#a78b71] transition-neural"
                     >
                       <option value="7" className="bg-[#0a0a0a]">7 Days (Standard Coursework Check)</option>
                       <option value="14" className="bg-[#0a0a0a]">14 Days (Standard Two-Week Term Sprint)</option>
@@ -309,7 +309,7 @@ export function DispatchDeskPage() {
                   value={checkinSearchQuery}
                   onChange={(e) => setCheckinSearchQuery(e.target.value)}
                   placeholder="Enter Asset Tag (e.g. AT-JET-0012) or Student PRN..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl font-mono text-xs text-white focus:outline-none focus:border-[#a78b71] transition-neural"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl font-sans text-xs text-white focus:outline-none focus:border-[#a78b71] transition-neural"
                 />
               </div>
             </div>
@@ -331,13 +331,13 @@ export function DispatchDeskPage() {
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold font-mono text-[#c9b8a0]">{loan.assetTag}</span>
+                    <span className="font-bold font-sans text-[#c9b8a0]">{loan.assetTag}</span>
                     <StatusBadge status={loan.status} type="due" size="xs" />
                   </div>
                   <div className="mt-1 font-inter text-xs text-white font-medium truncate">
                     {loan.nomenclature}
                   </div>
-                  <div className="mt-1 text-[11px] text-zinc-500 font-mono flex justify-between">
+                  <div className="mt-1 text-[11px] text-zinc-400 font-sans flex justify-between">
                     <span>PRN: {loan.borrowerPrn} ({loan.borrowerName})</span>
                     <span>Due: {loan.dueDate?.split(' ')[0]}</span>
                   </div>

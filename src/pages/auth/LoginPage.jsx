@@ -87,7 +87,7 @@ export function LoginPage() {
               LabTrack
             </h1>
             <div className="w-14 h-0.5 bg-gradient-to-r from-transparent via-[#c9b8a0]/70 to-transparent mx-auto mt-4 mb-3" />
-            <p className="text-xs font-mono uppercase tracking-[0.28em] text-[#c9b8a0]/80">
+            <p className="text-xs font-sans font-semibold uppercase tracking-[0.28em] text-[#c9b8a0]/80">
               Physical Computing
             </p>
           </div>

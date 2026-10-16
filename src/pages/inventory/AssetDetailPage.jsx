@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import {
@@ -9,34 +9,44 @@ import {
   ShoppingBag,
   BookmarkPlus,
   ExternalLink,
-  ShieldAlert,
-  Clock,
   History,
-  FileCode,
-  Tag,
-  Building,
+  Clock,
+  Layers,
+  Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 
 export function AssetDetailPage() {
   const { itemId } = useParams();
-  const navigate = useNavigate();
   const { inventory, addToBasket, joinWaitlist } = useLabData();
 
   const item = inventory.find((i) => i.id === itemId || i.assetTag === itemId);
 
+  const getItemImage = (hardware) => {
+    if (hardware.image) return hardware.image;
+    const nom = (hardware.nomenclature || '').toLowerCase();
+    if (nom.includes('raspberry') || nom.includes('pi 5')) return '/images/hardware/raspberry-pi-5.jpg';
+    if (nom.includes('jetson')) return '/images/hardware/jetson-nano.jpg';
+    if (nom.includes('esp32')) return '/images/hardware/esp32-wroom.jpg';
+    if (nom.includes('breadboard')) return '/images/hardware/breadboard-830.jpg';
+    if (nom.includes('sensor') || nom.includes('imu') || nom.includes('mpu') || nom.includes('bmp')) return '/images/hardware/bmp280-sensor.jpg';
+    if (nom.includes('resistor')) return '/images/hardware/resistors-pack.jpg';
+    return '/images/hardware/raspberry-pi-5.jpg';
+  };
+
   if (!item) {
     return (
-      <div className="p-8 text-center space-y-4">
-        <h2 className="text-lg font-bold text-zinc-200">Asset Record Not Found</h2>
-        <p className="text-xs font-mono text-zinc-500">
+      <div className="py-20 text-center space-y-4 max-w-md mx-auto p-8 rounded-3xl bg-white/[0.02] border border-white/10 backdrop-blur-xl">
+        <h2 className="font-display text-xl font-semibold text-white">Asset Record Not Found</h2>
+        <p className="text-xs font-sans text-zinc-400 leading-relaxed">
           Hardware identifier "{itemId}" does not match any entry in active collegiate datastore.
         </p>
         <Link
           to="/workspace/inventory"
-          className="inline-flex items-center gap-1.5 px-4 py-2 bg-zinc-800 text-xs font-mono text-zinc-200 rounded hover:bg-zinc-700"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-sm cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          Back to Inventory
+          <span>Back to Workstation</span>
         </Link>
       </div>
     );
@@ -44,51 +54,51 @@ export function AssetDetailPage() {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Top Back & Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800/80">
-        <div className="space-y-1">
+      {/* Editorial Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-white/10">
+        <div>
           <Link
             to="/workspace/inventory"
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-400 hover:text-zinc-200 transition-colors mb-1"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-sans text-zinc-300 hover:text-white transition-all mb-2 cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            Back to Master Inventory
+            <span>Hardware Workstation</span>
           </Link>
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-100">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1">
               {item.nomenclature}
             </h1>
             <StatusBadge status={item.stockStatus} type="stock" size="md" />
           </div>
-          <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-zinc-400">
-            <span className="text-blue-400 font-semibold">{item.assetTag}</span>
-            <span>•</span>
+          <div className="flex flex-wrap items-center gap-3 text-xs font-sans text-zinc-400 mt-1.5">
+            <span className="text-[#c9b8a0] font-semibold">{item.assetTag}</span>
+            <span className="text-zinc-600">•</span>
             <span>SKU: {item.sku}</span>
-            <span>•</span>
+            <span className="text-zinc-600">•</span>
             <span>{item.manufacturer}</span>
           </div>
         </div>
 
         {/* Action Button */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           {item.stockStatus === 'Available' ? (
             <button
               onClick={() => addToBasket(item, 1)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-medium rounded shadow-sm transition-colors"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black font-semibold text-xs tracking-wide transition-all shadow-[0_0_15px_rgba(201,184,160,0.3)] cursor-pointer active:scale-95"
             >
-              <ShoppingBag className="w-3.5 h-3.5" />
-              Requisition Asset
+              <ShoppingBag className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Add to Requisition Kit</span>
             </button>
           ) : item.stockStatus === 'Allocated' ? (
             <button
               onClick={() => joinWaitlist(item)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-amber-400 border border-zinc-700 font-mono text-xs rounded transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-[#f5e6c8] border border-[#c9b8a0]/30 font-semibold text-xs transition-colors cursor-pointer"
             >
-              <BookmarkPlus className="w-3.5 h-3.5" />
-              Join FIFO Backlog Queue (Pos #{item.queueDepth + 1})
+              <BookmarkPlus className="w-3.5 h-3.5 text-[#c9b8a0]" />
+              <span>Join FIFO Backlog Queue (Pos #{item.queueDepth + 1})</span>
             </button>
           ) : (
-            <span className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 font-mono text-xs text-rose-400 rounded">
+            <span className="px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/20 font-sans text-xs text-rose-400 font-medium">
               Locked for Maintenance
             </span>
           )}
@@ -99,29 +109,42 @@ export function AssetDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Columns: Technical Dossier */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Hardware Photo Pedestal */}
+          <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl backdrop-blur-xl shadow-lg flex items-center justify-center h-64 overflow-hidden relative">
+            <div className="absolute inset-0 bg-radial from-[#c9b8a0]/10 via-transparent to-transparent pointer-events-none" />
+            <img
+              src={getItemImage(item)}
+              alt={item.nomenclature}
+              className="max-h-full max-w-full object-contain filter drop-shadow-[0_20px_35px_rgba(0,0,0,0.9)] z-10"
+              onError={(e) => {
+                e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+              }}
+            />
+          </div>
+
           {/* Technical Specifications */}
-          <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg p-5 space-y-4">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold border-b border-zinc-800/80 pb-2">
-              <Cpu className="w-4 h-4 text-blue-400" />
+          <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl space-y-4 backdrop-blur-xl shadow-lg">
+            <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-wider text-[#c9b8a0] font-semibold border-b border-white/10 pb-3">
+              <Cpu className="w-4 h-4 text-[#c9b8a0]" />
               Technical Sub-Specifications & Silicon Architecture
             </div>
 
-            <div className="text-xs text-zinc-300 font-mono leading-relaxed bg-zinc-950 p-3.5 rounded border border-zinc-800/80">
+            <div className="text-xs text-zinc-300 font-sans leading-relaxed bg-white/[0.02] p-4 rounded-2xl border border-white/5">
               {item.subSpecs}
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-mono">
-              <div className="p-3 bg-zinc-950/60 rounded border border-zinc-800">
-                <div className="text-zinc-500 text-[10px] uppercase">Tracking Model</div>
-                <div className="text-zinc-200 font-semibold mt-0.5">{item.classification}</div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-sans">
+              <div className="p-3.5 bg-white/[0.02] rounded-2xl border border-white/5">
+                <div className="text-zinc-500 text-[10px] uppercase font-semibold">Tracking Model</div>
+                <div className="text-white font-semibold mt-0.5">{item.classification}</div>
               </div>
-              <div className="p-3 bg-zinc-950/60 rounded border border-zinc-800">
-                <div className="text-zinc-500 text-[10px] uppercase">Category Class</div>
-                <div className="text-zinc-200 font-semibold mt-0.5">{item.category}</div>
+              <div className="p-3.5 bg-white/[0.02] rounded-2xl border border-white/5">
+                <div className="text-zinc-500 text-[10px] uppercase font-semibold">Category Class</div>
+                <div className="text-white font-semibold mt-0.5">{item.category}</div>
               </div>
-              <div className="p-3 bg-zinc-950/60 rounded border border-zinc-800">
-                <div className="text-zinc-500 text-[10px] uppercase">Acquisition Date</div>
-                <div className="text-zinc-200 font-semibold mt-0.5">{item.dateAcquired || '2024-02-15'}</div>
+              <div className="p-3.5 bg-white/[0.02] rounded-2xl border border-white/5">
+                <div className="text-zinc-500 text-[10px] uppercase font-semibold">Availability</div>
+                <div className="text-[#f5e6c8] font-semibold mt-0.5">{item.availableStock} of {item.totalStock} Units</div>
               </div>
             </div>
 
@@ -131,43 +154,43 @@ export function AssetDetailPage() {
                   href={item.datasheetUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-mono text-blue-400 hover:text-blue-300 hover:underline"
+                  className="inline-flex items-center gap-1.5 text-xs font-sans text-[#c9b8a0] hover:text-[#f5e6c8] transition-colors"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
-                  View Manufacturer Hardware Reference Datasheet
+                  <span>View Manufacturer Hardware Reference Datasheet</span>
                 </a>
               </div>
             )}
           </div>
 
           {/* Custody History & Audit Trail */}
-          <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg p-5 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold border-b border-zinc-800/80 pb-2">
-              <History className="w-4 h-4 text-emerald-400" />
+          <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl space-y-4 backdrop-blur-xl shadow-lg">
+            <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-wider text-[#c9b8a0] font-semibold border-b border-white/10 pb-3">
+              <History className="w-4 h-4 text-[#c9b8a0]" />
               Institutional Custody & Circulation Log
             </div>
 
             {item.custodyHistory && item.custodyHistory.length > 0 ? (
-              <div className="divide-y divide-zinc-800/80 text-xs font-mono">
+              <div className="divide-y divide-white/5 text-xs font-sans">
                 {item.custodyHistory.map((log) => (
-                  <div key={log.id} className="py-2.5 flex items-start justify-between gap-4">
-                    <div className="space-y-0.5">
+                  <div key={log.id} className="py-3 flex items-start justify-between gap-4">
+                    <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-zinc-200">{log.event}</span>
-                        <span className="text-zinc-500">•</span>
-                        <span className="text-blue-400">PRN: {log.prn}</span>
+                        <span className="font-semibold text-white">{log.event}</span>
+                        <span className="text-zinc-600">•</span>
+                        <span className="text-zinc-400">PRN: {log.prn}</span>
                       </div>
                       <div className="text-zinc-400">{log.notes}</div>
                     </div>
                     <div className="text-right flex-shrink-0 text-zinc-500 text-[11px]">
                       <div>{log.date}</div>
-                      <div className="text-emerald-400">{log.condition}</div>
+                      <div className="text-emerald-400 font-medium mt-0.5">{log.condition}</div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-xs font-mono text-zinc-500 py-3 text-center">
+              <div className="text-xs font-sans text-zinc-500 py-4 text-center">
                 No past circulation incidents logged for this inventory unit.
               </div>
             )}
@@ -177,38 +200,38 @@ export function AssetDetailPage() {
         {/* Right Column: Physical Coordinates & Active Custodian */}
         <div className="space-y-6">
           {/* Storage Coordinate Visualizer */}
-          <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg p-5 space-y-4">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold border-b border-zinc-800/80 pb-2">
-              <MapPin className="w-4 h-4 text-blue-400" />
+          <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl space-y-4 backdrop-blur-xl shadow-lg">
+            <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-wider text-[#c9b8a0] font-semibold border-b border-white/10 pb-3">
+              <MapPin className="w-4 h-4 text-[#c9b8a0]" />
               Physical Laboratory Coordinates
             </div>
 
-            <div className="p-4 bg-zinc-950 rounded-lg border border-zinc-800 text-center space-y-2">
-              <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+            <div className="p-5 bg-white/[0.02] rounded-2xl border border-white/5 text-center space-y-2">
+              <div className="text-[10px] font-sans uppercase tracking-widest text-zinc-500 font-semibold">
                 Storage Coordinate Index
               </div>
-              <div className="text-3xl font-mono font-bold text-blue-400 tracking-wider">
+              <div className="text-3xl font-display font-bold text-white tracking-wider">
                 {item.coordinates}
               </div>
-              <div className="text-xs font-mono text-zinc-300">
+              <div className="text-xs font-sans text-zinc-400">
                 {item.labRoom}
               </div>
             </div>
 
-            <div className="space-y-1.5 text-xs font-mono text-zinc-400">
-              <div className="flex justify-between py-1 border-b border-zinc-800/60">
+            <div className="space-y-2 text-xs font-sans text-zinc-400">
+              <div className="flex justify-between py-1.5 border-b border-white/5">
                 <span className="text-zinc-500">Facility / Wing:</span>
                 <span className="text-zinc-200">Building 4 (Engineering)</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-zinc-800/60">
+              <div className="flex justify-between py-1.5 border-b border-white/5">
                 <span className="text-zinc-500">Laboratory Room:</span>
                 <span className="text-zinc-200">{item.labRoom}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-zinc-800/60">
+              <div className="flex justify-between py-1.5 border-b border-white/5">
                 <span className="text-zinc-500">Cabinet / Bay:</span>
                 <span className="text-zinc-200">CB-04 (ESD Shielded)</span>
               </div>
-              <div className="flex justify-between py-1">
+              <div className="flex justify-between py-1.5">
                 <span className="text-zinc-500">Shelf & Bin:</span>
                 <span className="text-zinc-200">Row 2, Bin A</span>
               </div>
@@ -216,37 +239,37 @@ export function AssetDetailPage() {
           </div>
 
           {/* Active Custody Status */}
-          <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg p-5 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold border-b border-zinc-800/80 pb-2">
-              <Clock className="w-4 h-4 text-amber-400" />
+          <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl space-y-4 backdrop-blur-xl shadow-lg">
+            <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-wider text-[#c9b8a0] font-semibold border-b border-white/10 pb-3">
+              <Clock className="w-4 h-4 text-[#c9b8a0]" />
               Current Custody Holder
             </div>
 
             {item.custodyHolder ? (
-              <div className="p-3 bg-zinc-950 rounded border border-zinc-800 space-y-2 text-xs font-mono">
+              <div className="p-4 bg-white/[0.02] rounded-2xl border border-white/5 space-y-2.5 text-xs font-sans">
                 <div className="flex justify-between">
                   <span className="text-zinc-500">Borrower:</span>
-                  <span className="text-zinc-200 font-semibold">{item.custodyHolder.name}</span>
+                  <span className="text-white font-semibold">{item.custodyHolder.name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-500">PRN:</span>
-                  <span className="text-blue-400">{item.custodyHolder.prn}</span>
+                  <span className="text-zinc-300 font-medium">{item.custodyHolder.prn}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-500">Project Team:</span>
-                  <span className="text-zinc-300">{item.custodyHolder.projectId}</span>
+                  <span className="text-[#c9b8a0] font-medium">{item.custodyHolder.projectId}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-500">Course Code:</span>
                   <span className="text-zinc-300">{item.custodyHolder.courseCode}</span>
                 </div>
-                <div className="flex justify-between pt-1 border-t border-zinc-800 text-amber-400 font-semibold">
+                <div className="flex justify-between pt-2 border-t border-white/5 text-amber-400 font-semibold">
                   <span>Scheduled Due:</span>
                   <span>{item.custodyHolder.dueDate}</span>
                 </div>
               </div>
             ) : (
-              <div className="p-3 bg-emerald-950/20 border border-emerald-900/40 rounded text-center text-xs font-mono text-emerald-400">
+              <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-center text-xs font-sans text-emerald-400">
                 Unit currently resting in assigned physical bin coordinates. Ready for immediate requisition.
               </div>
             )}
@@ -256,3 +279,5 @@ export function AssetDetailPage() {
     </div>
   );
 }
+
+export default AssetDetailPage;

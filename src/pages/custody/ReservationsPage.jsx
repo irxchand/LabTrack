@@ -19,7 +19,7 @@ export function ReservationsPage() {
       accessor: 'id',
       width: '150px',
       render: (row) => (
-        <span className="font-mono text-xs font-semibold text-blue-400">{row.id}</span>
+        <span className="font-sans text-xs font-medium text-[#c9b8a0]">{row.id}</span>
       ),
     },
     {
@@ -27,8 +27,8 @@ export function ReservationsPage() {
       accessor: 'nomenclature',
       render: (row) => (
         <div>
-          <div className="font-medium text-zinc-200">{row.nomenclature}</div>
-          <div className="font-mono text-[11px] text-zinc-500">Asset Tag: {row.itemId}</div>
+          <div className="font-medium text-white">{row.nomenclature}</div>
+          <div className="font-sans text-[11px] text-zinc-400 mt-0.5">Asset Tag: {row.itemId}</div>
         </div>
       ),
     },
@@ -37,9 +37,9 @@ export function ReservationsPage() {
       accessor: 'studentName',
       width: '180px',
       render: (row) => (
-        <div className="font-mono text-xs">
-          <div className="text-zinc-200">{row.studentName}</div>
-          <div className="text-zinc-500 text-[11px]">{row.projectId}</div>
+        <div className="font-sans text-xs">
+          <div className="text-zinc-200 font-medium">{row.studentName}</div>
+          <div className="text-zinc-400 text-[11px] mt-0.5">{row.projectId}</div>
         </div>
       ),
     },
@@ -48,11 +48,11 @@ export function ReservationsPage() {
       accessor: 'queuePosition',
       width: '180px',
       render: (row) => (
-        <div className="flex items-center gap-1.5 font-mono text-xs">
-          <span className="px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800 font-bold">
+        <div className="flex items-center gap-1.5 font-sans text-xs">
+          <span className="px-2.5 py-0.5 rounded-full bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 font-semibold text-xs shadow-sm">
             Pos #{row.queuePosition}
           </span>
-          <span className="text-zinc-500">of {row.totalInQueue}</span>
+          <span className="text-zinc-400">of {row.totalInQueue}</span>
         </div>
       ),
     },
@@ -61,8 +61,8 @@ export function ReservationsPage() {
       accessor: 'estimatedAvailability',
       width: '160px',
       render: (row) => (
-        <div className="flex items-center gap-1.5 font-mono text-xs text-zinc-300">
-          <Calendar className="w-3.5 h-3.5 text-zinc-500" />
+        <div className="flex items-center gap-1.5 font-sans text-xs text-zinc-300">
+          <Calendar className="w-3.5 h-3.5 text-[#c9b8a0]" />
           <span>{row.estimatedAvailability}</span>
         </div>
       ),
@@ -74,7 +74,7 @@ export function ReservationsPage() {
       render: (row) => (
         <button
           onClick={() => leaveWaitlist(row.id)}
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-800 hover:bg-rose-950/40 hover:text-rose-400 text-zinc-400 font-mono text-xs transition-colors border border-zinc-700"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-rose-500/15 hover:text-rose-400 text-zinc-400 font-sans text-xs transition-colors border border-white/10 cursor-pointer"
           title="Withdraw from waitlist backlog"
         >
           <XCircle className="w-3.5 h-3.5" />
@@ -85,28 +85,31 @@ export function ReservationsPage() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-zinc-800/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            <BookmarkCheck className="w-5 h-5 text-[#c9b8a0]" />
+          <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2 mb-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+            CIRCULATION FIFO QUEUE
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2">
             Hardware Reservations & FIFO Backlog Queue
           </h1>
-          <p className="text-xs font-sans text-zinc-400 mt-0.5">
+          <p className="text-xs font-sans text-zinc-400 mt-1 max-w-xl">
             Automated queue sequencing for allocated or out-of-stock collegiate equipment.
           </p>
         </div>
 
-        <div className="text-xs font-sans text-zinc-400 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full">
+        <div className="text-xs font-sans text-zinc-300 px-3.5 py-1.5 bg-white/[0.03] border border-white/10 rounded-full shadow-sm">
           Total Backlog Entries: <span className="text-[#f5e6c8] font-bold">{displayedReservations.length}</span>
         </div>
       </div>
 
       {/* Info Banner */}
-      <div className="p-3 bg-zinc-900/60 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-400 flex items-center gap-3">
-        <Users className="w-4 h-4 text-blue-400 flex-shrink-0" />
-        <span>
+      <div className="p-4 bg-white/[0.02] border border-white/10 rounded-2xl text-xs font-sans text-zinc-300 flex items-center gap-3 backdrop-blur-xl">
+        <Users className="w-4 h-4 text-[#c9b8a0] flex-shrink-0" />
+        <span className="leading-relaxed">
           When active borrowers check in their equipment at the assistant counter, the system automatically advances the FIFO reservation queue and dispatches an allocation notification to the next team in line.
         </span>
       </div>
@@ -121,3 +124,5 @@ export function ReservationsPage() {
     </div>
   );
 }
+
+export default ReservationsPage;

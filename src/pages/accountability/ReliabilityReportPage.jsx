@@ -30,9 +30,9 @@ export function ReliabilityReportPage() {
       accessor: 'id',
       width: '160px',
       render: (row) => (
-        <div className="font-mono text-xs">
+        <div className="font-sans text-xs">
           <div className="font-semibold text-[#c9b8a0]">{row.id}</div>
-          <div className="text-zinc-500 text-[11px]">{row.date}</div>
+          <div className="text-zinc-500 text-[11px] mt-0.5">{row.date}</div>
         </div>
       ),
     },
@@ -42,7 +42,7 @@ export function ReliabilityReportPage() {
       render: (row) => (
         <div>
           <div className="font-semibold text-white text-xs">{row.nomenclature}</div>
-          <div className="font-mono text-[11px] text-zinc-400">Tag: {row.assetTag}</div>
+          <div className="font-sans text-[11px] text-zinc-400 mt-0.5">Tag: {row.assetTag}</div>
         </div>
       ),
     },
@@ -52,7 +52,7 @@ export function ReliabilityReportPage() {
       width: '180px',
       render: (row) => (
         <span
-          className={`font-mono text-xs font-semibold px-2.5 py-0.5 rounded-full border ${
+          className={`font-sans text-xs font-semibold px-2.5 py-0.5 rounded-full border ${
             row.onTime
               ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
               : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
@@ -66,9 +66,9 @@ export function ReliabilityReportPage() {
       header: 'Technician Inspection Notes',
       accessor: 'technicianNotes',
       render: (row) => (
-        <div className="font-mono text-xs text-zinc-300">
+        <div className="font-sans text-xs text-zinc-300">
           <div>{row.technicianNotes}</div>
-          <div className="text-[10px] text-zinc-500">Verified by: {row.technicianPrn}</div>
+          <div className="text-[10px] text-zinc-500 mt-0.5">Verified by: {row.technicianPrn}</div>
         </div>
       ),
     },
@@ -78,7 +78,7 @@ export function ReliabilityReportPage() {
       width: '150px',
       render: (row) => (
         <span
-          className={`font-mono text-xs font-medium ${
+          className={`font-sans text-xs font-semibold ${
             row.pointsImpact?.startsWith('+') ? 'text-emerald-400' : 'text-rose-400'
           }`}
         >
@@ -186,7 +186,7 @@ export function ReliabilityReportPage() {
               <Clock className="w-4 h-4 text-emerald-400" />
             </div>
             <div className="mt-4">
-              <div className="text-3xl font-mono font-bold text-emerald-400">92.8%</div>
+              <div className="text-3xl font-display font-bold text-emerald-400">92.8%</div>
               <p className="text-xs text-zinc-400 font-inter mt-1">
                 13 on-time returns • 1 grace return
               </p>
@@ -212,7 +212,7 @@ export function ReliabilityReportPage() {
               <CheckCircle className="w-4 h-4 text-[#a78b71]" />
             </div>
             <div className="mt-4">
-              <div className="text-3xl font-mono font-bold text-white">2 / 5 Items</div>
+              <div className="text-3xl font-display font-bold text-white">2 / 5 Items</div>
               <p className="text-xs text-zinc-400 font-inter mt-1">
                 3 available custody allocations remaining
               </p>
@@ -228,7 +228,7 @@ export function ReliabilityReportPage() {
             <FileSpreadsheet className="w-4 h-4 text-[#a78b71]" />
             Chronological Incident & Return Ledger
           </h2>
-          <span className="text-xs font-mono text-zinc-500">
+          <span className="text-xs font-sans text-zinc-400">
             Immutable Audit Records: {incidentLedger.length}
           </span>
         </div>

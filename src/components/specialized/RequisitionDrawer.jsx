@@ -140,7 +140,7 @@ export function RequisitionDrawer() {
                 {(currentUser?.name || 'R').charAt(0)}
               </div>
               <span className="font-medium text-white">{currentUser?.name || 'Rahul Sharma'}</span>
-              <span className="text-zinc-500 font-mono text-[11px]">
+              <span className="text-zinc-500 font-sans text-[11px]">
                 {currentUser?.prn || '202401048'}
               </span>
             </div>
@@ -188,7 +188,7 @@ export function RequisitionDrawer() {
                   {/* Component Details */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[11px] text-[#c9b8a0]">
+                      <span className="font-sans font-medium text-[11px] text-[#c9b8a0]">
                         {item.assetTag}
                       </span>
                       <button
@@ -277,7 +277,7 @@ export function RequisitionDrawer() {
                     <span>Target Academic Project Group</span>
                   </label>
                   {activeSelectedProject && (
-                    <span className="text-[10px] text-zinc-400 font-mono">
+                    <span className="text-[10px] text-zinc-400 font-sans">
                       Mentor: {activeSelectedProject.mentorName}
                     </span>
                   )}

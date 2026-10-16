@@ -242,7 +242,7 @@ export function TopHeader() {
                 <span>{item.label}</span>
                 {typeof item.count === 'number' && (
                   <span
-                    className={`px-1.5 py-0.5 rounded-full text-[11px] font-mono font-medium leading-none ${
+                    className={`px-1.5 py-0.5 rounded-full text-[11px] font-sans font-semibold leading-none ${
                       active
                         ? 'bg-black/10 text-black font-bold'
                         : 'bg-white/10 text-zinc-300'
@@ -333,7 +333,7 @@ export function TopHeader() {
                             <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
                             {item.label}
                           </div>
-                          <div className="text-[11px] font-mono text-zinc-500 truncate mt-0.5">
+                          <div className="text-[11px] font-sans text-zinc-400 truncate mt-0.5">
                             {item.name} • {item.badge}
                           </div>
                         </div>

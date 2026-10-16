@@ -178,7 +178,7 @@ export function CommandPalette({ isOpen, onClose }) {
                         {item.label}
                       </div>
                       {item.sub && (
-                        <div className="text-[11px] font-mono text-zinc-500 truncate mt-0.5">
+                        <div className="text-[11px] font-sans text-zinc-400 truncate mt-0.5">
                           {item.sub}
                         </div>
                       )}

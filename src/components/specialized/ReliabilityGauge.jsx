@@ -108,12 +108,12 @@ export function ReliabilityGauge({ score = 94, size = 280, showDetails = true, i
         {/* Center Numerical Readout */}
         <div className="absolute bottom-1 flex flex-col items-center">
           <div className="flex items-baseline gap-1">
-            <span className="text-4xl sm:text-5xl font-mono font-bold tracking-tight text-[#f7f8f9]">
+            <span className="text-4xl sm:text-5xl font-display font-bold tracking-tight text-white">
               {clampedScore}
             </span>
-            <span className="text-xs font-mono text-[#6b7080]">/100</span>
+            <span className="text-xs font-sans font-semibold text-zinc-400">/100</span>
           </div>
-          <div className={`text-[11px] font-mono font-bold uppercase tracking-wider mt-1 ${color} flex items-center gap-1.5`}>
+          <div className={`text-[11px] font-sans font-bold uppercase tracking-wider mt-1 ${color} flex items-center gap-1.5`}>
             <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
             {tier}
           </div>
@@ -122,7 +122,7 @@ export function ReliabilityGauge({ score = 94, size = 280, showDetails = true, i
 
       {showDetails && (
         <div className="mt-4 text-center max-w-sm w-full">
-          <div className="flex items-center justify-between text-[11px] font-mono text-[#8a8f98] border-t border-white/[0.08] pt-3 px-2">
+          <div className="flex items-center justify-between text-[11px] font-sans text-zinc-400 border-t border-white/[0.08] pt-3 px-2">
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-rose-500" /> &lt;75 Flagged
             </span>
@@ -133,21 +133,21 @@ export function ReliabilityGauge({ score = 94, size = 280, showDetails = true, i
               <span className="w-2 h-2 rounded-full bg-[#3ecf8e]" /> 90-100 High
             </span>
           </div>
-          <p className="text-xs text-[#9da1ad] mt-2.5 leading-relaxed font-sans px-1">
+          <p className="text-xs text-zinc-300 mt-2.5 leading-relaxed font-sans px-1">
             {message}
           </p>
 
           {/* Interactive slider for reviewers / defense evaluation */}
-          <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center gap-3 text-xs font-mono text-[#8a8f98]">
-            <Sliders className="w-3.5 h-3.5 text-[#5e6ad2]" />
-            <span className="text-[10px] uppercase">Simulate Score:</span>
+          <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center gap-3 text-xs font-sans text-zinc-400">
+            <Sliders className="w-3.5 h-3.5 text-[#c9b8a0]" />
+            <span className="text-[10px] uppercase font-semibold">Simulate Score:</span>
             <input
               type="range"
               min="40"
               max="100"
               value={activeScore}
               onChange={(e) => setInteractiveScore(Number(e.target.value))}
-              className="flex-1 accent-[#5e6ad2] cursor-pointer"
+              className="flex-1 accent-[#c9b8a0] cursor-pointer"
             />
             <span className="font-bold text-white w-7 text-right">{activeScore}</span>
           </div>
