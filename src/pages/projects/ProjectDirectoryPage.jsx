@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
+import { Modal } from '../../components/common/Modal';
 import {
   FolderGit2,
   Users,
@@ -11,13 +12,29 @@ import {
   Check,
   Sparkles,
   Layers,
+  Plus,
+  X,
+  UserPlus,
+  AlertCircle,
 } from 'lucide-react';
 
 export function ProjectDirectoryPage() {
   const navigate = useNavigate();
-  const { projects, inventory } = useLabData();
+  const { projects, inventory, createProject } = useLabData();
   const { currentUser } = useAuth();
   const [activeFilter, setActiveFilter] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Group creation form state
+  const [title, setTitle] = useState('');
+  const [courseCode, setCourseCode] = useState('DCDS-SY-AIML');
+  const [mentorName, setMentorName] = useState('Dr. Anjali Dalvi');
+  const [abstract, setAbstract] = useState('');
+  const [friends, setFriends] = useState([]);
+  const [friendName, setFriendName] = useState('');
+  const [friendPrn, setFriendPrn] = useState('');
+  const [friendRole, setFriendRole] = useState('');
+  const [formError, setFormError] = useState('');
 
   // Resolve authentic hardware photography
   const getItemImage = (item) => {
@@ -70,6 +87,68 @@ export function ProjectDirectoryPage() {
     return projects;
   }, [projects, activeFilter, currentUser]);
 
+  const handleAddFriend = (e) => {
+    e.preventDefault();
+    if (!friendName.trim() || !friendPrn.trim()) {
+      setFormError('Please enter both friend name and PRN number.');
+      return;
+    }
+    if (friends.some((f) => f.prn === friendPrn.trim())) {
+      setFormError('Friend with this PRN is already added to the roster.');
+      return;
+    }
+    setFriends((prev) => [
+      ...prev,
+      {
+        name: friendName.trim(),
+        prn: friendPrn.trim(),
+        role: friendRole.trim() || 'Co-Developer',
+      },
+    ]);
+    setFriendName('');
+    setFriendPrn('');
+    setFriendRole('');
+    setFormError('');
+  };
+
+  const handleRemoveFriend = (prn) => {
+    setFriends((prev) => prev.filter((f) => f.prn !== prn));
+  };
+
+  const handleCreateGroup = async (e) => {
+    e.preventDefault();
+    if (!title.trim()) {
+      setFormError('Please provide a project group name.');
+      return;
+    }
+    setFormError('');
+
+    const leaderMember = {
+      name: currentUser?.name || 'Rahul Sharma',
+      prn: currentUser?.prn || '202401048',
+      role: 'Team Lead',
+    };
+
+    const newProject = await createProject({
+      title: title.trim(),
+      courseCode,
+      mentorName,
+      mentorId: mentorName.includes('Anjali') ? 'FAC-AI-019' : 'FAC-AI-022',
+      teamLeaderPrn: currentUser?.prn || '202401048',
+      members: [leaderMember, ...friends],
+      abstract: abstract.trim() || 'Collegiate project hardware development and bench evaluation.',
+      hardwareBudgetCap: 3,
+    });
+
+    if (newProject) {
+      setTitle('');
+      setAbstract('');
+      setFriends([]);
+      setIsModalOpen(false);
+      setActiveFilter('myTeam');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Editorial Header */}
@@ -86,12 +165,15 @@ export function ProjectDirectoryPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-sans text-zinc-300 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-            <span>Registered Teams:</span>
-            <span className="font-mono font-semibold text-white">{projects.length}</span>
-          </div>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs tracking-wide transition-all shadow-sm flex items-center gap-2 cursor-pointer active:scale-95 flex-shrink-0"
+          >
+            <Plus className="w-4 h-4 text-black stroke-[2.5]" />
+            <span>Create Project Group</span>
+          </button>
         </div>
       </div>
 
@@ -236,7 +318,7 @@ export function ProjectDirectoryPage() {
                   </div>
                 ) : (
                   <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 text-xs text-zinc-400 font-sans flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
                     <span>All {project.hardwareBudgetCap} hardware allocation slots currently available.</span>
                   </div>
                 )}
@@ -294,6 +376,214 @@ export function ProjectDirectoryPage() {
           );
         })}
       </div>
+
+      {/* Manual Group Creation Modal (Form Team & Add Friends) */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setFormError('');
+        }}
+        title="Register Capstone Project Group"
+        subtitle="Create your official student hardware research team, bind a mentor, and add your teammates."
+      >
+        <form onSubmit={handleCreateGroup} className="space-y-5 text-xs font-sans">
+          {/* Project Title */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-semibold block">
+              Project Group Name <span className="text-rose-400">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Autonomous Vision Rover & Edge Sensor Network"
+              className="w-full px-4 py-3 bg-white/[0.04] border border-white/10 rounded-2xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#c9b8a0] transition-all text-sm font-medium"
+            />
+          </div>
+
+          {/* Course & Mentor Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-semibold block">
+                Course Term
+              </label>
+              <select
+                value={courseCode}
+                onChange={(e) => setCourseCode(e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-[#121316] border border-white/10 rounded-2xl text-white text-xs focus:outline-none focus:border-[#c9b8a0]"
+              >
+                <option value="DCDS-SY-AIML">DCDS-SY-AIML (Semester III)</option>
+                <option value="CCE-TY-AIML">CCE-TY-AIML (Semester V)</option>
+                <option value="AIML-CAPSTONE-IV">AIML-CAPSTONE-IV (Final Year)</option>
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-semibold block">
+                Faculty Mentor
+              </label>
+              <select
+                value={mentorName}
+                onChange={(e) => setMentorName(e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-[#121316] border border-white/10 rounded-2xl text-white text-xs focus:outline-none focus:border-[#c9b8a0]"
+              >
+                <option value="Dr. Anjali Dalvi">Dr. Anjali Dalvi (FAC-AI-019)</option>
+                <option value="Dr. Sumanto Dutta">Dr. Sumanto Dutta (FAC-AI-022)</option>
+                <option value="Dr. Wasim Khan">Dr. Wasim Khan (FAC-AI-031)</option>
+                <option value="Dr. K. V. Ramanathan">Dr. K. V. Ramanathan (HOD-AIML-001)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Add Teammates / Friends Section */}
+          <div className="p-4 bg-white/[0.02] border border-white/10 rounded-2xl space-y-3.5">
+            <div className="flex items-center justify-between">
+              <div className="text-[11px] uppercase tracking-wider text-zinc-300 font-semibold flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-[#c9b8a0]" />
+                <span>Team Roster Builder (Add Friends)</span>
+              </div>
+              <span className="text-[11px] text-zinc-500 font-mono">
+                {1 + friends.length} Members
+              </span>
+            </div>
+
+            {/* Current Student (Team Lead Badge) */}
+            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-6 h-6 rounded-full bg-white/10 text-white font-bold text-[10px] flex items-center justify-center">
+                  {(currentUser?.name || 'R').charAt(0)}
+                </div>
+                <div>
+                  <div className="text-white text-xs font-semibold">{currentUser?.name || 'Rahul Sharma'}</div>
+                  <div className="text-[10px] font-mono text-zinc-500">{currentUser?.prn || '202401048'}</div>
+                </div>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/30 text-[10px] font-semibold">
+                Team Lead (You)
+              </span>
+            </div>
+
+            {/* Added Friends List */}
+            {friends.length > 0 && (
+              <div className="space-y-2 pt-1">
+                <div className="text-[10px] uppercase font-semibold text-zinc-500">Invited Teammates</div>
+                <div className="space-y-1.5">
+                  {friends.map((friend) => (
+                    <div
+                      key={friend.prn}
+                      className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-between text-xs"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-white/10 text-white font-semibold text-[10px] flex items-center justify-center">
+                          {friend.name.charAt(0)}
+                        </div>
+                        <div>
+                          <span className="text-white font-medium">{friend.name}</span>
+                          <span className="text-zinc-500 font-mono text-[10px] ml-1.5">({friend.prn})</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-zinc-400 font-sans">{friend.role}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFriend(friend.prn)}
+                          className="w-5 h-5 rounded-full hover:bg-white/10 text-zinc-400 hover:text-rose-400 flex items-center justify-center transition-colors cursor-pointer"
+                          title="Remove teammate"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Inline Form to Add a Friend */}
+            <div className="pt-2 border-t border-white/5 space-y-2">
+              <div className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+                Invite Teammate / Friend
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <input
+                  type="text"
+                  value={friendName}
+                  onChange={(e) => setFriendName(e.target.value)}
+                  placeholder="Friend Name (e.g. Priya Nair)"
+                  className="px-3 py-2 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-[#c9b8a0]"
+                />
+                <input
+                  type="text"
+                  value={friendPrn}
+                  onChange={(e) => setFriendPrn(e.target.value)}
+                  placeholder="PRN (e.g. 202401052)"
+                  className="px-3 py-2 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 text-xs font-mono focus:outline-none focus:border-[#c9b8a0]"
+                />
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="text"
+                    value={friendRole}
+                    onChange={(e) => setFriendRole(e.target.value)}
+                    placeholder="Role (e.g. Telemetry Lead)"
+                    className="flex-1 px-3 py-2 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 text-xs focus:outline-none focus:border-[#c9b8a0]"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddFriend}
+                    className="px-3 py-2 rounded-xl bg-white/[0.08] hover:bg-white text-zinc-200 hover:text-black font-semibold text-xs border border-white/15 transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    + Add
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Project Abstract */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-semibold block">
+              Project Technical Abstract
+            </label>
+            <textarea
+              rows={2}
+              value={abstract}
+              onChange={(e) => setAbstract(e.target.value)}
+              placeholder="Describe your project objective and target hardware requirements..."
+              className="w-full px-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-2xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#c9b8a0] transition-all text-xs leading-relaxed"
+            />
+          </div>
+
+          {formError && (
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+              <span>{formError}</span>
+            </div>
+          )}
+
+          {/* Modal Actions */}
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+            <button
+              type="button"
+              onClick={() => {
+                setIsModalOpen(false);
+                setFormError('');
+              }}
+              className="px-4 py-2 rounded-full border border-white/10 text-xs text-zinc-400 hover:text-white transition-all cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-md cursor-pointer active:scale-95"
+            >
+              Register Group
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

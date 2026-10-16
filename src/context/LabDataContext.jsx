@@ -334,6 +334,21 @@ export function LabDataProvider({ children }) {
     return false;
   };
 
+  // Create Project Group
+  const createProject = async (projectData) => {
+    const res = await accountabilityApi.createProject(projectData);
+    if (res.ok) {
+      await loadData();
+      addToast({
+        title: 'Project Group Registered',
+        message: `Group "${projectData.title}" registered with ${projectData.members.length} members.`,
+        type: 'success',
+      });
+      return res.data;
+    }
+    return null;
+  };
+
   return (
     <LabDataContext.Provider
       value={{
@@ -370,6 +385,7 @@ export function LabDataProvider({ children }) {
         updateDefectStatus,
         retireAsset,
         addNewInventoryItem,
+        createProject,
       }}
     >
       {children}
