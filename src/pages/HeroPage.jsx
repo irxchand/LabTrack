@@ -83,8 +83,7 @@ export function HeroPage() {
           maxCursorMove={120}
           xGap={14}
           yGap={36}
-          cursorDotColor="rgba(232, 213, 183, 0.85)"
-          showCursorDot={true}
+          showCursorDot={false}
         />
       </div>
 
@@ -103,7 +102,6 @@ export function HeroPage() {
           <span className="font-display font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
             LabTrack
           </span>
-          <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_10px_#c9b8a0]" />
         </div>
 
 
@@ -499,10 +497,7 @@ export function HeroPage() {
             © {new Date().getFullYear()} LABTRACK ACADEMIC HARDWARE OS. ALL RIGHTS RESERVED.
           </div>
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>LAB CLUSTERS NOMINAL</span>
-            </span>
+            <span>LAB CLUSTERS NOMINAL</span>
             <span>ZERO-TRUST VERIFIED</span>
           </div>
         </div>

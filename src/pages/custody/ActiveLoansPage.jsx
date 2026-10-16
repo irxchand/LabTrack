@@ -442,10 +442,10 @@ export function ActiveLoansPage() {
                   <span
                     className={`w-2 h-2 rounded-full flex-shrink-0 ${
                       loan.daysRemaining < 0
-                        ? 'bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.9)]'
+                        ? 'bg-rose-400'
                         : loan.daysRemaining <= 3
-                        ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)]'
-                        : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]'
+                        ? 'bg-amber-400'
+                        : 'bg-emerald-400'
                     }`}
                   />
                   <span className="text-xs font-semibold text-white truncate">

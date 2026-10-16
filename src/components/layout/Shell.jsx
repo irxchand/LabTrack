@@ -31,8 +31,7 @@ export function Shell() {
           maxCursorMove={120}
           xGap={14}
           yGap={36}
-          cursorDotColor="rgba(232, 213, 183, 0.65)"
-          showCursorDot={true}
+          showCursorDot={false}
         />
       </div>
 

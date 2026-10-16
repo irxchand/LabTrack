@@ -110,7 +110,7 @@ export function AuditLogPage() {
 
         <div className="flex items-center gap-2 font-sans text-xs text-zinc-400">
           <span className="px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/10 shadow-sm flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             <span className="text-zinc-400">Chain Status:</span>
             <span className="text-emerald-400 font-semibold">VERIFIED SHA-256</span>
           </span>

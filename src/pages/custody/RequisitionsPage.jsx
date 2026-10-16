@@ -290,14 +290,14 @@ export function RequisitionsPage() {
 
                     {/* Cupertino Status Pill */}
                     {(stageInfo.color === 'champagne' || stageInfo.color === 'amber') && (
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#c9b8a0]/15 backdrop-blur-md text-[#f5e6c8] border border-[#c9b8a0]/35 flex items-center gap-1.5 shadow-[0_0_12px_rgba(201,184,160,0.25)]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8] shadow-[0_0_8px_rgba(245,230,200,0.95)] animate-pulse" />
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#c9b8a0]/15 backdrop-blur-md text-[#f5e6c8] border border-[#c9b8a0]/35 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8]" />
                         <span>{stageInfo.label}</span>
                       </span>
                     )}
                     {stageInfo.color === 'emerald' && (
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 backdrop-blur-md text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 shadow-lg">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 backdrop-blur-md text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                         <span>{stageInfo.label}</span>
                       </span>
                     )}

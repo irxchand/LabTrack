@@ -250,7 +250,6 @@ export function TopHeader() {
             <span className="font-display text-xl sm:text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
               LabTrack
             </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_10px_#c9b8a0]" />
           </div>
 
           <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
@@ -265,7 +264,6 @@ export function TopHeader() {
               aria-expanded={isLabDropdownOpen}
               aria-haspopup="true"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_8px_#c9b8a0]" />
               <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-zinc-300 group-hover:text-white transition-colors">
                 {selectedFacility || 'AIML LAB'}
               </span>

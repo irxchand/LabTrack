@@ -98,7 +98,7 @@ export function InteractiveWavesBackground({
   tension = 0.005,
   maxCursorMove = 100,
   cursorDotColor = 'rgba(232, 213, 183, 0.5)',
-  showCursorDot = true,
+  showCursorDot = false,
   className = '',
   style = {}
 }) {

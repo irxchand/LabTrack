@@ -115,7 +115,7 @@ export function ReliabilityReportPage() {
 
         return (
           <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-emerald-500/[0.06] border border-emerald-500/20 text-xs font-sans">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)] shrink-0" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
             <span className="font-medium text-emerald-200">{title}</span>
             {tag && (
               <span className="text-[10px] font-semibold tracking-tight text-emerald-300 bg-emerald-500/15 border border-emerald-500/25 px-1.5 py-0.5 rounded">

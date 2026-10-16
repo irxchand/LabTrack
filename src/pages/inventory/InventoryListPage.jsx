@@ -437,7 +437,7 @@ export function InventoryListPage({ initialClassification = null }) {
             {/* Card Footer Actions */}
             <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)] flex-shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
                 <span className="text-xs text-white font-semibold">
                   In Stock
                 </span>
