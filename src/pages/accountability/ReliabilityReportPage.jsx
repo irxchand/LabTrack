@@ -97,7 +97,7 @@ export function ReliabilityReportPage() {
             <Sparkles className="w-3 h-3 text-[#a78b71]" />
             <span>ACCOUNTABILITY INTELLIGENCE</span>
           </div>
-          <h1 className="text-2xl font-playfair font-normal italic text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-playfair font-normal italic text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] flex items-center gap-2.5">
             <ShieldCheck className="w-6 h-6 text-[#a78b71]" />
             Accountability & Reliability Desk
           </h1>

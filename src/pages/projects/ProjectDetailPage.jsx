@@ -1,14 +1,27 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
-import { ArrowLeft, Users, Cpu, ShieldCheck, Check, Sparkles } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { ArrowLeft, Users, Cpu, ShieldCheck, ShieldAlert, Check, Sparkles } from 'lucide-react';
 
 export function ProjectDetailPage() {
   const { projectId } = useParams();
   const { projects, activeLoans, inventory } = useLabData();
+  const { currentUser, role } = useAuth();
+  const isStudent = !role || role === 'Student';
+  const userPrn = currentUser?.prn || '202401048';
 
   const project = projects.find((p) => p.id === projectId);
   const assignedLoans = activeLoans.filter((l) => l.projectId === projectId);
+
+  const isUserProject = (p) => {
+    if (!p) return false;
+    return (
+      p.teamLeaderPrn === userPrn ||
+      p.members?.some((m) => m.prn === userPrn) ||
+      p.id === currentUser?.projectId
+    );
+  };
 
   const formatHumanDate = (dateStr) => {
     if (!dateStr) return 'N/A';
@@ -53,16 +66,42 @@ export function ProjectDetailPage() {
   if (!project) {
     return (
       <div className="p-16 text-center space-y-4 max-w-md mx-auto">
-        <h2 className="font-display text-xl font-semibold text-white">Project Not Found</h2>
+        <h2 className="font-display text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0]">
+          Project Not Found
+        </h2>
         <p className="text-sm font-sans text-zinc-400">
           Identifier "{projectId}" is not registered in the institutional repository.
         </p>
         <Link
           to="/workspace/projects"
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-sm"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black font-semibold text-xs transition-all shadow-sm"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          Back to Academic Projects
+          <span>Back to Academic Projects</span>
+        </Link>
+      </div>
+    );
+  }
+
+  // Student Privacy: If student attempts to view a project they do not belong to
+  if (isStudent && !isUserProject(project)) {
+    return (
+      <div className="p-16 text-center space-y-4 max-w-md mx-auto">
+        <div className="w-14 h-14 rounded-full bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 flex items-center justify-center mx-auto text-[#f5e6c8] shadow-[0_0_20px_rgba(201,184,160,0.2)]">
+          <ShieldAlert className="w-7 h-7" />
+        </div>
+        <h2 className="font-display text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0]">
+          Restricted Project Dossier
+        </h2>
+        <p className="text-sm font-sans text-zinc-400 leading-relaxed">
+          Project group "{projectId}" belongs to another academic team. In accordance with institutional confidentiality, students may only view projects they lead or actively collaborate on.
+        </p>
+        <Link
+          to="/workspace/projects"
+          className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black font-semibold text-xs transition-all shadow-[0_0_15px_rgba(201,184,160,0.3)] mt-2"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 text-black" />
+          <span>Back to My Projects</span>
         </Link>
       </div>
     );
@@ -96,7 +135,7 @@ export function ProjectDetailPage() {
                 {project.academicTerm || 'Autumn 2026'}
               </span>
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1">
+            <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] mt-1">
               {project.title}
             </h1>
           </div>
@@ -127,7 +166,7 @@ export function ProjectDetailPage() {
         <div className="md:col-span-2 space-y-6">
           {/* Abstract */}
           <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl space-y-2 backdrop-blur-xl shadow-lg">
-            <div className="text-[10px] font-sans uppercase tracking-wider text-zinc-500 font-semibold">
+            <div className="text-[10px] font-sans uppercase tracking-wider text-[#c9b8a0] font-semibold">
               Project Abstract & Scope
             </div>
             <p className="text-zinc-300 leading-relaxed font-sans text-sm">{project.abstract}</p>
@@ -136,7 +175,7 @@ export function ProjectDetailPage() {
           {/* Assigned Hardware */}
           <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl space-y-4 backdrop-blur-xl shadow-lg">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <span className="text-zinc-300 uppercase text-[11px] font-semibold tracking-wider font-sans flex items-center gap-2">
+              <span className="text-[#f5e6c8] uppercase text-[11px] font-semibold tracking-wider font-sans flex items-center gap-2">
                 <Cpu className="w-4 h-4 text-[#c9b8a0]" />
                 Active Hardware Borrowings ({assignedLoans.length})
               </span>
@@ -186,7 +225,7 @@ export function ProjectDetailPage() {
         <div className="space-y-6">
           {/* Faculty Guide */}
           <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl space-y-2 backdrop-blur-xl shadow-lg">
-            <div className="text-zinc-500 text-[10px] uppercase font-semibold tracking-wider font-sans">Faculty Mentor</div>
+            <div className="text-[#c9b8a0] text-[10px] uppercase font-semibold tracking-wider font-sans">Faculty Mentor</div>
             <div className="flex items-center gap-3 pt-1">
               <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-white/20 to-white/5 border border-white/10 text-white font-semibold text-sm flex items-center justify-center shadow-sm">
                 {(project.mentorName || 'F').charAt(0)}
@@ -204,7 +243,7 @@ export function ProjectDetailPage() {
 
           {/* Members List */}
           <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl space-y-4 backdrop-blur-xl shadow-lg">
-            <div className="text-zinc-300 uppercase text-[11px] font-semibold tracking-wider font-sans flex items-center gap-2 border-b border-white/10 pb-3">
+            <div className="text-[#f5e6c8] uppercase text-[11px] font-semibold tracking-wider font-sans flex items-center gap-2 border-b border-white/10 pb-3">
               <Users className="w-4 h-4 text-[#c9b8a0]" />
               Team Roster ({project.members?.length || 0})
             </div>

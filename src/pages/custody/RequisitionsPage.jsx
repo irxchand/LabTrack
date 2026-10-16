@@ -141,10 +141,11 @@ export function RequisitionsPage() {
       {/* Editorial Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="text-[11px] font-sans font-medium text-zinc-400 tracking-wide uppercase">
+          <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
             ORDERS & ALLOCATIONS
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1">
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] mt-1">
             Requisitions
           </h1>
           <p className="text-sm font-sans text-zinc-400 mt-1 max-w-xl">
@@ -155,9 +156,9 @@ export function RequisitionsPage() {
         <button
           type="button"
           onClick={() => setIsBasketOpen(true)}
-          className="px-4 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs tracking-wide transition-all shadow-sm flex items-center gap-2 cursor-pointer active:scale-95 flex-shrink-0"
+          className="px-4 py-2 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black font-semibold text-xs tracking-wide transition-all shadow-[0_0_15px_rgba(201,184,160,0.3)] flex items-center gap-2 cursor-pointer active:scale-95 flex-shrink-0"
         >
-          <ShoppingBag className="w-4 h-4 text-black" />
+          <ShoppingBag className="w-4 h-4 text-black stroke-[2.5]" />
           <span>Draft Requisition</span>
         </button>
       </div>
@@ -231,14 +232,14 @@ export function RequisitionsPage() {
           <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto text-zinc-500 shadow-inner">
             <Inbox className="w-7 h-7 stroke-[1.5]" />
           </div>
-          <h3 className="font-display text-lg font-semibold text-white">No Requisitions Found</h3>
+          <h3 className="font-display text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0]">No Requisitions Found</h3>
           <p className="text-xs text-zinc-400 max-w-sm mx-auto font-sans leading-relaxed">
             No hardware orders match the selected filter. Browse the Workstation catalog to stage components into your requisition kit.
           </p>
           <button
             type="button"
             onClick={() => setIsBasketOpen(true)}
-            className="mt-2 px-4 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-sm cursor-pointer"
+            className="mt-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-[0_0_15px_rgba(201,184,160,0.3)] cursor-pointer"
           >
             Draft Requisition
           </button>
@@ -335,7 +336,7 @@ export function RequisitionsPage() {
                       </span>
                     </div>
 
-                    <h3 className="font-display text-base sm:text-lg font-semibold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors leading-snug">
+                    <h3 className="font-display text-base sm:text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] tracking-tight group-hover:from-[#f5e6c8] group-hover:to-[#c9b8a0] transition-colors leading-snug">
                       {primaryItem.nomenclature}
                     </h3>
 

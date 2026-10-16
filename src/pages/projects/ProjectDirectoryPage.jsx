@@ -21,7 +21,10 @@ import {
 export function ProjectDirectoryPage() {
   const navigate = useNavigate();
   const { projects, inventory, createProject } = useLabData();
-  const { currentUser } = useAuth();
+  const { currentUser, role } = useAuth();
+  const isStudent = !role || role === 'Student';
+  const userPrn = currentUser?.prn || '202401048';
+
   const [activeFilter, setActiveFilter] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -66,26 +69,63 @@ export function ProjectDirectoryPage() {
     return '/images/hardware/raspberry-pi-5.jpg';
   };
 
-  const isUserProject = (project) => {
-    const userPrn = currentUser?.prn || '202401048';
-    return project.members?.some((m) => m.prn === userPrn) || project.teamLeaderPrn === userPrn;
+  const isUserLead = (project) => {
+    return project.teamLeaderPrn === userPrn;
   };
 
-  const counts = useMemo(() => ({
-    all: projects.length,
-    myTeam: projects.filter((p) => isUserProject(p)).length,
-    aiml: projects.filter((p) => p.department?.includes('AIML') || p.courseCode?.includes('AIML')).length,
-  }), [projects, currentUser]);
+  const isUserMember = (project) => {
+    return project.members?.some((m) => m.prn === userPrn) && project.teamLeaderPrn !== userPrn;
+  };
+
+  const isUserProject = (project) => {
+    return (
+      project.teamLeaderPrn === userPrn ||
+      project.members?.some((m) => m.prn === userPrn) ||
+      project.id === currentUser?.projectId
+    );
+  };
+
+  // Student portal privacy: Students can ONLY view projects they lead or work in!
+  const visibleProjectsPool = useMemo(() => {
+    if (isStudent) {
+      return projects.filter(isUserProject);
+    }
+    return projects;
+  }, [projects, isStudent, userPrn, currentUser?.projectId]);
+
+  const counts = useMemo(() => {
+    if (isStudent) {
+      return {
+        all: visibleProjectsPool.length,
+        leading: visibleProjectsPool.filter(isUserLead).length,
+        collaborating: visibleProjectsPool.filter(isUserMember).length,
+      };
+    }
+    return {
+      all: projects.length,
+      myTeam: projects.filter(isUserProject).length,
+      aiml: projects.filter((p) => p.department?.includes('AIML') || p.courseCode?.includes('AIML')).length,
+    };
+  }, [visibleProjectsPool, projects, isStudent, userPrn]);
 
   const filteredProjects = useMemo(() => {
+    if (isStudent) {
+      if (activeFilter === 'leading') {
+        return visibleProjectsPool.filter(isUserLead);
+      }
+      if (activeFilter === 'collaborating') {
+        return visibleProjectsPool.filter(isUserMember);
+      }
+      return visibleProjectsPool;
+    }
     if (activeFilter === 'myTeam') {
-      return projects.filter((p) => isUserProject(p));
+      return projects.filter(isUserProject);
     }
     if (activeFilter === 'aiml') {
       return projects.filter((p) => p.department?.includes('AIML') || p.courseCode?.includes('AIML'));
     }
     return projects;
-  }, [projects, activeFilter, currentUser]);
+  }, [visibleProjectsPool, projects, activeFilter, isStudent, userPrn]);
 
   const handleAddFriend = (e) => {
     e.preventDefault();
@@ -145,7 +185,7 @@ export function ProjectDirectoryPage() {
       setAbstract('');
       setFriends([]);
       setIsModalOpen(false);
-      setActiveFilter('myTeam');
+      setActiveFilter('all');
     }
   };
 
@@ -154,14 +194,15 @@ export function ProjectDirectoryPage() {
       {/* Editorial Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="text-[11px] font-sans font-medium text-zinc-400 tracking-wide uppercase">
-            COLLABORATIVE HARDWARE POOLS
+          <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+            STUDENT ACADEMIC PORTAL • COLLABORATIVE HARDWARE POOLS
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1">
-            Academic Projects
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] mt-1.5">
+            My Academic Projects
           </h1>
           <p className="text-sm font-sans text-zinc-400 mt-1 max-w-xl">
-            Collegiate research teams, faculty mentor bindings, and authorized hardware quota allocations.
+            Active capstone research teams, mentor bindings, and authorized hardware quota allocations for your credentials.
           </p>
         </div>
 
@@ -169,7 +210,7 @@ export function ProjectDirectoryPage() {
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs tracking-wide transition-all shadow-sm flex items-center gap-2 cursor-pointer active:scale-95 flex-shrink-0"
+            className="px-4 py-2 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black font-semibold text-xs tracking-wide transition-all shadow-[0_0_15px_rgba(201,184,160,0.3)] flex items-center gap-2 cursor-pointer active:scale-95 flex-shrink-0"
           >
             <Plus className="w-4 h-4 text-black stroke-[2.5]" />
             <span>Create Project Group</span>
@@ -179,101 +220,182 @@ export function ProjectDirectoryPage() {
 
       {/* Segmented Filter Pills */}
       <div className="flex items-center gap-1.5 p-1 rounded-full bg-white/[0.04] border border-white/10 w-fit backdrop-blur-md">
-        <button
-          type="button"
-          onClick={() => setActiveFilter('all')}
-          className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
-            activeFilter === 'all'
-              ? 'bg-white text-black font-semibold shadow-sm'
-              : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
-          }`}
-        >
-          <span>All Projects</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'all' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
-            {counts.all}
-          </span>
-        </button>
+        {isStudent ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setActiveFilter('all')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeFilter === 'all'
+                  ? 'bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] text-black font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>All My Projects</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'all' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+                {counts.all}
+              </span>
+            </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveFilter('myTeam')}
-          className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
-            activeFilter === 'myTeam'
-              ? 'bg-white text-black font-semibold shadow-sm'
-              : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
-          }`}
-        >
-          <span>My Capstone Team</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'myTeam' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
-            {counts.myTeam}
-          </span>
-        </button>
+            <button
+              type="button"
+              onClick={() => setActiveFilter('leading')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeFilter === 'leading'
+                  ? 'bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] text-black font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>Projects I Lead</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'leading' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+                {counts.leading}
+              </span>
+            </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveFilter('aiml')}
-          className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
-            activeFilter === 'aiml'
-              ? 'bg-white text-black font-semibold shadow-sm'
-              : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
-          }`}
-        >
-          <span>AIML Department</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'aiml' ? 'bg-black/10 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
-            {counts.aiml}
-          </span>
-        </button>
+            <button
+              type="button"
+              onClick={() => setActiveFilter('collaborating')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeFilter === 'collaborating'
+                  ? 'bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] text-black font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>Working In</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'collaborating' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+                {counts.collaborating}
+              </span>
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => setActiveFilter('all')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeFilter === 'all'
+                  ? 'bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] text-black font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>All Projects</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'all' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+                {counts.all}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFilter('myTeam')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeFilter === 'myTeam'
+                  ? 'bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] text-black font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>My Department Teams</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'myTeam' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+                {counts.myTeam}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFilter('aiml')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeFilter === 'aiml'
+                  ? 'bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] text-black font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>AIML Department</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'aiml' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+                {counts.aiml}
+              </span>
+            </button>
+          </>
+        )}
       </div>
 
       {/* Projects Grid (Apple Cupertino Showcase) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filteredProjects.map((project) => {
-          const isMine = isUserProject(project);
-          const quotaPercentage = Math.round((project.currentAllocatedCount / project.hardwareBudgetCap) * 100);
-
-          return (
-            <div
-              key={project.id}
-              onClick={() => navigate(`/workspace/projects/${project.id}`)}
-              className="relative rounded-3xl p-6 sm:p-7 bg-gradient-to-b from-[#121422]/90 via-[#0e0f18]/85 to-[#08090f]/95 border border-white/10 hover:border-indigo-500/30 transition-all duration-300 backdrop-blur-xl flex flex-col justify-between group cursor-pointer shadow-[0_12px_40px_rgba(0,0,0,0.7)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.9)] space-y-6 overflow-hidden"
+      {filteredProjects.length === 0 ? (
+        <div className="py-20 text-center space-y-4 max-w-md mx-auto p-8 rounded-3xl bg-white/[0.02] border border-white/10">
+          <div className="w-12 h-12 rounded-full bg-[#c9b8a0]/10 border border-[#c9b8a0]/20 flex items-center justify-center mx-auto text-[#f5e6c8]">
+            <Users className="w-6 h-6" />
+          </div>
+          <h3 className="font-display text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0]">
+            No Project Groups Found
+          </h3>
+          <p className="text-xs text-zinc-400 font-sans leading-relaxed">
+            {isStudent
+              ? "You are not enrolled in any project matching this filter. Create a new project group or ask your team leader to add your PRN to their roster."
+              : "No institutional projects found matching the active filter."}
+          </p>
+          {isStudent && (
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className="px-4 py-2 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] text-black font-semibold text-xs tracking-wide transition-all shadow-sm flex items-center gap-2 mx-auto cursor-pointer"
             >
-              {/* Specular Edge Highlight */}
-              <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
+              <Plus className="w-4 h-4 text-black stroke-[2.5]" />
+              <span>Create Project Group</span>
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {filteredProjects.map((project) => {
+            const isLeader = project.teamLeaderPrn === userPrn;
+            const quotaPercentage = Math.round((project.currentAllocatedCount / project.hardwareBudgetCap) * 100);
 
-              {/* Top Strip */}
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[11px] font-sans font-medium text-zinc-300">
-                    {project.courseCode}
-                  </span>
-                  <span className="text-xs font-sans text-zinc-400 font-medium group-hover:text-zinc-200 transition-colors">
-                    {project.id}
-                  </span>
-                </div>
+            return (
+              <div
+                key={project.id}
+                onClick={() => navigate(`/workspace/projects/${project.id}`)}
+                className="relative rounded-3xl p-6 sm:p-7 bg-gradient-to-b from-[#121422]/90 via-[#0e0f18]/85 to-[#08090f]/95 border border-white/10 hover:border-[#c9b8a0]/40 transition-all duration-300 backdrop-blur-xl flex flex-col justify-between group cursor-pointer shadow-[0_12px_40px_rgba(0,0,0,0.7)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.9)] space-y-6 overflow-hidden"
+              >
+                {/* Specular Edge Highlight */}
+                <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
 
-                <div className="flex items-center gap-2">
-                  {isMine && (
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1.5 shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8]" />
-                      <span>My Team</span>
+                {/* Top Strip */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[11px] font-sans font-medium text-zinc-300">
+                      {project.courseCode}
                     </span>
-                  )}
-                  <span className="px-3 py-1 rounded-full text-[11px] font-sans font-medium bg-white/[0.04] text-zinc-300 border border-white/10 flex items-center gap-1.5 shadow-sm">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-                    <span>{project.reliabilityScore}% Integrity</span>
-                  </span>
-                </div>
-              </div>
+                    <span className="text-xs font-sans text-zinc-400 font-medium group-hover:text-zinc-200 transition-colors">
+                      {project.id}
+                    </span>
+                  </div>
 
-              {/* Title & Technical Abstract */}
-              <div className="space-y-2">
-                <h3 className="font-display text-lg sm:text-xl font-semibold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors leading-snug">
-                  {project.title}
-                </h3>
-                <p className="text-xs text-zinc-300 font-sans leading-relaxed line-clamp-2">
-                  {project.abstract}
-                </p>
-              </div>
+                  <div className="flex items-center gap-2">
+                    {isLeader ? (
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1.5 shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8]" />
+                        <span>Team Lead (You)</span>
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-white/[0.06] text-[#e2d2bc] border border-white/10 flex items-center gap-1.5 shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+                        <span>Working In</span>
+                      </span>
+                    )}
+                    <span className="px-3 py-1 rounded-full text-[11px] font-sans font-medium bg-white/[0.04] text-zinc-300 border border-white/10 flex items-center gap-1.5 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+                      <span>{project.reliabilityScore}% Integrity</span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Title & Technical Abstract */}
+                <div className="space-y-2">
+                  <h3 className="font-display text-lg sm:text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] tracking-tight group-hover:brightness-110 transition-all leading-snug">
+                    {project.title}
+                  </h3>
+                  <p className="text-xs text-zinc-300 font-sans leading-relaxed line-clamp-2">
+                    {project.abstract}
+                  </p>
+                </div>
 
               {/* Physical Hardware Showcase Pedestals */}
               <div className="pt-2 border-t border-white/5 space-y-3">
@@ -375,7 +497,7 @@ export function ProjectDirectoryPage() {
                     e.stopPropagation();
                     navigate(`/workspace/projects/${project.id}`);
                   }}
-                  className="px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-[#f5e6c8] text-black transition-all flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95 flex-shrink-0"
+                  className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black transition-all flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95 flex-shrink-0"
                 >
                   <span>Inspect Team</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -385,6 +507,7 @@ export function ProjectDirectoryPage() {
           );
         })}
       </div>
+      )}
 
       {/* Manual Group Creation Modal (Form Team & Add Friends) */}
       <Modal
@@ -611,7 +734,7 @@ export function ProjectDirectoryPage() {
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-md cursor-pointer active:scale-95"
+              className="px-5 py-2 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black font-semibold text-xs tracking-wide transition-all shadow-[0_0_15px_rgba(201,184,160,0.3)] cursor-pointer active:scale-95"
             >
               Register Group
             </button>

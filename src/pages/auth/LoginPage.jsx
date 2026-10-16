@@ -100,7 +100,7 @@ export function LoginPage() {
           <div className="max-w-sm mx-auto w-full">
             {/* Header */}
             <div className="text-center mb-6">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] tracking-tight">
                 Sign In
               </h2>
               <p className="text-xs text-[#c9b8a0]/70 mt-1 font-sans">

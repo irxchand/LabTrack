@@ -89,17 +89,17 @@ export function ReservationsPage() {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-zinc-800/80">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-zinc-100 flex items-center gap-2">
-            <BookmarkCheck className="w-5 h-5 text-blue-500" />
+          <h1 className="text-xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6c8] via-[#e2d2bc] to-[#c9b8a0] flex items-center gap-2">
+            <BookmarkCheck className="w-5 h-5 text-[#c9b8a0]" />
             Hardware Reservations & FIFO Backlog Queue
           </h1>
-          <p className="text-xs font-mono text-zinc-400 mt-0.5">
+          <p className="text-xs font-sans text-zinc-400 mt-0.5">
             Automated queue sequencing for allocated or out-of-stock collegiate equipment.
           </p>
         </div>
 
-        <div className="text-xs font-mono text-zinc-400 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded">
-          Total Backlog Entries: <span className="text-zinc-100 font-bold">{displayedReservations.length}</span>
+        <div className="text-xs font-sans text-zinc-400 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full">
+          Total Backlog Entries: <span className="text-[#f5e6c8] font-bold">{displayedReservations.length}</span>
         </div>
       </div>
 

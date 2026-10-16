@@ -526,6 +526,28 @@ export const INITIAL_PROJECTS = [
     abstract: 'Implementation of MQTT broker and local telemetry node for DCDS ESE evaluation task.',
   },
   {
+    id: 'PRJ-AIML-14',
+    title: 'Autonomous Drone Obstacle Avoidance & Telemetry',
+    courseCode: 'DCDS-SY-AIML',
+    academicTerm: 'Autumn 2026 (Semester III)',
+    department: 'Artificial Intelligence & Machine Learning',
+    mentorId: 'FAC-AI-019',
+    mentorName: 'Dr. Anjali Dalvi',
+    teamLeaderPrn: '202401052',
+    members: [
+      { prn: '202401052', name: 'Priya Nair', role: 'Flight Systems Lead' },
+      { prn: '202401048', name: 'Rahul Sharma', role: 'Telemetry & Sensor Node' },
+      { prn: '202401061', name: 'Aman Gupta', role: 'Power Distribution' },
+    ],
+    hardwareBudgetCap: 3,
+    currentAllocatedCount: 1,
+    reliabilityScore: 96,
+    allocatedItems: [
+      { assetTag: 'AT-RP5-0008', nomenclature: 'Raspberry Pi 5 Model B 8GB', checkedOut: '2026-10-06', due: '2026-10-27' },
+    ],
+    abstract: 'Edge AI inference for ultrasonic and LIDAR rangefinding obstacle avoidance node on quadcopter airframe.',
+  },
+  {
     id: 'PRJ-AIML-12',
     title: 'Autonomous Line-Following Robot',
     courseCode: 'CCE-TY-AIML',
