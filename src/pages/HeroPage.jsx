@@ -18,10 +18,12 @@ import {
   Terminal,
   Zap,
 } from 'lucide-react';
+import { InteractiveWavesBackground } from '../components/canvas/InteractiveWavesBackground';
 
 export function HeroPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('dispatch'); // 'dispatch' | 'telemetry' | 'custody'
+  const [wavePreset, setWavePreset] = useState('harmonic'); // 'harmonic' | 'velocity' | 'calm'
+  const [waveColorMode, setWaveColorMode] = useState('gold'); // 'gold' | 'emerald' | 'cyan'
   const [digestEmail, setDigestEmail] = useState('');
   const [digestSubscribed, setDigestSubscribed] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -163,568 +165,181 @@ export function HeroPage() {
         </div>
 
         {/* ─────────────────────────────────────────────────────────────────────
-            AUTONOMOUS HARDWARE MESH & TELEMETRY HUB (Responsive 3-Column Cockpit)
+            INTERACTIVE WAVES TELEMETRY STAGE (Replaces Hardware Mesh & Satellites)
         ───────────────────────────────────────────────────────────────────── */}
-        <div className="relative w-full max-w-[1360px] mx-auto mt-4 px-2 sm:px-4 z-10">
-          <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-0 w-full">
-            {/* ── LEFT SATELLITE COLUMN ── */}
-            <div className="flex flex-col sm:flex-row lg:flex-col gap-6 w-full lg:w-[270px] xl:w-[290px] shrink-0 justify-between">
-              {/* Satellite 1: Top-Left (FPGA) */}
-              <div
-                onClick={() => navigate('/workspace/inventory')}
-                className="w-full gold-glass-card rounded-[22px] p-3 hover:-translate-y-1 hover:border-[#a78b71]/50 hover:shadow-[0_0_30px_rgba(167,139,113,0.25)] transition-all duration-300 cursor-pointer group relative overflow-hidden"
-              >
-                <div className="rounded-[14px] overflow-hidden aspect-video relative mb-3 bg-neutral-900 border border-white/5">
-                  <img
-                    src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80"
-                    alt="Xilinx Artix-7 FPGA"
-                    className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
-                  />
-                  <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[9px] font-mono text-[#c9b8a0]">
-                    BENCH 04 // FPGA
-                  </div>
+        <div className="relative w-full max-w-6xl mx-auto mt-6 z-10 px-2 sm:px-0">
+          <div className="relative w-full h-[480px] sm:h-[560px] rounded-[32px] overflow-hidden gold-glass-card border border-white/10 shadow-[0_0_90px_rgba(167,139,113,0.18)] flex flex-col justify-between group">
+            {/* Interactive Perlin Noise Canvas */}
+            <InteractiveWavesBackground
+              lineColor={
+                waveColorMode === 'gold'
+                  ? 'rgba(201, 184, 160, 0.38)'
+                  : waveColorMode === 'emerald'
+                  ? 'rgba(98, 192, 115, 0.38)'
+                  : 'rgba(82, 168, 255, 0.38)'
+              }
+              backgroundColor="transparent"
+              waveSpeedX={
+                wavePreset === 'velocity' ? 0.035 : wavePreset === 'calm' ? 0.008 : 0.016
+              }
+              waveSpeedY={
+                wavePreset === 'velocity' ? 0.015 : wavePreset === 'calm' ? 0.004 : 0.007
+              }
+              waveAmpX={
+                wavePreset === 'velocity' ? 52 : wavePreset === 'calm' ? 24 : 38
+              }
+              waveAmpY={
+                wavePreset === 'velocity' ? 26 : wavePreset === 'calm' ? 12 : 18
+              }
+              friction={0.925}
+              tension={0.007}
+              maxCursorMove={120}
+              xGap={wavePreset === 'velocity' ? 10 : wavePreset === 'calm' ? 14 : 12}
+              yGap={wavePreset === 'velocity' ? 30 : wavePreset === 'calm' ? 38 : 34}
+              cursorDotColor={
+                waveColorMode === 'gold'
+                  ? 'rgba(232, 213, 183, 0.85)'
+                  : waveColorMode === 'emerald'
+                  ? 'rgba(98, 192, 115, 0.85)'
+                  : 'rgba(82, 168, 255, 0.85)'
+              }
+            />
+
+            {/* Inner Radial Ambient Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[320px] rounded-full bg-[#a78b71]/10 blur-[110px] pointer-events-none" />
+
+            {/* Top HUD Overlay */}
+            <div className="relative z-10 px-6 pt-5 pb-3 flex flex-wrap items-center justify-between gap-3 border-b border-white/5 bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
+              <div className="flex items-center gap-3">
+                <div className="relative flex items-center justify-center w-3 h-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c9b8a0] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#e8d5b7]" />
                 </div>
-                <div className="px-1">
-                  <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-neutral-400 uppercase mb-1">
-                    <span>Xilinx Artix-7</span>
-                    <span className="text-emerald-400 bg-emerald-400/10 px-1.5 py-0.2 rounded border border-emerald-400/20 font-semibold">
-                      DISPATCHED
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#a78b71]">
+                      AIML LAB // HARMONIC TELEMETRY FIELD
+                    </span>
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded">
+                      FLUID ACTIVE
                     </span>
                   </div>
-                  <div className="text-xs font-semibold text-white group-hover:text-[#e8d5b7] transition-colors truncate">
-                    100T CSG324 • PRN 202401048
-                  </div>
-                  <div className="text-[10px] text-neutral-500 font-mono mt-0.5 truncate">
-                    Vivado HW Server • Port 3121
+                  <div className="text-xs sm:text-sm font-semibold tracking-wide text-white font-display">
+                    Interactive RF Carrier & Waveform Surface
                   </div>
                 </div>
-                {/* Port anchor dot on right edge connecting to bus */}
-                <div className="hidden lg:block absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#e8d5b7] shadow-[0_0_8px_#e8d5b7]" />
               </div>
 
-              {/* Satellite 2: Bottom-Left (Jetson Orin) */}
-              <div
-                onClick={() => navigate('/workspace/custody/active')}
-                className="w-full gold-glass-card rounded-[22px] p-3 hover:-translate-y-1 hover:border-[#a78b71]/50 hover:shadow-[0_0_30px_rgba(167,139,113,0.25)] transition-all duration-300 cursor-pointer group relative overflow-hidden"
-              >
-                <div className="rounded-[14px] overflow-hidden aspect-video relative mb-3 bg-neutral-900 border border-white/5">
-                  <img
-                    src="https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=600&q=80"
-                    alt="NVIDIA Jetson Orin Nano"
-                    className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
-                  />
-                  <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[9px] font-mono text-[#c9b8a0]">
-                    DISPATCH // JETSON ORIN
-                  </div>
-                </div>
-                <div className="px-1">
-                  <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-neutral-400 uppercase mb-1">
-                    <span>Jetson Orin Nano</span>
-                    <span className="text-emerald-400 bg-emerald-400/10 px-1.5 py-0.2 rounded border border-emerald-400/20 font-semibold">
-                      BENCH #08
-                    </span>
-                  </div>
-                  <div className="text-xs font-semibold text-white group-hover:text-[#e8d5b7] transition-colors truncate">
-                    Autonomous Robotics Unit
-                  </div>
-                  <div className="text-[10px] text-neutral-500 font-mono mt-0.5 truncate">
-                    CUDA 12.2 • JetPack 6.0 Deploy
-                  </div>
-                </div>
-                {/* Port anchor dot on right edge connecting to bus */}
-                <div className="hidden lg:block absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#e8d5b7] shadow-[0_0_8px_#e8d5b7]" />
+              {/* Mode Selector Chips (Clickable) */}
+              <div className="flex items-center gap-1 bg-black/60 p-1 rounded-full border border-white/10 text-[10px] font-mono pointer-events-auto">
+                <button
+                  onClick={() => setWavePreset('harmonic')}
+                  className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                    wavePreset === 'harmonic'
+                      ? 'bg-[#a78b71] text-black font-semibold shadow-[0_0_12px_rgba(167,139,113,0.4)]'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  HARMONIC
+                </button>
+                <button
+                  onClick={() => setWavePreset('velocity')}
+                  className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                    wavePreset === 'velocity'
+                      ? 'bg-[#a78b71] text-black font-semibold shadow-[0_0_12px_rgba(167,139,113,0.4)]'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  VELOCITY
+                </button>
+                <button
+                  onClick={() => setWavePreset('calm')}
+                  className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                    wavePreset === 'calm'
+                      ? 'bg-[#a78b71] text-black font-semibold shadow-[0_0_12px_rgba(167,139,113,0.4)]'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  CALM
+                </button>
               </div>
             </div>
 
-            {/* ── LEFT TELEMETRY BUS CONNECTORS (Desktop) ── */}
-            <div className="hidden lg:flex w-12 xl:w-16 h-[540px] shrink-0 relative items-center justify-center">
-              <svg
-                className="w-full h-full overflow-visible pointer-events-none"
-                viewBox="0 0 64 540"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient id="goldGradientLeft" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#c9b8a0" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#a78b71" stopOpacity="0.3" />
-                  </linearGradient>
-                </defs>
-                {/* Upper Bus: Top Satellite (y: 130) to Center Console Top Port (y: 175) */}
-                <path
-                  d="M 0 130 C 32 130, 32 175, 64 175"
-                  stroke="url(#goldGradientLeft)"
-                  strokeWidth="2"
-                  className="node-line"
-                />
-                <path
-                  d="M 0 130 C 32 130, 32 175, 64 175"
-                  stroke="#e8d5b7"
-                  strokeWidth="1.5"
-                  className="flow-dash"
-                />
-                <circle cx="0" cy="130" r="3.5" fill="#e8d5b7" />
-                <circle cx="64" cy="175" r="3.5" fill="#e8d5b7" />
-                <text x="32" y="142" textAnchor="middle" fill="#c9b8a0" fontSize="7.5" fontFamily="monospace" letterSpacing="0.1em">
-                  BUS A
-                </text>
-
-                {/* Lower Bus: Bottom Satellite (y: 410) to Center Console Bottom Port (y: 365) */}
-                <path
-                  d="M 0 410 C 32 410, 32 365, 64 365"
-                  stroke="url(#goldGradientLeft)"
-                  strokeWidth="2"
-                  className="node-line"
-                />
-                <path
-                  d="M 0 410 C 32 410, 32 365, 64 365"
-                  stroke="#e8d5b7"
-                  strokeWidth="1.5"
-                  className="flow-dash"
-                />
-                <circle cx="0" cy="410" r="3.5" fill="#e8d5b7" />
-                <circle cx="64" cy="365" r="3.5" fill="#e8d5b7" />
-                <text x="32" y="398" textAnchor="middle" fill="#c9b8a0" fontSize="7.5" fontFamily="monospace" letterSpacing="0.1em">
-                  BUS B
-                </text>
-              </svg>
+            {/* Center Visual Interaction Indicator */}
+            <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 pointer-events-none select-none my-auto">
+              <div className="inline-flex items-center gap-2 bg-black/50 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 text-[11px] font-mono text-[#e8d5b7] mb-3 shadow-[0_0_20px_rgba(167,139,113,0.2)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#a78b71] animate-pulse" />
+                <span>PERLIN NOISE FLUID PHYSICS</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-semibold text-white tracking-tight drop-shadow-md">
+                Move cursor across the wave field to distort the carrier
+              </h3>
+              <p className="mt-2 text-xs sm:text-sm text-neutral-400 max-w-md font-sans leading-relaxed">
+                Dynamic fluid tension, friction dampening, and Perlin vector displacement simulating continuous high-frequency RF transmission.
+              </p>
             </div>
 
-            {/* ── CENTRAL CONSOLE HUB ── */}
-            <div className="w-full lg:flex-1 max-w-[660px] xl:max-w-[700px] gold-glass-card rounded-[28px] sm:rounded-[32px] p-5 sm:p-7 central-glow flex flex-col justify-between relative border border-white/15 min-h-[540px] overflow-hidden my-2 lg:my-0 z-10">
-              {/* Inner ambient glow */}
-              <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[#a78b71]/15 blur-3xl pointer-events-none" />
-              <div className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-[#a78b71]/10 blur-3xl pointer-events-none" />
-
-              {/* Hardware I/O Port Indicators on Left & Right Borders */}
-              <div className="hidden lg:flex absolute -left-1 top-[168px] w-2 h-3.5 bg-[#e8d5b7] rounded-r-sm items-center justify-center shadow-[0_0_6px_#e8d5b7]" />
-              <div className="hidden lg:flex absolute -left-1 top-[358px] w-2 h-3.5 bg-[#e8d5b7] rounded-r-sm items-center justify-center shadow-[0_0_6px_#e8d5b7]" />
-              <div className="hidden lg:flex absolute -right-1 top-[168px] w-2 h-3.5 bg-[#e8d5b7] rounded-l-sm items-center justify-center shadow-[0_0_6px_#e8d5b7]" />
-              <div className="hidden lg:flex absolute -right-1 top-[358px] w-2 h-3.5 bg-[#e8d5b7] rounded-l-sm items-center justify-center shadow-[0_0_6px_#e8d5b7]" />
-
-              {/* Console Header */}
-              <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-4 relative z-10 gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="relative flex items-center justify-center w-3 h-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c9b8a0] opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#e8d5b7]" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#a78b71]">
-                        AIML LAB // HARDWARE HUB
-                      </span>
-                      <span className="text-[9px] font-mono px-1.5 py-0.2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded">
-                        ONLINE
-                      </span>
-                    </div>
-                    <div className="text-sm sm:text-base font-bold tracking-wide text-white font-display">
-                      Hardware Custody & Telemetry Console
-                    </div>
-                  </div>
-                </div>
-
-                {/* Sub-node tabs */}
-                <div className="flex items-center bg-black/60 p-1 rounded-full border border-white/10 text-[10px] font-mono">
-                  <button
-                    onClick={() => setActiveTab('dispatch')}
-                    className={`px-3 py-1 rounded-full transition-all cursor-pointer font-medium ${
-                      activeTab === 'dispatch'
-                        ? 'bg-[#a78b71] text-black font-semibold shadow-[0_0_12px_rgba(167,139,113,0.5)]'
-                        : 'text-neutral-400 hover:text-white'
-                    }`}
-                  >
-                    DISPATCH
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('telemetry')}
-                    className={`px-3 py-1 rounded-full transition-all cursor-pointer font-medium ${
-                      activeTab === 'telemetry'
-                        ? 'bg-[#a78b71] text-black font-semibold shadow-[0_0_12px_rgba(167,139,113,0.5)]'
-                        : 'text-neutral-400 hover:text-white'
-                    }`}
-                  >
-                    TELEMETRY
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('custody')}
-                    className={`px-3 py-1 rounded-full transition-all cursor-pointer font-medium ${
-                      activeTab === 'custody'
-                        ? 'bg-[#a78b71] text-black font-semibold shadow-[0_0_12px_rgba(167,139,113,0.5)]'
-                        : 'text-neutral-400 hover:text-white'
-                    }`}
-                  >
-                    CUSTODY
-                  </button>
-                </div>
-              </div>
-
-              {/* Console Body: All 3 Tabs */}
-              <div className="my-auto py-4 relative z-10">
-                {/* ── TAB 1: CUSTODY (Dense Zero-Trust Hardware Ledger) ── */}
-                {activeTab === 'custody' && (
-                  <div className="space-y-3.5 font-mono">
-                    {/* Active Session Banner */}
-                    <div className="bg-black/50 p-3 rounded-2xl border border-white/10 flex items-center justify-between">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-[#a78b71]/15 border border-[#a78b71]/30 flex items-center justify-center text-[#e8d5b7]">
-                          <Shield className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-white text-xs font-semibold flex items-center gap-2">
-                            <span>Keysight DSOX1204G (4-Ch 70MHz)</span>
-                            <span className="text-[9px] text-[#c9b8a0] bg-white/5 px-1.5 py-0.2 rounded border border-white/10">
-                              TAG #EE-042
-                            </span>
-                          </div>
-                          <div className="text-[10px] text-neutral-400 mt-0.5">
-                            Asset ID: LT-HW-2024-0891 • Locker Bay B-04
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-[10px] bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 px-2 py-0.5 rounded-full font-semibold inline-flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          IN BENCH CUSTODY
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Custody Chain 4-Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                      {/* Custody Cell 1: Requisitioner */}
-                      <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
-                        <div className="text-[9px] text-neutral-400 uppercase tracking-wider mb-1 flex items-center justify-between">
-                          <span>REQUISITIONER</span>
-                          <span className="text-emerald-400 font-bold">RFID VERIFIED</span>
-                        </div>
-                        <div className="text-white font-medium text-[11px] truncate">Rahul Sharma</div>
-                        <div className="text-[10px] text-neutral-400 truncate">PRN: 202401048 • Final Year AIML</div>
-                      </div>
-
-                      {/* Custody Cell 2: Faculty Approval */}
-                      <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
-                        <div className="text-[9px] text-neutral-400 uppercase tracking-wider mb-1 flex items-center justify-between">
-                          <span>FACULTY GUIDE</span>
-                          <span className="text-emerald-400 font-bold">DUAL-SIGN PASS</span>
-                        </div>
-                        <div className="text-white font-medium text-[11px] truncate">Dr. Anjali Dalvi</div>
-                        <div className="text-[10px] text-neutral-400 truncate">Department of EE/CS • Station Head</div>
-                      </div>
-
-                      {/* Custody Cell 3: Bench & Countdown */}
-                      <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
-                        <div className="text-[9px] text-neutral-400 uppercase tracking-wider mb-1 flex items-center justify-between">
-                          <span>BENCH & WINDOW</span>
-                          <span className="text-[#a78b71] font-bold">01h 42m LEFT</span>
-                        </div>
-                        <div className="text-white font-medium text-[11px] truncate">Bench #04 • Room 402</div>
-                        <div className="w-full bg-neutral-800 h-1.5 rounded-full mt-1.5 overflow-hidden">
-                          <div className="bg-gradient-to-r from-[#a78b71] to-[#e8d5b7] h-full rounded-full w-[65%]" />
-                        </div>
-                      </div>
-
-                      {/* Custody Cell 4: Security Ledger */}
-                      <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
-                        <div className="text-[9px] text-neutral-400 uppercase tracking-wider mb-1 flex items-center justify-between">
-                          <span>TAMPER INTEGRITY</span>
-                          <span className="text-emerald-400 font-bold">SEAL #CS-9941</span>
-                        </div>
-                        <div className="text-white font-medium text-[11px] truncate">0 Penalty Strikes Accrued</div>
-                        <div className="text-[10px] text-neutral-400 truncate">Risk Score: 0.00 • Clean Record</div>
-                      </div>
-                    </div>
-
-                    {/* Pre-Return Verification Status Strip */}
-                    <div className="bg-black/30 p-2 rounded-xl border border-white/5 flex flex-wrap items-center justify-between text-[10px] text-neutral-300 gap-2">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                        <span>4x 100MHz Passive Probes Attached</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                        <span>Calibration Drift: &lt;0.01%</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-[#c9b8a0]">
-                        <Clock className="w-3 h-3" />
-                        <span>Auto Return: 17:30 IST</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* ── TAB 2: TELEMETRY (Oscilloscope SCPI Stream & Waveforms) ── */}
-                {activeTab === 'telemetry' && (
-                  <div className="space-y-3 font-mono">
-                    <div className="flex items-center justify-between text-xs text-neutral-300 border-b border-white/5 pb-2">
-                      <div className="flex items-center gap-2">
-                        <Activity className="w-4 h-4 text-[#a78b71]" />
-                        <span className="text-white font-medium">RIGOL DS1054Z // 192.168.1.104</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-[10px]">
-                        <span className="text-emerald-400 font-semibold bg-emerald-400/10 px-2 py-0.5 rounded border border-emerald-400/20">
-                          SCPI LIVE • 2.5 GSa/s
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Simulated Waveform SVG Screen with Oscilloscope Reticle */}
-                    <div className="relative rounded-xl overflow-hidden bg-black/70 border border-white/10 p-2">
-                      <svg className="w-full h-24" viewBox="0 0 540 90">
-                        {/* Reticle Grid Lines */}
-                        <defs>
-                          <pattern id="scopeGrid" width="45" height="18" patternUnits="userSpaceOnUse">
-                            <path d="M 45 0 L 0 0 0 18" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
-                          </pattern>
-                        </defs>
-                        <rect width="540" height="90" fill="url(#scopeGrid)" />
-                        
-                        {/* Center Reticle Crosshairs */}
-                        <line x1="0" y1="45" x2="540" y2="45" stroke="rgba(167,139,113,0.2)" strokeWidth="1" strokeDasharray="2 4" />
-                        <line x1="270" y1="0" x2="270" y2="90" stroke="rgba(167,139,113,0.2)" strokeWidth="1" strokeDasharray="2 4" />
-
-                        {/* Trace 1: Gold Waveform (Analog Modulation) */}
-                        <path
-                          d="M 0 45 Q 25 10 50 45 T 100 45 T 150 45 T 200 15 T 250 75 T 300 45 T 350 45 T 400 20 T 450 70 T 500 45 T 540 45"
-                          fill="none"
-                          stroke="#e8d5b7"
-                          strokeWidth="2"
-                          className="flow-dash"
-                        />
-                        {/* Trace 2: Emerald Waveform (Digital SPI Clock) */}
-                        <path
-                          d="M 0 68 L 45 68 L 45 22 L 90 22 L 90 68 L 135 68 L 135 22 L 180 22 L 180 68 L 225 68 L 225 22 L 270 22 L 270 68 L 315 68 L 315 22 L 360 22 L 360 68 L 405 68 L 405 22 L 450 22 L 450 68 L 495 68 L 495 22 L 540 22"
-                          fill="none"
-                          stroke="#62c073"
-                          strokeWidth="1.2"
-                          strokeOpacity="0.85"
-                        />
-                      </svg>
-                      
-                      {/* Real-time Oscilloscope Banner */}
-                      <div className="flex items-center justify-between text-[9px] text-neutral-400 px-1 pt-1 border-t border-white/5">
-                        <span className="text-[#e8d5b7]">CH1: 500mV/div (PWM)</span>
-                        <span className="text-[#62c073]">CH2: 1.0V/div (SPI_CLK)</span>
-                        <span className="text-neutral-500">TRIG: CH1 EDGE 1.65V</span>
-                      </div>
-                    </div>
-
-                    {/* Telemetry Metrics Readout Grid */}
-                    <div className="grid grid-cols-4 gap-2 text-center">
-                      <div className="bg-black/40 p-2 rounded-xl border border-white/5">
-                        <div className="text-[9px] text-neutral-400">V_PP</div>
-                        <div className="text-xs font-bold text-white mt-0.5">3.32 V</div>
-                      </div>
-                      <div className="bg-black/40 p-2 rounded-xl border border-white/5">
-                        <div className="text-[9px] text-neutral-400">FREQ</div>
-                        <div className="text-xs font-bold text-[#e8d5b7] mt-0.5">144.02 MHz</div>
-                      </div>
-                      <div className="bg-black/40 p-2 rounded-xl border border-white/5">
-                        <div className="text-[9px] text-neutral-400">RISE TIME</div>
-                        <div className="text-xs font-bold text-white mt-0.5">2.84 ns</div>
-                      </div>
-                      <div className="bg-black/40 p-2 rounded-xl border border-white/5">
-                        <div className="text-[9px] text-neutral-400">DUTY CYCLE</div>
-                        <div className="text-xs font-bold text-emerald-400 mt-0.5">50.2%</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* ── TAB 3: DISPATCH (Live Allocations & Requisitions) ── */}
-                {activeTab === 'dispatch' && (
-                  <div className="space-y-2.5 font-mono text-xs">
-                    <div className="bg-black/40 p-2.5 rounded-xl border border-white/5 flex items-center justify-between hover:border-white/10 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-lg bg-[#a78b71]/15 border border-[#a78b71]/30 flex items-center justify-center text-[#e8d5b7]">
-                          <Cpu className="w-3.5 h-3.5" />
-                        </div>
-                        <div>
-                          <div className="text-white font-medium text-xs">Xilinx Artix-7 XC7A100T</div>
-                          <div className="text-[10px] text-neutral-400">Bench #12 • PRN: 202401072 (Deepak Nair)</div>
-                        </div>
-                      </div>
-                      <span className="text-[10px] bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 px-2 py-0.5 rounded-full font-semibold">
-                        DISPATCHED
-                      </span>
-                    </div>
-
-                    <div className="bg-black/40 p-2.5 rounded-xl border border-white/5 flex items-center justify-between hover:border-white/10 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-lg bg-[#a78b71]/15 border border-[#a78b71]/30 flex items-center justify-center text-[#e8d5b7]">
-                          <Activity className="w-3.5 h-3.5" />
-                        </div>
-                        <div>
-                          <div className="text-white font-medium text-xs">NVIDIA Jetson Orin Nano 8GB</div>
-                          <div className="text-[10px] text-neutral-400">Bench #08 • PRN: 202401115 (Priya Patel)</div>
-                        </div>
-                      </div>
-                      <span className="text-[10px] bg-[#a78b71]/15 text-[#e8d5b7] border border-[#a78b71]/30 px-2 py-0.5 rounded-full font-semibold">
-                        ACTIVE BENCH
-                      </span>
-                    </div>
-
-                    <div className="bg-black/40 p-2.5 rounded-xl border border-white/5 flex items-center justify-between hover:border-white/10 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-lg bg-[#a78b71]/15 border border-[#a78b71]/30 flex items-center justify-center text-[#e8d5b7]">
-                          <Radio className="w-3.5 h-3.5" />
-                        </div>
-                        <div>
-                          <div className="text-white font-medium text-xs">Keysight 33600A Waveform Gen</div>
-                          <div className="text-[10px] text-neutral-400">Bench #03 • PRN: 202401033 (Aditya Verma)</div>
-                        </div>
-                      </div>
-                      <span className="text-[10px] bg-blue-400/10 text-blue-400 border border-blue-400/20 px-2 py-0.5 rounded-full font-semibold">
-                        QUEUED (#1)
-                      </span>
-                    </div>
-
-                    {/* Summary row */}
-                    <div className="flex items-center justify-between text-[10px] text-neutral-400 pt-1 px-1">
-                      <span>Active Benches: 18 / 24</span>
-                      <span>Turnaround: 4.2 min avg</span>
-                      <span className="text-emerald-400">0 Overdue Violations</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Console Footer */}
-              <div className="flex flex-wrap items-center justify-between border-t border-white/10 pt-3.5 text-[10px] font-mono text-neutral-400 relative z-10 gap-2">
+            {/* Bottom HUD Telemetry Strip & Color Palette Toggles */}
+            <div className="relative z-10 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 bg-black/50 backdrop-blur-md font-mono text-xs">
+              {/* Telemetry Metrics */}
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-[10px] text-neutral-400">
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  <span>FACILITY: AIML LAB (ROOM 402)</span>
-                  <span className="text-neutral-600 hidden sm:inline">|</span>
-                  <span className="text-neutral-500 hidden sm:inline">NTP SYNCED • 12ms LATENCY</span>
+                  <span className="text-neutral-500">BASE FREQ:</span>
+                  <span className="text-white font-medium">144.02 MHz</span>
                 </div>
-                <div className="text-[#a78b71] font-semibold tracking-wider">ZERO-TRUST HARDWARE LEDGER v2.4</div>
-              </div>
-            </div>
-
-            {/* ── RIGHT TELEMETRY BUS CONNECTORS (Desktop) ── */}
-            <div className="hidden lg:flex w-12 xl:w-16 h-[540px] shrink-0 relative items-center justify-center">
-              <svg
-                className="w-full h-full overflow-visible pointer-events-none"
-                viewBox="0 0 64 540"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient id="goldGradientRight" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#a78b71" stopOpacity="0.3" />
-                    <stop offset="100%" stopColor="#c9b8a0" stopOpacity="0.8" />
-                  </linearGradient>
-                </defs>
-                {/* Upper Bus: Center Console Top Port (y: 175) to Top Satellite (y: 130) */}
-                <path
-                  d="M 0 175 C 32 175, 32 130, 64 130"
-                  stroke="url(#goldGradientRight)"
-                  strokeWidth="2"
-                  className="node-line"
-                />
-                <path
-                  d="M 0 175 C 32 175, 32 130, 64 130"
-                  stroke="#e8d5b7"
-                  strokeWidth="1.5"
-                  className="flow-dash"
-                />
-                <circle cx="0" cy="175" r="3.5" fill="#e8d5b7" />
-                <circle cx="64" cy="130" r="3.5" fill="#e8d5b7" />
-                <text x="32" y="142" textAnchor="middle" fill="#c9b8a0" fontSize="7.5" fontFamily="monospace" letterSpacing="0.1em">
-                  BUS C
-                </text>
-
-                {/* Lower Bus: Center Console Bottom Port (y: 365) to Bottom Satellite (y: 410) */}
-                <path
-                  d="M 0 365 C 32 365, 32 410, 64 410"
-                  stroke="url(#goldGradientRight)"
-                  strokeWidth="2"
-                  className="node-line"
-                />
-                <path
-                  d="M 0 365 C 32 365, 32 410, 64 410"
-                  stroke="#e8d5b7"
-                  strokeWidth="1.5"
-                  className="flow-dash"
-                />
-                <circle cx="0" cy="365" r="3.5" fill="#e8d5b7" />
-                <circle cx="64" cy="410" r="3.5" fill="#e8d5b7" />
-                <text x="32" y="398" textAnchor="middle" fill="#c9b8a0" fontSize="7.5" fontFamily="monospace" letterSpacing="0.1em">
-                  BUS D
-                </text>
-              </svg>
-            </div>
-
-            {/* ── RIGHT SATELLITE COLUMN ── */}
-            <div className="flex flex-col sm:flex-row lg:flex-col gap-6 w-full lg:w-[270px] xl:w-[290px] shrink-0 justify-between">
-              {/* Satellite 3: Top-Right (Rigol Oscilloscope) */}
-              <div
-                onClick={() => navigate('/workspace/inventory')}
-                className="w-full gold-glass-card rounded-[22px] p-3 hover:-translate-y-1 hover:border-[#a78b71]/50 hover:shadow-[0_0_30px_rgba(167,139,113,0.25)] transition-all duration-300 cursor-pointer group relative overflow-hidden"
-              >
-                {/* Port anchor dot on left edge connecting to bus */}
-                <div className="hidden lg:block absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#e8d5b7] shadow-[0_0_8px_#e8d5b7]" />
-
-                <div className="rounded-[14px] overflow-hidden aspect-video relative mb-3 bg-neutral-900 border border-white/5">
-                  <img
-                    src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80"
-                    alt="Rigol DS1054Z Digital Storage Oscilloscope"
-                    className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
-                  />
-                  <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[9px] font-mono text-[#c9b8a0]">
-                    TELEMETRY // RIGOL
-                  </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-neutral-500">SAMPLING:</span>
+                  <span className="text-emerald-400 font-medium">2.50 GSa/s</span>
                 </div>
-                <div className="px-1">
-                  <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-neutral-400 uppercase mb-1">
-                    <span>Rigol DS1054Z 4-Ch</span>
-                    <span className="text-[#a78b71] bg-[#a78b71]/10 px-1.5 py-0.2 rounded border border-[#a78b71]/20 font-semibold">
-                      100 MHz
-                    </span>
-                  </div>
-                  <div className="text-xs font-semibold text-white group-hover:text-[#e8d5b7] transition-colors truncate">
-                    Live SCPI Channel Stream
-                  </div>
-                  <div className="text-[10px] text-neutral-500 font-mono mt-0.5 truncate">
-                    Bench #02 • 4 Probes Online
-                  </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-neutral-500">TENSION:</span>
+                  <span className="text-[#e8d5b7] font-medium">0.007</span>
+                </div>
+                <div className="flex items-center gap-2 hidden md:flex">
+                  <span className="text-neutral-500">FRICTION:</span>
+                  <span className="text-white font-medium">0.925</span>
                 </div>
               </div>
 
-              {/* Satellite 4: Bottom-Right (Keysight Waveform Rig) */}
-              <div
-                onClick={() => navigate('/workspace/custody/reservations')}
-                className="w-full gold-glass-card rounded-[22px] p-3 hover:-translate-y-1 hover:border-[#a78b71]/50 hover:shadow-[0_0_30px_rgba(167,139,113,0.25)] transition-all duration-300 cursor-pointer group relative overflow-hidden"
-              >
-                {/* Port anchor dot on left edge connecting to bus */}
-                <div className="hidden lg:block absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#e8d5b7] shadow-[0_0_8px_#e8d5b7]" />
-
-                <div className="rounded-[14px] overflow-hidden aspect-video relative mb-3 bg-neutral-900 border border-white/5">
-                  <img
-                    src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"
-                    alt="Keysight Precision Lab Bench Rig"
-                    className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
-                  />
-                  <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[9px] font-mono text-[#c9b8a0]">
-                    CALIBRATED // BENCH RIG
-                  </div>
-                </div>
-                <div className="px-1">
-                  <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-neutral-400 uppercase mb-1">
-                    <span>Keysight 33600A</span>
-                    <span className="text-emerald-400 bg-emerald-400/10 px-1.5 py-0.2 rounded border border-emerald-400/20 font-semibold">
-                      100% HEALTH
-                    </span>
-                  </div>
-                  <div className="text-xs font-semibold text-white group-hover:text-[#e8d5b7] transition-colors truncate">
-                    Waveform Generator Rig
-                  </div>
-                  <div className="text-[10px] text-neutral-500 font-mono mt-0.5 truncate">
-                    Dual-Ch 80MHz • Calib: Oct 2026
-                  </div>
-                </div>
+              {/* Color Palette Switcher (Clickable) */}
+              <div className="flex items-center gap-2 text-[10px] pointer-events-auto">
+                <span className="text-neutral-400 mr-1 hidden sm:inline">PALETTE:</span>
+                <button
+                  onClick={() => setWaveColorMode('gold')}
+                  className={`px-2.5 py-1 rounded-full border transition-all cursor-pointer flex items-center gap-1.5 ${
+                    waveColorMode === 'gold'
+                      ? 'border-[#a78b71] bg-[#a78b71]/20 text-[#e8d5b7]'
+                      : 'border-white/10 text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#c9b8a0]" />
+                  <span>Gold</span>
+                </button>
+                <button
+                  onClick={() => setWaveColorMode('emerald')}
+                  className={`px-2.5 py-1 rounded-full border transition-all cursor-pointer flex items-center gap-1.5 ${
+                    waveColorMode === 'emerald'
+                      ? 'border-emerald-400 bg-emerald-400/20 text-emerald-300'
+                      : 'border-white/10 text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span>Emerald</span>
+                </button>
+                <button
+                  onClick={() => setWaveColorMode('cyan')}
+                  className={`px-2.5 py-1 rounded-full border transition-all cursor-pointer flex items-center gap-1.5 ${
+                    waveColorMode === 'cyan'
+                      ? 'border-blue-400 bg-blue-400/20 text-blue-300'
+                      : 'border-white/10 text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-blue-400" />
+                  <span>Cyan</span>
+                </button>
               </div>
             </div>
+
           </div>
         </div>
       </section>
