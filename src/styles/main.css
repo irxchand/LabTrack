@@ -4,6 +4,7 @@
 @theme {
   --font-sans: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
   --font-display: 'Clash Display', 'Satoshi', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -25,66 +26,62 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   DARK TECH BRUTALIST SPEC
+   LUXURY GOLD & NEURAL DESIGN SYSTEM SPEC
 ───────────────────────────────────────────────────────────────────────────── */
-.font-inter-display {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 500;
+.font-playfair {
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
-.font-geist-mono {
-  font-family: 'Geist Mono', 'JetBrains Mono', monospace;
+.bg-dots {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1.25px, transparent 1.25px);
+  background-size: 32px 32px;
 }
 
-.headline-fluid {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 500;
-  font-size: clamp(32px, 5.5vw, 60px);
-  letter-spacing: clamp(-3.36px, -0.05em, -1px);
-  line-height: 1.04;
-  color: #ffffff;
-  max-width: 752px;
+.gold-glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.btn-square {
-  border-radius: 0px !important;
-  background-color: #ffffff;
-  color: #121212;
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  transition: background-color 0.15s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.btn-square:hover {
-  background-color: #ededed;
+.central-glow {
+  box-shadow: 0 0 100px rgba(167, 139, 113, 0.2);
 }
 
-.v-chip {
-  display: inline-flex;
-  align-items: center;
-  background-color: #1f1f1f;
-  border-radius: 100px;
-  padding: 4px 10px;
-  gap: 6px;
-  font-family: 'Geist Mono', 'JetBrains Mono', monospace;
-  font-size: 12px;
-  color: #999999;
-  text-transform: uppercase;
-  white-space: nowrap;
-  user-select: none;
+.satellite-glow-hover {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.satellite-glow-hover:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 60px rgba(167, 139, 113, 0.3);
 }
 
-.spec-card {
-  background-color: #0a0a0a;
-  border: 1px solid rgba(255, 255, 255, 0.145);
-  border-radius: 0px;
+.node-line {
+  stroke-width: 2.5;
+  animation: pulsing-branch 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
 }
 
-.scrim-hero {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.76) 0%, rgba(0, 0, 0, 0) 93.785%);
+@keyframes pulsing-branch {
+  0% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+.flow-dash {
+  stroke-dasharray: 5 15;
+  animation: flow-run 2s linear infinite;
+}
+
+@keyframes flow-run {
+  from {
+    stroke-dashoffset: 40;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 .liquid-glass {

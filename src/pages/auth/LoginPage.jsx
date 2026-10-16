@@ -195,9 +195,18 @@ export function LoginPage() {
               <button
                 type="button"
                 onClick={() => alert('New enrollments must be provisioned by the lab administrator.')}
-                className="text-xs text-[#c9b8a0] hover:text-[#f5e6c8] font-medium transition-colors cursor-pointer block mx-auto"
+                className="text-xs text-stone-400 hover:text-stone-300 font-normal transition-colors cursor-pointer block mx-auto"
               >
                 Need an account? Contact lab administrator
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate('/hero')}
+                className="text-xs text-[#c9b8a0] hover:text-[#f5e6c8] font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 mx-auto pt-1"
+              >
+                <span>View Neural Architecture & Showcase</span>
+                <ArrowRight className="w-3 h-3" />
               </button>
             </div>
           </div>

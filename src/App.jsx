@@ -32,7 +32,7 @@ import { ApprovalsQueuePage } from './pages/operations/ApprovalsQueuePage';
 import { DispatchDeskPage } from './pages/operations/DispatchDeskPage';
 import { DefectManagementPage } from './pages/operations/DefectManagementPage';
 
-// Flagship Showcase Hero Page
+// Hero Showcase Page
 import { HeroPage } from './pages/HeroPage';
 
 export function App() {
@@ -48,7 +48,7 @@ export function App() {
               <Route path="/auth/login" element={<LoginPage />} />
               <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
-              {/* Flagship 3D Hero Showcase Page */}
+              {/* Luxury Gold & Neural Hero Page */}
               <Route path="/hero" element={<HeroPage />} />
               <Route path="/showcase" element={<HeroPage />} />
               <Route path="/experience" element={<HeroPage />} />

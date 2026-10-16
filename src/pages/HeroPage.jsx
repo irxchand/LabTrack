@@ -1,1091 +1,1146 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import {
+  Activity,
+  ArrowRight,
   ArrowUpRight,
-  Menu,
-  X,
+  Check,
+  ChevronDown,
+  Cpu,
+  Database,
+  Globe,
+  Layers,
+  Lock,
+  Radio,
+  RefreshCw,
+  Search,
+  Server,
+  Shield,
+  Sparkles,
+  Terminal,
+  Zap,
 } from 'lucide-react';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SPEC COMPONENT: Status Chip (v-chip)
-// Specification:
-// "Create an inline-flex element: background #1f1f1f, border-radius 100px,
-// padding 4px 10px, gap 6px. Inside, a 6px x 6px circle with a status-dependent
-// background color (#62c073 for PASS, #999999 for WARN, #ededed for ERROR/FAIL)
-// followed by uppercase text in Geist Mono, font-size 12px, color #999999."
-// ─────────────────────────────────────────────────────────────────────────────
-export function StatusChip({ status = 'PASS', label }) {
-  const dotColor =
-    status === 'PASS'
-      ? 'bg-[#62c073]'
-      : status === 'WARN'
-      ? 'bg-[#999999]'
-      : 'bg-[#ededed]';
-
-  return (
-    <span
-      className="v-chip"
-      style={{
-        backgroundColor: '#1f1f1f',
-        borderRadius: '100px',
-        padding: '4px 10px',
-        gap: '6px',
-        display: 'inline-flex',
-        alignItems: 'center',
-      }}
-    >
-      <span
-        className={`rounded-full flex-shrink-0 ${dotColor}`}
-        style={{ width: '6px', height: '6px' }}
-      />
-      <span
-        style={{
-          fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-          fontSize: '12px',
-          color: '#999999',
-          textTransform: 'uppercase',
-        }}
-      >
-        {label || status}
-      </span>
-    </span>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SPEC COMPONENT: Timeline Progress Bar
-// Specification:
-// "Container: w-full, h-1.5, bg-transparent. Inner bar: absolute, height 100%,
-// rounded-sm (2px). The inner bar's left position and width should be controlled
-// via percentage to represent start time and duration respectively.
-// Default color: rgba(255,255,255,0.18), Active color: #52a8ff."
-// ─────────────────────────────────────────────────────────────────────────────
-export function TimelineProgressBar({
-  startPercent = 0,
-  durationPercent = 20,
-  isActive = false,
-}) {
-  return (
-    <div className="w-full h-1.5 bg-transparent relative">
-      <div
-        className="absolute h-full transition-all duration-200"
-        style={{
-          left: `${startPercent}%`,
-          width: `${durationPercent}%`,
-          borderRadius: '2px',
-          backgroundColor: isActive ? '#52a8ff' : 'rgba(255, 255, 255, 0.18)',
-        }}
-      />
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN PAGE: Dark Tech Brutalist Implementation
-// ─────────────────────────────────────────────────────────────────────────────
 export function HeroPage() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [selectedSpanId, setSelectedSpanId] = useState('span-req-8821');
+  const [billingCycle, setBillingCycle] = useState('annual'); // 'monthly' | 'annual'
+  const [activeTab, setActiveTab] = useState('neural'); // 'neural' | 'telemetry' | 'custody'
+  const [digestEmail, setDigestEmail] = useState('');
+  const [digestSubscribed, setDigestSubscribed] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const heroContainerRef = useRef(null);
 
-  const handleAction = () => {
-    if (isAuthenticated) {
-      navigate('/workspace');
-    } else {
-      navigate('/login');
+  // Subtle interactive parallax coordinates
+  const handleMouseMove = (e) => {
+    if (!heroContainerRef.current) return;
+    const rect = heroContainerRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setMousePos({ x, y });
+  };
+
+  const handleDigestSubmit = (e) => {
+    e.preventDefault();
+    if (digestEmail.trim()) {
+      setDigestSubscribed(true);
+      setTimeout(() => {
+        setDigestSubscribed(false);
+        setDigestEmail('');
+      }, 4000);
     }
   };
 
-  // Telemetry Spans for Event Stream Table
-  const EVENT_SPANS = [
-    {
-      id: 'span-req-8821',
-      label: 'requisition.verify_endorsement',
-      startPercent: 4,
-      durationPercent: 26,
-      durationText: '142ms',
-      status: 'PASS',
-    },
-    {
-      id: 'span-fifo-queue',
-      label: 'queue.fifo_allocation_lease',
-      startPercent: 30,
-      durationPercent: 16,
-      durationText: '88ms',
-      status: 'PASS',
-    },
-    {
-      id: 'span-counter-sign',
-      label: 'custody.counter_pickup_sign',
-      startPercent: 48,
-      durationPercent: 38,
-      durationText: '210ms',
-      status: 'PASS',
-    },
-    {
-      id: 'span-pin-continuity',
-      label: 'telemetry.pin_continuity_bench',
-      startPercent: 82,
-      durationPercent: 12,
-      durationText: '45ms',
-      status: 'WARN',
-    },
-    {
-      id: 'span-sha256-commit',
-      label: 'ledger.sha256_custody_commit',
-      startPercent: 96,
-      durationPercent: 4,
-      durationText: '18ms',
-      status: 'PASS',
-    },
-  ];
-
   return (
-    <div
-      className="min-h-screen text-white font-sans overflow-x-hidden relative"
-      style={{ backgroundColor: '#000000' }}
-    >
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* HEADER: Absolute at top: 38px, horizontal padding: 56px */}
-      {/* ───────────────────────────────────────────────────────────────── */}
-      <header
-        className="absolute z-50 flex items-center justify-between"
-        style={{
-          top: '38px',
-          left: 0,
-          right: 0,
-          paddingLeft: '56px',
-          paddingRight: '56px',
-        }}
-      >
-        {/* Left: Geometric SVG + Brand Name in Inter Medium (20px) */}
+    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#a78b71] selection:text-black overflow-x-hidden relative font-sans">
+      {/* ─────────────────────────────────────────────────────────────────────────
+          RADIAL DOT GRID BACKGROUND
+      ───────────────────────────────────────────────────────────────────────── */}
+      <div className="fixed inset-0 bg-dots pointer-events-none z-0" />
+
+      {/* Subtle Central Ambient Glow */}
+      <div className="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[#a78b71]/[0.035] blur-[150px] pointer-events-none z-0" />
+
+      {/* ─────────────────────────────────────────────────────────────────────────
+          FIXED TOP NAVBAR
+      ───────────────────────────────────────────────────────────────────────── */}
+      <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-[10px] bg-[#0a0a0a]/80 border-b border-white/10 px-6 sm:px-12 h-20 flex items-center justify-between transition-all duration-300">
+        {/* Left: Text Logo in 'Playfair Display' (Bold Italic) */}
         <div
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="flex items-center gap-3 cursor-pointer group select-none"
+          className="flex items-center gap-2 cursor-pointer group select-none"
         >
-          {/* Geometric SVG */}
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect x="2" y="2" width="9" height="9" fill="#ffffff" />
-            <rect x="13" y="2" width="9" height="9" fill="#52a8ff" />
-            <rect x="2" y="13" width="9" height="9" fill="#62c073" />
-            <rect x="13" y="13" width="9" height="9" fill="#ededed" />
-          </svg>
-          <span
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 500,
-              fontSize: '20px',
-              letterSpacing: '-0.5px',
-              color: '#ffffff',
-            }}
-          >
+          <span className="font-serif italic font-bold text-2xl tracking-tight text-white group-hover:text-[#e8d5b7] transition-colors">
             LabTrack
           </span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#a78b71] shadow-[0_0_12px_#a78b71]" />
         </div>
 
-        {/* Center: Hidden-on-mobile nav with 16px white links */}
-        <nav className="hidden md:flex items-center gap-8 text-[16px] text-white font-normal">
+        {/* Center: Links in 'Inter' (11px, uppercase, tracking-wide) */}
+        <nav className="hidden md:flex items-center gap-8 text-[11px] font-medium tracking-[0.25em] text-white/70 uppercase">
           <a
-            href="#event-stream"
-            className="hover:text-[#52a8ff] transition-colors duration-150"
+            href="#neural-mesh"
+            className="hover:text-[#e8d5b7] transition-colors duration-200"
           >
-            Event Stream
+            Neural Mesh
           </a>
           <a
-            href="#bento-grid"
-            className="hover:text-[#52a8ff] transition-colors duration-150"
+            href="#features"
+            className="hover:text-[#e8d5b7] transition-colors duration-200"
           >
-            Architecture
+            Capabilities
           </a>
           <a
-            href="#metrics"
-            className="hover:text-[#52a8ff] transition-colors duration-150"
+            href="#pricing"
+            className="hover:text-[#e8d5b7] transition-colors duration-200"
           >
-            Metrics
+            Pricing
+          </a>
+          <a
+            href="#syndicate"
+            className="hover:text-[#e8d5b7] transition-colors duration-200"
+          >
+            Syndicate
           </a>
         </nav>
 
-        {/* Right: btn-square CTA 'Book a demo' (background: #fff, text: #121212, padding: 8px 12px) */}
-        <div className="flex items-center gap-3">
+        {/* Right: Actions */}
+        <div className="flex items-center gap-4">
           <button
-            type="button"
-            onClick={handleAction}
-            className="btn-square hidden sm:inline-flex items-center gap-2"
-            style={{
-              borderRadius: '0px',
-              backgroundColor: '#ffffff',
-              color: '#121212',
-              padding: '8px 12px',
-              fontSize: '14px',
-              fontWeight: 500,
-            }}
+            onClick={() => navigate('/workspace')}
+            className="text-[11px] font-medium uppercase tracking-[0.25em] text-[#c9b8a0] hover:text-white transition-colors px-3 py-1.5 hidden sm:inline-block"
           >
-            <span>Book a demo</span>
-            <ArrowUpRight style={{ width: '12px', height: '12px' }} />
+            Workspace
           </button>
-
-          {/* Mobile Menu Hamburger */}
+          {/* 'Start Free Trial' Pill Button (white background, black text, rounded-full) */}
           <button
-            type="button"
-            onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="md:hidden p-2 text-white hover:text-[#52a8ff]"
-            aria-label="Toggle Mobile Menu"
+            onClick={() => navigate('/workspace')}
+            className="bg-white text-black font-semibold text-xs tracking-wider uppercase px-5 py-2.5 rounded-full hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.18)] hover:shadow-[0_0_30px_rgba(232,213,183,0.4)] cursor-pointer"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            Start Free Trial
           </button>
         </div>
       </header>
 
-      {/* Full-screen Mobile Menu (Transitions on small screens) */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 z-40 flex flex-col justify-center px-8 space-y-6 md:hidden animate-in fade-in duration-150"
-          style={{ backgroundColor: '#000000' }}
+      {/* ─────────────────────────────────────────────────────────────────────────
+          HERO SECTION
+      ───────────────────────────────────────────────────────────────────────── */}
+      <section
+        id="neural-mesh"
+        ref={heroContainerRef}
+        onMouseMove={handleMouseMove}
+        className="relative pt-36 pb-28 px-6 sm:px-12 flex flex-col items-center z-10 min-h-screen"
+      >
+        {/* Live Notification Pill */}
+        <div className="pill-glass-card rounded-full px-4 py-1.5 inline-flex items-center gap-2.5 mb-8 border border-white/10 bg-white/[0.03] backdrop-blur-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.4)] animate-fadeIn">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]" />
+          <span className="text-emerald-400 font-bold text-[8px] tracking-[0.25em]">
+            LIVE
+          </span>
+          <span className="w-px h-3 bg-white/10" />
+          <span className="text-white/90 text-[12px] font-light tracking-wide">
+            Synapse Mesh v4.9 Active • 8,420 Lab Telemetry Nodes Synchronized
+          </span>
+        </div>
+
+        {/* Headline: 'Playfair Display Italic' at clamp(2.5rem, 8vw, 6rem) */}
+        <h1
+          className="font-serif italic font-normal tracking-tight text-white leading-[1.06] text-center max-w-5xl mx-auto mb-6"
+          style={{ fontSize: 'clamp(2.5rem, 6.8vw, 5.8rem)' }}
         >
-          <a
-            href="#event-stream"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-[24px] font-['Inter'] font-medium text-white hover:text-[#52a8ff]"
-          >
-            Event Stream
-          </a>
-          <a
-            href="#bento-grid"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-[24px] font-['Inter'] font-medium text-white hover:text-[#52a8ff]"
-          >
-            Architecture
-          </a>
-          <a
-            href="#metrics"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-[24px] font-['Inter'] font-medium text-white hover:text-[#52a8ff]"
-          >
-            Metrics
-          </a>
-          <div className="pt-6 border-t border-[rgba(255,255,255,0.145)]">
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                handleAction();
-              }}
-              className="btn-square w-full inline-flex items-center justify-center gap-2"
-              style={{
-                borderRadius: '0px',
-                backgroundColor: '#ffffff',
-                color: '#121212',
-                padding: '16px',
-                fontSize: '18px',
-                fontWeight: 500,
-              }}
-            >
-              <span>Book a demo</span>
-              <ArrowUpRight style={{ width: '14px', height: '14px' }} />
-            </button>
-          </div>
-        </div>
-      )}
+          The Architecture of{' '}
+          <span className="text-[#a78b71] font-semibold not-italic">
+            Autonomous Synthesis
+          </span>{' '}
+          & <span className="text-[#c9b8a0]">Tactile Precision</span>
+        </h1>
 
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* HERO SECTION: Full-height (100svh) canvas frame */}
-      {/* ───────────────────────────────────────────────────────────────── */}
-      <section
-        className="relative w-full flex items-end overflow-hidden"
-        style={{
-          height: '100svh',
-          minHeight: '620px',
-          paddingBottom: '88px',
-          paddingLeft: '56px',
-          paddingRight: '56px',
-        }}
-      >
-        {/* Background image with heavy black scrim overlay on bottom 40-70% */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img
-            src="/images/hardware/jetson-nano.jpg"
-            alt="Hardware Infrastructure"
-            className="w-full h-full object-cover object-center filter contrast-[1.15]"
-          />
-          {/* Spec Scrim: linear-gradient(to top, rgba(0,0,0,0.76) 0%, rgba(0,0,0,0) 93.785%) */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'linear-gradient(to top, rgba(0,0,0,0.76) 0%, rgba(0,0,0,0) 93.785%)',
-            }}
-          />
-          {/* Accent radial background glow */}
-          <div
-            className="absolute bottom-0 left-1/3 w-[500px] h-[300px] rounded-full blur-[140px] pointer-events-none"
-            style={{ backgroundColor: 'rgba(82, 168, 255, 0.08)' }}
-          />
+        {/* Subtext: refined Inter */}
+        <p className="text-gray-400 text-base sm:text-lg font-light text-center max-w-2xl mx-auto mb-10 leading-relaxed tracking-wide">
+          Harness real-time neural instrument streaming, zero-latency physical
+          telemetry custody, and cryogenic FPGA synchronization engineered for
+          the world's most demanding laboratories.
+        </p>
+
+        {/* Dual-Button CTA Group */}
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-20">
+          {/* Solid White CTA */}
+          <button
+            onClick={() => navigate('/workspace')}
+            className="bg-white text-[#0a0a0a] px-8 py-3.5 rounded-full font-medium text-sm tracking-wider uppercase hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_35px_rgba(255,255,255,0.22)] hover:shadow-[0_0_40px_rgba(232,213,183,0.45)] flex items-center gap-2 cursor-pointer group"
+          >
+            <span>Launch Workspace</span>
+            <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </button>
+
+          {/* Bordered CTA */}
+          <a
+            href="#features"
+            className="border border-white/20 hover:border-[#a78b71] bg-white/[0.02] text-white px-8 py-3.5 rounded-full font-medium text-sm tracking-wider uppercase hover:text-[#e8d5b7] transition-all duration-300 backdrop-blur-[10px] flex items-center gap-2 cursor-pointer group"
+          >
+            <span>Explore Architecture</span>
+            <ChevronDown className="w-4 h-4 text-[#a78b71] group-hover:translate-y-0.5 transition-transform" />
+          </a>
         </div>
 
-        {/* Hero Content Block */}
-        <div style={{ maxWidth: '752px' }} className="z-10">
-          <div className="mb-4">
-            <StatusChip status="PASS" label="DEPOT V4.2 // CONTINUOUS CUSTODY" />
-          </div>
-
-          {/* Headline: 'headline-fluid' (32px to 60px) in Inter Display, white, max-width 752px */}
-          <h1 className="headline-fluid">
-            The Physical Hardware Custody Operating System.
-          </h1>
-
-          {/* Subtext: font-size 16px, color #e7e7e7 */}
-          <p
-            className="mt-5 max-w-[640px]"
-            style={{
-              fontSize: '16px',
-              color: '#e7e7e7',
-              lineHeight: '1.5',
-            }}
+        {/* ─────────────────────────────────────────────────────────────────────
+            NEURAL NETWORK CONNECTIVITY & SATELLITE SYSTEM
+        ───────────────────────────────────────────────────────────────────── */}
+        <div className="relative w-full max-w-6xl mx-auto mt-6 flex flex-col items-center justify-center">
+          {/* SVG Neural Connection Lines Overlay */}
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none z-0 hidden lg:block"
+            viewBox="0 0 1152 700"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            Deterministic chain of custody, automated FIFO reservation queues, and cryptographically verified faculty endorsements for engineering research laboratories.
-          </p>
-
-          {/* Large CTA: btn-square, 0px border-radius, font-size 20px, 12px diagonal arrow */}
-          <div className="mt-8">
-            <button
-              type="button"
-              onClick={handleAction}
-              className="btn-square inline-flex items-center gap-3"
-              style={{
-                borderRadius: '0px',
-                backgroundColor: '#ffffff',
-                color: '#121212',
-                fontSize: '20px',
-                padding: '16px 24px',
-                fontWeight: 500,
-              }}
-            >
-              <span>Book a demo</span>
-              <ArrowUpRight style={{ width: '12px', height: '12px' }} />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* EVENT STREAM TABLE SECTION */}
-      {/* ───────────────────────────────────────────────────────────────── */}
-      <section
-        id="event-stream"
-        className="max-w-[1240px] mx-auto py-[96px]"
-        style={{ paddingLeft: '56px', paddingRight: '56px' }}
-      >
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span
-                className="w-1.5 h-1.5 rounded-full"
-                style={{ backgroundColor: '#52a8ff' }}
-              />
-              <span
-                style={{
-                  fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                  fontSize: '12px',
-                  color: '#999999',
-                  textTransform: 'uppercase',
-                }}
+            <defs>
+              <linearGradient
+                id="goldGradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
               >
-                Real-Time Telemetry Trace
-              </span>
-            </div>
-            <h2
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 500,
-                fontSize: '32px',
-                letterSpacing: '-1.5px',
-                color: '#ffffff',
-              }}
-            >
-              Event Stream Table
-            </h2>
-          </div>
+                <stop offset="10%" stopColor="#c9b8a0" stopOpacity="0.85" />
+                <stop offset="90%" stopColor="#a78b71" stopOpacity="0.45" />
+              </linearGradient>
+            </defs>
 
-          {/* Header Metadata Chips */}
-          <div className="flex items-center gap-3">
-            <span
-              style={{
-                fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                fontSize: '12px',
-                color: '#999999',
-                backgroundColor: '#1f1f1f',
-                padding: '4px 10px',
-                borderRadius: '100px',
-              }}
-            >
-              trace_id: <span className="text-white">0x8f22_aiml_core</span>
-            </span>
-            <StatusChip status="PASS" label="240MS TOTAL" />
-          </div>
-        </div>
+            {/* Top-Left Satellite to Central Node */}
+            <path
+              d="M 170 120 C 260 120, 360 260, 420 310"
+              className="node-line"
+              stroke="url(#goldGradient)"
+            />
+            <path
+              d="M 170 120 C 260 120, 360 260, 420 310"
+              className="flow-dash"
+              stroke="#e8d5b7"
+              strokeWidth="1.5"
+            />
 
-        {/* Card-based Table Layout: #0a0a0a with 1px ring border rgba(255,255,255,0.145) */}
-        <div
-          className="spec-card rounded-none overflow-hidden"
-          style={{
-            backgroundColor: '#0a0a0a',
-            border: '1px solid rgba(255, 255, 255, 0.145)',
-          }}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-[rgba(255,255,255,0.145)]">
-            {/* Left Sidebar (240px): Scrollable list of event IDs with status dots */}
+            {/* Top-Right Satellite to Central Node */}
+            <path
+              d="M 982 120 C 892 120, 792 260, 732 310"
+              className="node-line"
+              stroke="url(#goldGradient)"
+            />
+            <path
+              d="M 982 120 C 892 120, 792 260, 732 310"
+              className="flow-dash"
+              stroke="#e8d5b7"
+              strokeWidth="1.5"
+            />
+
+            {/* Bottom-Left Satellite to Central Node */}
+            <path
+              d="M 180 580 C 280 580, 370 440, 420 390"
+              className="node-line"
+              stroke="url(#goldGradient)"
+            />
+            <path
+              d="M 180 580 C 280 580, 370 440, 420 390"
+              className="flow-dash"
+              stroke="#e8d5b7"
+              strokeWidth="1.5"
+            />
+
+            {/* Bottom-Right Satellite to Central Node */}
+            <path
+              d="M 972 580 C 872 580, 782 440, 732 390"
+              className="node-line"
+              stroke="url(#goldGradient)"
+            />
+            <path
+              d="M 972 580 C 872 580, 782 440, 732 390"
+              className="flow-dash"
+              stroke="#e8d5b7"
+              strokeWidth="1.5"
+            />
+
+            {/* Central Node Synapse Anchors */}
+            <circle cx="420" cy="310" r="3.5" fill="#e8d5b7" />
+            <circle cx="732" cy="310" r="3.5" fill="#e8d5b7" />
+            <circle cx="420" cy="390" r="3.5" fill="#e8d5b7" />
+            <circle cx="732" cy="390" r="3.5" fill="#e8d5b7" />
+          </svg>
+
+          {/* Floating Satellite Cards (Desktop Layout) */}
+          <div className="w-full relative z-10 flex flex-col lg:block min-h-[640px]">
+            {/* Satellite 1: Top-Left (260px) */}
             <div
-              className="md:col-span-4 lg:w-[240px] p-4 flex-shrink-0"
-              style={{ backgroundColor: '#0a0a0a' }}
+              style={{
+                transform: `translate(${mousePos.x * 15}px, ${mousePos.y * 15}px)`,
+              }}
+              className="lg:absolute lg:top-4 lg:left-0 mb-6 lg:mb-0 w-full sm:w-[260px] gold-glass-card rounded-[20px] p-3 satellite-glow-hover cursor-pointer group z-20"
             >
-              <div
-                style={{
-                  fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                  fontSize: '11px',
-                  color: '#999999',
-                  textTransform: 'uppercase',
-                  marginBottom: '12px',
-                  paddingLeft: '8px',
-                }}
-              >
-                Event IDs ({EVENT_SPANS.length})
+              <div className="rounded-[14px] overflow-hidden aspect-video relative mb-3 bg-neutral-900 border border-white/5">
+                <img
+                  src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80"
+                  alt="Quantum Silicon Node"
+                  className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                />
+                <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[9px] font-mono text-[#c9b8a0]">
+                  SYNAPSE // 01
+                </div>
               </div>
-
-              <div className="space-y-1">
-                {EVENT_SPANS.map((span) => {
-                  const isSelected = selectedSpanId === span.id;
-                  return (
-                    <button
-                      key={span.id}
-                      type="button"
-                      onClick={() => setSelectedSpanId(span.id)}
-                      className="w-full text-left px-3 py-2 rounded-none transition-colors flex items-center justify-between cursor-pointer"
-                      style={{
-                        backgroundColor: isSelected ? '#1f1f1f' : 'transparent',
-                        border: isSelected
-                          ? '1px solid #52a8ff'
-                          : '1px solid transparent',
-                        fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                        fontSize: '12px',
-                        color: isSelected ? '#ffffff' : '#999999',
-                      }}
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <span
-                          className="rounded-full flex-shrink-0"
-                          style={{
-                            width: '6px',
-                            height: '6px',
-                            backgroundColor:
-                              span.status === 'PASS' ? '#62c073' : '#999999',
-                          }}
-                        />
-                        <span className="truncate">{span.id}</span>
-                      </div>
-                      <span style={{ fontSize: '11px', color: '#999999' }}>
-                        {span.durationText}
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="px-1">
+                <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-neutral-400 uppercase mb-1">
+                  <span>Quantum Silicon</span>
+                  <span className="text-emerald-400">99.8%</span>
+                </div>
+                <div className="text-xs font-semibold text-white group-hover:text-[#e8d5b7] transition-colors truncate">
+                  Cryogenic Micro-Bus
+                </div>
               </div>
             </div>
 
-            {/* Right Side: Table with SPAN, START, and DURATION columns */}
-            <div className="md:col-span-8 lg:flex-1 p-5 sm:p-6 overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[500px]">
-                <thead>
-                  <tr
-                    className="border-b border-[rgba(255,255,255,0.145)]"
-                    style={{
-                      fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                      fontSize: '11px',
-                      color: '#999999',
-                      textTransform: 'uppercase',
-                    }}
+            {/* Satellite 2: Top-Right (280px) */}
+            <div
+              style={{
+                transform: `translate(${mousePos.x * -18}px, ${mousePos.y * 18}px)`,
+              }}
+              className="lg:absolute lg:top-4 lg:right-0 mb-6 lg:mb-0 w-full sm:w-[280px] gold-glass-card rounded-[20px] p-3 satellite-glow-hover cursor-pointer group z-20"
+            >
+              <div className="rounded-[14px] overflow-hidden aspect-video relative mb-3 bg-neutral-900 border border-white/5">
+                <img
+                  src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=600&q=80"
+                  alt="Photonic Telemetry Stream"
+                  className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                />
+                <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[9px] font-mono text-[#c9b8a0]">
+                  TELEMETRY // 02
+                </div>
+              </div>
+              <div className="px-1">
+                <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-neutral-400 uppercase mb-1">
+                  <span>Photonic Laser</span>
+                  <span className="text-[#a78b71]">0.02ms</span>
+                </div>
+                <div className="text-xs font-semibold text-white group-hover:text-[#e8d5b7] transition-colors truncate">
+                  Interferometry Harmonic
+                </div>
+              </div>
+            </div>
+
+            {/* Central Interactive Node (16:9 aspect ratio glass card) */}
+            <div
+              style={{
+                transform: `translate(${mousePos.x * 6}px, ${mousePos.y * 6}px)`,
+              }}
+              className="lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 w-full lg:w-[680px] aspect-[16/10] sm:aspect-video gold-glass-card rounded-[32px] p-6 sm:p-8 central-glow flex flex-col justify-between overflow-hidden relative border border-white/15 my-6 lg:my-0 z-10"
+            >
+              {/* Inner ambient glow */}
+              <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-[#a78b71]/15 blur-3xl pointer-events-none" />
+
+              {/* Node Header */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-4 relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-[#a78b71] animate-ping" />
+                  <div>
+                    <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#a78b71]">
+                      CORE NODE // 00
+                    </div>
+                    <div className="text-sm font-semibold tracking-wide text-white">
+                      Neural Runtime Hypervisor
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sub-node tabs */}
+                <div className="flex items-center bg-black/40 p-1 rounded-full border border-white/10 text-[10px] font-mono">
+                  <button
+                    onClick={() => setActiveTab('neural')}
+                    className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                      activeTab === 'neural'
+                        ? 'bg-[#a78b71] text-black font-semibold'
+                        : 'text-neutral-400 hover:text-white'
+                    }`}
                   >
-                    <th className="pb-3 w-2/5">SPAN</th>
-                    <th className="pb-3 w-2/5">START</th>
-                    <th className="pb-3 text-right w-1/5">DURATION</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[rgba(255,255,255,0.08)]">
-                  {EVENT_SPANS.map((span) => {
-                    const isSelected = selectedSpanId === span.id;
-                    return (
-                      <tr
-                        key={span.id}
-                        onClick={() => setSelectedSpanId(span.id)}
-                        className="transition-colors cursor-pointer"
+                    SYNAPSE
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('telemetry')}
+                    className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                      activeTab === 'telemetry'
+                        ? 'bg-[#a78b71] text-black font-semibold'
+                        : 'text-neutral-400 hover:text-white'
+                    }`}
+                  >
+                    TELEMETRY
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('custody')}
+                    className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                      activeTab === 'custody'
+                        ? 'bg-[#a78b71] text-black font-semibold'
+                        : 'text-neutral-400 hover:text-white'
+                    }`}
+                  >
+                    CUSTODY
+                  </button>
+                </div>
+              </div>
+
+              {/* Node Center Interactive Canvas / Telemetry Display */}
+              <div className="my-auto py-4 relative z-10">
+                {activeTab === 'neural' && (
+                  <div className="flex flex-col items-center justify-center">
+                    {/* SVG Interactive Synapse Ring */}
+                    <svg className="w-56 h-36 mx-auto" viewBox="0 0 240 140">
+                      <circle
+                        cx="120"
+                        cy="70"
+                        r="55"
+                        stroke="#a78b71"
+                        strokeWidth="1"
+                        strokeDasharray="4 6"
+                        fill="none"
+                        className="animate-spin"
+                        style={{ animationDuration: '30s' }}
+                      />
+                      <circle
+                        cx="120"
+                        cy="70"
+                        r="35"
+                        stroke="#c9b8a0"
+                        strokeWidth="1.5"
+                        strokeDasharray="8 8"
+                        fill="none"
+                        className="animate-spin"
                         style={{
-                          backgroundColor: isSelected
-                            ? 'rgba(31, 31, 31, 0.45)'
-                            : 'transparent',
+                          animationDuration: '18s',
+                          animationDirection: 'reverse',
                         }}
-                      >
-                        <td className="py-3.5 pr-4">
-                          <span
-                            style={{
-                              fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                              fontSize: '13px',
-                              color: isSelected ? '#ffffff' : '#ededed',
-                            }}
-                          >
-                            {span.label}
-                          </span>
-                        </td>
+                      />
+                      <circle
+                        cx="120"
+                        cy="70"
+                        r="12"
+                        fill="#a78b71"
+                        className="shadow-[0_0_20px_#a78b71]"
+                      />
+                      {/* Radiating Synapse Points */}
+                      <circle cx="65" cy="70" r="4" fill="#e8d5b7" />
+                      <circle cx="175" cy="70" r="4" fill="#e8d5b7" />
+                      <circle cx="120" cy="15" r="4" fill="#e8d5b7" />
+                      <circle cx="120" cy="125" r="4" fill="#e8d5b7" />
+                      <line
+                        x1="65"
+                        y1="70"
+                        x2="175"
+                        y2="70"
+                        stroke="#a78b71"
+                        strokeWidth="0.75"
+                        strokeOpacity="0.6"
+                      />
+                      <line
+                        x1="120"
+                        y1="15"
+                        x2="120"
+                        y2="125"
+                        stroke="#a78b71"
+                        strokeWidth="0.75"
+                        strokeOpacity="0.6"
+                      />
+                    </svg>
+                    <div className="text-center font-mono text-[11px] text-neutral-300 tracking-wider">
+                      NEURAL SYNCHRONY: <span className="text-[#a78b71]">99.984%</span> • JITTER:{' '}
+                      <span className="text-emerald-400">0.08 ps</span>
+                    </div>
+                  </div>
+                )}
 
-                        <td className="py-3.5 px-2">
-                          {/* Progress Bar Visualization: 1.5h relative background */}
-                          <TimelineProgressBar
-                            startPercent={span.startPercent}
-                            durationPercent={span.durationPercent}
-                            isActive={isSelected}
-                          />
-                        </td>
+                {activeTab === 'telemetry' && (
+                  <div className="space-y-3 font-mono">
+                    <div className="flex justify-between text-xs text-neutral-400 border-b border-white/5 pb-1">
+                      <span>CH 1: RIGOL DS1054Z OSCILLOSCOPE</span>
+                      <span className="text-emerald-400">1.24 GHz STREAM</span>
+                    </div>
+                    {/* Simulated Waveform SVG */}
+                    <svg className="w-full h-16" viewBox="0 0 500 60">
+                      <path
+                        d="M 0 30 Q 30 10 60 30 T 120 30 T 180 30 T 240 10 T 300 50 T 360 30 T 420 30 T 500 30"
+                        fill="none"
+                        stroke="#a78b71"
+                        strokeWidth="2"
+                        className="flow-dash"
+                      />
+                      <path
+                        d="M 0 30 Q 30 20 60 30 T 120 30 T 180 40 T 240 30 T 300 20 T 360 30 T 420 40 T 500 30"
+                        fill="none"
+                        stroke="#c9b8a0"
+                        strokeWidth="1"
+                        strokeOpacity="0.4"
+                      />
+                    </svg>
+                    <div className="flex justify-between text-[10px] text-neutral-500">
+                      <span>SAMP: 2.5 GSa/s</span>
+                      <span>V_PP: 3.32 V</span>
+                      <span>FREQ: 144.02 MHz</span>
+                    </div>
+                  </div>
+                )}
 
-                        <td className="py-3.5 pl-4 text-right">
-                          <span
-                            style={{
-                              fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                              fontSize: '13px',
-                              color: isSelected ? '#52a8ff' : '#999999',
-                            }}
-                          >
-                            {span.durationText}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                {activeTab === 'custody' && (
+                  <div className="space-y-2.5 font-mono text-xs">
+                    <div className="bg-black/40 p-2.5 rounded-xl border border-white/5 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Lock className="w-3.5 h-3.5 text-[#a78b71]" />
+                        <span className="text-neutral-300">
+                          FPGA-XILINX-A7 #04
+                        </span>
+                      </div>
+                      <span className="text-[10px] bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 px-2 py-0.5 rounded-full">
+                        CUSTODY LOCKED
+                      </span>
+                    </div>
+                    <div className="bg-black/40 p-2.5 rounded-xl border border-white/5 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-3.5 h-3.5 text-[#c9b8a0]" />
+                        <span className="text-neutral-300">
+                          GEN-ANOMALY-DETECTOR
+                        </span>
+                      </div>
+                      <span className="text-[10px] bg-[#a78b71]/15 text-[#e8d5b7] border border-[#a78b71]/30 px-2 py-0.5 rounded-full">
+                        ACTIVE BENCH
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Node Footer */}
+              <div className="flex items-center justify-between border-t border-white/10 pt-4 text-[10px] font-mono text-neutral-400 relative z-10">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span>CLUSTER STATUS: SECURE</span>
+                </div>
+                <div className="text-[#a78b71]">128-BIT QUANTUM SIGNED</div>
+              </div>
+            </div>
+
+            {/* Satellite 3: Bottom-Left (270px) */}
+            <div
+              style={{
+                transform: `translate(${mousePos.x * 20}px, ${mousePos.y * -16}px)`,
+              }}
+              className="lg:absolute lg:bottom-4 lg:left-0 mb-6 lg:mb-0 w-full sm:w-[270px] gold-glass-card rounded-[20px] p-3 satellite-glow-hover cursor-pointer group z-20"
+            >
+              <div className="rounded-[14px] overflow-hidden aspect-video relative mb-3 bg-neutral-900 border border-white/5">
+                <img
+                  src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=600&q=80"
+                  alt="Autonomous Robotics Arm"
+                  className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                />
+                <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[9px] font-mono text-[#c9b8a0]">
+                  DISPATCH // 03
+                </div>
+              </div>
+              <div className="px-1">
+                <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-neutral-400 uppercase mb-1">
+                  <span>Micro-Actuator</span>
+                  <span className="text-emerald-400">ACTIVE</span>
+                </div>
+                <div className="text-xs font-semibold text-white group-hover:text-[#e8d5b7] transition-colors truncate">
+                  Robotic Bench Sentry
+                </div>
+              </div>
+            </div>
+
+            {/* Satellite 4: Bottom-Right (250px) */}
+            <div
+              style={{
+                transform: `translate(${mousePos.x * -16}px, ${mousePos.y * -20}px)`,
+              }}
+              className="lg:absolute lg:bottom-4 lg:right-0 mb-6 lg:mb-0 w-full sm:w-[250px] gold-glass-card rounded-[20px] p-3 satellite-glow-hover cursor-pointer group z-20"
+            >
+              <div className="rounded-[14px] overflow-hidden aspect-video relative mb-3 bg-neutral-900 border border-white/5">
+                <img
+                  src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80"
+                  alt="Cryogenic Sensor Core"
+                  className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                />
+                <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[9px] font-mono text-[#c9b8a0]">
+                  CRYOGENIC // 04
+                </div>
+              </div>
+              <div className="px-1">
+                <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-neutral-400 uppercase mb-1">
+                  <span>Sensor Core</span>
+                  <span className="text-[#a78b71]">-269°C</span>
+                </div>
+                <div className="text-xs font-semibold text-white group-hover:text-[#e8d5b7] transition-colors truncate">
+                  Superconducting Trunk
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* BENTO FEATURE GRID: 3-column grid of cards (#0a0a0a) */}
-      {/* ───────────────────────────────────────────────────────────────── */}
+      {/* ─────────────────────────────────────────────────────────────────────────
+          FEATURES GRID (4 Columns)
+      ───────────────────────────────────────────────────────────────────────── */}
       <section
-        id="bento-grid"
-        className="max-w-[1240px] mx-auto py-[96px] border-t border-[rgba(255,255,255,0.145)]"
-        style={{ paddingLeft: '56px', paddingRight: '56px' }}
+        id="features"
+        className="py-28 px-6 sm:px-12 max-w-7xl mx-auto relative z-10 border-t border-white/5"
       >
-        <div className="mb-10">
-          <div className="flex items-center gap-2 mb-2">
-            <span
-              className="w-1.5 h-1.5 rounded-full"
-              style={{ backgroundColor: '#62c073' }}
-            />
-            <span
-              style={{
-                fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                fontSize: '12px',
-                color: '#999999',
-                textTransform: 'uppercase',
-              }}
-            >
-              System Telemetry Architecture
-            </span>
+        <div className="text-center mb-16">
+          <div className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#a78b71] mb-3">
+            TACTILE CAPABILITIES
           </div>
-          <h2
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 500,
-              fontSize: '32px',
-              letterSpacing: '-1.5px',
-              color: '#ffffff',
-            }}
-          >
-            Bento Feature Grid
+          <h2 className="font-serif italic text-3xl sm:text-5xl font-normal text-white">
+            Engineered for <span className="text-[#c9b8a0]">Extreme R&D</span>
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1 (Regression): Vertical list of status rows with PASS/FAIL chips & percentage changes */}
-          <div
-            className="spec-card p-6 flex flex-col justify-between"
-            style={{
-              backgroundColor: '#0a0a0a',
-              border: '1px solid rgba(255, 255, 255, 0.145)',
-              borderRadius: '0px',
-            }}
-          >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Card 1 */}
+          <div className="gold-glass-card rounded-[28px] p-7 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <span
-                  style={{
-                    fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                    fontSize: '11px',
-                    color: '#999999',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  Regression
-                </span>
-                <StatusChip status="PASS" label="100% OK" />
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-6 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
+                <Cpu className="w-6 h-6" />
               </div>
-              <h3
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontWeight: 500,
-                  fontSize: '18px',
-                  color: '#ffffff',
-                  marginBottom: '8px',
-                }}
-              >
-                Continuous Integrity
+              <h3 className="text-xl font-bold text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
+                Neural Instrument Mesh
               </h3>
-              <p style={{ fontSize: '13px', color: '#999999', lineHeight: '1.5' }}>
-                Automated regression sweeps verify serial numbers, active workbench custody, and faculty endorsements every 60 seconds.
+              <p className="text-sm text-gray-400 font-light leading-relaxed">
+                Microsecond streaming telemetry connecting oscilloscopes, RF
+                analyzers, and FPGA benches across high-throughput physical buses.
               </p>
             </div>
-
-            {/* Vertical list of status rows with PASS/FAIL chips and percentage changes */}
-            <div
-              className="mt-6 pt-4 border-t border-[rgba(255,255,255,0.1)] space-y-3"
-              style={{ fontFamily: "'Geist Mono', 'JetBrains Mono', monospace" }}
-            >
-              <div className="flex items-center justify-between text-[12px]">
-                <span className="text-white">PRJ-AIML-08_lease</span>
-                <div className="flex items-center gap-2">
-                  <span style={{ color: '#62c073' }}>+0.0%</span>
-                  <StatusChip status="PASS" />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between text-[12px]">
-                <span className="text-white">orin_agx_signature</span>
-                <div className="flex items-center gap-2">
-                  <span style={{ color: '#62c073' }}>+0.0%</span>
-                  <StatusChip status="PASS" />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between text-[12px]">
-                <span className="text-white">overdue_lock_check</span>
-                <div className="flex items-center gap-2">
-                  <span style={{ color: '#999999' }}>0.0%</span>
-                  <StatusChip status="PASS" />
-                </div>
-              </div>
+            <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#a78b71]">
+              <span>IEEE-488 / SCPI</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
-          {/* Card 2 (Failure Clustering): Stacked horizontal bar charts for error metrics */}
-          <div
-            className="spec-card p-6 flex flex-col justify-between"
-            style={{
-              backgroundColor: '#0a0a0a',
-              border: '1px solid rgba(255, 255, 255, 0.145)',
-              borderRadius: '0px',
-            }}
-          >
+          {/* Card 2 */}
+          <div className="gold-glass-card rounded-[28px] p-7 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <span
-                  style={{
-                    fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                    fontSize: '11px',
-                    color: '#999999',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  Failure Clustering
-                </span>
-                <StatusChip status="WARN" label="1 FLAG" />
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-6 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
+                <Shield className="w-6 h-6" />
               </div>
-              <h3
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontWeight: 500,
-                  fontSize: '18px',
-                  color: '#ffffff',
-                  marginBottom: '8px',
-                }}
-              >
-                Defect Isolation
+              <h3 className="text-xl font-bold text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
+                Autonomous Custody Ledger
               </h3>
-              <p style={{ fontSize: '13px', color: '#999999', lineHeight: '1.5' }}>
-                Hardware anomaly categorization maps damaged pins, thermal throttles, and sensor drifts to quarantine benches.
+              <p className="text-sm text-gray-400 font-light leading-relaxed">
+                Cryptographically signed hardware dispatch, tamper-proof state
+                hashes, and custody verification with zero manual friction.
               </p>
             </div>
-
-            {/* Stacked horizontal bar charts for error metrics */}
-            <div
-              className="mt-6 pt-4 border-t border-[rgba(255,255,255,0.1)] space-y-3"
-              style={{ fontFamily: "'Geist Mono', 'JetBrains Mono', monospace" }}
-            >
-              <div>
-                <div className="flex justify-between text-[11px] text-[#999999] mb-1">
-                  <span>GPIO Pin Continuity Fatigue</span>
-                  <span className="text-white">12%</span>
-                </div>
-                <div className="w-full h-1.5 bg-[#1f1f1f]">
-                  <div
-                    className="h-full"
-                    style={{ width: '12%', backgroundColor: '#52a8ff' }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-[11px] text-[#999999] mb-1">
-                  <span>Thermal Throttling Under Load</span>
-                  <span className="text-white">4%</span>
-                </div>
-                <div className="w-full h-1.5 bg-[#1f1f1f]">
-                  <div
-                    className="h-full"
-                    style={{ width: '4%', backgroundColor: '#62c073' }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-[11px] text-[#999999] mb-1">
-                  <span>Sensor Calibration Drift</span>
-                  <span className="text-white">1%</span>
-                </div>
-                <div className="w-full h-1.5 bg-[#1f1f1f]">
-                  <div
-                    className="h-full"
-                    style={{ width: '1%', backgroundColor: '#999999' }}
-                  />
-                </div>
-              </div>
+            <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#a78b71]">
+              <span>SHA-256 LEDGER</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
-          {/* Card 3 (Version Replay): Code-diff view with green/blue side-borders for added/modified lines */}
-          <div
-            className="spec-card p-6 flex flex-col justify-between"
-            style={{
-              backgroundColor: '#0a0a0a',
-              border: '1px solid rgba(255, 255, 255, 0.145)',
-              borderRadius: '0px',
-            }}
-          >
+          {/* Card 3 */}
+          <div className="gold-glass-card rounded-[28px] p-7 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <span
-                  style={{
-                    fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                    fontSize: '11px',
-                    color: '#999999',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  Version Replay
-                </span>
-                <StatusChip status="PASS" label="ATOMIC" />
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-6 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
+                <Activity className="w-6 h-6" />
               </div>
-              <h3
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontWeight: 500,
-                  fontSize: '18px',
-                  color: '#ffffff',
-                  marginBottom: '8px',
-                }}
-              >
-                Immutable Ledger Diff
+              <h3 className="text-xl font-bold text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
+                Predictive Defect Mitigation
               </h3>
-              <p style={{ fontSize: '13px', color: '#999999', lineHeight: '1.5' }}>
-                Replay historical states of the laboratory ledger. Every counter transaction generates a verifiable SHA-256 state delta.
+              <p className="text-sm text-gray-400 font-light leading-relaxed">
+                Deep generative anomaly detection diagnosing component thermal
+                fatigue, harmonic jitter, and calibration drift before failure.
               </p>
             </div>
+            <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#a78b71]">
+              <span>AI ANOMALY V2</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
 
-            {/* Code-diff view with green/blue side-borders */}
-            <div
-              className="mt-6 pt-4 border-t border-[rgba(255,255,255,0.1)] p-3 space-y-1"
-              style={{
-                backgroundColor: '#000000',
-                fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                fontSize: '11px',
-                lineHeight: '1.5',
-              }}
-            >
-              <div
-                style={{
-                  borderLeft: '2px solid #62c073',
-                  paddingLeft: '8px',
-                  color: '#62c073',
-                }}
-              >
-                + [COMMIT 0x8f2a] REQ-8821 verified
+          {/* Card 4 */}
+          <div className="gold-glass-card rounded-[28px] p-7 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between">
+            <div>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-6 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
+                <Zap className="w-6 h-6" />
               </div>
-              <div
-                style={{
-                  borderLeft: '2px solid #52a8ff',
-                  paddingLeft: '8px',
-                  color: '#52a8ff',
-                }}
-              >
-                ~ [CUSTODY] Holder: Rahul Sharma (202401048)
-              </div>
-              <div
-                style={{
-                  borderLeft: '2px solid #52a8ff',
-                  paddingLeft: '8px',
-                  color: '#ededed',
-                }}
-              >
-                ~ [LOCATION] Desk 04 // Due Oct 24
-              </div>
-              <div
-                style={{
-                  borderLeft: '2px solid #62c073',
-                  paddingLeft: '8px',
-                  color: '#62c073',
-                }}
-              >
-                + [HASH] e3b0c44298fc1c149afbf4c8996fb
-              </div>
+              <h3 className="text-xl font-bold text-white tracking-tight mb-3 group-hover:text-[#e8d5b7] transition-colors">
+                Sub-Millisecond Synapse Sync
+              </h3>
+              <p className="text-sm text-gray-400 font-light leading-relaxed">
+                Distributed peer-to-peer event mesh streaming multi-gigabit
+                sensor vectors with deterministic latency guarantees.
+              </p>
+            </div>
+            <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#a78b71]">
+              <span>&lt; 0.8ms P99</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* METRICS GRID: 4-column border-connected grid */}
-      {/* ───────────────────────────────────────────────────────────────── */}
+      {/* ─────────────────────────────────────────────────────────────────────────
+          PRICING SECTION (Three-Tiered Layout)
+      ───────────────────────────────────────────────────────────────────────── */}
       <section
-        id="metrics"
-        className="max-w-[1240px] mx-auto py-[96px] border-t border-[rgba(255,255,255,0.145)]"
-        style={{ paddingLeft: '56px', paddingRight: '56px' }}
+        id="pricing"
+        className="py-28 px-6 sm:px-12 max-w-7xl mx-auto relative z-10 border-t border-white/5"
       >
-        <div className="mb-10">
-          <div className="flex items-center gap-2 mb-2">
-            <span
-              className="w-1.5 h-1.5 rounded-full"
-              style={{ backgroundColor: '#52a8ff' }}
-            />
-            <span
-              style={{
-                fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                fontSize: '12px',
-                color: '#999999',
-                textTransform: 'uppercase',
-              }}
-            >
-              Telemetry Matrix
-            </span>
+        <div className="text-center mb-12">
+          <div className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#a78b71] mb-3">
+            DEPLOYMENT TIERS
           </div>
-          <h2
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 500,
-              fontSize: '32px',
-              letterSpacing: '-1.5px',
-              color: '#ffffff',
-            }}
-          >
-            Metrics Grid
+          <h2 className="font-serif italic text-3xl sm:text-5xl font-normal text-white mb-6">
+            Predictable Scaling for <span className="text-[#a78b71]">Pioneers</span>
+          </h2>
+
+          {/* Monthly / Annual Pill Toggle */}
+          <div className="inline-flex items-center rounded-full bg-white/[0.06] p-1 border border-white/10 backdrop-blur-md">
+            <button
+              onClick={() => setBillingCycle('monthly')}
+              className={`px-5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                billingCycle === 'monthly'
+                  ? 'bg-white text-black font-semibold shadow-sm'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingCycle('annual')}
+              className={`px-5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all cursor-pointer flex items-center gap-1.5 ${
+                billingCycle === 'annual'
+                  ? 'bg-white text-black font-semibold shadow-sm'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
+            >
+              <span>Annual</span>
+              <span className="text-[10px] bg-[#a78b71]/20 text-[#a78b71] px-1.5 py-0.2 rounded-full font-mono">
+                -20%
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* 3-Tier Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center pt-6">
+          {/* Tier 1: Academic Sandbox */}
+          <div className="gold-glass-card rounded-[28px] p-8 sm:p-10 flex flex-col justify-between h-full border-white/10">
+            <div>
+              <div className="text-[11px] font-mono tracking-[0.25em] text-neutral-400 uppercase mb-2">
+                ACADEMIC SANDBOX
+              </div>
+              <div className="text-xl font-bold text-white mb-4">
+                Student & Researcher
+              </div>
+              <div className="flex items-baseline gap-2 mb-6">
+                <span className="text-5xl font-bold text-white tracking-tight">
+                  $0
+                </span>
+                <span className="text-xs font-mono text-neutral-400">/mo</span>
+              </div>
+              <p className="text-sm text-gray-400 font-light mb-8 leading-relaxed">
+                Ideal for university coursework, student capstone teams, and
+                open research labs.
+              </p>
+
+              <div className="space-y-3 font-light text-sm text-neutral-300 mb-8">
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>Up to 15 Active Hardware Loans</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>Basic SCPI & Rigol Telemetry</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>Project Waitlist Queuing</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>Community Discord Support</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => navigate('/workspace')}
+              className="w-full py-3 rounded-full border border-white/20 text-white font-medium text-xs tracking-wider uppercase hover:border-[#a78b71] hover:text-[#e8d5b7] transition-all cursor-pointer"
+            >
+              Get Started Free
+            </button>
+          </div>
+
+          {/* Tier 2: Pro Research (Center, Highlighted) */}
+          <div className="gold-glass-card rounded-[32px] p-8 sm:p-10 flex flex-col justify-between h-full border-[#a78b71]/40 shadow-[0_0_60px_rgba(167,139,113,0.18)] relative lg:scale-105 z-10 bg-white/[0.04]">
+            {/* Top-Centered 'Most Popular' Badge */}
+            <div className="bg-[#a78b71] text-black font-semibold text-[10px] uppercase tracking-[0.25em] px-4 py-1.5 rounded-full absolute -top-3.5 left-1/2 -translate-x-1/2 shadow-lg">
+              Most Popular
+            </div>
+
+            <div>
+              <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-2">
+                PRO RESEARCH
+              </div>
+              <div className="text-xl font-bold text-white mb-4">
+                Advanced Institute
+              </div>
+              <div className="flex items-baseline gap-2 mb-6">
+                <span className="text-5xl font-bold text-white tracking-tight">
+                  {billingCycle === 'annual' ? '$180' : '$220'}
+                </span>
+                <span className="text-xs font-mono text-neutral-400">
+                  /seat/mo
+                </span>
+              </div>
+              <p className="text-sm text-gray-300 font-light mb-8 leading-relaxed">
+                Full-featured neural instrumentation and custody orchestration
+                for departmental research labs.
+              </p>
+
+              <div className="space-y-3 font-light text-sm text-white mb-8">
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>Unlimited Instrument Telemetry</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>Cryptographic Hardware Custody Ledger</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>AI Predictive Defect Early Warning</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>Multi-Facility Synchronization</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>Sub-Millisecond Synapse Streaming</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => navigate('/workspace')}
+              className="w-full py-3.5 rounded-full bg-white text-black font-semibold text-xs tracking-wider uppercase hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_25px_rgba(255,255,255,0.2)] cursor-pointer"
+            >
+              Deploy Pro Node
+            </button>
+          </div>
+
+          {/* Tier 3: Enterprise Syndicate */}
+          <div className="gold-glass-card rounded-[28px] p-8 sm:p-10 flex flex-col justify-between h-full border-white/10">
+            <div>
+              <div className="text-[11px] font-mono tracking-[0.25em] text-neutral-400 uppercase mb-2">
+                ENTERPRISE SYNDICATE
+              </div>
+              <div className="text-xl font-bold text-white mb-4">
+                National Consortium
+              </div>
+              <div className="flex items-baseline gap-2 mb-6">
+                <span className="text-5xl font-bold text-white tracking-tight">
+                  Custom
+                </span>
+              </div>
+              <p className="text-sm text-gray-400 font-light mb-8 leading-relaxed">
+                Tailored for national cleanrooms, semiconductor fabs, and
+                aerospace testing rigs.
+              </p>
+
+              <div className="space-y-3 font-light text-sm text-neutral-300 mb-8">
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>Dedicated On-Premise Air-Gapped Mesh</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>Custom Hardware FPGA Drivers</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>24/7 Priority Field Engineering SLA</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-4 h-4 text-[#a78b71]" />
+                  <span>Continuous Compliance & FedRAMP Audits</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => navigate('/workspace')}
+              className="w-full py-3 rounded-full border border-white/20 text-white font-medium text-xs tracking-wider uppercase hover:border-[#a78b71] hover:text-[#e8d5b7] transition-all cursor-pointer"
+            >
+              Contact Syndicate
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────────────────
+          TEAM SECTION (Two-Column Layout, 4:5 Aspect Ratio)
+      ───────────────────────────────────────────────────────────────────────── */}
+      <section
+        id="syndicate"
+        className="py-28 px-6 sm:px-12 max-w-6xl mx-auto relative z-10 border-t border-white/5"
+      >
+        <div className="text-center mb-16">
+          <div className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#a78b71] mb-3">
+            ARCHITECTURAL STEWARDSHIP
+          </div>
+          <h2 className="font-serif italic text-3xl sm:text-5xl font-normal text-white">
+            Led by <span className="text-[#c9b8a0]">Hardware Visionaries</span>
           </h2>
         </div>
 
-        {/* 4-column border-connected grid */}
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[1px]"
-          style={{ backgroundColor: 'rgba(255, 255, 255, 0.145)' }}
-        >
-          {/* Cell 1: 100 % */}
-          <div
-            className="p-8 flex flex-col justify-between"
-            style={{ backgroundColor: '#000000' }}
-          >
-            <div className="flex items-baseline gap-1">
-              <span
-                style={{
-                  fontFamily: "'Geist', 'Inter', sans-serif",
-                  fontSize: '56px',
-                  letterSpacing: '-3.36px',
-                  color: '#ffffff',
-                  lineHeight: 1,
-                  fontWeight: 500,
-                }}
-              >
-                100
-              </span>
-              <span
-                style={{
-                  fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                  fontSize: '18px',
-                  color: '#52a8ff',
-                }}
-              >
-                %
-              </span>
-            </div>
-            <div className="mt-4">
-              <div
-                style={{
-                  fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                  fontSize: '12px',
-                  color: '#999999',
-                }}
-              >
-                Chain of Custody Rate
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Team Member 1 */}
+          <div className="gold-glass-card rounded-[32px] overflow-hidden group cursor-pointer border border-white/10 hover:border-[#a78b71]/50 transition-all duration-700">
+            <div className="aspect-[4/5] relative overflow-hidden bg-neutral-900">
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80"
+                alt="Dr. Elena Vance"
+                className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/65 to-transparent flex flex-col justify-end p-8 sm:p-10">
+                <h3 className="font-serif italic text-3xl sm:text-4xl font-medium text-white group-hover:text-[#e8d5b7] transition-colors">
+                  Dr. Elena Vance
+                </h3>
+                <div className="text-[#a78b71] text-xs font-light tracking-[0.3em] uppercase mt-1.5 mb-3">
+                  HEAD OF NEURAL HARDWARE ARCHITECTURE
+                </div>
+                <p className="text-sm text-gray-300 font-light leading-relaxed max-w-md">
+                  Pioneered sub-picosecond telemetry synchronization for
+                  superconducting quantum testbeds at CERN and MIT Lincoln
+                  Laboratory.
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Cell 2: 0 ms */}
-          <div
-            className="p-8 flex flex-col justify-between"
-            style={{ backgroundColor: '#000000' }}
-          >
-            <div className="flex items-baseline gap-1">
-              <span
-                style={{
-                  fontFamily: "'Geist', 'Inter', sans-serif",
-                  fontSize: '56px',
-                  letterSpacing: '-3.36px',
-                  color: '#ffffff',
-                  lineHeight: 1,
-                  fontWeight: 500,
-                }}
-              >
-                0
-              </span>
-              <span
-                style={{
-                  fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                  fontSize: '18px',
-                  color: '#62c073',
-                }}
-              >
-                ms
-              </span>
-            </div>
-            <div className="mt-4">
-              <div
-                style={{
-                  fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                  fontSize: '12px',
-                  color: '#999999',
-                }}
-              >
-                Audit Latency Drift
-              </div>
-            </div>
-          </div>
-
-          {/* Cell 3: 14.2 M */}
-          <div
-            className="p-8 flex flex-col justify-between"
-            style={{ backgroundColor: '#000000' }}
-          >
-            <div className="flex items-baseline gap-1">
-              <span
-                style={{
-                  fontFamily: "'Geist', 'Inter', sans-serif",
-                  fontSize: '56px',
-                  letterSpacing: '-3.36px',
-                  color: '#ffffff',
-                  lineHeight: 1,
-                  fontWeight: 500,
-                }}
-              >
-                14.2
-              </span>
-              <span
-                style={{
-                  fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                  fontSize: '18px',
-                  color: '#999999',
-                }}
-              >
-                M
-              </span>
-            </div>
-            <div className="mt-4">
-              <div
-                style={{
-                  fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                  fontSize: '12px',
-                  color: '#999999',
-                }}
-              >
-                Verified Clock Cycles
-              </div>
-            </div>
-          </div>
-
-          {/* Cell 4: 0 % */}
-          <div
-            className="p-8 flex flex-col justify-between"
-            style={{ backgroundColor: '#000000' }}
-          >
-            <div className="flex items-baseline gap-1">
-              <span
-                style={{
-                  fontFamily: "'Geist', 'Inter', sans-serif",
-                  fontSize: '56px',
-                  letterSpacing: '-3.36px',
-                  color: '#ffffff',
-                  lineHeight: 1,
-                  fontWeight: 500,
-                }}
-              >
-                0
-              </span>
-              <span
-                style={{
-                  fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                  fontSize: '18px',
-                  color: '#ededed',
-                }}
-              >
-                %
-              </span>
-            </div>
-            <div className="mt-4">
-              <div
-                style={{
-                  fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-                  fontSize: '12px',
-                  color: '#999999',
-                }}
-              >
-                Unreturned Hardware Loss
+          {/* Team Member 2 */}
+          <div className="gold-glass-card rounded-[32px] overflow-hidden group cursor-pointer border border-white/10 hover:border-[#a78b71]/50 transition-all duration-700">
+            <div className="aspect-[4/5] relative overflow-hidden bg-neutral-900">
+              <img
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80"
+                alt="Julian Thorne"
+                className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/65 to-transparent flex flex-col justify-end p-8 sm:p-10">
+                <h3 className="font-serif italic text-3xl sm:text-4xl font-medium text-white group-hover:text-[#e8d5b7] transition-colors">
+                  Julian Thorne
+                </h3>
+                <div className="text-[#a78b71] text-xs font-light tracking-[0.3em] uppercase mt-1.5 mb-3">
+                  DIRECTOR OF DISTRIBUTED TELEMETRY SYSTEMS
+                </div>
+                <p className="text-sm text-gray-300 font-light leading-relaxed max-w-md">
+                  Architect of zero-trust laboratory custody protocols and
+                  real-time physical instrument validation engines across Tier-1
+                  cleanrooms.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* FOOTER */}
-      {/* ───────────────────────────────────────────────────────────────── */}
-      <footer
-        className="border-t border-[rgba(255,255,255,0.145)] py-[36px] flex flex-col sm:flex-row items-center justify-between gap-4 max-w-[1240px] mx-auto"
-        style={{
-          paddingLeft: '56px',
-          paddingRight: '56px',
-          fontFamily: "'Geist Mono', 'JetBrains Mono', monospace",
-          fontSize: '12px',
-          color: '#999999',
-        }}
-      >
-        <div className="flex items-center gap-3">
-          <span className="text-white font-medium">LabTrack</span>
-          <span>//</span>
-          <span>Department of Artificial Intelligence & Data Science</span>
+      {/* ─────────────────────────────────────────────────────────────────────────
+          FOOTER (5 Columns)
+      ───────────────────────────────────────────────────────────────────────── */}
+      <footer className="pt-20 pb-12 px-6 sm:px-12 border-t border-white/10 bg-[#080808] relative z-10">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-16">
+          {/* Column 1: Logo & Socials */}
+          <div className="lg:col-span-1 space-y-4">
+            <div
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="flex items-center gap-2 cursor-pointer group select-none"
+            >
+              <span className="font-serif italic font-bold text-2xl tracking-tight text-white group-hover:text-[#e8d5b7] transition-colors">
+                LabTrack
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#a78b71]" />
+            </div>
+            <p className="text-xs text-gray-400 font-light leading-relaxed">
+              High-throughput neural instrument mesh and verifiable physical
+              custody architecture.
+            </p>
+            <div className="flex items-center gap-3 pt-2">
+              <a
+                href="#syndicate"
+                className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/70 hover:text-[#e8d5b7] hover:border-[#a78b71] transition-all cursor-pointer"
+                title="Global Node"
+              >
+                <Globe className="w-4 h-4" />
+              </a>
+              <a
+                href="#syndicate"
+                className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/70 hover:text-[#e8d5b7] hover:border-[#a78b71] transition-all cursor-pointer"
+                title="Terminal API"
+              >
+                <Terminal className="w-4 h-4" />
+              </a>
+              <a
+                href="#syndicate"
+                className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/70 hover:text-[#e8d5b7] hover:border-[#a78b71] transition-all cursor-pointer"
+                title="Cluster Server"
+              >
+                <Server className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
+          {/* Column 2: Architecture */}
+          <div>
+            <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
+              ARCHITECTURE
+            </div>
+            <ul className="space-y-2.5 text-xs text-neutral-400 font-light">
+              <li>
+                <a href="#neural-mesh" className="hover:text-white transition-colors">
+                  Synapse Mesh
+                </a>
+              </li>
+              <li>
+                <a href="#features" className="hover:text-white transition-colors">
+                  SCPI Waveforms
+                </a>
+              </li>
+              <li>
+                <a href="#features" className="hover:text-white transition-colors">
+                  Cryo Bus Protocol
+                </a>
+              </li>
+              <li>
+                <a href="#features" className="hover:text-white transition-colors">
+                  FPGA Ring Buffers
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Capabilities */}
+          <div>
+            <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
+              CAPABILITIES
+            </div>
+            <ul className="space-y-2.5 text-xs text-neutral-400 font-light">
+              <li>
+                <button
+                  onClick={() => navigate('/workspace/inventory')}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  Asset Custody
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/workspace/custody/active')}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  Active Benches
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/workspace/projects')}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  Project Telemetry
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/workspace/operations/defects')}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  Predictive Defect Log
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Syndicate */}
+          <div>
+            <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
+              GOVERNANCE
+            </div>
+            <ul className="space-y-2.5 text-xs text-neutral-400 font-light">
+              <li>
+                <a href="#pricing" className="hover:text-white transition-colors">
+                  Institute Tiers
+                </a>
+              </li>
+              <li>
+                <a href="#syndicate" className="hover:text-white transition-colors">
+                  Research Council
+                </a>
+              </li>
+              <li>
+                <a href="#syndicate" className="hover:text-white transition-colors">
+                  Security Audits
+                </a>
+              </li>
+              <li>
+                <a href="#syndicate" className="hover:text-white transition-colors">
+                  Verifiable Logs
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 5: Join Digest */}
+          <div className="space-y-4">
+            <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase">
+              JOIN DIGEST
+            </div>
+            <p className="text-xs text-gray-400 font-light">
+              Quarterly briefings on neural instrument protocols and physical
+              computing.
+            </p>
+            {/* Low-opacity search bar with circular arrow-submit button */}
+            <form
+              onSubmit={handleDigestSubmit}
+              className="bg-white/[0.03] border border-white/10 rounded-full pl-4 pr-1.5 py-1.5 flex items-center justify-between focus-within:border-[#a78b71] transition-all backdrop-blur-md"
+            >
+              <input
+                type="email"
+                placeholder="lab@institute.edu"
+                value={digestEmail}
+                onChange={(e) => setDigestEmail(e.target.value)}
+                required
+                className="bg-transparent text-xs text-white placeholder:text-neutral-500 focus:outline-none w-full mr-2 font-mono"
+              />
+              <button
+                type="submit"
+                className="w-8 h-8 rounded-full bg-[#a78b71] text-black flex items-center justify-center hover:bg-[#e8d5b7] transition-colors flex-shrink-0 cursor-pointer shadow-md"
+                title="Subscribe to Digest"
+              >
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </form>
+            {digestSubscribed && (
+              <div className="text-[10px] font-mono text-emerald-400 tracking-wide animate-fadeIn">
+                ✓ Digest dispatched to subscription buffer.
+              </div>
+            )}
+          </div>
         </div>
-        <div>
-          <span>Deterministic Hardware Custody • 2026</span>
+
+        {/* Bottom Bar */}
+        <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-neutral-500 gap-4">
+          <div>
+            © {new Date().getFullYear()} LABTRACK SYSTEMS INC. ALL TELEMETRY
+            SECURED.
+          </div>
+          <div className="flex items-center gap-6">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span>RUNTIME 0.04ms</span>
+            </span>
+            <span>ENCRYPTED END-TO-END</span>
+          </div>
         </div>
       </footer>
     </div>
