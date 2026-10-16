@@ -281,8 +281,8 @@ export function RequisitionsPage() {
                     </span>
                   )}
                   {stageInfo.color === 'emerald' && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/25 flex items-center gap-1.5 shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/[0.08] text-white border border-white/15 flex items-center gap-1.5 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
                       <span>{stageInfo.label}</span>
                     </span>
                   )}

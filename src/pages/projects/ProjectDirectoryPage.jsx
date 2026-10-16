@@ -177,8 +177,9 @@ export function ProjectDirectoryPage() {
                       <span>My Team</span>
                     </span>
                   )}
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/25">
-                    {project.reliabilityScore}% Integrity
+                  <span className="px-3 py-1 rounded-full text-[11px] font-sans font-medium bg-white/[0.04] text-zinc-300 border border-white/10 flex items-center gap-1.5 shadow-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+                    <span>{project.reliabilityScore}% Integrity</span>
                   </span>
                 </div>
               </div>

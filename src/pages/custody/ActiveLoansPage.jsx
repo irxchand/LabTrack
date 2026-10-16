@@ -218,12 +218,12 @@ export function ActiveLoansPage() {
         <div className="text-xs">
           <div className="text-white font-mono font-medium">{row.dueDate?.split(' ')[0]}</div>
           <div
-            className={`text-[11px] font-medium flex items-center gap-1 mt-0.5 ${
+            className={`text-[11px] font-medium flex items-center gap-1.5 mt-0.5 ${
               row.daysRemaining < 0
                 ? 'text-rose-400 font-semibold'
                 : row.daysRemaining <= 3
                 ? 'text-amber-400 font-semibold'
-                : 'text-emerald-400'
+                : 'text-zinc-400'
             }`}
           >
             <span
@@ -232,7 +232,7 @@ export function ActiveLoansPage() {
                   ? 'bg-rose-400 animate-pulse'
                   : row.daysRemaining <= 3
                   ? 'bg-amber-400 animate-pulse'
-                  : 'bg-emerald-400'
+                  : 'bg-[#c9b8a0]'
               }`}
             />
             {row.daysRemaining < 0
