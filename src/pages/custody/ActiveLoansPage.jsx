@@ -325,35 +325,27 @@ export function ActiveLoansPage() {
           </div>
         </div>
 
-        {/* Card Footer: Deadline Urgency & Actions */}
+        {/* Card Footer: Deadline Status & Actions */}
         <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-3">
           {/* Urgency Badge */}
           <div className="flex items-center gap-2">
             <span
-              className={`w-2 h-2 rounded-full ${
+              className={`w-1.5 h-1.5 rounded-full ${
                 loan.daysRemaining < 0
-                  ? 'bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse'
+                  ? 'bg-rose-400'
                   : loan.daysRemaining <= 3
-                  ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)] animate-pulse'
-                  : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'
+                  ? 'bg-amber-400'
+                  : 'bg-emerald-400'
               }`}
             />
             <div className="text-xs">
-              <span
-                className={`font-medium ${
-                  loan.daysRemaining < 0
-                    ? 'text-rose-400 font-semibold'
-                    : loan.daysRemaining <= 3
-                    ? 'text-amber-300 font-semibold'
-                    : 'text-zinc-300'
-                }`}
-              >
+              <span className="font-medium text-white">
                 {loan.daysRemaining < 0
-                  ? `${Math.abs(loan.daysRemaining)}d Overdue`
-                  : `${loan.daysRemaining}d Left`}
+                  ? `${Math.abs(loan.daysRemaining)} ${Math.abs(loan.daysRemaining) === 1 ? 'day' : 'days'} overdue`
+                  : `${loan.daysRemaining} ${loan.daysRemaining === 1 ? 'day' : 'days'} remaining`}
               </span>
               <span className="text-zinc-500 ml-1.5 text-[11px]">
-                Due {loan.dueDate?.split(' ')[0]}
+                · Due {loan.dueDate?.split(' ')[0]}
               </span>
             </div>
           </div>
@@ -396,7 +388,7 @@ export function ActiveLoansPage() {
   return (
     <div className="space-y-8 select-none font-sans max-w-7xl mx-auto">
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* 1. TOP HEADER & TELEMETRY STRIP                               */}
+      {/* 1. TOP HEADER                                                 */}
       {/* ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
@@ -407,44 +399,8 @@ export function ActiveLoansPage() {
             My Bench
           </h1>
           <p className="text-xs text-zinc-400 mt-1.5 max-w-xl font-normal">
-            Real-time physical custody of laboratory equipment staged at your workstation. Track return countdowns and request milestone renewals.
+            Hardware modules and bench instrumentation currently in your possession.
           </p>
-        </div>
-
-        {/* Telemetry Metric Strip */}
-        <div className="grid grid-cols-2 sm:flex items-center gap-2 text-xs">
-          <div className="px-3.5 py-2 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
-            <span className="text-[10px] uppercase font-mono text-zinc-400 block">Total Issued</span>
-            <span className="text-sm font-semibold text-white">{stats.total} Units</span>
-          </div>
-
-          <div className="px-3.5 py-2 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl flex items-center gap-2">
-            <div>
-              <span className="text-[10px] uppercase font-mono text-zinc-400 block">Nominal</span>
-              <span className="text-sm font-semibold text-emerald-400">{stats.normal} Units</span>
-            </div>
-            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)] ml-auto" />
-          </div>
-
-          {stats.imminent > 0 && (
-            <div className="px-3.5 py-2 rounded-2xl bg-amber-500/[0.08] border border-amber-500/20 backdrop-blur-xl flex items-center gap-2">
-              <div>
-                <span className="text-[10px] uppercase font-mono text-amber-300/80 block">Due &lt; 48h</span>
-                <span className="text-sm font-semibold text-amber-300">{stats.imminent} Units</span>
-              </div>
-              <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)] animate-pulse ml-auto" />
-            </div>
-          )}
-
-          {stats.overdue > 0 && (
-            <div className="px-3.5 py-2 rounded-2xl bg-rose-500/[0.08] border border-rose-500/20 backdrop-blur-xl flex items-center gap-2">
-              <div>
-                <span className="text-[10px] uppercase font-mono text-rose-300/80 block">Overdue</span>
-                <span className="text-sm font-semibold text-rose-400">{stats.overdue} Units</span>
-              </div>
-              <span className="w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse ml-auto" />
-            </div>
-          )}
         </div>
       </div>
 
@@ -452,24 +408,16 @@ export function ActiveLoansPage() {
       {/* 2. OVERDUE ACCOUNTABILITY NOTICE (Apple Style Minimal Toast)  */}
       {/* ───────────────────────────────────────────────────────────── */}
       {userHasOverdue && (
-        <div className="p-4 sm:p-5 rounded-3xl bg-rose-950/20 border border-rose-500/30 backdrop-blur-2xl flex items-start sm:items-center justify-between gap-4 shadow-[0_15px_40px_rgba(244,63,94,0.1)]">
-          <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center flex-shrink-0">
-              <ShieldAlert className="w-5 h-5 text-rose-400" />
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold text-rose-200">
-                Overdue Custody Notice · Return Required
-              </h4>
-              <p className="text-xs text-rose-200/70 mt-0.5 leading-relaxed">
-                One or more hardware units have breached the scheduled return deadline. Please surrender the equipment at the Lab Counter to unlock extension privileges.
-              </p>
-            </div>
+        <div className="px-5 py-3.5 rounded-2xl bg-white/[0.03] border border-rose-500/20 backdrop-blur-xl flex items-center justify-between text-xs">
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse flex-shrink-0" />
+            <span className="text-zinc-300">
+              One or more items are overdue. Please surrender the equipment at Lab 1 Counter (Desk 2).
+            </span>
           </div>
-          <div className="hidden sm:block text-right flex-shrink-0">
-            <span className="text-[11px] font-mono text-rose-300/80 uppercase block">Drop-off Location</span>
-            <span className="text-xs font-semibold text-white">Lab 1 Counter · Desk 2</span>
-          </div>
+          <span className="text-[11px] font-mono text-zinc-500 hidden sm:inline">
+            Extensions Locked
+          </span>
         </div>
       )}
 
@@ -488,7 +436,7 @@ export function ActiveLoansPage() {
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
-            All Deployments ({stats.total})
+            All Hardware ({displayedLoans.length})
           </button>
 
           <button
@@ -500,7 +448,7 @@ export function ActiveLoansPage() {
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
-            Nominal ({stats.normal})
+            In Good Standing ({stats.normal})
           </button>
 
           {stats.imminent > 0 && (
@@ -509,7 +457,7 @@ export function ActiveLoansPage() {
               onClick={() => setStatusFilter('Imminent')}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
                 statusFilter === 'Imminent'
-                  ? 'bg-amber-400 text-black font-semibold shadow-md'
+                  ? 'bg-white text-black font-semibold shadow-md'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -523,7 +471,7 @@ export function ActiveLoansPage() {
               onClick={() => setStatusFilter('Overdue')}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
                 statusFilter === 'Overdue'
-                  ? 'bg-rose-500 text-white font-semibold shadow-md'
+                  ? 'bg-white text-black font-semibold shadow-md'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
