@@ -40,6 +40,15 @@ export function TopHeader() {
   const [isLabDropdownOpen, setIsLabDropdownOpen] = useState(false);
   const labDropdownRef = useRef(null);
 
+  const getUserInitials = (name) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return parts[0].slice(0, 2).toUpperCase();
+  };
+
   // Outside click listener for lab dropdown
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -380,11 +389,17 @@ export function TopHeader() {
 
           <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
 
-          {/* Current User Identity (Read-only) */}
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5 text-xs font-sans">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-            <span className="font-medium text-zinc-200">{currentUser?.name || role}</span>
-            <span className="text-[10px] text-zinc-500">({role})</span>
+          {/* Current User Identity (Apple-Style Monogram Pill) */}
+          <div className="hidden lg:flex items-center gap-2.5 pl-1.5 pr-2.5 py-1 rounded-full bg-white/[0.03] border border-white/10 hover:border-[#a78b71]/40 transition-all backdrop-blur-md shadow-sm">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#a78b71]/35 to-[#e8d5b7]/20 border border-[#c9b8a0]/30 flex items-center justify-center text-[10px] font-semibold text-[#f5e6c8] tracking-tight select-none">
+              {getUserInitials(currentUser?.name || role)}
+            </div>
+            <span className="font-medium text-white/90 text-xs tracking-tight">
+              {currentUser?.name || role}
+            </span>
+            <span className="text-[10px] font-medium text-[#c9b8a0] bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/10">
+              {role}
+            </span>
           </div>
 
           {/* Direct Logout Action */}
