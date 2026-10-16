@@ -129,6 +129,7 @@ export function DataTable({
                       className={`px-4 py-3 text-[#d1d5db] ${
                         col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'
                       }`}
+                      style={col.width ? { width: col.width, minWidth: col.width } : {}}
                     >
                       {col.render ? col.render(row) : row[col.accessor] ?? '—'}
                     </td>

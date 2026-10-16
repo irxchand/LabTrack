@@ -67,26 +67,72 @@ export function ReliabilityReportPage() {
     {
       header: 'Return Rating',
       accessor: 'conditionRating',
-      width: '180px',
-      render: (row) => (
-        <span
-          className={`font-sans text-xs font-medium px-3 py-1 rounded-full border shadow-sm ${
-            row.onTime
-              ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25'
-              : 'bg-amber-500/10 text-amber-300 border-amber-500/25'
-          }`}
-        >
-          {row.conditionRating}
-        </span>
-      ),
+      width: '210px',
+      render: (row) => {
+        const raw = row.conditionRating || row.returnCondition || (row.onTime ? 'Clean Return' : 'Late Return');
+
+        let title = raw;
+        let tag = null;
+        const match = raw.match(/^(.*?)\s*\((.*?)\)$/);
+        if (match) {
+          title = match[1].trim();
+          tag = match[2].trim();
+          if (tag.toLowerCase().includes('day grace')) {
+            tag = tag.replace(/day grace/i, '1d Grace').replace(/^1\s*1d/i, '1d');
+          }
+        }
+
+        const isLate = !row.onTime || raw.toLowerCase().includes('late');
+        const isDefect = raw.toLowerCase().includes('defect') || raw.toLowerCase().includes('damage');
+
+        if (isDefect) {
+          return (
+            <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-rose-500/[0.06] border border-rose-500/20 text-xs font-sans">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shadow-[0_0_6px_rgba(244,63,94,0.6)] shrink-0" />
+              <span className="font-medium text-rose-200">{title}</span>
+              {tag && (
+                <span className="text-[10px] font-semibold tracking-tight text-rose-300 bg-rose-500/15 border border-rose-500/25 px-1.5 py-0.5 rounded">
+                  {tag}
+                </span>
+              )}
+            </div>
+          );
+        }
+
+        if (isLate) {
+          return (
+            <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-amber-500/[0.06] border border-amber-500/20 text-xs font-sans">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.6)] shrink-0" />
+              <span className="font-medium text-amber-200">{title}</span>
+              {tag && (
+                <span className="text-[10px] font-semibold tracking-tight text-amber-300 bg-amber-500/15 border border-amber-500/25 px-1.5 py-0.5 rounded">
+                  {tag}
+                </span>
+              )}
+            </div>
+          );
+        }
+
+        return (
+          <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-emerald-500/[0.06] border border-emerald-500/20 text-xs font-sans">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)] shrink-0" />
+            <span className="font-medium text-emerald-200">{title}</span>
+            {tag && (
+              <span className="text-[10px] font-semibold tracking-tight text-emerald-300 bg-emerald-500/15 border border-emerald-500/25 px-1.5 py-0.5 rounded">
+                {tag}
+              </span>
+            )}
+          </div>
+        );
+      },
     },
     {
       header: 'Technician Inspection Notes',
       accessor: 'technicianNotes',
       render: (row) => (
-        <div className="font-sans text-xs text-zinc-300 leading-relaxed">
-          <div>{row.technicianNotes}</div>
-          <div className="text-[11px] text-zinc-500 mt-0.5">Verified by {row.technicianPrn}</div>
+        <div className="font-sans text-xs text-zinc-300 leading-relaxed max-w-sm">
+          <div className="text-zinc-200">{row.technicianNotes || row.returnCondition || 'Inspection completed; asset integrity verified.'}</div>
+          <div className="text-[11px] text-zinc-500 mt-0.5">Verified by {row.technicianPrn || row.technicianSignOff || 'Depot Staff'}</div>
         </div>
       ),
     },
@@ -95,21 +141,34 @@ export function ReliabilityReportPage() {
       accessor: 'pointsImpact',
       width: '160px',
       render: (row) => {
-        const isPositive = row.pointsImpact?.startsWith('+');
+        const impact = row.pointsImpact || '+0 Pts';
+        const isPositive = impact.startsWith('+') && !impact.startsWith('+0');
+        const isNegative = impact.startsWith('-');
+
+        let sublabel = 'Standard Clearance';
+        if (isPositive) sublabel = 'Punctual Incentive';
+        else if (isNegative) sublabel = 'Policy Deduction';
+
+        if (impact.includes('(')) {
+          sublabel = impact.slice(impact.indexOf('(') + 1, -1);
+        }
+
         return (
           <div className="font-sans text-xs">
-            <span
-              className={`font-semibold ${
-                isPositive ? 'text-emerald-400' : 'text-rose-400'
+            <div
+              className={`font-semibold tracking-tight ${
+                isPositive
+                  ? 'text-emerald-400'
+                  : isNegative
+                  ? 'text-rose-400'
+                  : 'text-zinc-400'
               }`}
             >
-              {row.pointsImpact?.split(' ')[0] || row.pointsImpact} Pts
-            </span>
-            <span className="text-[11px] text-zinc-400 block mt-0.5">
-              {row.pointsImpact?.includes('(')
-                ? row.pointsImpact.slice(row.pointsImpact.indexOf('(') + 1, -1)
-                : 'Accountability Metric'}
-            </span>
+              {impact.split(' ')[0]} Pts
+            </div>
+            <div className="text-[11px] text-zinc-500 mt-0.5">
+              {sublabel}
+            </div>
           </div>
         );
       },
@@ -125,7 +184,7 @@ export function ReliabilityReportPage() {
             <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
             COLLEGIATE ACCOUNTABILITY • REPUTATION SCORE
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white flex items-center gap-2.5">
+          <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
             <ShieldCheck className="w-7 h-7 text-[#c9b8a0]" />
             Reputation & Reliability Score
           </h1>
@@ -219,7 +278,8 @@ export function ReliabilityReportPage() {
             <div className="mt-4">
               <div className="flex items-center gap-2.5">
                 <span className="text-3xl font-bold font-sans text-white tracking-tight">92.8%</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-sans font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-sans font-medium bg-emerald-500/[0.08] text-emerald-300 border border-emerald-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   On-Time
                 </span>
               </div>
