@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { SiliconCanvas } from '../components/hero/SiliconCanvas';
@@ -13,11 +13,15 @@ import {
   Terminal,
   Activity,
   Zap,
+  Radio,
+  CheckCircle2,
+  Box,
 } from 'lucide-react';
 
 export function HeroPage() {
   const navigate = useNavigate();
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const [activeTab, setActiveTab] = useState('3d-core');
 
   const handleLaunchWorkspace = () => {
     if (isAuthenticated) {
@@ -32,8 +36,8 @@ export function HeroPage() {
       {/* ───────────────────────────────────────────────────────────────── */}
       {/* 1. Ambient Velvet Lighting Orbs */}
       {/* ───────────────────────────────────────────────────────────────── */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-gradient-to-b from-[#c9b8a0]/15 via-[#a78b71]/5 to-transparent blur-[140px] pointer-events-none -z-10" />
-      <div className="absolute top-[800px] right-0 w-[500px] h-[500px] bg-gradient-to-bl from-[#c9b8a0]/10 via-transparent to-transparent blur-[160px] pointer-events-none -z-10" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-b from-[#c9b8a0]/15 via-[#a78b71]/5 to-transparent blur-[150px] pointer-events-none -z-10" />
+      <div className="absolute top-[750px] right-0 w-[550px] h-[550px] bg-gradient-to-bl from-[#c9b8a0]/10 via-transparent to-transparent blur-[160px] pointer-events-none -z-10" />
 
       {/* ───────────────────────────────────────────────────────────────── */}
       {/* 2. Top Navigation Bar */}
@@ -52,6 +56,12 @@ export function HeroPage() {
 
         {/* Center Links (Anchor Jumps) */}
         <nav className="hidden md:flex items-center gap-6 text-xs text-zinc-400">
+          <a
+            href="#stage-3d"
+            className="hover:text-white transition-colors duration-200"
+          >
+            3D Architecture
+          </a>
           <a
             href="#hardware"
             className="hover:text-white transition-colors duration-200"
@@ -86,30 +96,30 @@ export function HeroPage() {
       </header>
 
       {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 3. Hero Section with 3D Silicon Canvas */}
+      {/* 3. Hero Section with 3D Silicon Stage */}
       {/* ───────────────────────────────────────────────────────────────── */}
       <main className="pt-24 sm:pt-32 pb-16">
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <section id="stage-3d" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             {/* Left Column: Editorial Headline & Actions */}
-            <div className="lg:col-span-7 flex flex-col justify-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs text-[#c9b8a0] mb-6 w-fit">
+            <div className="lg:col-span-6 flex flex-col justify-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs text-[#c9b8a0] mb-5 w-fit shadow-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_8px_#c9b8a0]" />
                 <span className="font-semibold tracking-[0.16em] uppercase text-[10px]">
-                  DEPARTMENT OF AI & DATA SCIENCE
+                  AIML RESEARCH DEPOT // 2026 ARCHITECTURE
                 </span>
               </div>
 
-              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-100 to-[#c9b8a0] leading-[1.08]">
-                The Physical Hardware Custody Operating System.
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-100 to-[#c9b8a0] leading-[1.06]">
+                Silicon-Grade Custody for AI Laboratories.
               </h1>
 
-              <p className="mt-6 text-base sm:text-lg text-zinc-400 font-sans leading-relaxed max-w-2xl">
-                Engineered for academic research laboratories. Real-time component tracking, automated FIFO reservation queues, and cryptographic chain-of-custody from depot dispatch to active workbench.
+              <p className="mt-5 text-base text-zinc-400 font-sans leading-relaxed max-w-xl">
+                Eliminate untracked hardware leakage. Dual-signature faculty endorsements, automated FIFO reservation queues, and cryptographic chain-of-custody—from depot dispatch to active workbench.
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 mt-8">
+              <div className="flex flex-wrap items-center gap-3.5 mt-8">
                 <button
                   type="button"
                   onClick={handleLaunchWorkspace}
@@ -120,35 +130,39 @@ export function HeroPage() {
                 </button>
 
                 <a
-                  href="#lifecycle"
+                  href="#hardware"
                   className="flex items-center gap-2 px-5 py-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-white border border-white/10 text-sm font-medium transition-all"
                 >
-                  <span>Explore Workflow</span>
+                  <span>Inspect Hardware</span>
                   <ChevronRight className="w-4 h-4 text-zinc-400" />
                 </a>
               </div>
 
-              {/* Key Platform Metrics Pill Bar */}
-              <div className="grid grid-cols-3 gap-4 mt-12 pt-8 border-t border-white/10 max-w-xl">
+              {/* Real-time Status Telemetry */}
+              <div className="grid grid-cols-3 gap-4 mt-10 pt-6 border-t border-white/10 max-w-lg">
                 <div>
-                  <div className="text-xl sm:text-2xl font-bold text-[#f5e6c8]">100%</div>
-                  <div className="text-[11px] text-zinc-400 mt-0.5">Asset Accountability</div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span className="text-xl sm:text-2xl font-bold text-[#f5e6c8]">10</span>
+                  </div>
+                  <div className="text-[11px] text-zinc-400 mt-0.5">Active AI Rigs</div>
                 </div>
                 <div>
                   <div className="text-xl sm:text-2xl font-bold text-white">0%</div>
-                  <div className="text-[11px] text-zinc-400 mt-0.5">Unverified Leakage</div>
+                  <div className="text-[11px] text-zinc-400 mt-0.5">Hardware Loss</div>
                 </div>
                 <div>
                   <div className="text-xl sm:text-2xl font-bold text-[#c9b8a0]">FIFO</div>
-                  <div className="text-[11px] text-zinc-400 mt-0.5">Fair Allocation Queue</div>
+                  <div className="text-[11px] text-zinc-400 mt-0.5">Queue Protocol</div>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Interactive 3D Silicon Wafer Substrate */}
-            <div className="lg:col-span-5 h-[420px] sm:h-[480px] lg:h-[540px] w-full flex items-center justify-center relative">
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#c9b8a0]/15 via-transparent to-transparent rounded-full blur-3xl pointer-events-none" />
-              <SiliconCanvas />
+            {/* Right Column: Next-Gen Exploded 3D Silicon Stage */}
+            <div className="lg:col-span-6 w-full flex items-center justify-center relative">
+              <div className="w-full h-[520px] sm:h-[580px] lg:h-[620px]">
+                <SiliconCanvas />
+              </div>
             </div>
           </div>
         </section>
