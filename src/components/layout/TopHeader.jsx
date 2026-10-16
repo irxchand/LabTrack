@@ -155,7 +155,7 @@ export function TopHeader() {
 
       case 'Student':
       default:
-        // Student Primary macOS Toolbar: Workstation, My Bench, Requisitions, Waitlist, Projects
+        // Student Primary macOS Toolbar Flow: Workstation -> Requisitions -> Waitlist -> My Bench -> Projects
         return [
           {
             label: 'Workstation',
@@ -163,13 +163,6 @@ export function TopHeader() {
             icon: Cpu,
             count: inventory.length,
             isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
-          },
-          {
-            label: 'My Bench',
-            to: '/workspace/custody/active',
-            icon: Clock,
-            count: activeLoans.length,
-            isActive: (pathname) => pathname.includes('/custody/active') || pathname.includes('/custody/bench'),
           },
           {
             label: 'Requisitions',
@@ -184,6 +177,13 @@ export function TopHeader() {
             icon: BookmarkCheck,
             count: reservations.length,
             isActive: (pathname) => pathname.includes('/custody/reservations'),
+          },
+          {
+            label: 'My Bench',
+            to: '/workspace/custody/active',
+            icon: Clock,
+            count: activeLoans.length,
+            isActive: (pathname) => pathname.includes('/custody/active') || pathname.includes('/custody/bench'),
           },
           {
             label: 'Projects',
