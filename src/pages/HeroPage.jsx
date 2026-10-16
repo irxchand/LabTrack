@@ -121,17 +121,7 @@ export function HeroPage() {
         onMouseMove={handleMouseMove}
         className="relative pt-36 pb-28 px-6 sm:px-12 flex flex-col items-center z-10 min-h-screen"
       >
-        {/* Live Notification Pill */}
-        <div className="pill-glass-card rounded-full px-4 py-1.5 inline-flex items-center gap-2.5 mb-8 border border-white/10 bg-white/[0.03] backdrop-blur-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.4)] animate-fadeIn">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]" />
-          <span className="text-emerald-400 font-bold text-[8px] tracking-[0.25em] font-mono">
-            LIVE
-          </span>
-          <span className="w-px h-3 bg-white/10" />
-          <span className="text-white/90 text-[12px] font-light tracking-wide font-sans">
-            AIML & IoT Labs Synchronized • 248 Active Benches • 1,420 Instruments in Custody
-          </span>
-        </div>
+
 
         {/* Headline: Matched to Clash Display (Website Font DNA) */}
         <h1
