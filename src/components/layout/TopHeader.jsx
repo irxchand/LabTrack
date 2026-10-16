@@ -10,17 +10,20 @@ import {
   Check,
   LogOut,
   Cpu,
-  Package,
   Clock,
   Inbox,
+  FolderGit2,
   CheckSquare,
+  Terminal,
+  Wrench,
+  FileText,
 } from 'lucide-react';
 
 export function TopHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser, role, switchRole, logout } = useAuth();
-  const { basket, setIsBasketOpen, inventory, activeLoans, requisitions } = useLabData();
+  const { basket, setIsBasketOpen, inventory, activeLoans, requisitions, projects, defects } = useLabData();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
 
@@ -63,40 +66,139 @@ export function TopHeader() {
     },
   ];
 
-  // Primary macOS Toolbar items - displaying ONLY the main things
-  const mainNavItems = [
-    {
-      label: 'Workstation',
-      to: '/workspace/inventory',
-      icon: Cpu,
-      count: inventory.length,
-      isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
-    },
-    {
-      label: 'My Bench',
-      to: '/workspace/custody/active',
-      icon: Clock,
-      count: activeLoans.length,
-      isActive: (pathname) => pathname.includes('/custody/active') || pathname.includes('/custody/bench'),
-    },
-    {
-      label: 'Requisitions',
-      to: '/workspace/custody/requests',
-      icon: Inbox,
-      count: requisitions.length,
-      isActive: (pathname) => pathname.includes('/custody/requests'),
-    },
-  ];
+  // Dynamic macOS Toolbar items tailored to active role
+  const getMainNavItems = () => {
+    switch (role) {
+      case 'Faculty':
+        return [
+          {
+            label: 'Workstation',
+            to: '/workspace/inventory',
+            icon: Cpu,
+            count: inventory.length,
+            isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
+          },
+          {
+            label: 'Approvals',
+            to: '/workspace/operations/approvals',
+            icon: CheckSquare,
+            count: requisitions.filter((r) => r.status === 'Pending').length,
+            isActive: (pathname) => pathname.includes('/operations/approvals'),
+          },
+          {
+            label: 'Projects',
+            to: '/workspace/projects',
+            icon: FolderGit2,
+            count: projects.length,
+            isActive: (pathname) => pathname.includes('/projects'),
+          },
+          {
+            label: 'Defects',
+            to: '/workspace/operations/defects',
+            icon: Wrench,
+            count: defects.length,
+            isActive: (pathname) => pathname.includes('/operations/defects'),
+          },
+        ];
 
-  if (role === 'Faculty' || role === 'HoD / Admin') {
-    mainNavItems.push({
-      label: 'Approvals',
-      to: '/workspace/operations/approvals',
-      icon: CheckSquare,
-      count: requisitions.filter((r) => r.status === 'Pending').length,
-      isActive: (pathname) => pathname.includes('/operations/approvals'),
-    });
-  }
+      case 'Lab Assistant':
+        return [
+          {
+            label: 'Workstation',
+            to: '/workspace/inventory',
+            icon: Cpu,
+            count: inventory.length,
+            isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
+          },
+          {
+            label: 'Dispatch Desk',
+            to: '/workspace/operations/dispatch',
+            icon: Terminal,
+            isActive: (pathname) => pathname.includes('/operations/dispatch'),
+          },
+          {
+            label: 'Defect Bench',
+            to: '/workspace/operations/defects',
+            icon: Wrench,
+            count: defects.length,
+            isActive: (pathname) => pathname.includes('/operations/defects'),
+          },
+          {
+            label: 'Audit Log',
+            to: '/workspace/accountability/audit-log',
+            icon: FileText,
+            isActive: (pathname) => pathname.includes('/accountability/audit-log'),
+          },
+        ];
+
+      case 'HoD / Admin':
+        return [
+          {
+            label: 'Workstation',
+            to: '/workspace/inventory',
+            icon: Cpu,
+            count: inventory.length,
+            isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
+          },
+          {
+            label: 'Approvals',
+            to: '/workspace/operations/approvals',
+            icon: CheckSquare,
+            count: requisitions.filter((r) => r.status === 'Pending').length,
+            isActive: (pathname) => pathname.includes('/operations/approvals'),
+          },
+          {
+            label: 'Projects',
+            to: '/workspace/projects',
+            icon: FolderGit2,
+            count: projects.length,
+            isActive: (pathname) => pathname.includes('/projects'),
+          },
+          {
+            label: 'Audit Log',
+            to: '/workspace/accountability/audit-log',
+            icon: FileText,
+            isActive: (pathname) => pathname.includes('/accountability/audit-log'),
+          },
+        ];
+
+      case 'Student':
+      default:
+        // Student Primary macOS Toolbar: Workstation, My Bench, Requisitions, and Projects (Option B)
+        return [
+          {
+            label: 'Workstation',
+            to: '/workspace/inventory',
+            icon: Cpu,
+            count: inventory.length,
+            isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
+          },
+          {
+            label: 'My Bench',
+            to: '/workspace/custody/active',
+            icon: Clock,
+            count: activeLoans.length,
+            isActive: (pathname) => pathname.includes('/custody/active') || pathname.includes('/custody/bench'),
+          },
+          {
+            label: 'Requisitions',
+            to: '/workspace/custody/requests',
+            icon: Inbox,
+            count: requisitions.length,
+            isActive: (pathname) => pathname.includes('/custody/requests'),
+          },
+          {
+            label: 'Projects',
+            to: '/workspace/projects',
+            icon: FolderGit2,
+            count: projects.length,
+            isActive: (pathname) => pathname.includes('/projects'),
+          },
+        ];
+    }
+  };
+
+  const mainNavItems = getMainNavItems();
 
   return (
     <>

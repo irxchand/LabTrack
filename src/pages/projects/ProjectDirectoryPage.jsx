@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { DataTable } from '../../components/common/DataTable';
-import { FolderGit2, Users, Eye, Cpu } from 'lucide-react';
+import { FolderGit2, Users, Cpu } from 'lucide-react';
 
 export function ProjectDirectoryPage() {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export function ProjectDirectoryPage() {
       width: '180px',
       render: (row) => (
         <div className="font-mono text-xs">
-          <div className="font-semibold text-blue-400 hover:underline">{row.id}</div>
+          <div className="font-semibold text-white group-hover:text-[#f5e6c8] transition-colors">{row.id}</div>
           <div className="text-zinc-500 text-[11px]">{row.courseCode}</div>
         </div>
       ),
@@ -25,8 +25,8 @@ export function ProjectDirectoryPage() {
       accessor: 'title',
       render: (row) => (
         <div className="space-y-0.5">
-          <div className="font-medium text-zinc-100">{row.title}</div>
-          <p className="text-xs text-zinc-400 font-mono line-clamp-1">{row.abstract}</p>
+          <div className="font-medium text-white">{row.title}</div>
+          <p className="text-xs text-zinc-400 font-sans line-clamp-1">{row.abstract}</p>
         </div>
       ),
     },
@@ -35,9 +35,9 @@ export function ProjectDirectoryPage() {
       accessor: 'mentorName',
       width: '180px',
       render: (row) => (
-        <div className="font-mono text-xs">
-          <div className="text-zinc-200">{row.mentorName}</div>
-          <div className="text-zinc-500 text-[11px]">{row.department}</div>
+        <div className="text-xs">
+          <div className="text-zinc-200 font-medium font-sans">{row.mentorName}</div>
+          <div className="text-zinc-500 text-[11px] font-mono">{row.department}</div>
         </div>
       ),
     },
@@ -47,7 +47,7 @@ export function ProjectDirectoryPage() {
       width: '120px',
       align: 'center',
       render: (row) => (
-        <span className="font-mono text-xs text-zinc-300">
+        <span className="font-sans text-xs text-zinc-300">
           {row.members?.length || 0} Members
         </span>
       ),
@@ -55,39 +55,38 @@ export function ProjectDirectoryPage() {
     {
       header: 'Hardware Allocation Cap',
       accessor: 'currentAllocatedCount',
-      width: '180px',
-      render: (row) => (
-        <div className="space-y-1 font-mono text-xs">
-          <div className="flex justify-between text-zinc-400">
-            <span>{row.currentAllocatedCount} / {row.hardwareBudgetCap} Items</span>
-            <span className="text-blue-400">
-              {Math.round((row.currentAllocatedCount / row.hardwareBudgetCap) * 100)}%
-            </span>
+      width: '190px',
+      render: (row) => {
+        const percentage = Math.round((row.currentAllocatedCount / row.hardwareBudgetCap) * 100);
+        return (
+          <div className="space-y-1.5 font-sans text-xs">
+            <div className="flex justify-between text-zinc-400 text-[11px]">
+              <span>{row.currentAllocatedCount} of {row.hardwareBudgetCap} units</span>
+              <span className="font-mono text-zinc-300">{percentage}%</span>
+            </div>
+            <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+              <div
+                className="bg-white h-full rounded-full transition-all duration-300"
+                style={{ width: `${Math.min(100, percentage)}%` }}
+              />
+            </div>
           </div>
-          <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
-            <div
-              className="bg-blue-500 h-full rounded-full"
-              style={{
-                width: `${Math.min(100, (row.currentAllocatedCount / row.hardwareBudgetCap) * 100)}%`,
-              }}
-            />
-          </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       header: 'Reliability',
       accessor: 'reliabilityScore',
-      width: '110px',
+      width: '120px',
       align: 'center',
       render: (row) => (
         <span
-          className={`font-mono text-xs font-bold ${
+          className={`inline-flex px-2 py-0.5 rounded-full text-[11px] font-mono font-medium border ${
             row.reliabilityScore >= 90
-              ? 'text-emerald-400'
+              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
               : row.reliabilityScore >= 75
-              ? 'text-amber-400'
-              : 'text-red-400'
+              ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+              : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
           }`}
         >
           {row.reliabilityScore}/100
@@ -96,36 +95,45 @@ export function ProjectDirectoryPage() {
     },
     {
       header: 'Action',
-      width: '120px',
+      width: '110px',
       align: 'right',
       render: (row) => (
         <button
-          onClick={() => navigate(`/workspace/projects/${row.id}`)}
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-mono text-xs transition-colors"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/workspace/projects/${row.id}`);
+          }}
+          className="px-3 py-1 rounded-full text-xs font-medium bg-white/[0.04] hover:bg-white text-zinc-300 hover:text-black border border-white/10 transition-all cursor-pointer shadow-sm"
         >
-          <Eye className="w-3.5 h-3.5" />
-          View Profile
+          Inspect
         </button>
       ),
     },
   ];
 
   return (
-    <div className="space-y-4">
-      {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-zinc-800/80">
+    <div className="space-y-6">
+      {/* Editorial Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-zinc-100 flex items-center gap-2">
-            <FolderGit2 className="w-5 h-5 text-blue-500" />
-            Academic Project Directory & Hardware Caps
+          <div className="text-[11px] font-sans font-medium text-zinc-400 tracking-wide uppercase">
+            COLLABORATIVE ALLOCATIONS
+          </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1">
+            Academic Projects
           </h1>
-          <p className="text-xs font-mono text-zinc-400 mt-0.5">
-            Registered collegiate project groups, mentor bindings, and custody limit allocations.
+          <p className="text-sm font-sans text-zinc-400 mt-1 max-w-xl">
+            Registered collegiate research teams, faculty mentor bindings, and authorized hardware pool quotas.
           </p>
         </div>
 
-        <div className="text-xs font-mono text-zinc-400 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded">
-          Active Student Teams: <span className="text-zinc-100 font-bold">{projects.length}</span>
+        <div className="flex items-center gap-2">
+          <div className="px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-sans text-zinc-300 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+            <span>Active Teams:</span>
+            <span className="font-mono font-semibold text-white">{projects.length}</span>
+          </div>
         </div>
       </div>
 
@@ -139,3 +147,5 @@ export function ProjectDirectoryPage() {
     </div>
   );
 }
+
+export default ProjectDirectoryPage;
