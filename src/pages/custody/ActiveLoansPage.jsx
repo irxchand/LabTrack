@@ -25,14 +25,20 @@ import {
   AlertCircle,
   HelpCircle,
   ArrowRight,
+  Wrench,
 } from 'lucide-react';
 
 export function ActiveLoansPage() {
-  const { activeLoans, inventory, requestExtension } = useLabData();
+  const { activeLoans, inventory, requestExtension, reportDefect } = useLabData();
   const { currentUser, role } = useAuth();
 
   const [selectedLoan, setSelectedLoan] = useState(null);
   const [inspectedLoan, setInspectedLoan] = useState(null);
+  const [defectLoan, setDefectLoan] = useState(null);
+  const [defectCategory, setDefectCategory] = useState('Component Fault');
+  const [defectSeverity, setDefectSeverity] = useState('Moderate');
+  const [defectDescription, setDefectDescription] = useState('');
+  const [isSubmittingDefect, setIsSubmittingDefect] = useState(false);
   const [extensionDays, setExtensionDays] = useState('7');
   const [extensionReason, setExtensionReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -453,26 +459,41 @@ export function ActiveLoansPage() {
                 </p>
               </div>
 
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpenExtension(loan);
-              }}
-              disabled={isExtensionDisabled}
-              className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all shadow-lg active:scale-95 flex-shrink-0 cursor-pointer ${
-                isExtensionDisabled
-                  ? 'bg-white/[0.06] text-zinc-500 border border-white/10 cursor-not-allowed'
-                  : 'bg-white hover:bg-zinc-200 text-black'
-              }`}
-              title={
-                isExtensionDisabled
-                  ? 'Extension locked: overdue item pending return'
-                  : 'Request Term Extension'
-              }
-            >
-              Extend
-            </button>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDefectLoan(loan);
+                  }}
+                  className="px-3 py-2 rounded-full text-xs font-medium bg-white/[0.06] hover:bg-rose-500/15 text-zinc-300 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
+                  title="Report a defect or issue with this hardware unit"
+                >
+                  <Wrench className="w-3.5 h-3.5 text-zinc-400 group-hover:text-rose-300" />
+                  <span>Report Fault</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOpenExtension(loan);
+                  }}
+                  disabled={isExtensionDisabled}
+                  className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all shadow-lg active:scale-95 flex-shrink-0 cursor-pointer ${
+                    isExtensionDisabled
+                      ? 'bg-white/[0.06] text-zinc-500 border border-white/10 cursor-not-allowed'
+                      : 'bg-white hover:bg-zinc-200 text-black'
+                  }`}
+                  title={
+                    isExtensionDisabled
+                      ? 'Extension locked: overdue item pending return'
+                      : 'Request Term Extension'
+                  }
+                >
+                  Extend
+                </button>
+              </div>
           </div>
         </div>
       </div>
@@ -849,6 +870,113 @@ export function ActiveLoansPage() {
               </div>
             );
           })()}
+        </Modal>
+      )}
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* 7. STUDENT DEFECT / FAULT REPORTING MODAL                    */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {defectLoan && (
+        <Modal
+          isOpen={!!defectLoan}
+          onClose={() => setDefectLoan(null)}
+          title="Report Hardware Fault"
+          subtitle={`Unit: ${defectLoan.nomenclature} • Asset Tag: ${defectLoan.assetTag}`}
+          maxWidth="max-w-lg"
+        >
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setIsSubmittingDefect(true);
+              try {
+                await reportDefect({
+                  assetTag: defectLoan.assetTag,
+                  nomenclature: defectLoan.nomenclature,
+                  projectId: defectLoan.projectId,
+                  severity: defectSeverity,
+                  defectCategory,
+                  description: defectDescription,
+                });
+                setDefectLoan(null);
+                setDefectDescription('');
+              } finally {
+                setIsSubmittingDefect(false);
+              }
+            }}
+            className="space-y-4 text-xs font-sans"
+          >
+            <div className="p-3.5 bg-amber-500/[0.08] border border-amber-500/20 rounded-2xl text-amber-200 text-xs leading-relaxed flex items-start gap-2.5">
+              <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+              <span>
+                Reporting a hardware fault alerts the lab technician bench. If approved for return/swap, bring this physical unit to Counter Desk 1 for inspection without incurring a personal penalty.
+              </span>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-zinc-400 font-medium block">Issue Classification</label>
+              <select
+                value={defectCategory}
+                onChange={(e) => setDefectCategory(e.target.value)}
+                className="w-full bg-[#141417] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#c9b8a0]/50"
+              >
+                <option value="Component Fault">Component Fault / GPIO Failure</option>
+                <option value="Physical Damage">Physical Damage / Broken Pin / Cable</option>
+                <option value="Power Failure">Overheating / Power Supply Short</option>
+                <option value="Sensor Drift">Sensor Reading Drift / Calibration Error</option>
+                <option value="Firmware Issue">Firmware Bricked / Unresponsive</option>
+                <option value="Other">Other Bench Anomaly</option>
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-zinc-400 font-medium block">Severity Level</label>
+              <div className="grid grid-cols-3 gap-2">
+                {['Minor', 'Moderate', 'Critical'].map((sev) => (
+                  <button
+                    key={sev}
+                    type="button"
+                    onClick={() => setDefectSeverity(sev)}
+                    className={`py-2 rounded-xl border text-center font-semibold text-xs transition-all cursor-pointer ${
+                      defectSeverity === sev
+                        ? 'bg-white text-black border-white shadow-sm'
+                        : 'bg-white/[0.03] text-zinc-400 border-white/10 hover:text-white'
+                    }`}
+                  >
+                    {sev}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-zinc-400 font-medium block">Detailed Description of Defect</label>
+              <textarea
+                required
+                value={defectDescription}
+                onChange={(e) => setDefectDescription(e.target.value)}
+                rows={3}
+                placeholder="Describe what occurred (e.g. pin 4 not outputting 3.3V, OLED display glass cracked during breadboard insertion)..."
+                className="w-full bg-[#141417] border border-white/10 rounded-xl p-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#c9b8a0]/50 text-xs leading-relaxed"
+              />
+            </div>
+
+            <div className="pt-3 border-t border-white/10 flex justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setDefectLoan(null)}
+                className="px-4 py-2 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-zinc-300 font-semibold text-xs transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmittingDefect || !defectDescription.trim()}
+                className="px-5 py-2 rounded-full bg-gradient-to-r from-rose-500 to-amber-500 hover:opacity-90 text-white font-semibold text-xs transition-all shadow-md active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {isSubmittingDefect ? 'Submitting Ticket...' : 'Submit Fault Report'}
+              </button>
+            </div>
+          </form>
         </Modal>
       )}
     </div>

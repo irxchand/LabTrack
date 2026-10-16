@@ -70,27 +70,6 @@ export function TopHeader() {
             isActive: (pathname) => pathname.includes('/operations/approvals'),
           },
           {
-            label: 'My Bench',
-            to: '/workspace/custody/active',
-            icon: Clock,
-            count: activeLoans.length,
-            isActive: (pathname) => pathname.includes('/custody/active') || pathname.includes('/custody/bench'),
-          },
-          {
-            label: 'Requisitions',
-            to: '/workspace/custody/requests',
-            icon: Inbox,
-            count: requisitions.length,
-            isActive: (pathname) => pathname.includes('/custody/requests'),
-          },
-          {
-            label: 'Waitlist',
-            to: '/workspace/custody/reservations',
-            icon: BookmarkCheck,
-            count: reservations.length,
-            isActive: (pathname) => pathname.includes('/custody/reservations'),
-          },
-          {
             label: 'Projects',
             to: '/workspace/projects',
             icon: FolderGit2,
@@ -103,13 +82,6 @@ export function TopHeader() {
             icon: Wrench,
             count: defects.length,
             isActive: (pathname) => pathname.includes('/operations/defects'),
-          },
-          {
-            label: 'Audit Log',
-            to: '/workspace/accountability/audit-log',
-            icon: FileText,
-            count: auditLogs.length,
-            isActive: (pathname) => pathname.includes('/accountability/audit-log'),
           },
         ];
 
@@ -135,20 +107,6 @@ export function TopHeader() {
             icon: Clock,
             count: activeLoans.length,
             isActive: (pathname) => pathname.includes('/custody/active') || pathname.includes('/custody/bench'),
-          },
-          {
-            label: 'Requisitions',
-            to: '/workspace/custody/requests',
-            icon: Inbox,
-            count: requisitions.length,
-            isActive: (pathname) => pathname.includes('/custody/requests'),
-          },
-          {
-            label: 'Waitlist',
-            to: '/workspace/custody/reservations',
-            icon: BookmarkCheck,
-            count: reservations.length,
-            isActive: (pathname) => pathname.includes('/custody/reservations'),
           },
           {
             label: 'Defect Bench',
@@ -183,31 +141,10 @@ export function TopHeader() {
             isActive: (pathname) => pathname.includes('/operations/approvals'),
           },
           {
-            label: 'Dispatch',
+            label: 'Dispatch Desk',
             to: '/workspace/operations/dispatch',
             icon: Terminal,
             isActive: (pathname) => pathname.includes('/operations/dispatch'),
-          },
-          {
-            label: 'Active Loans',
-            to: '/workspace/custody/active',
-            icon: Clock,
-            count: activeLoans.length,
-            isActive: (pathname) => pathname.includes('/custody/active') || pathname.includes('/custody/bench'),
-          },
-          {
-            label: 'Requisitions',
-            to: '/workspace/custody/requests',
-            icon: Inbox,
-            count: requisitions.length,
-            isActive: (pathname) => pathname.includes('/custody/requests'),
-          },
-          {
-            label: 'Waitlist',
-            to: '/workspace/custody/reservations',
-            icon: BookmarkCheck,
-            count: reservations.length,
-            isActive: (pathname) => pathname.includes('/custody/reservations'),
           },
           {
             label: 'Projects',
@@ -217,17 +154,11 @@ export function TopHeader() {
             isActive: (pathname) => pathname.includes('/projects'),
           },
           {
-            label: 'Defects',
+            label: 'Defect Bench',
             to: '/workspace/operations/defects',
             icon: Wrench,
             count: defects.length,
             isActive: (pathname) => pathname.includes('/operations/defects'),
-          },
-          {
-            label: 'Reputation',
-            to: '/workspace/accountability/reliability',
-            icon: ShieldCheck,
-            isActive: (pathname) => pathname.includes('/accountability/reliability'),
           },
           {
             label: 'Audit Log',
@@ -240,7 +171,7 @@ export function TopHeader() {
 
       case 'Student':
       default:
-        // Student Primary macOS Toolbar: Workstation, My Bench, Requisitions, Waitlist, Projects, Reputation, Defects, Audit Log
+        // Student Primary macOS Toolbar: Workstation, My Bench, Requisitions, Waitlist, Projects, Reputation
         return [
           {
             label: 'Workstation',
@@ -282,20 +213,6 @@ export function TopHeader() {
             to: '/workspace/accountability/reliability',
             icon: ShieldCheck,
             isActive: (pathname) => pathname.includes('/accountability/reliability'),
-          },
-          {
-            label: 'Defects',
-            to: '/workspace/operations/defects',
-            icon: Wrench,
-            count: defects.length,
-            isActive: (pathname) => pathname.includes('/operations/defects'),
-          },
-          {
-            label: 'Audit Log',
-            to: '/workspace/accountability/audit-log',
-            icon: FileText,
-            count: auditLogs.length,
-            isActive: (pathname) => pathname.includes('/accountability/audit-log'),
           },
         ];
     }

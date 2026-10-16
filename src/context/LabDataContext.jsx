@@ -325,6 +325,30 @@ export function LabDataProvider({ children }) {
     }
   };
 
+  // Report Defect from Active Loan
+  const reportDefect = async (defectData) => {
+    const newDefect = {
+      id: `DEF-2026-${String(defects.length + 101).padStart(3, '0')}`,
+      assetTag: defectData.assetTag,
+      nomenclature: defectData.nomenclature,
+      associatedPrn: currentUser?.prn || '202401048',
+      associatedProject: defectData.projectId || 'PRJ-AIML-2026-08',
+      severity: defectData.severity || 'Moderate',
+      defectCategory: defectData.defectCategory || 'Component Fault',
+      conditionSummary: defectData.description || 'Reported by borrower during active loan',
+      reportedDate: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      repairStatus: 'Under Inspection',
+      resolutionPlan: 'Staged for technician bench triage',
+    };
+    setDefects((prev) => [newDefect, ...prev]);
+    addToast({
+      title: 'Fault Report Submitted',
+      message: `Defect ticket ${newDefect.id} logged for technician bench inspection.`,
+      type: 'warning',
+    });
+    return newDefect;
+  };
+
   // Inventory additions
   const addNewInventoryItem = async (newItem) => {
     const res = await inventoryApi.addItem(newItem);
@@ -389,6 +413,7 @@ export function LabDataProvider({ children }) {
         joinWaitlist,
         leaveWaitlist,
         updateDefectStatus,
+        reportDefect,
         retireAsset,
         addNewInventoryItem,
         createProject,
