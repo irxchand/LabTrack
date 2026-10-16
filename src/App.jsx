@@ -63,7 +63,7 @@ export function App() {
                 />
                 <Route
                   path="inventory/components"
-                  element={<InventoryListPage initialClassification="Component" />}
+                  element={<InventoryListPage initialClassification="Consumable" />}
                 />
                 <Route
                   path="inventory/consumables"

@@ -108,17 +108,8 @@ export function TopHeader() {
           </button>
         </div>
 
-        {/* Right: Quick Role Switcher, Basket & Hero Link */}
+        {/* Right: Quick Role Switcher, Basket */}
         <div className="flex items-center gap-3">
-          {/* Link back to Luxury Hero Showcase */}
-          <Link
-            to="/hero"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#a78b71]/15 border border-[#a78b71]/30 text-[#e8d5b7] hover:bg-[#a78b71]/25 text-xs font-inter font-semibold transition-neural"
-            title="Return to Neural Hero Experience"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-[#a78b71]" />
-            <span className="hidden sm:inline">Hero Showcase</span>
-          </Link>
 
           {/* Requisition Basket Shortcut */}
           <button

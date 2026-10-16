@@ -28,41 +28,23 @@ export function NavigationRail() {
 
   const navSections = [
     {
-      title: 'SHOWCASE',
+      title: 'HARDWARE WORKSPACE',
       items: [
         {
-          label: 'Neural Hero Showcase',
-          to: '/hero',
-          icon: Sparkles,
-          exact: true,
-          badge: 'EXPERIENCE',
-        },
-      ],
-    },
-    {
-      title: 'REGISTRY',
-      items: [
-        {
-          label: 'Master Inventory',
+          label: 'Hardware Depot',
           to: '/workspace/inventory',
           icon: Boxes,
           exact: true,
           count: inventory.length,
         },
         {
-          label: 'Serialized Assets',
+          label: 'Assets (Serialized)',
           to: '/workspace/inventory/assets',
           icon: Cpu,
           count: inventory.filter((i) => i.classification === 'Asset').length,
         },
         {
-          label: 'Bulk Components',
-          to: '/workspace/inventory/components',
-          icon: Package,
-          count: inventory.filter((i) => i.classification === 'Component').length,
-        },
-        {
-          label: 'Consumables',
+          label: 'Consumables & Stock',
           to: '/workspace/inventory/consumables',
           icon: Package,
           count: inventory.filter((i) => i.classification === 'Consumable').length,

@@ -34,7 +34,7 @@ export function LoginPage() {
     try {
       const result = await loginWithMySQL(username, password, selectedRole);
       if (result.success) {
-        navigate('/hero');
+        navigate('/workspace');
       } else {
         setErrorMessage(result.error || 'Invalid credentials. Please verify your PRN and password.');
       }

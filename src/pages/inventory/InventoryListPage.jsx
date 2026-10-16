@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
@@ -16,15 +16,17 @@ import {
   Table as TableIcon,
   MapPin,
   Cpu,
-  Layers,
   Package,
   X,
   ExternalLink,
   Copy,
   Check,
-  Building,
   Clock,
+  ChevronRight,
+  ArrowLeft,
   Sparkles,
+  Layers,
+  CheckCircle2,
   SlidersHorizontal,
 } from 'lucide-react';
 
@@ -34,21 +36,30 @@ export function InventoryListPage({ initialClassification = null }) {
   const { inventory, addToBasket, joinWaitlist, addNewInventoryItem, setIsBasketOpen } = useLabData();
   const { role, permissions } = useAuth();
 
+  // Determine initial category from props or route
   const routeClassification = useMemo(() => {
     if (initialClassification) return initialClassification;
     if (location.pathname.includes('/assets')) return 'Asset';
-    if (location.pathname.includes('/components')) return 'Component';
-    if (location.pathname.includes('/consumables')) return 'Consumable';
-    return 'All';
+    if (location.pathname.includes('/consumables') || location.pathname.includes('/components')) {
+      return 'Consumable';
+    }
+    return null; // Null triggers the two-option chooser gateway
   }, [location.pathname, initialClassification]);
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(routeClassification);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedLab, setSelectedLab] = useState('All Labs');
   const [inStockOnly, setInStockOnly] = useState(false);
-  const [viewMode, setViewMode] = useState('table'); // 'table' | 'grid'
+  const [viewMode, setViewMode] = useState('grid'); // Default to Cupertino Component Widgets Grid
 
-  // Slide-over preview inspector (Linear / Supabase style)
+  // Keep state in sync if URL route changes directly
+  useEffect(() => {
+    if (routeClassification) {
+      setSelectedCategory(routeClassification);
+    }
+  }, [routeClassification]);
+
+  // Slide-over preview inspector
   const [inspectedItem, setInspectedItem] = useState(null);
   const [copiedTag, setCopiedTag] = useState(null);
 
@@ -65,6 +76,7 @@ export function InventoryListPage({ initialClassification = null }) {
     coordinates: 'L2-CB1-R1',
     totalStock: 1,
     availableStock: 1,
+    image: '/images/hardware/raspberry-pi-5.jpg',
     notes: '',
   });
 
@@ -75,10 +87,10 @@ export function InventoryListPage({ initialClassification = null }) {
     setTimeout(() => setCopiedTag(null), 1500);
   };
 
-  // Filter logic
+  // Filtered items (strictly respecting 5 items per category)
   const filteredItems = useMemo(() => {
     return inventory.filter((item) => {
-      if (selectedCategory !== 'All' && item.classification !== selectedCategory) {
+      if (selectedCategory && item.classification !== selectedCategory) {
         return false;
       }
       if (selectedLab !== 'All Labs' && item.labRoom !== selectedLab) {
@@ -102,6 +114,15 @@ export function InventoryListPage({ initialClassification = null }) {
     });
   }, [inventory, selectedCategory, selectedLab, inStockOnly, searchQuery]);
 
+  const assetsCount = useMemo(
+    () => inventory.filter((i) => i.classification === 'Asset').length,
+    [inventory]
+  );
+  const consumablesCount = useMemo(
+    () => inventory.filter((i) => i.classification === 'Consumable').length,
+    [inventory]
+  );
+
   const handleAddNewItem = async (e) => {
     e.preventDefault();
     const item = {
@@ -118,16 +139,15 @@ export function InventoryListPage({ initialClassification = null }) {
     setIsAddModalOpen(false);
   };
 
+  // Table Columns with Component Thumbnail
   const tableColumns = [
     {
       header: 'Identifier',
       accessor: 'assetTag',
-      width: '150px',
+      width: '140px',
       render: (row) => (
         <div className="flex items-center gap-1.5 font-mono text-xs">
-          <span className="font-semibold text-[#c9b8a0] hover:underline cursor-pointer">
-            {row.assetTag}
-          </span>
+          <span className="font-semibold text-[#c9b8a0]">{row.assetTag}</span>
           <button
             onClick={(e) => handleCopyTag(row.assetTag, e)}
             className="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-white transition-opacity"
@@ -143,68 +163,71 @@ export function InventoryListPage({ initialClassification = null }) {
       ),
     },
     {
-      header: 'Hardware Nomenclature',
+      header: 'Component',
       accessor: 'nomenclature',
       render: (row) => (
-        <div className="space-y-0.5">
-          <div className="font-semibold text-white text-xs flex items-center gap-2">
-            <span>{row.nomenclature}</span>
-            <span className="text-[10px] font-mono text-zinc-500 font-normal">
-              {row.manufacturer}
-            </span>
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-xl overflow-hidden bg-white/[0.04] border border-white/10 flex-shrink-0 flex items-center justify-center p-1">
+            <img
+              src={row.image || '/images/hardware/raspberry-pi-5.jpg'}
+              alt={row.nomenclature}
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+              }}
+            />
           </div>
-          <div className="text-[11px] text-zinc-400 font-mono line-clamp-1">
-            {row.subSpecs}
+          <div className="space-y-0.5">
+            <div className="font-semibold text-white text-xs flex items-center gap-2">
+              <span>{row.nomenclature}</span>
+              <span className="text-[10px] font-mono text-zinc-500 font-normal">
+                {row.manufacturer}
+              </span>
+            </div>
+            <div className="text-[11px] text-zinc-400 font-mono line-clamp-1">
+              {row.subSpecs}
+            </div>
           </div>
         </div>
       ),
     },
     {
-      header: 'Class',
+      header: 'Classification',
       accessor: 'classification',
       width: '120px',
       render: (row) => <StatusBadge status={row.classification} type="classification" size="xs" />,
     },
     {
-      header: 'Bay Coordinates',
+      header: 'Coordinates',
       accessor: 'coordinates',
-      width: '140px',
-      render: (row) => {
-        const parts = row.coordinates.split('-');
-        return (
-          <div className="inline-flex items-center gap-1 font-mono text-[11px] px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300">
-            <MapPin className="w-3 h-3 text-[#a78b71]" />
-            <span>{parts.join(' › ')}</span>
-          </div>
-        );
-      },
+      width: '130px',
+      render: (row) => (
+        <div className="inline-flex items-center gap-1 font-mono text-[11px] px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300">
+          <MapPin className="w-3 h-3 text-[#a78b71]" />
+          <span>{row.coordinates}</span>
+        </div>
+      ),
     },
     {
       header: 'Status',
       accessor: 'stockStatus',
-      width: '130px',
+      width: '120px',
       render: (row) => <StatusBadge status={row.stockStatus} type="stock" size="xs" />,
     },
     {
-      header: 'Backlog',
-      accessor: 'queueDepth',
+      header: 'Available',
+      accessor: 'availableStock',
       width: '100px',
       align: 'center',
       render: (row) => (
-        <span className="font-mono text-xs text-[#8a8f98]">
-          {row.queueDepth > 0 ? (
-            <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 font-bold border border-amber-500/20">
-              {row.queueDepth} Teams
-            </span>
-          ) : (
-            '—'
-          )}
+        <span className="font-mono text-xs text-white font-semibold">
+          {row.availableStock} {row.classification === 'Consumable' ? 'Units' : 'Unit'}
         </span>
       ),
     },
     {
-      header: 'Actions',
-      width: '160px',
+      header: 'Action',
+      width: '140px',
       align: 'right',
       render: (row) => (
         <div
@@ -213,210 +236,405 @@ export function InventoryListPage({ initialClassification = null }) {
         >
           <button
             onClick={() => setInspectedItem(row)}
-            className="p-1 rounded-md text-[#8a8f98] hover:text-white hover:bg-white/[0.08] transition-colors"
-            title="Inspect Hardware Panel"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+            title="Inspect Component"
           >
             <Eye className="w-3.5 h-3.5" />
           </button>
-
-          {row.stockStatus === 'Available' ? (
-            <button
-              onClick={() => addToBasket(row, 1)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#a78b71] hover:bg-[#c9b8a0] text-black font-inter text-[11px] font-bold transition-all shadow-sm"
-              title="Add to Requisition Basket"
-            >
-              <ShoppingBag className="w-3 h-3" />
-              Requisition
-            </button>
-          ) : row.stockStatus === 'Allocated' ? (
-            <button
-              onClick={() => joinWaitlist(row)}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-amber-400 border border-amber-500/30 font-inter text-[11px] transition-colors"
-              title="Join FIFO waitlist queue"
-            >
-              <BookmarkPlus className="w-3 h-3" />
-              Queue
-            </button>
-          ) : (
-            <span className="text-[10px] font-mono text-zinc-500 px-2 py-1">Locked</span>
-          )}
+          <button
+            onClick={() => addToBasket(row, 1)}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-inter text-[11px] font-bold transition-all shadow-sm cursor-pointer"
+          >
+            <ShoppingBag className="w-3 h-3" />
+            <span>Requisition</span>
+          </button>
         </div>
       ),
     },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Page Title & Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
+    <div className="space-y-6 select-none font-sans max-w-7xl mx-auto">
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* 1. TOP HEADER & CATEGORY SWITCHER                             */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-playfair font-bold italic tracking-tight text-white flex items-center gap-3">
-              <Boxes className="w-6 h-6 text-[#a78b71]" />
-              Master Inventory Registry
+            <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
+              <span>Hardware Workspace</span>
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full glass-neural text-zinc-400 font-mono text-[11px]">
-              {filteredItems.length} records
-            </span>
+            {selectedCategory && (
+              <span className="px-2.5 py-0.5 rounded-full bg-[#a78b71]/20 border border-[#a78b71]/40 text-[#f5e6c8] text-xs font-mono font-medium">
+                {selectedCategory === 'Asset' ? 'Assets Depot' : 'Consumables Depot'}
+              </span>
+            )}
           </div>
-          <p className="text-xs font-inter text-zinc-400 mt-1">
-            Single pane of glass for hardware discovery, coordinates, and stock verification across institutional labs.
+          <p className="text-xs text-zinc-400 mt-1 font-normal">
+            Choose a section to view catalog inventory, check lab bench coordinates, or initiate requisitions.
           </p>
         </div>
 
+        {/* Action Controls */}
         <div className="flex items-center gap-2">
           {permissions.canAddInventory && (
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="px-4 py-2 rounded-full glass-neural hover:border-[#a78b71]/50 text-white font-inter text-xs font-semibold flex items-center gap-1.5 transition-neural"
+              className="px-4 py-2 rounded-full glass-neural hover:border-[#a78b71]/50 text-white font-inter text-xs font-semibold flex items-center gap-1.5 transition-neural cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 text-[#a78b71]" />
-              Catalog Hardware
+              <span>Register Hardware</span>
             </button>
           )}
 
           <button
             onClick={() => setIsBasketOpen(true)}
-            className="px-5 py-2 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-inter text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-neural shadow-md"
+            className="px-5 py-2 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-inter text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
           >
             <ShoppingBag className="w-3.5 h-3.5" />
-            New Requisition
+            <span>Requisitions</span>
           </button>
         </div>
       </div>
 
-      {/* Modern Filter Surface */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center glass-neural p-3 rounded-2xl border border-white/10">
-        {/* Search Input (5 cols) */}
-        <div className="md:col-span-5">
-          <SearchInput
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder="Search SKU, nomenclature, manufacturer, or coordinates (Press '/' to focus)..."
-          />
-        </div>
-
-        {/* Category Pills (3 cols) */}
-        <div className="md:col-span-3 flex items-center gap-1 overflow-x-auto text-xs font-mono">
-          {[
-            { label: 'All Items', val: 'All' },
-            { label: 'Assets', val: 'Asset' },
-            { label: 'Components', val: 'Component' },
-            { label: 'Consumables', val: 'Consumable' },
-          ].map((cat) => (
-            <button
-              key={cat.val}
-              onClick={() => setSelectedCategory(cat.val)}
-              className={`px-2.5 py-1 rounded-md transition-all whitespace-nowrap text-[11px] ${
-                selectedCategory === cat.val
-                  ? 'bg-white/[0.08] text-white font-semibold border border-white/[0.14] shadow-xs'
-                  : 'text-[#8a8f98] hover:text-white hover:bg-white/[0.03]'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Lab Room Dropdown (2 cols) */}
-        <div className="md:col-span-2">
-          <select
-            value={selectedLab}
-            onChange={(e) => setSelectedLab(e.target.value)}
-            className="w-full bg-white/[0.04] border border-white/10 rounded-full px-3.5 py-2 text-xs font-inter text-zinc-300 focus:outline-none focus:border-[#a78b71] transition-neural"
-          >
-            <option value="All Labs" className="bg-[#0a0a0a]">All Laboratories</option>
-            <option value="Lab 1 - AI" className="bg-[#0a0a0a]">Lab 1 - AI</option>
-            <option value="Lab 2 - IoT" className="bg-[#0a0a0a]">Lab 2 - IoT</option>
-            <option value="Lab 3 - Embedded" className="bg-[#0a0a0a]">Lab 3 - Embedded</option>
-          </select>
-        </div>
-
-        {/* In Stock & View Mode (2 cols) */}
-        <div className="md:col-span-2 flex items-center justify-between sm:justify-end gap-3 text-xs font-inter">
-          <label className="flex items-center gap-2 text-zinc-400 hover:text-white cursor-pointer select-none text-[11px]">
-            <input
-              type="checkbox"
-              checked={inStockOnly}
-              onChange={() => setInStockOnly(!inStockOnly)}
-              className="rounded border-white/20 bg-white/5 text-[#a78b71] focus:ring-0 accent-[#a78b71]"
-            />
-            In Stock
-          </label>
-
-          <div className="flex items-center rounded-full border border-white/10 bg-white/[0.03] p-1">
-            <button
-              onClick={() => setViewMode('table')}
-              className={`p-1.5 rounded-full transition-neural ${
-                viewMode === 'table' ? 'bg-[#a78b71] text-black' : 'text-zinc-500 hover:text-white'
-              }`}
-              title="Dense Table View"
-            >
-              <TableIcon className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-full transition-neural ${
-                viewMode === 'grid' ? 'bg-[#a78b71] text-black' : 'text-zinc-500 hover:text-white'
-              }`}
-              title="Card Grid View"
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-            </button>
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* 2. SECTION CHOOSER PORTAL (When no category is picked)        */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {!selectedCategory ? (
+        <div className="space-y-6 pt-2">
+          <div className="text-center max-w-lg mx-auto mb-8">
+            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#c9b8a0]">
+              Hardware Directory
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mt-1">
+              Select Workspace Section
+            </h2>
+            <p className="text-xs text-zinc-400 mt-2">
+              Choose between serialized durable assets or modular consumable prototyping stock.
+            </p>
           </div>
-        </div>
-      </div>
 
-      {/* Main View: Table vs Grid */}
-      {viewMode === 'table' ? (
-        <DataTable
-          columns={tableColumns}
-          data={filteredItems}
-          onRowClick={(row) => setInspectedItem(row)}
-          pageSize={12}
-          emptyMessage="No hardware matches query filters in institutional registry."
-        />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredItems.map((item) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            {/* OPTION 1: ASSETS */}
             <div
-              key={item.id}
-              onClick={() => setInspectedItem(item)}
-              className="glass-neural rounded-2xl p-5 cursor-pointer space-y-3 hover:border-[#a78b71]/50 transition-neural"
+              onClick={() => setSelectedCategory('Asset')}
+              className="group relative rounded-3xl p-8 bg-white/[0.02] hover:bg-white/[0.04] border border-white/15 hover:border-[#c9b8a0]/60 transition-all duration-300 cursor-pointer shadow-[0_20px_60px_rgba(0,0,0,0.7)] flex flex-col justify-between overflow-hidden"
             >
-              <div className="flex items-start justify-between gap-2">
-                <span className="font-mono text-xs font-bold text-[#c9b8a0]">{item.assetTag}</span>
-                <StatusBadge status={item.stockStatus} type="stock" size="xs" />
-              </div>
+              {/* Top ambient highlight */}
+              <div className="absolute -top-24 -right-24 w-60 h-60 rounded-full bg-[#c9b8a0]/15 blur-[70px] pointer-events-none group-hover:bg-[#c9b8a0]/25 transition-all" />
 
               <div>
-                <h3 className="text-sm font-semibold text-white line-clamp-1">{item.nomenclature}</h3>
-                <p className="text-xs text-zinc-400 font-mono line-clamp-2 mt-1">{item.subSpecs}</p>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="px-3 py-1 rounded-full bg-white/[0.06] border border-white/10 text-xs font-mono text-[#f5e6c8] flex items-center gap-1.5">
+                    <Cpu className="w-3.5 h-3.5 text-[#c9b8a0]" />
+                    <span>{assetsCount} Serialized Units</span>
+                  </span>
+                  <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-all">
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
+                </div>
+
+                <h3 className="text-2xl font-bold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors">
+                  Assets
+                </h3>
+                <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
+                  High-value capital computing boards, AI accelerators, microcontrollers, and laboratory digital storage oscilloscopes.
+                </p>
+
+                {/* Visual Preview Grid */}
+                <div className="grid grid-cols-3 gap-3 my-6">
+                  {[
+                    { name: 'Raspberry Pi 5', img: '/images/hardware/raspberry-pi-5.jpg' },
+                    { name: 'Jetson Nano', img: '/images/hardware/jetson-nano.jpg' },
+                    { name: 'Oscilloscope', img: '/images/hardware/oscilloscope.jpg' },
+                  ].map((p) => (
+                    <div
+                      key={p.name}
+                      className="aspect-square rounded-2xl bg-black/40 border border-white/10 p-2 flex flex-col items-center justify-center text-center overflow-hidden"
+                    >
+                      <img
+                        src={p.img}
+                        alt={p.name}
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-zinc-400">
-                <div className="flex items-center gap-1.5 text-[11px]">
-                  <MapPin className="w-3 h-3 text-[#a78b71]" />
-                  <span>{item.coordinates}</span>
-                </div>
-                <StatusBadge status={item.classification} type="classification" size="xs" />
+              <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
+                <span className="text-zinc-400 font-mono text-[11px]">
+                  Includes: Raspberry Pi 5, Arduino, Jetson Nano, ESP32, Scope
+                </span>
+                <span className="font-semibold text-[#f5e6c8] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                  Browse Assets →
+                </span>
               </div>
             </div>
-          ))}
+
+            {/* OPTION 2: CONSUMABLES */}
+            <div
+              onClick={() => setSelectedCategory('Consumable')}
+              className="group relative rounded-3xl p-8 bg-white/[0.02] hover:bg-white/[0.04] border border-white/15 hover:border-emerald-500/50 transition-all duration-300 cursor-pointer shadow-[0_20px_60px_rgba(0,0,0,0.7)] flex flex-col justify-between overflow-hidden"
+            >
+              {/* Top ambient highlight */}
+              <div className="absolute -top-24 -right-24 w-60 h-60 rounded-full bg-emerald-500/10 blur-[70px] pointer-events-none group-hover:bg-emerald-500/20 transition-all" />
+
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="px-3 py-1 rounded-full bg-white/[0.06] border border-white/10 text-xs font-mono text-emerald-300 flex items-center gap-1.5">
+                    <Package className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>{consumablesCount} Component Lines</span>
+                  </span>
+                  <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-all">
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
+                </div>
+
+                <h3 className="text-2xl font-bold text-white tracking-tight group-hover:text-emerald-300 transition-colors">
+                  Consumables
+                </h3>
+                <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
+                  Modular sensor breakouts, I2C OLED displays, solderless breadboards, DuPont jumper ribbon cables, and passive metal film resistors.
+                </p>
+
+                {/* Visual Preview Grid */}
+                <div className="grid grid-cols-3 gap-3 my-6">
+                  {[
+                    { name: 'OLED Display', img: '/images/hardware/oled-display.jpg' },
+                    { name: 'BMP280 Sensor', img: '/images/hardware/bmp280-sensor.jpg' },
+                    { name: '830 Breadboard', img: '/images/hardware/breadboard-830.jpg' },
+                  ].map((p) => (
+                    <div
+                      key={p.name}
+                      className="aspect-square rounded-2xl bg-black/40 border border-white/10 p-2 flex flex-col items-center justify-center text-center overflow-hidden"
+                    >
+                      <img
+                        src={p.img}
+                        alt={p.name}
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.src = '/images/hardware/oled-display.jpg';
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
+                <span className="text-zinc-400 font-mono text-[11px]">
+                  Includes: OLED Displays, BMP280, Breadboards, Cables, Resistors
+                </span>
+                <span className="font-semibold text-emerald-300 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                  Browse Consumables →
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* ───────────────────────────────────────────────────────────── */
+        /* 3. SECTION CATALOG VIEW (Assets or Consumables with Widgets)   */
+        /* ───────────────────────────────────────────────────────────── */
+        <div className="space-y-6">
+          {/* Apple Segmented Bar & Filter Surface */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 glass-neural p-3 rounded-2xl border border-white/10">
+            {/* Left: Back button & Segmented Switcher */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className="px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] text-xs text-zinc-300 hover:text-white flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Return to Section Selection"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sections</span>
+              </button>
+
+              {/* Apple Segmented Control */}
+              <div className="flex items-center bg-black/40 p-1 rounded-full border border-white/10">
+                <button
+                  onClick={() => setSelectedCategory('Asset')}
+                  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+                    selectedCategory === 'Asset'
+                      ? 'bg-white text-black font-semibold shadow-md'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  <Cpu className="w-3.5 h-3.5" />
+                  <span>Assets ({assetsCount})</span>
+                </button>
+
+                <button
+                  onClick={() => setSelectedCategory('Consumable')}
+                  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+                    selectedCategory === 'Consumable'
+                      ? 'bg-white text-black font-semibold shadow-md'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  <Package className="w-3.5 h-3.5" />
+                  <span>Consumables ({consumablesCount})</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Right: Search, Lab filter, View Switcher */}
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="w-64">
+                <SearchInput
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="Filter by name or SKU..."
+                />
+              </div>
+
+              <select
+                value={selectedLab}
+                onChange={(e) => setSelectedLab(e.target.value)}
+                className="bg-white/[0.04] border border-white/10 rounded-full px-3.5 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-[#a78b71] transition-all cursor-pointer"
+              >
+                <option value="All Labs" className="bg-[#0a0a0a]">All Labs</option>
+                <option value="Lab 1 - AI" className="bg-[#0a0a0a]">Lab 1 - AI</option>
+                <option value="Lab 2 - IoT" className="bg-[#0a0a0a]">Lab 2 - IoT</option>
+                <option value="Lab 3 - Embedded" className="bg-[#0a0a0a]">Lab 3 - Embedded</option>
+              </select>
+
+              {/* View Switcher */}
+              <div className="flex items-center rounded-full border border-white/10 bg-white/[0.03] p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-1.5 rounded-full transition-all cursor-pointer ${
+                    viewMode === 'grid'
+                      ? 'bg-[#a78b71] text-black font-bold'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                  title="Widget Cards Grid"
+                >
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => setViewMode('table')}
+                  className={`p-1.5 rounded-full transition-all cursor-pointer ${
+                    viewMode === 'table'
+                      ? 'bg-[#a78b71] text-black font-bold'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                  title="Dense Table View"
+                >
+                  <TableIcon className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* ───────────────────────────────────────────────────────── */}
+          {/* 4. COMPONENT WIDGET GRID (Each widget has picture & name)  */}
+          {/* ───────────────────────────────────────────────────────── */}
+          {viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+              {filteredItems.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => setInspectedItem(item)}
+                  className="group relative rounded-3xl bg-white/[0.025] hover:bg-white/[0.05] border border-white/10 hover:border-[#c9b8a0]/60 p-4 transition-all duration-300 hover:shadow-[0_20px_45px_rgba(0,0,0,0.7)] flex flex-col justify-between cursor-pointer backdrop-blur-xl"
+                >
+                  <div>
+                    {/* Component Picture Container */}
+                    <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gradient-to-b from-[#18181b] to-[#0c0c0e] border border-white/10 mb-4 flex items-center justify-center p-3">
+                      <img
+                        src={item.image || '/images/hardware/raspberry-pi-5.jpg'}
+                        alt={item.nomenclature}
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]"
+                        onError={(e) => {
+                          e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+                        }}
+                      />
+
+                      {/* Stock Status Badge Floating */}
+                      <div className="absolute top-2.5 left-2.5">
+                        <StatusBadge status={item.stockStatus} type="stock" size="xs" />
+                      </div>
+
+                      {/* Tag Chip Floating */}
+                      <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-[#c9b8a0]">
+                        {item.assetTag}
+                      </div>
+                    </div>
+
+                    {/* Component Name */}
+                    <div>
+                      <h3 className="text-sm font-semibold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors line-clamp-1">
+                        {item.nomenclature}
+                      </h3>
+                      <p className="text-xs text-zinc-400 font-mono line-clamp-2 mt-1 leading-relaxed">
+                        {item.subSpecs}
+                      </p>
+                    </div>
+
+                    {/* Physical Location Coordinates */}
+                    <div className="mt-3 flex items-center gap-1.5 text-xs font-mono text-zinc-300 bg-white/[0.03] px-2.5 py-1 rounded-xl border border-white/5 w-fit">
+                      <MapPin className="w-3.5 h-3.5 text-[#a78b71] flex-shrink-0" />
+                      <span className="text-[#c9b8a0] font-semibold">{item.coordinates}</span>
+                      <span className="text-zinc-600">•</span>
+                      <span className="text-[11px] text-zinc-400 truncate">{item.labRoom}</span>
+                    </div>
+                  </div>
+
+                  {/* Requisition Button */}
+                  <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToBasket(item, 1);
+                      }}
+                      className="flex-1 py-2 px-3 rounded-xl bg-white hover:bg-[#e8d5b7] text-black font-inter text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-98 cursor-pointer"
+                    >
+                      <ShoppingBag className="w-3.5 h-3.5" />
+                      <span>Requisition</span>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setInspectedItem(item);
+                      }}
+                      className="p-2 rounded-xl border border-white/10 hover:border-white/30 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                      title="Inspect Specs"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <DataTable
+              columns={tableColumns}
+              data={filteredItems}
+              onRowClick={(row) => setInspectedItem(row)}
+              pageSize={10}
+              emptyMessage="No hardware found in this category."
+            />
+          )}
         </div>
       )}
 
-      {/* Linear-Style Slide-Over Detail Inspector */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* 5. SLIDE-OVER DETAIL INSPECTOR                                */}
+      {/* ───────────────────────────────────────────────────────────── */}
       {inspectedItem && (
         <div className="fixed inset-0 z-50 overflow-hidden">
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-black/70 backdrop-blur-md transition-opacity"
             onClick={() => setInspectedItem(null)}
           />
 
           <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-lg bg-[#0a0a0a] border-l border-white/15 shadow-2xl flex flex-col">
-              {/* Inspector Header */}
+            <div className="w-screen max-w-lg bg-[#0a0a0c] border-l border-white/15 shadow-2xl flex flex-col">
+              {/* Header */}
               <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
                 <div className="flex items-center gap-2 font-mono text-xs">
                   <span className="text-[#c9b8a0] font-bold">{inspectedItem.assetTag}</span>
@@ -426,14 +644,14 @@ export function InventoryListPage({ initialClassification = null }) {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => navigate(`/workspace/inventory/${inspectedItem.id}`)}
-                    className="p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors"
+                    className="p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
                     title="Open Full Dossier"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setInspectedItem(null)}
-                    className="p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors"
+                    className="p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -442,8 +660,20 @@ export function InventoryListPage({ initialClassification = null }) {
 
               {/* Inspector Body */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {/* Large Component Picture in Inspector */}
+                <div className="w-full aspect-video rounded-2xl bg-gradient-to-b from-[#18181b] to-[#0c0c0e] border border-white/10 p-4 flex items-center justify-center overflow-hidden">
+                  <img
+                    src={inspectedItem.image || '/images/hardware/raspberry-pi-5.jpg'}
+                    alt={inspectedItem.nomenclature}
+                    className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]"
+                    onError={(e) => {
+                      e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+                    }}
+                  />
+                </div>
+
                 <div>
-                  <h2 className="text-xl font-playfair font-normal italic text-white">
+                  <h2 className="text-xl font-bold text-white tracking-tight">
                     {inspectedItem.nomenclature}
                   </h2>
                   <div className="text-xs font-mono text-zinc-400 mt-1">
@@ -451,105 +681,76 @@ export function InventoryListPage({ initialClassification = null }) {
                   </div>
                 </div>
 
-                {/* Physical Coordinates Chip Card */}
-                <div className="p-5 rounded-2xl glass-neural border border-white/10 space-y-2">
-                  <div className="text-[10px] font-inter uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-1.5">
+                {/* Storage Bay Coordinates */}
+                <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-[#a78b71]" />
-                    Storage Coordinates & Facility Location
+                    Storage Coordinates & Location
                   </div>
-                  <div className="text-2xl font-mono font-bold text-[#c9b8a0]">
+                  <div className="text-2xl font-mono font-bold text-[#f5e6c8]">
                     {inspectedItem.coordinates}
                   </div>
-                  <div className="text-xs font-inter text-zinc-400">
-                    {inspectedItem.labRoom} • Building 4 (Electronics & Computing)
+                  <div className="text-xs text-zinc-400 font-sans">
+                    {inspectedItem.labRoom} • Depository Section
                   </div>
                 </div>
 
                 {/* Technical Specs */}
                 <div className="space-y-2">
-                  <div className="text-[10px] font-inter uppercase tracking-wider text-zinc-400 font-semibold">
-                    Technical Sub-Specifications
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
+                    Technical Specifications
                   </div>
                   <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 font-mono text-xs text-zinc-300 leading-relaxed">
                     {inspectedItem.subSpecs}
                   </div>
                 </div>
 
-                {/* Custody Status */}
-                <div className="p-5 rounded-2xl glass-neural border border-white/10 space-y-3 text-xs font-inter">
-                  <div className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-amber-400" />
-                    Custody & Allocation Status
+                {/* Stock Availability */}
+                <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2 text-xs">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    Depot Availability
                   </div>
-
-                  {inspectedItem.custodyHolder ? (
-                    <div className="space-y-2 text-xs font-mono">
-                      <div className="flex justify-between">
-                        <span className="text-zinc-500">Current Borrower:</span>
-                        <span className="text-white font-semibold">{inspectedItem.custodyHolder.name}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-zinc-500">PRN:</span>
-                        <span className="text-[#c9b8a0]">{inspectedItem.custodyHolder.prn}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-zinc-500">Due Date:</span>
-                        <span className="text-amber-400 font-bold">{inspectedItem.custodyHolder.dueDate}</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-emerald-400 text-xs">
-                      Resting in assigned tray coordinates. Available for immediate checkout.
-                    </div>
-                  )}
+                  <div className="text-emerald-400 font-semibold">
+                    {inspectedItem.availableStock} of {inspectedItem.totalStock} units available for immediate lab requisition.
+                  </div>
                 </div>
               </div>
 
-              {/* Inspector Footer Actions */}
+              {/* Inspector Footer */}
               <div className="p-5 border-t border-white/10 bg-white/[0.02] flex items-center justify-between gap-3">
                 <button
                   onClick={() => navigate(`/workspace/inventory/${inspectedItem.id}`)}
-                  className="px-4 py-2.5 rounded-full border border-white/10 text-xs text-zinc-300 hover:text-white transition-neural flex items-center gap-1.5"
+                  className="px-4 py-2.5 rounded-full border border-white/10 text-xs text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <Eye className="w-3.5 h-3.5" />
                   Full Dossier
                 </button>
 
-                {inspectedItem.stockStatus === 'Available' ? (
-                  <button
-                    onClick={() => {
-                      addToBasket(inspectedItem, 1);
-                      setInspectedItem(null);
-                    }}
-                    className="flex-1 py-2.5 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-inter text-xs font-bold uppercase tracking-wider transition-neural flex items-center justify-center gap-2 shadow-md"
-                  >
-                    <ShoppingBag className="w-3.5 h-3.5" />
-                    Requisition Item
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      joinWaitlist(inspectedItem);
-                      setInspectedItem(null);
-                    }}
-                    className="flex-1 py-2.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-amber-400 border border-amber-500/30 font-inter text-xs font-semibold flex items-center justify-center gap-1.5 transition-neural"
-                  >
-                    <BookmarkPlus className="w-3.5 h-3.5" />
-                    Join FIFO Waitlist
-                  </button>
-                )}
+                <button
+                  onClick={() => {
+                    addToBasket(inspectedItem, 1);
+                    setInspectedItem(null);
+                  }}
+                  className="flex-1 py-2.5 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-inter text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                >
+                  <ShoppingBag className="w-3.5 h-3.5" />
+                  <span>Requisition Component</span>
+                </button>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Catalog New Hardware Modal */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* 6. REGISTER NEW HARDWARE MODAL                                */}
+      {/* ───────────────────────────────────────────────────────────── */}
       <Modal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        title="Register New Hardware to Institutional Inventory"
-        subtitle="Registers physical or serialized stock into relational database with storage coordinates."
+        title="Register Hardware to Inventory"
+        subtitle="Catalog serialized assets or bulk consumable components into the institutional database."
       >
         <form onSubmit={handleAddNewItem} className="space-y-4 text-xs font-sans">
           <div className="grid grid-cols-2 gap-3">
@@ -583,32 +784,19 @@ export function InventoryListPage({ initialClassification = null }) {
 
           <div>
             <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
-              Hardware Nomenclature (Full Name) <span className="text-rose-400">*</span>
+              Component Name <span className="text-rose-400">*</span>
             </label>
             <input
               type="text"
               required
               value={newItemData.nomenclature}
               onChange={(e) => setNewItemData({ ...newItemData, nomenclature: e.target.value })}
-              placeholder="e.g. ESP32-S3-DevKitC-1 N8R8"
+              placeholder="e.g. ESP32-WROOM-32D DevBoard"
               className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white"
             />
           </div>
 
-          <div>
-            <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
-              Technical Sub-Specifications & Pinout Details
-            </label>
-            <textarea
-              rows={2}
-              value={newItemData.subSpecs}
-              onChange={(e) => setNewItemData({ ...newItemData, subSpecs: e.target.value })}
-              placeholder="e.g. Xtensa 32-bit LX7 dual-core @ 240MHz, 8MB Flash, 8MB PSRAM, USB-OTG"
-              className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white font-mono text-xs"
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
                 Classification
@@ -616,56 +804,89 @@ export function InventoryListPage({ initialClassification = null }) {
               <select
                 value={newItemData.classification}
                 onChange={(e) => setNewItemData({ ...newItemData, classification: e.target.value })}
-                className="w-full bg-[#0a0b0e] border border-white/[0.1] rounded px-2 py-1.5 text-white"
+                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white"
               >
-                <option value="Asset">Serialized Asset</option>
-                <option value="Component">Bulk Component</option>
-                <option value="Consumable">Consumable</option>
+                <option value="Asset">Asset (Serialized)</option>
+                <option value="Consumable">Consumable (Bulk)</option>
               </select>
             </div>
 
             <div>
               <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
-                Laboratory Room
+                Laboratory Location
               </label>
               <select
                 value={newItemData.labRoom}
                 onChange={(e) => setNewItemData({ ...newItemData, labRoom: e.target.value })}
-                className="w-full bg-[#0a0b0e] border border-white/[0.1] rounded px-2 py-1.5 text-white"
+                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white"
               >
                 <option value="Lab 1 - AI">Lab 1 - AI</option>
                 <option value="Lab 2 - IoT">Lab 2 - IoT</option>
                 <option value="Lab 3 - Embedded">Lab 3 - Embedded</option>
               </select>
             </div>
+          </div>
 
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
-                Coordinates (Room-Cab-Row)
+                Storage Coordinates
               </label>
               <input
                 type="text"
                 value={newItemData.coordinates}
                 onChange={(e) => setNewItemData({ ...newItemData, coordinates: e.target.value })}
-                placeholder="L2-CB3-R2"
+                placeholder="e.g. L2-CB1-R1"
+                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded font-mono text-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
+                Available Stock Count
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={newItemData.availableStock}
+                onChange={(e) =>
+                  setNewItemData({
+                    ...newItemData,
+                    availableStock: parseInt(e.target.value) || 1,
+                    totalStock: parseInt(e.target.value) || 1,
+                  })
+                }
                 className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded font-mono text-white"
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+          <div>
+            <label className="block text-[10px] font-mono uppercase text-[#8a8f98] mb-1">
+              Technical Sub-Specifications
+            </label>
+            <textarea
+              rows="3"
+              value={newItemData.subSpecs}
+              onChange={(e) => setNewItemData({ ...newItemData, subSpecs: e.target.value })}
+              placeholder="Processor clock, interface bus, pin count, operating voltages..."
+              className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white font-mono text-[11px]"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-3 border-t border-white/[0.1]">
             <button
               type="button"
               onClick={() => setIsAddModalOpen(false)}
-              className="px-4 py-2 rounded-full border border-white/10 text-xs text-zinc-400 hover:text-white transition-neural"
+              className="px-4 py-2 rounded-full border border-white/10 text-zinc-400 hover:text-white text-xs transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-inter text-xs font-bold uppercase tracking-wider transition-neural shadow-md"
+              className="px-5 py-2 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-bold text-xs transition-colors cursor-pointer"
             >
-              Commit to Registry
+              Catalog Hardware
             </button>
           </div>
         </form>
@@ -673,3 +894,5 @@ export function InventoryListPage({ initialClassification = null }) {
     </div>
   );
 }
+
+export default InventoryListPage;

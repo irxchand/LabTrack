@@ -1,203 +1,203 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLabData } from '../context/LabDataContext';
 import {
   Boxes,
   Cpu,
-  Layers,
-  ShieldCheck,
-  ScanLine,
-  ArrowRight,
-  Activity,
-  CheckCircle2,
-  Terminal,
-  Lock,
-  Radio,
-  Sparkles,
-  Search,
-  Check,
-  LogOut,
-  ChevronRight,
-  FileText,
-  AlertCircle,
+  Package,
   Clock,
-  Compass,
+  Inbox,
+  ShieldCheck,
+  CheckCircle2,
+  ArrowRight,
+  ArrowLeft,
+  ChevronRight,
+  LogOut,
+  FolderGit2,
+  Sparkles,
+  ExternalLink,
+  Check,
+  Zap,
 } from 'lucide-react';
 
 export function HeroPage() {
   const navigate = useNavigate();
   const { currentUser, role, currentRole, switchRole, logout } = useAuth();
-  const { basket, setIsBasketOpen, inventory } = useLabData();
+  const { basket, setIsBasketOpen } = useLabData();
 
-  // Mouse tracking for subtle 3D perspective tilt on interactive hardware node
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [promptText, setPromptText] = useState('Allocate Jetson Nano 4GB to PRJ-AIML-08');
-  const [promptSubmitted, setPromptSubmitted] = useState(false);
+  // Active tour stage: 0 = Workspace, 1 = The Queue, 2 = The Repo Score, 3 = Project & Return
   const [activeStage, setActiveStage] = useState(0);
+  const [catalogSubTab, setCatalogSubTab] = useState('assets'); // 'assets' | 'consumables'
 
   const activeUserRole = currentRole || role || 'Student';
 
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setMousePos({ x, y });
-  };
-
-  const handleMouseLeave = () => {
-    setMousePos({ x: 0, y: 0 });
-  };
-
-  const handlePromptSubmit = (e) => {
-    e.preventDefault();
-    if (!promptText.trim()) return;
-    setPromptSubmitted(true);
-    setTimeout(() => {
-      navigate('/workspace/inventory');
-    }, 600);
-  };
-
-  // 5-Stage Lifecycle Model (Replacing manual notebooks with complete digital lifecycle)
-  const lifecycleStages = [
+  const stages = [
     {
-      step: '01',
-      title: 'Component Discovery',
-      tagline: '2-Tier Stock Boundary Model',
-      description:
-        'Digitized catalogue separates serialized high-value capital assets (FPGAs, GPUs, logic analyzers) from bulk passive consumables (jumpers, sensors, breadboards). Real-time inventory status prevents duplicate ordering and manual notebook searches.',
-      metrics: ['2-Tier Classification', 'Real-Time Stock Query', 'Sub-Zero Drift'],
-      responsibleRole: 'Student / Research Team',
+      id: 'workspace',
+      title: 'The Workspace',
+      badge: 'ASSETS & CONSUMABLES',
+      icon: Boxes,
+      headline: 'Everything in the lab, accounted for.',
+      subhead: 'A clean 2-tier inventory boundary separating high-value capital assets from bulk project consumables—with exact shelf coordinates.',
     },
     {
-      step: '02',
-      title: 'Faculty Endorsement',
-      tagline: 'Supervisor Project Quota Governance',
-      description:
-        'Requisitions are cryptographically bound to approved academic projects. Faculty supervisors evaluate hardware necessity, project budget caps, and team return reliability before one-click endorsement.',
-      metrics: ['Project Cap Enforcement', 'Cryptographic Audit Trail', 'Zero Paper Slips'],
-      responsibleRole: 'Faculty Mentor / Supervisor',
+      id: 'queue',
+      title: 'The Queue',
+      badge: 'LOANS & REQUESTS',
+      icon: Clock,
+      headline: 'Zero lost hardware. Zero notebook logs.',
+      subhead: 'A single transparent queue tracking active loans with return countdowns, faculty approval pipelines, and automated waitlist reservations.',
     },
     {
-      step: '03',
-      title: 'Counter Dispatch',
-      tagline: 'Optical Barcode & Custody Handshake',
-      description:
-        'The lab assistant executes physical fulfillment using high-speed optical barcode & RFID scanning. Verification of pre-existing cosmetic condition is timestamped before student checkout.',
-      metrics: ['Optical Scanner Link', 'Sub-Second Handshake', 'Immutable Custody Transfer'],
-      responsibleRole: 'Lab Assistant Depot Custodian',
+      id: 'reputation',
+      title: 'The Repo Score',
+      badge: 'STUDENT TRUST RATING',
+      icon: ShieldCheck,
+      headline: 'Trust is earned with every return.',
+      subhead: 'A dynamic 0–100% accountability rating calculated on return timeliness and equipment care, unlocking higher borrowing quotas.',
     },
     {
-      step: '04',
-      title: 'Physical Return & Triage',
-      tagline: 'Dual-State Return Verification',
-      description:
-        'Upon project completion, equipment undergoes bench inspection. Clean items immediately restock and notify waiting students in FIFO queues; defective items route to maintenance with automated incident logs.',
-      metrics: ['Bench Inspection Checklist', 'FIFO Waitlist Release', 'Automated Damage Ledger'],
-      responsibleRole: 'Lab Assistant & Maintenance Bench',
-    },
-    {
-      step: '05',
-      title: 'Reliability Index',
-      tagline: 'Vector Accountability Scoring',
-      description:
-        'An empirical compliance score (0-100%) dynamically updates based on on-time return rate, equipment handling hygiene, and prompt defect reporting, ensuring university-wide hardware accountability.',
-      metrics: ['Empirical 0-100% Score', 'Academic ESE Rubric Sync', 'Institutional Transparency'],
-      responsibleRole: 'Department HoD & Auditors',
+      id: 'project-handshake',
+      title: 'Project & Return',
+      badge: 'ACADEMIC ANCHOR',
+      icon: FolderGit2,
+      headline: 'Hardware tied to purpose. Verified at the counter.',
+      subhead: 'Every component is strictly bound to an approved academic project team and faculty mentor, with fair counter return inspection.',
     },
   ];
 
-  // Quad-Persona Institutional Matrix
-  const personas = [
+  const currentStage = stages[activeStage];
+
+  // Real Hardware Samples
+  const assets = [
     {
-      role: 'Student',
-      title: 'Student Requester',
-      headline: 'Project Team Workspace',
-      description: 'Explore verified lab silicon, stage batch component requisitions, and track active loan countdowns.',
-      route: '/workspace/inventory',
-      badge: 'REQUEST CLEARANCE',
-      capabilities: ['Hardware discovery & reservation', 'Project team requisition basket', 'Active loan deadline tracking'],
+      name: 'NVIDIA Jetson Orin Nano (8GB)',
+      category: 'Edge AI / GPU',
+      location: 'Shelf B-02',
+      qty: '11 Available',
+      tag: 'AST-JET-01',
+      spec: '40 TOPS AI • 8GB LPDDR5',
     },
     {
-      role: 'Faculty',
-      title: 'Faculty Mentor',
-      headline: 'Supervisory Review Desk',
-      description: 'Review student project hardware requests, endorse allocations, and inspect team reliability ratings.',
-      route: '/workspace/operations/approvals',
-      badge: 'ENDORSEMENT CLEARANCE',
-      capabilities: ['Requisition queue authorization', 'Project allocation limits', 'Student accountability score review'],
+      name: 'Xilinx Kintex-7 FPGA Board',
+      category: 'Programmable Logic',
+      location: 'Shelf C-01',
+      qty: '3 Available',
+      tag: 'AST-KINTEX-02',
+      spec: '325K Logic Cells • DSP Slices',
     },
     {
-      role: 'Lab Assistant',
-      title: 'Lab Assistant',
-      headline: 'Counter Dispatch Terminal',
-      description: 'Physical equipment check-in/out station with optical barcode scanning, condition verification, and return triage.',
-      route: '/workspace/operations/dispatch',
-      badge: 'DISPATCH CLEARANCE',
-      capabilities: ['Barcode/RFID physical issue', 'Return inspection checklist', 'Defect triage & maintenance routing'],
+      name: 'Raspberry Pi 4 Model B (8GB)',
+      category: 'Single Board Computer',
+      location: 'Shelf A-03',
+      qty: '6 Available',
+      tag: 'AST-RPI4-04',
+      spec: 'Quad Core Cortex-A72 • Dual 4K',
     },
     {
-      role: 'HoD / Admin',
-      title: 'HoD / Department Auditor',
-      headline: 'Executive Governance Hub',
-      description: 'Department-wide hardware valuation, reliability distribution analytics, and immutable cryptographic audit trails.',
-      route: '/workspace/accountability/audit',
-      badge: 'GOVERNANCE CLEARANCE',
-      capabilities: ['Institutional asset valuation', 'NIST SP 800-53 audit ledger', 'System-wide policy configuration'],
+      name: 'Saleae Logic 8 USB Analyzer',
+      category: 'Test & Diagnostics',
+      location: 'Drawer D-01',
+      qty: '4 Available',
+      tag: 'AST-LOGIC-01',
+      spec: '8 Channels • 100MS/s Logic',
+    },
+  ];
+
+  const consumables = [
+    {
+      name: 'ESP32-S3 Wireless Module',
+      category: 'Microcontroller',
+      location: 'Cabinet 1 • Drawer A-04',
+      qty: '64 Units in Stock',
+      tag: 'CON-ESP-01',
+      spec: 'Wi-Fi + BLE 5.0 • Native USB OTG',
+    },
+    {
+      name: 'MPU-6050 6-DoF Sensor Kit',
+      category: 'Motion Sensor',
+      location: 'Cabinet 2 • Tray 02',
+      qty: '140 Pieces in Stock',
+      tag: 'CON-SENS-08',
+      spec: '3-Axis Gyro + 3-Axis Accelerometer',
+    },
+    {
+      name: 'Dupont Jumper Wire Ribbons',
+      category: 'Prototyping Cables',
+      location: 'Open Bins • Station 03',
+      qty: '420 Bundles in Stock',
+      tag: 'CON-JUMP-02',
+      spec: '40-pin 20cm Multi-Color M-M & M-F',
+    },
+    {
+      name: '830-Tie Point Solderless Breadboard',
+      category: 'Circuit Prototyping',
+      location: 'Storage Rack 04',
+      qty: '85 Units in Stock',
+      tag: 'CON-BREAD-01',
+      spec: 'Dual Power Rails • Phosphor Bronze',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white font-inter selection:bg-[#a78b71] selection:text-black overflow-x-hidden relative select-none">
+    <div className="h-screen w-screen overflow-hidden bg-[#09090b] text-white font-inter selection:bg-[#a78b71] selection:text-black flex flex-col justify-between relative select-none">
       {/* ───────────────────────────────────────────────────────────────── */}
-      {/* AMBIENT LIGHTING & DOT GRID CANVAS                                */}
+      {/* 1. AMBIENT BACKGROUND ATMOSPHERE                                  */}
       {/* ───────────────────────────────────────────────────────────────── */}
-      <div className="absolute inset-0 bg-dots pointer-events-none z-0 opacity-25" />
+      <div className="absolute inset-0 bg-dots pointer-events-none z-0 opacity-20" />
 
-      {/* Luminous Ambient Halos behind glass elements */}
-      <div className="absolute top-20 left-1/4 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#c9b8a0]/15 via-[#a78b71]/10 to-transparent blur-[140px] pointer-events-none -z-10" />
-      <div className="absolute top-96 right-1/4 translate-x-1/3 w-[700px] h-[700px] rounded-full bg-gradient-to-tl from-[#e8d5b7]/15 via-[#8a6845]/10 to-transparent blur-[160px] pointer-events-none -z-10" />
+      {/* Radiant ambient gold light orb shining through central stage */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] rounded-full bg-gradient-to-br from-[#c9b8a0]/15 via-[#a78b71]/10 to-transparent blur-[160px] pointer-events-none -z-10" />
 
       {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 1. TOP FLOATING GLASS NAVIGATION BAR                              */}
+      {/* 2. APPLE-GRADE GLASS TOOLBAR                                      */}
       {/* ───────────────────────────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-50 h-20 px-6 lg:px-12 flex items-center justify-between bg-white/[0.02] backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+      <header className="h-20 px-6 lg:px-12 flex items-center justify-between border-b border-white/10 bg-white/[0.02] backdrop-blur-2xl z-30 flex-shrink-0">
         {/* Brand Block */}
         <div
           className="flex items-center space-x-3 cursor-pointer group"
-          onClick={() => navigate('/hero')}
+          onClick={() => setActiveStage(0)}
         >
-          <span className="font-clash text-2xl lg:text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
+          <span className="font-clash text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
             LabTrack
           </span>
-          <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_12px_#c9b8a0] group-hover:scale-125 transition-transform" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_10px_#c9b8a0]" />
         </div>
 
-        {/* Center Live Status Pill */}
-        <div className="hidden lg:flex items-center space-x-3 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md text-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-stone-300 font-mono text-[11px] tracking-wider uppercase">
-            1,420 HARDWARE NODES ONLINE
-          </span>
-          <span className="text-white/20">|</span>
-          <span className="text-[#c9b8a0] font-mono text-[11px]">
-            {activeUserRole.toUpperCase()} CLEARANCE
-          </span>
-        </div>
+        {/* Center Floating Segmented Pill Control */}
+        <nav className="flex items-center space-x-1 p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl text-xs font-medium">
+          {stages.map((stage, idx) => {
+            const isSelected = activeStage === idx;
+            return (
+              <button
+                key={stage.id}
+                onClick={() => setActiveStage(idx)}
+                className={`px-3.5 py-1.5 rounded-full transition-all cursor-pointer flex items-center space-x-1.5 ${
+                  isSelected
+                    ? 'bg-[#c9b8a0]/25 text-[#f5e6c8] border border-[#f5e6c8]/50 shadow-[0_0_15px_rgba(201,184,160,0.25)] font-semibold'
+                    : 'text-stone-400 hover:text-white hover:bg-white/[0.04]'
+                }`}
+              >
+                <span>{stage.title}</span>
+              </button>
+            );
+          })}
+        </nav>
 
         {/* Right Persona & Action Controls */}
         <div className="flex items-center space-x-3">
-          {/* Active Persona Pill */}
+          {/* Persona Capsule */}
           <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 text-xs">
             <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#c9b8a0]/30 to-[#a78b71]/20 flex items-center justify-center font-bold text-[#f5e6c8] text-[11px]">
-              {currentUser?.name ? currentUser.name.charAt(0) : 'U'}
+              {currentUser?.name ? currentUser.name.charAt(0) : 'R'}
             </div>
             <div className="text-left font-sans leading-tight">
-              <div className="text-[12px] font-medium text-white truncate max-w-[120px]">
+              <div className="text-[12px] font-medium text-white truncate max-w-[110px]">
                 {currentUser?.name || 'Rahul Sharma'}
               </div>
-              <div className="text-[10px] text-[#c9b8a0]/70 font-mono">
-                {currentUser?.prn || '202401048'}
+              <div className="text-[10px] text-[#c9b8a0]/80 font-mono">
+                {activeUserRole}
               </div>
             </div>
           </div>
@@ -210,10 +210,10 @@ export function HeroPage() {
                 <button
                   key={r}
                   onClick={() => switchRole(r)}
-                  className={`px-2.5 py-1 rounded-lg transition-all font-medium cursor-pointer ${
+                  className={`px-2 py-0.5 rounded-lg transition-all font-medium cursor-pointer ${
                     isSelected
-                      ? 'bg-[#c9b8a0]/25 text-[#f5e6c8] border border-[#f5e6c8]/40 shadow-[0_0_15px_rgba(201,184,160,0.2)]'
-                      : 'text-stone-400 hover:text-white hover:bg-white/[0.04]'
+                      ? 'bg-[#c9b8a0]/25 text-[#f5e6c8] border border-[#f5e6c8]/40'
+                      : 'text-stone-400 hover:text-white'
                   }`}
                 >
                   {r.split(' ')[0]}
@@ -222,19 +222,7 @@ export function HeroPage() {
             })}
           </div>
 
-          {/* Enter Workstation Shell Button */}
-          <button
-            onClick={() => navigate('/workspace/inventory')}
-            className="px-5 py-2 rounded-full text-black font-bold text-xs tracking-wide shadow-[0_4px_20px_rgba(167,139,113,0.35)] hover:shadow-[0_4px_25px_rgba(201,184,160,0.5)] transition-all cursor-pointer flex items-center space-x-1.5"
-            style={{
-              background: 'linear-gradient(to right, #a78b71 0%, #c9b8a0 50%, #e8d5b7 100%)',
-            }}
-          >
-            <span>Workspace</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-
-          {/* Sign Out Button */}
+          {/* Sign Out */}
           <button
             onClick={() => {
               logout();
@@ -249,524 +237,371 @@ export function HeroPage() {
       </header>
 
       {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 2. HERO VISION SECTION                                            */}
+      {/* 3. CENTRAL INTERACTIVE SHOWCASE STAGE                             */}
       {/* ───────────────────────────────────────────────────────────────── */}
-      <section className="relative z-10 pt-36 pb-20 px-6 lg:px-12 flex flex-col items-center justify-center text-center">
-        {/* Subtle Eyebrow */}
-        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-md text-[11px] font-mono uppercase tracking-[0.25em] text-[#c9b8a0] mb-6">
-          <Sparkles className="w-3.5 h-3.5 text-[#e8d5b7]" />
-          <span>PHYSICAL COMPUTING ARCHITECTURE</span>
-        </div>
-
-        {/* Master Headline */}
-        <h1 className="font-clash text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white max-w-5xl mx-auto mb-6 leading-[1.08]">
-          Hardware Lifecycle Orchestrated with{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
-            Absolute Precision.
-          </span>
-        </h1>
-
-        <p className="text-base sm:text-lg text-stone-400 font-normal max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
-          The collegiate hardware lifecycle unified. Eliminate manual notebook logs with verified component availability,
-          cryptographic faculty endorsements, optical counter dispatch, and real-time reliability scoring.
-        </p>
-
-        {/* Dual Primary Action Gateway */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-20">
-          <button
-            onClick={() => navigate('/workspace/inventory')}
-            className="px-8 py-3.5 rounded-full text-black font-bold text-xs uppercase tracking-wider hover:brightness-105 transition-all shadow-[0_4px_30px_rgba(167,139,113,0.4)] cursor-pointer flex items-center space-x-2"
-            style={{
-              background: 'linear-gradient(to right, #a78b71 0%, #c9b8a0 50%, #e8d5b7 100%)',
-            }}
-          >
-            <span>Launch Master Inventory</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-
-          <a
-            href="#lifecycle-flow"
-            className="px-8 py-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/15 text-stone-300 hover:text-white font-medium text-xs uppercase tracking-wider transition-all backdrop-blur-md cursor-pointer flex items-center space-x-2"
-          >
-            <span>Explore 5-Stage Lifecycle</span>
-            <ChevronRight className="w-4 h-4" />
-          </a>
-        </div>
-
-        {/* ───────────────────────────────────────────────────────────── */}
-        {/* CENTRAL INTERACTIVE SILICON NODE & 4 FLOATING GLASS SATELLITES  */}
-        {/* ───────────────────────────────────────────────────────────── */}
-        <div
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          className="relative w-full max-w-5xl mx-auto my-4 px-4"
-        >
-          {/* Dynamic SVG Bezier Lines connecting central node to satellites */}
-          <svg
-            className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible hidden md:block"
-            viewBox="0 0 1000 560"
-            fill="none"
-          >
-            <defs>
-              <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#c9b8a0" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#a78b71" stopOpacity="0.2" />
-              </linearGradient>
-            </defs>
-            <path
-              d="M 500 280 C 350 200, 220 160, 120 100"
-              stroke="url(#goldGradient)"
-              strokeWidth="2"
-              className="node-line pulsing-branch"
-            />
-            <path
-              d="M 500 280 C 650 200, 780 160, 880 100"
-              stroke="url(#goldGradient)"
-              strokeWidth="2"
-              className="node-line pulsing-branch"
-            />
-            <path
-              d="M 500 280 C 380 380, 240 440, 140 480"
-              stroke="url(#goldGradient)"
-              strokeWidth="2"
-              className="node-line pulsing-branch"
-            />
-            <path
-              d="M 500 280 C 620 380, 760 440, 860 480"
-              stroke="url(#goldGradient)"
-              strokeWidth="2"
-              className="node-line pulsing-branch"
-            />
-          </svg>
-
-          {/* Central 16:9 Transparent Glass Card */}
-          <div className="relative z-20 aspect-video w-full rounded-3xl bg-white/[0.03] backdrop-blur-2xl p-6 sm:p-10 flex flex-col justify-between overflow-hidden text-left border border-white/20 shadow-[0_30px_90px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.35)]">
-            {/* Top Bar of Central Node */}
-            <div className="flex items-center justify-between pb-4 border-b border-white/10">
-              <div className="flex items-center space-x-3">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#c9b8a0] animate-pulse" />
-                <span className="text-xs font-mono font-bold tracking-[0.2em] uppercase text-[#c9b8a0]">
-                  CENTRAL SILICON NODE // DSP-RIG-8840
-                </span>
-              </div>
-              <span className="text-[10px] font-mono px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
-                ACTIVE TELEMETRY • L2-CB4-R2
-              </span>
+      <main className="flex-1 flex items-center justify-center p-6 lg:p-12 overflow-hidden z-20">
+        <div className="w-full max-w-5xl h-full max-h-[620px] rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-white/15 p-8 sm:p-12 shadow-[0_30px_90px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.3)] flex flex-col justify-between relative overflow-hidden">
+          
+          {/* Top Stage Bar: Stage Eyebrow + Stage Switch Counter */}
+          <div className="flex items-center justify-between pb-6 border-b border-white/10 flex-shrink-0">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-[10px] font-mono uppercase tracking-widest text-[#c9b8a0]">
+              <Sparkles className="w-3 h-3 text-[#f5e6c8]" />
+              <span>{currentStage.badge}</span>
             </div>
 
-            {/* Center Telemetry Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
-              <div className="space-y-1">
-                <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider">Device Architecture</div>
-                <div className="text-xl sm:text-2xl font-clash font-bold text-white">NVIDIA Jetson Orin Nano</div>
-                <div className="text-xs text-[#c9b8a0] font-mono">Serial: JET-ORIN-0104</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider">Operating Telemetry</div>
-                <div className="text-xl sm:text-2xl font-mono font-bold text-white">38.4°C / 62.5MHz</div>
-                <div className="text-xs text-emerald-400 font-mono">Emissivity: Normal • 5V / 2.1A</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider">Custody State</div>
-                <div className="text-xl sm:text-2xl font-clash font-bold text-[#f5e6c8]">Active Academic Loan</div>
-                <div className="text-xs text-amber-400 font-mono">Due: 04h 12m Remaining</div>
-              </div>
-            </div>
-
-            {/* Bottom Bar */}
-            <div className="pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
-              <div className="flex items-center space-x-2 text-stone-400 font-mono">
-                <Radio className="w-3.5 h-3.5 text-[#c9b8a0]" />
-                <span>RFID TAG: AT-ESP-0104 // 100% TELEMETRY SYNC</span>
-              </div>
-              <button
-                onClick={() => navigate('/workspace/inventory')}
-                className="px-4 py-1.5 rounded-full bg-white/[0.05] hover:bg-[#c9b8a0] text-[#f5e6c8] hover:text-black font-medium transition-all flex items-center space-x-1.5 border border-white/15 cursor-pointer"
-              >
-                <span>Inspect Registry Node</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+            <div className="text-xs font-mono text-stone-400">
+              FEATURE <span className="text-white font-bold">{activeStage + 1}</span> OF 4
             </div>
           </div>
 
           {/* ───────────────────────────────────────────────────────────── */}
-          {/* 4 FLOATING GLASS SATELLITES (3D Perspective Tilt)             */}
+          {/* DYNAMIC STAGE VIEWS                                           */}
           {/* ───────────────────────────────────────────────────────────── */}
+          <div className="flex-1 py-6 flex flex-col justify-center overflow-y-auto">
+            {/* Stage Titles */}
+            <div className="max-w-3xl mb-6">
+              <h2 className="font-clash text-2xl sm:text-4xl font-bold text-white tracking-tight mb-2 leading-tight">
+                {currentStage.headline}
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-300 font-normal leading-relaxed">
+                {currentStage.subhead}
+              </p>
+            </div>
 
-          {/* SATELLITE 1: TELEMETRY SPARKLINE */}
-          <div
-            onClick={() => navigate('/workspace/custody')}
-            style={{
-              transform: `perspective(1000px) rotateX(${-mousePos.y * 14}deg) rotateY(${mousePos.x * 14}deg) translateZ(15px)`,
-            }}
-            className="satellite-card absolute -top-12 -left-8 z-30 w-72 bg-white/[0.04] backdrop-blur-2xl rounded-2xl p-4 text-left cursor-pointer border border-white/15 hidden md:block hover:border-[#c9b8a0]/50 transition-colors"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c9b8a0] font-bold">
-                TELEMETRY SPARKLINE
+            {/* ── VIEW 0: THE WORKSPACE (ASSETS VS CONSUMABLES) ──────────── */}
+            {activeStage === 0 && (
+              <div className="space-y-4">
+                {/* Sub Tab Toggle */}
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setCatalogSubTab('assets')}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                      catalogSubTab === 'assets'
+                        ? 'bg-[#c9b8a0] text-black shadow-[0_0_15px_rgba(201,184,160,0.3)]'
+                        : 'bg-white/[0.04] text-stone-300 hover:bg-white/[0.08] border border-white/10'
+                    }`}
+                  >
+                    Serialized Capital Assets (4)
+                  </button>
+                  <button
+                    onClick={() => setCatalogSubTab('consumables')}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                      catalogSubTab === 'consumables'
+                        ? 'bg-[#c9b8a0] text-black shadow-[0_0_15px_rgba(201,184,160,0.3)]'
+                        : 'bg-white/[0.04] text-stone-300 hover:bg-white/[0.08] border border-white/10'
+                    }`}
+                  >
+                    Bulk Project Consumables (4)
+                  </button>
+                </div>
+
+                {/* 4 Cards Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {(catalogSubTab === 'assets' ? assets : consumables).map((item) => (
+                    <div
+                      key={item.tag}
+                      className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="text-[10px] font-mono text-stone-500 uppercase mb-1">
+                          {item.location}
+                        </div>
+                        <h4 className="font-clash text-sm font-bold text-white mb-1 line-clamp-1">
+                          {item.name}
+                        </h4>
+                        <div className="text-[11px] text-[#c9b8a0] font-mono mb-2">
+                          {item.category}
+                        </div>
+                        <p className="text-[10px] text-stone-400 font-mono line-clamp-2">
+                          {item.spec}
+                        </p>
+                      </div>
+
+                      <div className="pt-3 border-t border-white/10 mt-3 flex items-center justify-between text-xs">
+                        <span className="font-mono text-emerald-400 text-[11px] font-semibold">
+                          {item.qty}
+                        </span>
+                        <span className="text-[10px] font-mono text-stone-400">
+                          {item.tag}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                STABLE
-              </span>
-            </div>
-            <div className="font-clash text-base text-white font-bold mb-2">
-              NVIDIA Jetson Nano
-            </div>
-            <div className="h-12 w-full bg-white/[0.02] rounded-xl border border-white/10 p-1 relative overflow-hidden flex items-end">
-              <svg className="w-full h-full" viewBox="0 0 200 50" preserveAspectRatio="none">
-                <path
-                  d="M 0 40 Q 30 15, 60 25 T 120 10 T 170 30 T 200 15 L 200 50 L 0 50 Z"
-                  fill="rgba(201, 184, 160, 0.15)"
-                />
-                <path
-                  d="M 0 40 Q 30 15, 60 25 T 120 10 T 170 30 T 200 15"
-                  fill="none"
-                  stroke="#c9b8a0"
-                  strokeWidth="2"
-                />
-              </svg>
-            </div>
-            <div className="mt-2 text-[10px] text-stone-400 font-mono flex items-center justify-between">
-              <span>Drift: ±0.01%</span>
-              <span className="text-amber-400 font-bold">4h left</span>
-            </div>
+            )}
+
+            {/* ── VIEW 1: THE QUEUE (ACTIVE LOANS, PIPELINE, WAITLIST) ──── */}
+            {activeStage === 1 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Column 1: Active Borrowings */}
+                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between text-xs font-mono font-bold text-[#c9b8a0] uppercase mb-3">
+                      <span>1. Active Loans</span>
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    </div>
+
+                    <div className="space-y-2.5">
+                      <div className="p-3 rounded-xl bg-black/40 border border-white/10">
+                        <div className="flex justify-between items-start text-xs font-bold text-white mb-0.5">
+                          <span>NVIDIA Jetson Nano 4GB</span>
+                          <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">
+                            3d Left
+                          </span>
+                        </div>
+                        <div className="text-[10px] font-mono text-stone-400">Tag: JET-NANO-04 • Due 19 Oct</div>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-black/40 border border-white/10">
+                        <div className="flex justify-between items-start text-xs font-bold text-white mb-0.5">
+                          <span>Saleae Logic 8 USB</span>
+                          <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                            5d Left
+                          </span>
+                        </div>
+                        <div className="text-[10px] font-mono text-stone-400">Tag: LOGIC-8-01 • Due 21 Oct</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 text-[11px] font-mono text-[#c9b8a0] flex items-center justify-between">
+                    <span>2 Items in Custody</span>
+                    <span>No Overdue</span>
+                  </div>
+                </div>
+
+                {/* Column 2: Requisition Pipeline */}
+                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between text-xs font-mono font-bold text-[#c9b8a0] uppercase mb-3">
+                      <span>2. Requisition Pipeline</span>
+                      <span className="text-[10px] font-mono text-blue-400">STAGED</span>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-black/40 border border-white/10 space-y-2">
+                      <div className="text-xs font-bold text-white">Google Coral Edge TPU (USB)</div>
+                      
+                      <div className="space-y-1 text-[10px] font-mono">
+                        <div className="flex items-center space-x-1.5 text-emerald-400">
+                          <Check className="w-3 h-3" />
+                          <span>Requisition Submitted</span>
+                        </div>
+                        <div className="flex items-center space-x-1.5 text-emerald-400">
+                          <Check className="w-3 h-3" />
+                          <span>Endorsed by Dr. Dalvi</span>
+                        </div>
+                        <div className="flex items-center space-x-1.5 text-amber-400">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 ml-0.5 mr-1" />
+                          <span>Staged at Counter Depot 02</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 text-[11px] font-mono text-emerald-400 flex items-center justify-between">
+                    <span>Ready for Counter Pickup</span>
+                  </div>
+                </div>
+
+                {/* Column 3: FIFO Waitlist */}
+                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between text-xs font-mono font-bold text-[#c9b8a0] uppercase mb-3">
+                      <span>3. Reservation Waitlist</span>
+                      <span className="text-[10px] font-mono text-amber-400">POSITION #2</span>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-black/40 border border-white/10 space-y-2">
+                      <div className="text-xs font-bold text-white">Kintex-7 UltraScale+ FPGA</div>
+                      <div className="text-[10px] font-mono text-stone-400">All 8 Units Currently Loaned</div>
+                      <div className="text-xs font-mono text-[#f5e6c8]">
+                        Your Queue: <strong>#2 in FIFO Queue</strong>
+                      </div>
+                      <div className="text-[10px] font-mono text-stone-400">
+                        Next Return: Team Hyperion (2 days)
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 text-[11px] font-mono text-stone-400 flex items-center justify-between">
+                    <span>Automated Notification Sync</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── VIEW 2: THE REPO SCORE (RELIABILITY RATING) ────────────── */}
+            {activeStage === 2 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                {/* Circular Gauge */}
+                <div className="p-6 rounded-2xl bg-black/40 border border-white/10 flex flex-col items-center justify-center text-center">
+                  <div className="relative w-32 h-32 flex items-center justify-center mb-3">
+                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        stroke="rgba(255,255,255,0.08)"
+                        strokeWidth="7"
+                        fill="transparent"
+                      />
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        stroke="#c9b8a0"
+                        strokeWidth="7"
+                        strokeDasharray="251"
+                        strokeDashoffset="10"
+                        strokeLinecap="round"
+                        fill="transparent"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="font-clash text-3xl font-bold text-white">96%</span>
+                      <span className="text-[9px] font-mono text-[#c9b8a0] uppercase tracking-wider">
+                        TRUST SCORE
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-xs font-mono text-emerald-400 font-semibold">
+                    TIER 1 • HIGH RELIABILITY
+                  </div>
+                </div>
+
+                {/* Score Breakdown Rules */}
+                <div className="md:col-span-2 space-y-3">
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.02] border border-white/10 text-xs">
+                    <div>
+                      <span className="font-semibold text-white block">On-Time Return Record (100%)</span>
+                      <span className="text-stone-400 text-[11px]">14 of 14 hardware loans returned on or before scheduled deadline.</span>
+                    </div>
+                    <span className="text-emerald-400 font-mono font-bold">+15 Pts</span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.02] border border-white/10 text-xs">
+                    <div>
+                      <span className="font-semibold text-white block">Bench Inspection Pass Rate (95%)</span>
+                      <span className="text-stone-400 text-[11px]">Zero bent pins, zero burned components, packaging preserved.</span>
+                    </div>
+                    <span className="text-emerald-400 font-mono font-bold">+20 Pts</span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.02] border border-white/10 text-xs">
+                    <div>
+                      <span className="font-semibold text-white block">Unlocked Hardware Custody Quota</span>
+                      <span className="text-[#f5e6c8] text-[11px]">Tier 1 clearance unlocks up to 3 simultaneous high-value capital assets.</span>
+                    </div>
+                    <span className="text-[#c9b8a0] font-mono font-bold">MAX QUOTA</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── VIEW 3: PROJECT LINK & RETURN HANDSHAKE ────────────────── */}
+            {activeStage === 3 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Academic Project Anchor */}
+                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                  <div className="text-[10px] font-mono uppercase text-[#c9b8a0] font-bold">
+                    ACADEMIC PROJECT ANCHOR
+                  </div>
+                  <h4 className="font-clash text-lg font-bold text-white">
+                    PRJ-AIML-08: Autonomous Drone Navigation
+                  </h4>
+                  <p className="text-xs text-stone-400 leading-relaxed">
+                    All hardware requisitions are strictly validated against approved academic course projects and faculty mentor quotas.
+                  </p>
+
+                  <div className="space-y-1 text-xs font-mono text-stone-300 pt-1">
+                    <div>Supervisor: <strong className="text-[#f5e6c8]">Dr. Anjali Dalvi (AIML Dept)</strong></div>
+                    <div>Team Quota: <strong className="text-emerald-400">2 of 3 Capital Assets Active</strong></div>
+                  </div>
+                </div>
+
+                {/* Physical Counter Return Inspection */}
+                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                  <div className="text-[10px] font-mono uppercase text-[#c9b8a0] font-bold">
+                    PHYSICAL RETURN INSPECTION
+                  </div>
+                  <h4 className="font-clash text-lg font-bold text-white">
+                    Dual-State Counter Handshake
+                  </h4>
+                  
+                  <div className="space-y-2 text-xs">
+                    <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+                      <strong>Clean Return:</strong> Verified by lab assistant, restocked, and releases next team on waitlist.
+                    </div>
+                    <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300">
+                      <strong>Defect Reported:</strong> Routed to repair bench without penalizing your Repo Score for honest wear & tear.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* SATELLITE 2: HARDWARE KERNEL */}
-          <div
-            onClick={() => navigate('/workspace/projects')}
-            style={{
-              transform: `perspective(1000px) rotateX(${-mousePos.y * 14}deg) rotateY(${mousePos.x * 14}deg) translateZ(15px)`,
-            }}
-            className="satellite-card absolute -top-12 -right-8 z-30 w-72 bg-white/[0.04] backdrop-blur-2xl rounded-2xl p-4 text-left cursor-pointer border border-white/15 hidden md:block hover:border-[#c9b8a0]/50 transition-colors"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c9b8a0] font-bold">
-                HARDWARE KERNEL
-              </div>
-              <div className="flex space-x-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              </div>
-            </div>
-            <div className="font-mono text-xs text-stone-300 font-semibold mb-1.5">
-              fpga_accelerator.v
-            </div>
-            <div className="p-2.5 rounded-xl bg-black/60 border border-white/10 font-mono text-[10px] leading-relaxed text-stone-300">
-              <div><span className="text-purple-400">module</span> <span className="text-[#f5e6c8]">accelerator</span> (</div>
-              <div className="pl-2 text-stone-400">input <span className="text-blue-400">clk</span>, <span className="text-blue-400">rst_n</span>,</div>
-              <div className="pl-2 text-stone-400">input [31:0] <span className="text-[#c9b8a0]">din</span></div>
-              <div>);</div>
-            </div>
-            <div className="mt-2 text-[10px] text-stone-400 font-mono flex items-center justify-between">
-              <span>Kintex-7 UltraScale+</span>
-              <span className="text-[#c9b8a0]">Ready</span>
-            </div>
-          </div>
-
-          {/* SATELLITE 3: OPTICAL SIGNAL BAY */}
-          <div
-            onClick={() => navigate('/workspace/operations/dispatch')}
-            style={{
-              transform: `perspective(1000px) rotateX(${-mousePos.y * 14}deg) rotateY(${mousePos.x * 14}deg) translateZ(15px)`,
-            }}
-            className="satellite-card absolute -bottom-10 -left-6 z-30 w-72 bg-white/[0.04] backdrop-blur-2xl rounded-2xl p-4 text-left cursor-pointer border border-white/15 hidden md:block hover:border-[#c9b8a0]/50 transition-colors"
-          >
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c9b8a0] font-bold">
-                SIGNAL BENCH
-              </div>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            </div>
-            <div className="font-clash text-base text-white font-bold mb-2">
-              Optical Solenoid Bay
-            </div>
-            <div className="h-10 w-full bg-black/40 rounded-xl border border-white/10 px-3 flex items-end justify-between py-1.5">
-              {[40, 75, 45, 90, 65, 30, 85, 95, 40, 70, 80, 50, 65].map((h, i) => (
-                <div
-                  key={i}
-                  style={{ height: `${h}%` }}
-                  className="w-1.5 rounded-full bg-gradient-to-t from-[#a78b71] to-[#f5e6c8]"
+          {/* ───────────────────────────────────────────────────────────── */}
+          {/* BOTTOM TOUR CONTROLS: PREV / NEXT + LAUNCH WORKSPACE           */}
+          {/* ───────────────────────────────────────────────────────────── */}
+          <div className="pt-6 border-t border-white/10 flex items-center justify-between flex-shrink-0">
+            {/* Step Navigation Dots */}
+            <div className="flex items-center space-x-2">
+              {stages.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveStage(idx)}
+                  className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer ${
+                    activeStage === idx
+                      ? 'w-8 bg-[#c9b8a0]'
+                      : 'bg-white/20 hover:bg-white/40'
+                  }`}
+                  title={`Go to stage ${idx + 1}`}
                 />
               ))}
             </div>
-            <div className="mt-2 text-[10px] text-stone-400 font-mono flex items-center justify-between">
-              <span>650nm Laser Latch</span>
-              <span className="text-emerald-400 font-bold">LOCKED</span>
-            </div>
-          </div>
 
-          {/* SATELLITE 4: DISPATCH CO-PILOT PROMPT */}
-          <div
-            style={{
-              transform: `perspective(1000px) rotateX(${-mousePos.y * 14}deg) rotateY(${mousePos.x * 14}deg) translateZ(15px)`,
-            }}
-            className="satellite-card absolute -bottom-10 -right-6 z-30 w-80 bg-white/[0.04] backdrop-blur-2xl rounded-2xl p-4 text-left border border-white/15 hidden md:block"
-          >
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c9b8a0] font-bold">
-                CO-PILOT // PROMPT
-              </div>
-              <Sparkles className="w-3.5 h-3.5 text-[#f5e6c8]" />
-            </div>
-            <div className="font-clash text-base text-white font-bold mb-2">
-              Natural Query Dispatch
-            </div>
-            <form onSubmit={handlePromptSubmit} className="relative flex items-center">
-              <input
-                type="text"
-                value={promptText}
-                onChange={(e) => setPromptText(e.target.value)}
-                placeholder="Ask hardware co-pilot..."
-                className="w-full bg-black/60 border border-white/15 rounded-xl py-2 pl-3 pr-8 font-mono text-[10px] text-white placeholder-stone-500 focus:outline-none focus:border-[#c9b8a0]"
-              />
+            {/* Navigation Actions */}
+            <div className="flex items-center space-x-3">
               <button
-                type="submit"
-                className="absolute right-1.5 p-1 rounded-lg bg-[#c9b8a0] hover:bg-[#e8d5b7] text-black transition-colors cursor-pointer"
-                title="Execute query"
+                onClick={() => setActiveStage((prev) => (prev > 0 ? prev - 1 : stages.length - 1))}
+                className="px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-stone-300 hover:text-white border border-white/10 text-xs font-medium transition-colors cursor-pointer flex items-center space-x-1"
               >
-                <ArrowRight className="w-3 h-3" />
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Prev</span>
               </button>
-            </form>
-            <div className="mt-2 text-[10px] text-stone-400 font-mono flex items-center justify-between">
-              <span>NLP Hardware Parser</span>
-              <span className={promptSubmitted ? 'text-emerald-400 font-bold' : 'text-[#c9b8a0]'}>
-                {promptSubmitted ? 'Query Dispatched!' : 'Press Enter'}
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 3. THE 5-STAGE HARDWARE LIFECYCLE ARCHITECTURE                     */}
-      {/* ───────────────────────────────────────────────────────────────── */}
-      <section id="lifecycle-flow" className="relative z-10 py-24 px-6 lg:px-12 max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] font-mono uppercase tracking-widest text-[#c9b8a0] mb-3">
-            <span>DIGITAL LIFECYCLE DISCIPLINE</span>
-          </div>
-          <h2 className="font-clash text-3xl sm:text-5xl font-bold text-white tracking-tight mb-4">
-            From Manual Paper Notebooks to an Auditable Lifecycle.
-          </h2>
-          <p className="text-sm sm:text-base text-stone-400 max-w-2xl mx-auto font-normal font-sans">
-            LabTrack eliminates manual notebooks, lost hardware, and unverified returns by turning physical lab handling into an immutable 5-stage workflow.
-          </p>
-        </div>
-
-        {/* Stepper Tabs */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-8">
-          {lifecycleStages.map((stage, idx) => {
-            const isActive = activeStage === idx;
-            return (
               <button
-                key={stage.step}
-                onClick={() => setActiveStage(idx)}
-                className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer backdrop-blur-xl ${
-                  isActive
-                    ? 'bg-[#c9b8a0]/20 border-[#f5e6c8]/60 shadow-[0_0_20px_rgba(201,184,160,0.25)]'
-                    : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06] text-stone-400'
-                }`}
+                onClick={() => setActiveStage((prev) => (prev < stages.length - 1 ? prev + 1 : 0))}
+                className="px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-stone-300 hover:text-white border border-white/10 text-xs font-medium transition-colors cursor-pointer flex items-center space-x-1"
               >
-                <div className="text-[10px] font-mono text-[#c9b8a0] font-bold mb-1">
-                  STAGE {stage.step}
-                </div>
-                <div className={`font-clash text-sm font-bold truncate ${isActive ? 'text-white' : 'text-stone-300'}`}>
-                  {stage.title}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Active Stage Detailed Glass Card */}
-        <div className="rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-white/20 p-8 sm:p-12 shadow-[0_25px_60px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.3)]">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-            <div className="lg:col-span-2 space-y-4">
-              <div className="inline-flex items-center space-x-2 text-xs font-mono uppercase tracking-widest text-[#c9b8a0]">
-                <span>STAGE {lifecycleStages[activeStage].step} ARCHITECTURAL SPECIFICATION</span>
-              </div>
-              <h3 className="font-clash text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                {lifecycleStages[activeStage].title} —{' '}
-                <span className="text-[#f5e6c8]">
-                  {lifecycleStages[activeStage].tagline}
-                </span>
-              </h3>
-              <p className="text-sm sm:text-base text-stone-300 leading-relaxed font-normal">
-                {lifecycleStages[activeStage].description}
-              </p>
-
-              <div className="pt-2 flex flex-wrap gap-2">
-                {lifecycleStages[activeStage].metrics.map((m) => (
-                  <span
-                    key={m}
-                    className="px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-[#f5e6c8]"
-                  >
-                    ✓ {m}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl bg-black/50 border border-white/10 p-6 space-y-4 text-left">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-stone-400">
-                GOVERNING AUTHORITY
-              </div>
-              <div className="text-base font-clash font-bold text-white">
-                {lifecycleStages[activeStage].responsibleRole}
-              </div>
-              <div className="h-[1px] bg-white/10" />
-              <div className="text-xs text-stone-400 font-mono leading-relaxed">
-                Automated notification webhooks trigger upon stage progression, updating global inventory locks in sub-100ms.
-              </div>
-              <button
-                onClick={() => navigate('/workspace/inventory')}
-                className="w-full py-2.5 rounded-xl bg-white/[0.05] hover:bg-[#c9b8a0] text-[#f5e6c8] hover:text-black font-medium text-xs transition-all border border-white/15 flex items-center justify-center space-x-1.5 cursor-pointer"
-              >
-                <span>Simulate in Workspace</span>
+                <span>Next</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 4. THE QUAD-PERSONA CLEARANCE MATRIX                              */}
-      {/* ───────────────────────────────────────────────────────────────── */}
-      <section className="relative z-10 py-20 px-6 lg:px-12 max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] font-mono uppercase tracking-widest text-[#c9b8a0] mb-3">
-            <span>INSTITUTIONAL ROLES</span>
-          </div>
-          <h2 className="font-clash text-3xl sm:text-5xl font-bold text-white tracking-tight mb-4">
-            Engineered for Every Stakeholder in the Laboratory.
-          </h2>
-          <p className="text-sm sm:text-base text-stone-400 max-w-2xl mx-auto font-normal">
-            Four tailored operational views ensure students, faculty supervisors, lab technicians, and department auditors work in complete synchronization.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {personas.map((p) => {
-            const isCurrent = activeUserRole === p.role;
-            return (
-              <div
-                key={p.role}
-                className={`rounded-3xl p-6 flex flex-col justify-between transition-all backdrop-blur-2xl border ${
-                  isCurrent
-                    ? 'bg-[#c9b8a0]/15 border-[#f5e6c8]/60 shadow-[0_15px_40px_rgba(201,184,160,0.2)]'
-                    : 'bg-white/[0.03] border-white/10 hover:border-white/25 hover:bg-white/[0.05]'
-                }`}
+              <button
+                onClick={() => navigate('/workspace/inventory')}
+                className="px-6 py-2.5 rounded-full text-black font-bold text-xs uppercase tracking-wider transition-all shadow-[0_4px_25px_rgba(167,139,113,0.4)] cursor-pointer flex items-center space-x-2"
+                style={{
+                  background: 'linear-gradient(to right, #a78b71 0%, #c9b8a0 50%, #e8d5b7 100%)',
+                }}
               >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-mono font-bold tracking-wider px-2.5 py-1 rounded-full bg-white/[0.05] border border-white/10 text-[#c9b8a0]">
-                      {p.badge}
-                    </span>
-                    {isCurrent && (
-                      <span className="text-[10px] font-mono text-emerald-400 font-bold flex items-center space-x-1">
-                        <Check className="w-3 h-3" />
-                        <span>ACTIVE</span>
-                      </span>
-                    )}
-                  </div>
-
-                  <h3 className="font-clash text-xl font-bold text-white mb-1">
-                    {p.title}
-                  </h3>
-                  <div className="text-xs text-[#c9b8a0] font-mono mb-3">
-                    {p.headline}
-                  </div>
-                  <p className="text-xs text-stone-400 leading-relaxed mb-6 font-normal">
-                    {p.description}
-                  </p>
-
-                  <div className="space-y-2 mb-6">
-                    {p.capabilities.map((cap) => (
-                      <div key={cap} className="flex items-start space-x-2 text-[11px] text-stone-300">
-                        <span className="text-[#c9b8a0] mt-0.5">•</span>
-                        <span>{cap}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => {
-                    switchRole(p.role);
-                    navigate(p.route);
-                  }}
-                  className={`w-full py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center space-x-1.5 ${
-                    isCurrent
-                      ? 'bg-[#c9b8a0] text-black hover:bg-[#e8d5b7]'
-                      : 'bg-white/[0.05] hover:bg-white/[0.1] text-white border border-white/15'
-                  }`}
-                >
-                  <span>Launch {p.role.split(' ')[0]} Desk</span>
-                  <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 5. EXECUTIVE WORKSTATION LAUNCHPAD                                */}
-      {/* ───────────────────────────────────────────────────────────────── */}
-      <section className="relative z-10 py-20 px-6 lg:px-12 max-w-6xl mx-auto">
-        <div className="rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-white/20 p-8 sm:p-12 shadow-[0_30px_90px_rgba(0,0,0,0.8)] text-center relative overflow-hidden">
-          <div className="relative z-10 max-w-3xl mx-auto space-y-6">
-            <h2 className="font-clash text-3xl sm:text-5xl font-bold text-white tracking-tight">
-              Ready to Explore the Live Workstation?
-            </h2>
-            <p className="text-sm sm:text-base text-stone-400 font-normal">
-              Enter the functional application environment. Query serialized hardware assets, build multi-item project requisitions, or test the optical return inspection station.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 text-left">
-              {[
-                { title: 'Master Registry', desc: 'Browse assets, FPGAs, and microcontrollers', path: '/workspace/inventory', icon: Boxes },
-                { title: 'Custody Desk', desc: 'Active loans, return timers, and extensions', path: '/workspace/custody', icon: Clock },
-                { title: 'Dispatch Terminal', desc: 'Optical barcode scan & return checklist', path: '/workspace/operations/dispatch', icon: Terminal },
-                { title: 'Reliability Index', desc: 'Vector scores & immutable audit logs', path: '/workspace/accountability', icon: ShieldCheck },
-              ].map((tile) => {
-                const IconComponent = tile.icon;
-                return (
-                  <div
-                    key={tile.title}
-                    onClick={() => navigate(tile.path)}
-                    className="p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-[#c9b8a0]/50 transition-all cursor-pointer group"
-                  >
-                    <IconComponent className="w-6 h-6 text-[#c9b8a0] mb-3 group-hover:scale-110 transition-transform" />
-                    <div className="font-clash text-base font-bold text-white mb-1">
-                      {tile.title}
-                    </div>
-                    <div className="text-xs text-stone-400 leading-tight">
-                      {tile.desc}
-                    </div>
-                  </div>
-                );
-              })}
+                <span>Enter Workspace</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
-      </section>
+      </main>
 
       {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 6. APPLE-GRADE MINIMAL ENGINEERING FOOTER                        */}
+      {/* 4. UNDERSTATED ENGINEERING FOOTER BAR                             */}
       {/* ───────────────────────────────────────────────────────────────── */}
-      <footer className="relative z-10 py-12 px-6 lg:px-12 border-t border-white/10 text-center text-xs text-stone-500 font-mono">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center space-x-2">
-            <span className="font-clash text-base font-bold text-stone-300">LabTrack</span>
-            <span>— Hardware Lifecycle Platform</span>
-          </div>
-          <div>Department of AIML • Symbiosis Institute of Technology</div>
-          <div className="text-stone-600">NIST SP 800-53 Audited</div>
-        </div>
+      <footer className="h-12 px-6 lg:px-12 flex items-center justify-between border-t border-white/10 text-[11px] font-mono text-stone-500 bg-white/[0.01] flex-shrink-0">
+        <div>Department of AIML • Symbiosis Institute of Technology</div>
+        <div className="hidden sm:block">LabTrack Hardware Lifecycle Platform</div>
+        <div className="text-stone-600">NIST SP 800-53 Audited</div>
       </footer>
     </div>
   );
