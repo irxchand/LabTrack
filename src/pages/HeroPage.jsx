@@ -5,17 +5,23 @@ import {
   ArrowRight,
   ArrowUpRight,
   BookmarkCheck,
+  Check,
+  CheckSquare,
   ChevronDown,
   Clock,
   Cpu,
   FolderGit2,
   Globe,
   Inbox,
+  Layers,
   Lock,
   Radio,
+  RotateCcw,
+  Send,
   Server,
   Shield,
   Terminal,
+  Wrench,
   X,
   Zap,
 } from 'lucide-react';
@@ -50,6 +56,26 @@ const POLICIES = {
     title: 'Security & Compliance',
     subtitle: 'Access controls, immutable audit logging, and vulnerability disclosure protocols.',
     sections: [],
+  },
+  returnResetSop: {
+    id: 'returnResetSop',
+    tag: 'Custodial Operating Procedure',
+    title: '5-Point Return & Firmware Reset SOP',
+    subtitle: 'Standardized pin header inspection, firmware flash wipe, and dynamic stock restock verification.',
+    sections: [
+      {
+        heading: 'Physical Pin & Header Inspection',
+        body: 'Examine GPIO pin rows, JTAG headers, and SMD passives under magnification. Verify zero bent pins, solder bridging, or copper pad delamination before initiating check-in.',
+      },
+      {
+        heading: 'Firmware Sanitization & Flash Cleansing',
+        body: 'Execute automated flash wipe to remove custom student binaries. Re-flash the verified laboratory golden image (e.g. MicroPython REPL or STM32 factory test firmware).',
+      },
+      {
+        heading: 'Dynamic Inventory Restock',
+        body: 'Upon passing digital check-in, the system immediately increments the available on-shelf count, clears the borrower PRN link, and moves the serial to Ready for Issue.',
+      },
+    ],
   },
   instrumentSop: {
     id: 'instrumentSop',
@@ -142,6 +168,296 @@ export function HeroPage() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const heroContainerRef = useRef(null);
 
+  // Persona Definition Engine: Tailored views for Lab Assistant, Student, and Faculty
+  const PERSONA_CONFIGS = {
+    assistant: {
+      roleBadge: 'CUSTODIAL CONTROL PLANE',
+      headline: (
+        <>
+          Autonomous Lab Operations &{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
+            Depot Control Plane
+          </span>
+        </>
+      ),
+      subtext:
+        'The institutional operating system for laboratory custodians. Real-time depot stock reconciliation, 1-tap counter handover verification, 5-point return inspection with dynamic firmware sanitization, and tamper-proof chain of custody.',
+      primaryCta: {
+        label: 'Launch Counter Desk',
+        path: '/workspace/operations/dispatch',
+        icon: Terminal,
+      },
+      secondaryCta: {
+        label: 'Browse Custodial Systems',
+        href: '#capabilities',
+      },
+      navItems: [
+        { label: 'Capabilities', href: '#capabilities' },
+        { label: 'Workstation Depot', path: '/workspace/inventory' },
+        { label: 'Counter Desk', path: '/workspace/operations/dispatch' },
+        { label: 'Defect Bench', path: '/workspace/operations/defects' },
+        { label: 'Audit Log', path: '/workspace/operations/audit' },
+      ],
+      capabilitiesTitle: (
+        <>
+          From Depot Stock Restock{' '}
+          <span className="block mt-1.5 text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
+            to Counter Circulation Triage
+          </span>
+        </>
+      ),
+      cards: [
+        {
+          id: 'depot',
+          path: '/workspace/inventory',
+          icon: Cpu,
+          tag: 'STOCK RECONCILIATION',
+          title: 'Depot Inventory',
+          description:
+            'Audit live component availability counts, calibrate replenishment alerts, track shelf depot bins, and manage component status.',
+          badge: 'DEPOT INVENTORY',
+        },
+        {
+          id: 'dispatch',
+          path: '/workspace/operations/dispatch?mode=dispatch',
+          icon: Send,
+          tag: 'DISPATCH POOL',
+          title: 'Physical Handover',
+          description:
+            'Inspect pre-approved student pickup requisitions, match and allocate physical hardware asset tags, and complete instantaneous custody handover.',
+          badge: 'HANDOVER POOL',
+        },
+        {
+          id: 'return',
+          path: '/workspace/operations/dispatch?mode=checkin',
+          icon: RotateCcw,
+          tag: 'FIRMWARE RESET & RESTOCK',
+          title: 'Return & Reset',
+          description:
+            'Perform physical pin inspections, wipe microcontrollers, verify firmware integrity, and dynamically increment inventory availability stock.',
+          badge: '5-POINT TRIAGE',
+        },
+        {
+          id: 'circulation',
+          path: '/workspace/operations/dispatch?mode=circulation',
+          icon: Clock,
+          tag: 'INSTITUTIONAL LEDGER',
+          title: 'Circulation Registry',
+          description:
+            'Real-time campus-wide custody tracking, overdue student accountability notices, technical asset specifications, and CSV ledger reporting.',
+          badge: 'ACTIVE LEDGER',
+        },
+        {
+          id: 'defects',
+          path: '/workspace/operations/defects',
+          icon: Wrench,
+          tag: 'HARDWARE TRIAGE & RMA',
+          title: 'Defect Bench',
+          description:
+            'Quarantine damaged hardware, diagnose electrical and mechanical faults, coordinate vendor RMA servicing, and handle zero-penalty student defect intakes.',
+          badge: 'RMA QUARANTINE',
+        },
+      ],
+    },
+    student: {
+      roleBadge: 'STUDENT BENCH & CUSTODY',
+      headline: (
+        <>
+          Autonomous Hardware Custody &{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
+            Lab Telemetry
+          </span>
+        </>
+      ),
+      subtext:
+        'The unified operating system for academic laboratories. Real-time instrument tracking, student capstone requisitions, bench custody countdowns, and zero-trust hardware dispatch.',
+      primaryCta: {
+        label: 'Enter Student Workspace',
+        path: '/workspace/inventory',
+        icon: ArrowUpRight,
+      },
+      secondaryCta: {
+        label: 'Browse Capabilities',
+        href: '#capabilities',
+      },
+      navItems: [
+        { label: 'Capabilities', href: '#capabilities' },
+        { label: 'Workstation', path: '/workspace/inventory' },
+        { label: 'Projects', path: '/workspace/projects' },
+        { label: 'Requisitions', path: '/workspace/custody/requests' },
+        { label: 'My Bench', path: '/workspace/custody/active' },
+      ],
+      capabilitiesTitle: (
+        <>
+          From Project Proposal{' '}
+          <span className="block mt-1.5 text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
+            to Active Bench Custody
+          </span>
+        </>
+      ),
+      cards: [
+        {
+          id: 'projects',
+          path: '/workspace/projects',
+          icon: FolderGit2,
+          tag: 'CAPSTONES & BOM',
+          title: 'Projects',
+          description:
+            'Form Capstone and Mini Project teams, assemble collaborative rosters, and compile required hardware Bills of Materials.',
+          badge: 'CAPSTONES & BOM',
+        },
+        {
+          id: 'inventory',
+          path: '/workspace/inventory',
+          icon: Cpu,
+          tag: 'LAB INVENTORY',
+          title: 'Workstation',
+          description:
+            'Search real-time inventory across AIML, IoT, and Embedded labs for available FPGAs, microcontrollers, sensors, and instruments.',
+          badge: 'LAB INVENTORY',
+        },
+        {
+          id: 'requests',
+          path: '/workspace/custody/requests',
+          icon: Inbox,
+          tag: 'FACULTY APPROVALS',
+          title: 'Requisitions',
+          description:
+            'Submit component baskets for faculty guide review, track one-tap approvals, and route approved items to the dispatch desk.',
+          badge: 'FACULTY APPROVALS',
+        },
+        {
+          id: 'reservations',
+          path: '/workspace/custody/reservations',
+          icon: BookmarkCheck,
+          tag: 'EQUIPMENT QUEUE',
+          title: 'Waitlist',
+          description:
+            'Reserve high-demand equipment, monitor live queue positioning, and automatically claim available instruments upon check-in.',
+          badge: 'EQUIPMENT QUEUE',
+        },
+        {
+          id: 'active',
+          path: '/workspace/custody/active',
+          icon: Clock,
+          tag: 'ACTIVE CUSTODY',
+          title: 'My Bench',
+          description:
+            'Monitor active equipment custody, observe real-time countdown return timers, and report component defects with zero penalty strikes.',
+          badge: 'ACTIVE CUSTODY',
+        },
+      ],
+    },
+    faculty: {
+      roleBadge: 'ACADEMIC GOVERNANCE',
+      headline: (
+        <>
+          Academic Governance &{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
+            Capstone Custody
+          </span>
+        </>
+      ),
+      subtext:
+        'The faculty oversight control plane. One-tap student BOM endorsement, capstone milestone tracking, cross-team component quotas, and institutional defect auditing.',
+      primaryCta: {
+        label: 'Open Approvals Queue',
+        path: '/workspace/operations/approvals',
+        icon: CheckSquare,
+      },
+      secondaryCta: {
+        label: 'Browse Governance Tools',
+        href: '#capabilities',
+      },
+      navItems: [
+        { label: 'Capabilities', href: '#capabilities' },
+        { label: 'Workstation', path: '/workspace/inventory' },
+        { label: 'Approvals', path: '/workspace/operations/approvals' },
+        { label: 'Projects', path: '/workspace/projects' },
+        { label: 'Defects', path: '/workspace/operations/defects' },
+      ],
+      capabilitiesTitle: (
+        <>
+          From Student Proposals{' '}
+          <span className="block mt-1.5 text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
+            to Institutional Endorsements
+          </span>
+        </>
+      ),
+      cards: [
+        {
+          id: 'approvals',
+          path: '/workspace/operations/approvals',
+          icon: CheckSquare,
+          tag: 'BOM ENDORSEMENT',
+          title: 'Approvals Queue',
+          description:
+            'Review student capstone component baskets, verify project justification, and endorse requisition batches with one tap.',
+          badge: 'ONE-TAP APPROVALS',
+        },
+        {
+          id: 'projects',
+          path: '/workspace/projects',
+          icon: FolderGit2,
+          tag: 'PROJECT MENTORSHIP',
+          title: 'Projects Directory',
+          description:
+            'Review student team rosters, track capstone project milestones, and audit hardware allocation against department limits.',
+          badge: 'CAPSTONE OVERSIGHT',
+        },
+        {
+          id: 'inventory',
+          path: '/workspace/inventory',
+          icon: Cpu,
+          tag: 'CURRICULUM ASSETS',
+          title: 'Workstation',
+          description:
+            'Inspect laboratory bench readiness, browse high-value instrumentation catalogs, and track lab equipment availability.',
+          badge: 'BENCH READY',
+        },
+        {
+          id: 'defects',
+          path: '/workspace/operations/defects',
+          icon: Wrench,
+          tag: 'EQUIPMENT HEALTH',
+          title: 'Defect Log',
+          description:
+            'Monitor bench hardware fault rates, verify student damage immunity reports, and track vendor RMA replacements.',
+          badge: 'FAULT MONITORING',
+        },
+        {
+          id: 'audit',
+          path: '/workspace/operations/audit',
+          icon: Shield,
+          tag: 'CHAIN OF CUSTODY',
+          title: 'Audit Log',
+          description:
+            'Review cryptographic custody records, track checkout timestamps, and maintain compliance with university asset regulations.',
+          badge: 'TAMPER-PROOF AUDIT',
+        },
+      ],
+    },
+  };
+
+  // Active persona state defaults to current user's role
+  const [activePersona, setActivePersona] = useState(() => {
+    if (currentUser?.role === 'Lab Assistant') return 'assistant';
+    if (currentUser?.role === 'Faculty' || currentUser?.role === 'HoD / Admin') return 'faculty';
+    return 'student';
+  });
+
+  useEffect(() => {
+    if (currentUser?.role === 'Lab Assistant') {
+      setActivePersona('assistant');
+    } else if (currentUser?.role === 'Faculty' || currentUser?.role === 'HoD / Admin') {
+      setActivePersona('faculty');
+    } else {
+      setActivePersona('student');
+    }
+  }, [currentUser]);
+
+  const currentConfig = PERSONA_CONFIGS[activePersona] || PERSONA_CONFIGS.student;
+
   // Keyboard Escape and body scroll lock for Cupertino Policy Modal
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -221,55 +537,44 @@ export function HeroPage() {
       <div className="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[#a78b71]/[0.035] blur-[150px] pointer-events-none z-0" />
 
       {/* ─────────────────────────────────────────────────────────────────────────
-          FIXED TOP NAVBAR (Matching LabTrack Brand Typography)
+          FIXED TOP NAVBAR (Matching LabTrack Brand Typography & Dynamic Role)
       ───────────────────────────────────────────────────────────────────────── */}
       <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-[10px] bg-[#0a0a0a]/80 border-b border-white/10 px-6 sm:px-12 h-20 flex items-center justify-between transition-all duration-300">
         {/* Left: Brand Monogram in Clash Display with Champagne Gold Gradient */}
         <div
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="flex items-center gap-2 cursor-pointer group select-none"
+          className="flex items-center gap-2.5 cursor-pointer group select-none"
         >
           <span className="font-display font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
             LabTrack
           </span>
+          <span className="text-[10px] uppercase tracking-[0.16em] text-[#c9b8a0] bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/10 font-sans hidden sm:inline-block">
+            {currentConfig.roleBadge}
+          </span>
         </div>
 
-        {/* Center: Apple-Grade Glass Segmented Navigation Pill */}
+        {/* Center: Apple-Grade Glass Segmented Navigation Pill Tailored to Persona */}
         <nav className="hidden lg:flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
-          <a
-            href="#capabilities"
-            className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all font-sans"
-          >
-            Capabilities
-          </a>
-          <button
-            type="button"
-            onClick={() => navigate('/workspace/projects')}
-            className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
-          >
-            Projects
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/workspace/inventory')}
-            className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
-          >
-            Workstation
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/workspace/custody/requests')}
-            className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
-          >
-            Requisitions
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/workspace/custody/active')}
-            className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
-          >
-            Active Loans
-          </button>
+          {currentConfig.navItems.map((item, idx) =>
+            item.href ? (
+              <a
+                key={idx}
+                href={item.href}
+                className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all font-sans"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => navigate(item.path)}
+                className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
+              >
+                {item.label}
+              </button>
+            )
+          )}
         </nav>
 
         {/* Right: Actions */}
@@ -305,18 +610,28 @@ export function HeroPage() {
               Sign In
             </button>
           )}
-          {/* 'Enter Workspace' Pill Button */}
+          {/* Action Button: Routes directly to operational hub */}
           <button
-            onClick={() => navigate('/workspace')}
+            onClick={() => {
+              if (currentUser?.role === 'Lab Assistant' || activePersona === 'assistant') {
+                navigate('/workspace/operations/dispatch');
+              } else if (currentUser?.role === 'Faculty' || activePersona === 'faculty') {
+                navigate('/workspace/operations/approvals');
+              } else {
+                navigate('/workspace');
+              }
+            }}
             className="bg-white text-black font-semibold text-xs tracking-wider uppercase px-5 py-2.5 rounded-full hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.18)] hover:shadow-[0_0_30px_rgba(232,213,183,0.4)] cursor-pointer"
           >
-            Enter Workspace
+            {activePersona === 'assistant' || currentUser?.role === 'Lab Assistant'
+              ? 'Launch Desk'
+              : 'Enter Workspace'}
           </button>
         </div>
       </header>
 
       {/* ─────────────────────────────────────────────────────────────────────────
-          HERO SECTION
+          HERO SECTION (Role Perspective Switcher & Dynamic Content)
       ───────────────────────────────────────────────────────────────────────── */}
       <section
         id="hardware-mesh"
@@ -324,43 +639,85 @@ export function HeroPage() {
         onMouseMove={handleMouseMove}
         className="relative pt-36 pb-28 px-6 sm:px-12 flex flex-col items-center z-10 min-h-screen"
       >
+        {/* Apple Segmented Persona Perspective Selector */}
+        <div className="inline-flex p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl mb-8 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+          <button
+            type="button"
+            onClick={() => setActivePersona('assistant')}
+            className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all cursor-pointer flex items-center gap-2 ${
+              activePersona === 'assistant'
+                ? 'bg-white text-black shadow-md'
+                : 'text-zinc-400 hover:text-white'
+            }`}
+          >
+            <Terminal className="w-3.5 h-3.5" />
+            <span>Lab Assistant Operations</span>
+            {currentUser?.role === 'Lab Assistant' && (
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActivePersona('student')}
+            className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all cursor-pointer flex items-center gap-2 ${
+              activePersona === 'student'
+                ? 'bg-white text-black shadow-md'
+                : 'text-zinc-400 hover:text-white'
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5" />
+            <span>Student Custody & Bench</span>
+            {currentUser?.role === 'Student' && (
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActivePersona('faculty')}
+            className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all cursor-pointer flex items-center gap-2 ${
+              activePersona === 'faculty'
+                ? 'bg-white text-black shadow-md'
+                : 'text-zinc-400 hover:text-white'
+            }`}
+          >
+            <Shield className="w-3.5 h-3.5" />
+            <span>Faculty & Mentorship</span>
+            {(currentUser?.role === 'Faculty' || currentUser?.role === 'HoD / Admin') && (
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            )}
+          </button>
+        </div>
 
-
-        {/* Headline: Matched to Clash Display (Website Font DNA) */}
+        {/* Headline: Matched to Clash Display */}
         <h1
           className="font-display font-bold tracking-tight text-white leading-[1.04] text-center max-w-5xl mx-auto mb-6"
           style={{ fontSize: 'clamp(2.5rem, 6.5vw, 5.5rem)' }}
         >
-          Autonomous Hardware Custody &{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
-            Lab Telemetry
-          </span>
+          {currentConfig.headline}
         </h1>
 
         {/* Subtext */}
         <p className="text-gray-400 text-base sm:text-lg font-normal text-center max-w-2xl mx-auto mb-10 leading-relaxed tracking-wide font-sans">
-          The unified operating system for academic laboratories. Real-time instrument
-          tracking, student capstone requisitions, bench custody countdowns, and
-          zero-trust hardware dispatch.
+          {currentConfig.subtext}
         </p>
 
         {/* Dual-Button CTA Group */}
         <div className="flex flex-wrap items-center justify-center gap-4 mb-12 sm:mb-16">
-          {/* Solid White CTA */}
+          {/* Solid White Primary CTA */}
           <button
-            onClick={() => navigate('/workspace')}
+            onClick={() => navigate(currentConfig.primaryCta.path)}
             className="bg-white text-[#0a0a0a] px-8 py-3.5 rounded-full font-semibold text-sm tracking-wider uppercase hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_35px_rgba(255,255,255,0.22)] hover:shadow-[0_0_40px_rgba(232,213,183,0.45)] flex items-center gap-2 cursor-pointer group"
           >
-            <span>Enter Lab Workspace</span>
-            <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            <span>{currentConfig.primaryCta.label}</span>
+            <currentConfig.primaryCta.icon className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </button>
 
-          {/* Bordered CTA */}
+          {/* Bordered Secondary CTA */}
           <a
-            href="#capabilities"
+            href={currentConfig.secondaryCta.href}
             className="border border-white/20 hover:border-[#a78b71] bg-white/[0.02] text-white px-8 py-3.5 rounded-full font-medium text-sm tracking-wider uppercase hover:text-[#e8d5b7] transition-all duration-300 backdrop-blur-[10px] flex items-center gap-2 cursor-pointer group"
           >
-            <span>Browse Capabilities</span>
+            <span>{currentConfig.secondaryCta.label}</span>
             <ChevronDown className="w-4 h-4 text-[#a78b71] group-hover:translate-y-0.5 transition-transform" />
           </a>
         </div>
@@ -375,123 +732,37 @@ export function HeroPage() {
       >
         <div className="text-center mb-20 max-w-3xl mx-auto px-4">
           <h2 className="font-display font-semibold text-3xl sm:text-4xl lg:text-[44px] text-white leading-[1.25] tracking-[-0.01em]">
-            From Project Proposal{' '}
-            <span className="block mt-1.5 text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
-              to Active Bench Custody
-            </span>
+            {currentConfig.capabilitiesTitle}
           </h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-          {/* Card 1: Projects */}
-          <div
-            onClick={() => navigate('/workspace/projects')}
-            className="gold-glass-card rounded-[24px] p-6 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between hover:-translate-y-1"
-          >
-            <div>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
-                <FolderGit2 className="w-5 h-5" />
+          {currentConfig.cards.map((card) => {
+            const CardIcon = card.icon;
+            return (
+              <div
+                key={card.id}
+                onClick={() => navigate(card.path)}
+                className="gold-glass-card rounded-[24px] p-6 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between hover:-translate-y-1"
+              >
+                <div>
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
+                    <CardIcon className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
+                    {card.title}
+                  </h3>
+                  <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
+                    {card.description}
+                  </p>
+                </div>
+                <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[11px] font-sans font-medium tracking-wide text-[#c9b8a0] group-hover:text-[#e8d5b7] transition-colors">
+                  <span>{card.badge}</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
-              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
-                Projects
-              </h3>
-              <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
-                Form Capstone and Mini Project teams, assemble collaborative rosters, and compile required hardware Bills of Materials.
-              </p>
-            </div>
-            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[11px] font-sans font-medium tracking-wide text-[#c9b8a0] group-hover:text-[#e8d5b7] transition-colors">
-              <span>CAPSTONES & BOM</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-
-          {/* Card 2: Workstation */}
-          <div
-            onClick={() => navigate('/workspace/inventory')}
-            className="gold-glass-card rounded-[24px] p-6 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between hover:-translate-y-1"
-          >
-            <div>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
-                <Cpu className="w-5 h-5" />
-              </div>
-              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
-                Workstation
-              </h3>
-              <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
-                Search real-time inventory across AIML, IoT, and Embedded labs for available FPGAs, microcontrollers, sensors, and instruments.
-              </p>
-            </div>
-            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[11px] font-sans font-medium tracking-wide text-[#c9b8a0] group-hover:text-[#e8d5b7] transition-colors">
-              <span>LAB INVENTORY</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-
-          {/* Card 3: Requisitions */}
-          <div
-            onClick={() => navigate('/workspace/custody/requests')}
-            className="gold-glass-card rounded-[24px] p-6 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between hover:-translate-y-1"
-          >
-            <div>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
-                <Inbox className="w-5 h-5" />
-              </div>
-              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
-                Requisitions
-              </h3>
-              <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
-                Submit component baskets for faculty guide review, track one-tap approvals, and route approved items to the dispatch desk.
-              </p>
-            </div>
-            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[11px] font-sans font-medium tracking-wide text-[#c9b8a0] group-hover:text-[#e8d5b7] transition-colors">
-              <span>FACULTY APPROVALS</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-
-          {/* Card 4: Waitlist */}
-          <div
-            onClick={() => navigate('/workspace/custody/reservations')}
-            className="gold-glass-card rounded-[24px] p-6 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between hover:-translate-y-1"
-          >
-            <div>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
-                <BookmarkCheck className="w-5 h-5" />
-              </div>
-              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
-                Waitlist
-              </h3>
-              <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
-                Reserve high-demand equipment, monitor live queue positioning, and automatically claim available instruments upon check-in.
-              </p>
-            </div>
-            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[11px] font-sans font-medium tracking-wide text-[#c9b8a0] group-hover:text-[#e8d5b7] transition-colors">
-              <span>EQUIPMENT QUEUE</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-
-          {/* Card 5: My Bench */}
-          <div
-            onClick={() => navigate('/workspace/custody/active')}
-            className="gold-glass-card rounded-[24px] p-6 transition-all duration-500 hover:border-[#a78b71]/60 group cursor-pointer flex flex-col justify-between hover:-translate-y-1"
-          >
-            <div>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#a78b71]/10 text-[#c9b8a0] border border-[#a78b71]/20 mb-5 group-hover:scale-110 group-hover:border-[#a78b71]/50 transition-all duration-300">
-                <Clock className="w-5 h-5" />
-              </div>
-              <h3 className="font-display font-bold text-xl text-white tracking-tight mb-2.5 group-hover:text-[#e8d5b7] transition-colors">
-                My Bench
-              </h3>
-              <p className="text-xs text-gray-400 font-normal leading-relaxed font-sans">
-                Monitor active equipment custody, observe real-time countdown return timers, and report component defects with zero penalty strikes.
-              </p>
-            </div>
-            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[11px] font-sans font-medium tracking-wide text-[#c9b8a0] group-hover:text-[#e8d5b7] transition-colors">
-              <span>ACTIVE CUSTODY</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
+            );
+          })}
         </div>
       </section>
 
@@ -561,6 +832,20 @@ export function HeroPage() {
                   </span>
                   <span className="text-[11px] text-stone-500">
                     High-res GPIO pin maps & component timing sheets
+                  </span>
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setActivePolicyModal(POLICIES.returnResetSop)}
+                  className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
+                >
+                  <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
+                    5-Point Return & Reset SOP
+                  </span>
+                  <span className="text-[11px] text-stone-500">
+                    Pin integrity, digital sanitization & dynamic restock
                   </span>
                 </button>
               </li>
