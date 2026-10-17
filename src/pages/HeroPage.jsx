@@ -16,18 +16,120 @@ import {
   Server,
   Shield,
   Terminal,
+  X,
   Zap,
 } from 'lucide-react';
 import { InteractiveWavesBackground } from '../components/canvas/InteractiveWavesBackground';
 import { useAuth } from '../context/AuthContext';
+
+const POLICIES = {
+  sla: {
+    id: 'sla',
+    tag: 'Institutional Custody Charter',
+    title: 'Fair-Use Lending Terms & SLA',
+    subtitle: 'Autonomous allocation, standard checkout limits, and renewal regulations.',
+    sections: [
+      {
+        heading: 'Standard Bench Duration',
+        body: 'Short-term equipment loans are provisioned for an initial duration of 72 hours. Equipment must be checked back in at Counter Station LA-04 or renewed digitally.',
+      },
+      {
+        heading: 'Capstone & Research Allocation',
+        body: 'Dedicated Capstone teams with faculty-approved Bills of Materials (BOM) receive semester-long bench allocation subject to bi-weekly progress checks.',
+      },
+      {
+        heading: 'Grace Period & Strike Immunity',
+        body: 'No overdue penalty strikes are assessed if an extension permit is submitted at least 24 hours prior to the scheduled return deadline.',
+      },
+    ],
+  },
+  esd: {
+    id: 'esd',
+    tag: 'Laboratory Safety Directives',
+    title: 'ESD & Clean Bench Protocol',
+    subtitle: 'Static grounding, voltage regulation, and physical hardware protection rules.',
+    sections: [
+      {
+        heading: 'Anti-Static Grounding',
+        body: 'Conductive ESD wrist straps connected to earth ground are strictly mandatory before handling unshielded FPGA boards, RF testbeds, or CMOS microcontrollers.',
+      },
+      {
+        heading: 'Current-Limited Power Supplies',
+        body: 'All programmable DC bench power supplies must be pre-configured with current compliance limits prior to connecting student prototype circuits.',
+      },
+      {
+        heading: 'Defect Immediate Reporting',
+        body: 'In the event of thermal runaway, burnt traces, or component smoking, cut power immediately and log the incident through Defect Triage with zero penalty.',
+      },
+    ],
+  },
+  appeals: {
+    id: 'appeals',
+    tag: 'Custody Resolution Matrix',
+    title: 'Dispute Appeals & Penalty Waivers',
+    subtitle: 'Transparent, zero-retaliation review for unintended delays or hardware anomalies.',
+    sections: [
+      {
+        heading: 'No-Fault Defect Triage',
+        body: 'Hardware failures discovered during standard laboratory bench operation carry 0 penalty strikes when reported promptly via the RMA bench.',
+      },
+      {
+        heading: 'Exam & Institutional Waivers',
+        body: 'Return delays caused by certified institutional examinations, hospitalizations, or departmental hackathons qualify for expedited strike waivers.',
+      },
+      {
+        heading: 'Academic Council Review',
+        body: 'Formal appeals are reviewed every Friday by the Department Academic Council and Faculty Mentors. Approvals immediately restore pristine custody ratings.',
+      },
+    ],
+  },
+  ip: {
+    id: 'ip',
+    tag: 'Intellectual Property Policy',
+    title: 'Capstone IP & Open Source Attribution',
+    subtitle: 'Institutional asset custody boundaries and 100% student code ownership.',
+    sections: [
+      {
+        heading: 'Hardware Institutional Ownership',
+        body: 'All physical evaluation boards, development kits, test equipment, and non-consumable components remain the permanent property of the institution.',
+      },
+      {
+        heading: 'Student Intellectual Property',
+        body: 'All firmware, Verilog/VHDL code, machine learning weights, schematic designs, and software algorithms created by students belong 100% to the student team.',
+      },
+      {
+        heading: 'Academic Publication Credit',
+        body: 'Conference papers and patent disclosures using LabTrack facility equipment are requested to include the standard institutional facility acknowledgement.',
+      },
+    ],
+  },
+};
 
 export function HeroPage() {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser, logout } = useAuth();
   const [digestEmail, setDigestEmail] = useState('');
   const [digestSubscribed, setDigestSubscribed] = useState(false);
+  const [activePolicyModal, setActivePolicyModal] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const heroContainerRef = useRef(null);
+
+  // Keyboard Escape and body scroll lock for Cupertino Policy Modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setActivePolicyModal(null);
+      }
+    };
+    if (activePolicyModal) {
+      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'unset';
+    };
+  }, [activePolicyModal]);
 
   // Auth gate: First is auth page, then hero page
   useEffect(() => {
@@ -385,10 +487,10 @@ export function HeroPage() {
               Department of Computer Science & Engineering • Physical Computing & Embedded Systems Division.
             </p>
 
-            {/* Live Station Status Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-sans font-medium text-emerald-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Counter Station: Active • LA-04</span>
+            {/* Live Station Status Pill - Apple Cupertino Dark Glass */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-[11px] font-sans font-medium text-stone-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+              <span>Counter Station: LA-04 • Operational</span>
             </div>
 
             <div className="flex items-center gap-2.5 pt-1 text-stone-400 text-xs font-sans">
@@ -450,7 +552,7 @@ export function HeroPage() {
               <li>
                 <button
                   type="button"
-                  onClick={() => alert("Fair-Use Lending Terms & SLA:\n\n• Short-term loans: 72h max checkout with 1 extension permit.\n• Capstone allocation: Full semester custody linked to approved PRJ Bill of Materials.\n• Zero overdue penalties when extension is requested 24h prior to return deadline.")}
+                  onClick={() => setActivePolicyModal(POLICIES.sla)}
                   className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
                 >
                   <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
@@ -464,7 +566,7 @@ export function HeroPage() {
               <li>
                 <button
                   type="button"
-                  onClick={() => alert("ESD & High-Voltage Bench Safety Protocol:\n\n• Anti-static wrist straps mandatory on all FPGA & CMOS benches.\n• Current-limited power supplies must be pre-set before device connection.\n• Report burnt traces or component smoking immediately to Counter LA-04.")}
+                  onClick={() => setActivePolicyModal(POLICIES.esd)}
                   className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
                 >
                   <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
@@ -478,7 +580,7 @@ export function HeroPage() {
               <li>
                 <button
                   type="button"
-                  onClick={() => alert("Penalty Contest & Dispute Resolution:\n\n• Accidental hardware defects reported via Bench Triage carry 0 penalty strikes.\n• Involuntary return delays caused by institutional exam schedules qualify for automatic strike waivers.\n• Written appeals reviewed weekly by the Department Academic Council.")}
+                  onClick={() => setActivePolicyModal(POLICIES.appeals)}
                   className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
                 >
                   <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
@@ -492,7 +594,7 @@ export function HeroPage() {
               <li>
                 <button
                   type="button"
-                  onClick={() => alert("Capstone Attribution & Open Source IP:\n\n• Hardware components provided by LabTrack remain institutional property.\n• Firmware, Verilog, and machine learning models created by students belong 100% to the student group.\n• Research papers must include standard institutional equipment acknowledgement.")}
+                  onClick={() => setActivePolicyModal(POLICIES.ip)}
                   className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
                 >
                   <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
@@ -536,8 +638,8 @@ export function HeroPage() {
               </button>
             </form>
             {digestSubscribed && (
-              <div className="text-xs font-sans text-emerald-400 tracking-normal animate-fadeIn">
-                ✓ Enrolled in Institutional Procurement & Maintenance Circular.
+              <div className="text-xs font-sans text-[#c9b8a0] tracking-normal animate-fadeIn flex items-center gap-1.5">
+                <span>✓ Enrolled in Institutional Procurement & Maintenance Circular.</span>
               </div>
             )}
             <div className="pt-2 text-[11px] text-stone-500 font-sans">
@@ -553,8 +655,8 @@ export function HeroPage() {
           </div>
           <div className="flex items-center gap-6 text-[11px]">
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>Lab Clusters Nominal</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+              <span>Lab Clusters Operational</span>
             </span>
             <span>•</span>
             <span>Zero-Trust Hardware Dispatch</span>
@@ -563,6 +665,83 @@ export function HeroPage() {
           </div>
         </div>
       </footer>
+
+      {/* ─────────────────────────────────────────────────────────────────────────
+          CUPERTINO GLASS POLICY MODAL DIALOG (Zero Browser Alerts)
+      ───────────────────────────────────────────────────────────────────────── */}
+      {activePolicyModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="policy-dialog-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-fadeIn"
+          onClick={() => setActivePolicyModal(null)}
+        >
+          <div
+            className="relative w-full max-w-lg rounded-3xl bg-[#0d0d0d]/95 border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.85)] backdrop-blur-2xl p-6 sm:p-8 overflow-hidden text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top Specular Bevel Line */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+
+            {/* Header: Category Badge & Close Button */}
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#a78b71]/10 border border-[#a78b71]/30 text-[#e8d5b7] text-[11px] font-medium tracking-wide uppercase font-sans">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+                <span>{activePolicyModal.tag}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActivePolicyModal(null)}
+                className="w-8 h-8 rounded-full bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 flex items-center justify-center text-stone-400 hover:text-white transition-colors cursor-pointer -mr-1 -mt-1"
+                aria-label="Close dialog"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Title & Subtitle */}
+            <h3
+              id="policy-dialog-title"
+              className="font-display font-semibold text-2xl text-white tracking-tight mb-2"
+            >
+              {activePolicyModal.title}
+            </h3>
+            <p className="text-xs text-stone-400 font-normal leading-relaxed font-sans mb-6">
+              {activePolicyModal.subtitle}
+            </p>
+
+            {/* Policy Sections */}
+            <div className="space-y-3 mb-6">
+              {activePolicyModal.sections.map((section, idx) => (
+                <div
+                  key={idx}
+                  className="p-3.5 rounded-2xl bg-white/[0.025] border border-white/5 space-y-1"
+                >
+                  <div className="text-xs font-medium text-stone-200 font-sans flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-[#c9b8a0]" />
+                    <span>{section.heading}</span>
+                  </div>
+                  <p className="text-[12px] text-stone-400 font-normal leading-relaxed font-sans pl-3">
+                    {section.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Dismiss CTA */}
+            <div className="flex justify-end pt-2 border-t border-white/5">
+              <button
+                type="button"
+                onClick={() => setActivePolicyModal(null)}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-white text-black font-semibold text-xs tracking-wider uppercase hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] cursor-pointer"
+              >
+                Understood & Acknowledged
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
