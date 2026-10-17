@@ -104,6 +104,43 @@ export function HeroPage() {
           </span>
         </div>
 
+        {/* Center: Apple-Grade Glass Segmented Navigation Pill */}
+        <nav className="hidden lg:flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+          <a
+            href="#capabilities"
+            className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all font-sans"
+          >
+            Capabilities
+          </a>
+          <button
+            type="button"
+            onClick={() => navigate('/workspace/inventory')}
+            className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
+          >
+            Workstation
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/workspace/custody/active')}
+            className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
+          >
+            Active Loans
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/workspace/custody/requisitions')}
+            className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
+          >
+            Requisitions
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/workspace/projects')}
+            className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
+          >
+            Projects
+          </button>
+        </nav>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-3 sm:gap-4">
