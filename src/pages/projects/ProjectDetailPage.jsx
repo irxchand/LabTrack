@@ -16,11 +16,12 @@ import {
   Layers,
   AlertCircle,
   FileCheck2,
+  Pencil,
 } from 'lucide-react';
 
 export function ProjectDetailPage() {
   const { projectId } = useParams();
-  const { projects, activeLoans, inventory, allocateHardwareToProject } = useLabData();
+  const { projects, activeLoans, inventory, allocateHardwareToProject, updateProjectTitle } = useLabData();
   const { currentUser, role } = useAuth();
   const isStudent = !role || role === 'Student';
   const isFaculty = role === 'Faculty';
@@ -32,6 +33,10 @@ export function ProjectDetailPage() {
   const [allocNotes, setAllocNotes] = useState('Allocated by faculty mentor for sprint validation');
   const [isSubmittingAlloc, setIsSubmittingAlloc] = useState(false);
   const [allocError, setAllocError] = useState('');
+
+  // Title editing state
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
 
   const project = projects.find((p) => p.id === projectId);
   const assignedLoans = activeLoans.filter((l) => l.projectId === projectId);
@@ -48,6 +53,14 @@ export function ProjectDetailPage() {
       project.id === currentUser?.projectId;
     return isMentor || isLead;
   }, [isFaculty, project, currentUser]);
+
+  const canEditProject = useMemo(() => {
+    if (!project) return false;
+    if (project.teamLeaderPrn === userPrn) return true;
+    if (isFacultyLeadOrMentor) return true;
+    if (role === 'HoD / Admin') return true;
+    return false;
+  }, [project, userPrn, isFacultyLeadOrMentor, role]);
 
   const isUserProject = (p) => {
     if (!p) return false;
@@ -170,9 +183,62 @@ export function ProjectDetailPage() {
                 {project.academicTerm || 'Autumn 2026'}
               </span>
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1">
-              {project.title}
-            </h1>
+            {isEditingTitle ? (
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (!editedTitle.trim()) return;
+                  await updateProjectTitle(project.id, editedTitle.trim());
+                  setIsEditingTitle(false);
+                }}
+                className="flex items-center gap-2 mt-2 flex-wrap"
+              >
+                <input
+                  type="text"
+                  autoFocus
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  placeholder="Enter project name..."
+                  className="px-3.5 py-1.5 rounded-xl bg-white/[0.06] border border-white/25 text-white font-display text-xl sm:text-2xl font-semibold focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/30 min-w-[280px] sm:min-w-[420px]"
+                />
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="submit"
+                    className="px-3.5 py-1.5 rounded-full bg-white text-black font-semibold text-xs transition-transform active:scale-95 shadow-sm flex items-center gap-1 cursor-pointer"
+                  >
+                    <Check className="w-3.5 h-3.5 text-black" />
+                    <span>Save</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingTitle(false)}
+                    className="p-1.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-zinc-400 hover:text-white border border-white/10 transition-colors cursor-pointer"
+                    title="Cancel"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="flex items-center gap-3 mt-1 group/title">
+                <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+                  {project.title}
+                </h1>
+                {canEditProject && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditedTitle(project.title);
+                      setIsEditingTitle(true);
+                    }}
+                    className="p-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.1] text-zinc-400 hover:text-white border border-white/10 hover:border-white/25 transition-all cursor-pointer opacity-70 group-hover/title:opacity-100 shadow-sm"
+                    title="Change Project Name"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

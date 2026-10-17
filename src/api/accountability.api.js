@@ -191,4 +191,19 @@ export const accountabilityApi = {
       return newProject;
     });
   },
+
+  updateProjectTitle: async (projectId, newTitle, actorName, actorRole) => {
+    return apiClient.simulatedFetch('UPDATE_PROJECT_TITLE', () => {
+      const projects = getStored(PROJECTS_KEY, INITIAL_PROJECTS);
+      const idx = projects.findIndex((p) => p.id === projectId);
+      if (idx !== -1) {
+        const oldTitle = projects[idx].title;
+        projects[idx].title = newTitle;
+        saveStored(PROJECTS_KEY, projects);
+        appendAudit('PROJECT_RENAMED', projectId, `Renamed project from "${oldTitle}" to "${newTitle}"`, actorRole || 'Team Lead', actorName || 'User');
+        return projects[idx];
+      }
+      return null;
+    });
+  },
 };

@@ -552,6 +552,37 @@ export function LabDataProvider({ children }) {
     return null;
   };
 
+  // Rename / Update Project Title
+  const updateProjectTitle = async (projectId, newTitle) => {
+    if (!newTitle || !newTitle.trim()) {
+      addToast({
+        title: 'Invalid Title',
+        message: 'Project title cannot be empty.',
+        type: 'warning',
+      });
+      return false;
+    }
+    const cleanTitle = newTitle.trim();
+    setProjects((prev) =>
+      prev.map((p) => (p.id === projectId ? { ...p, title: cleanTitle } : p))
+    );
+    const res = await accountabilityApi.updateProjectTitle(
+      projectId,
+      cleanTitle,
+      currentUser?.name,
+      currentUser?.role
+    );
+    if (res.ok) {
+      addToast({
+        title: 'Project Title Updated',
+        message: `Project renamed to "${cleanTitle}".`,
+        type: 'success',
+      });
+      return true;
+    }
+    return false;
+  };
+
   return (
     <LabDataContext.Provider
       value={{
@@ -591,6 +622,7 @@ export function LabDataProvider({ children }) {
         retireAsset,
         addNewInventoryItem,
         createProject,
+        updateProjectTitle,
         // Facility State
         selectedFacility,
         setSelectedFacility: changeFacility,
