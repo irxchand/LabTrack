@@ -639,19 +639,9 @@ export function HeroPage() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-xs font-sans text-stone-500 gap-4">
+        <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex items-center justify-between text-xs font-sans text-stone-500">
           <div>
-            © {new Date().getFullYear()} LabTrack Academic Hardware OS • Department of Computer Science & Engineering.
-          </div>
-          <div className="flex items-center gap-6 text-[11px]">
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-              <span>Lab Clusters Operational</span>
-            </span>
-            <span>•</span>
-            <span>Zero-Trust Hardware Dispatch</span>
-            <span>•</span>
-            <span>ISO 9001 Lab Compliance</span>
+            © {new Date().getFullYear()} LabTrack Academic Hardware OS • Department of Computer Science & Engineering. All rights reserved.
           </div>
         </div>
       </footer>
