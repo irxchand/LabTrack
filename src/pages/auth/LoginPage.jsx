@@ -16,12 +16,6 @@ export function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
-  const personas = [
-    { role: 'Student', idTag: '202401048', name: 'Rahul Sharma' },
-    { role: 'Faculty', idTag: 'FAC-AI-019', name: 'Dr. Anjali Dalvi' },
-    { role: 'Lab Assistant', idTag: 'LA-04', name: 'Ramesh Patil' },
-    { role: 'HoD / Admin', idTag: 'HOD-AIML-001', name: 'Dr. K. V. Ramanathan' },
-  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -152,7 +146,7 @@ export function LoginPage() {
             </form>
 
             {/* Footer Links */}
-            <div className="mt-5 text-center space-y-2">
+            <div className="mt-6 text-center space-y-2">
               <div>
                 <Link
                   to="/auth/reset-password"
@@ -170,38 +164,6 @@ export function LoginPage() {
                 >
                   Need an account? Contact lab administrator
                 </button>
-              </div>
-            </div>
-
-            {/* Subtle Demo Accounts Quick-Fill Helper */}
-            <div className="mt-6 pt-5 border-t border-white/[0.08] space-y-2">
-              <div className="flex items-center justify-between text-[11px] text-zinc-500 font-sans">
-                <span>Demo Quick-Fill</span>
-                <span className="text-[10px] text-zinc-600 font-mono">1-click test</span>
-              </div>
-              <div className="grid grid-cols-4 gap-1.5">
-                {personas.map((p) => {
-                  const isSelected = username === p.idTag;
-                  return (
-                    <button
-                      key={p.role}
-                      type="button"
-                      onClick={() => {
-                        setUsername(p.idTag);
-                        setPassword('password123');
-                        setErrorMessage('');
-                      }}
-                      className={`py-1.5 px-1 rounded-xl text-[11px] font-sans transition-all truncate cursor-pointer border text-center ${
-                        isSelected
-                          ? 'bg-white text-black font-semibold border-white shadow-sm'
-                          : 'bg-white/[0.03] text-zinc-400 border-white/5 hover:border-white/20 hover:text-white'
-                      }`}
-                      title={`${p.name} • ${p.role} (${p.idTag})`}
-                    >
-                      {p.role === 'Lab Assistant' ? 'Assistant' : p.role === 'HoD / Admin' ? 'HoD' : p.role}
-                    </button>
-                  );
-                })}
               </div>
             </div>
           </div>
