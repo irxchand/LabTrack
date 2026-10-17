@@ -370,20 +370,22 @@ export function TopHeader() {
 
         {/* Right: Requisition Basket, User Identity, Direct Logout */}
         <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
-          {/* Requisition Basket Shortcut */}
-          <button
-            type="button"
-            onClick={() => setIsBasketOpen(true)}
-            className="relative p-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white transition-all cursor-pointer"
-            title="Open Requisition Kit"
-          >
-            <ShoppingBag className="w-4 h-4 text-[#c9b8a0]" />
-            {basket.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#f5e6c8] text-black text-[10px] font-bold flex items-center justify-center shadow-sm">
-                {basket.length}
-              </span>
-            )}
-          </button>
+          {/* Requisition Basket Shortcut (Student Only) */}
+          {role === 'Student' && (
+            <button
+              type="button"
+              onClick={() => setIsBasketOpen(true)}
+              className="relative p-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white transition-all cursor-pointer"
+              title="Open Requisition Kit"
+            >
+              <ShoppingBag className="w-4 h-4 text-[#c9b8a0]" />
+              {basket.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#f5e6c8] text-black text-[10px] font-bold flex items-center justify-center shadow-sm">
+                  {basket.length}
+                </span>
+              )}
+            </button>
+          )}
 
           <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
 

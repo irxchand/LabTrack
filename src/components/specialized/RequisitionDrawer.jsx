@@ -27,7 +27,11 @@ export function RequisitionDrawer() {
     projects,
     activeLoans,
   } = useLabData();
-  const { currentUser } = useAuth();
+  const { currentUser, role } = useAuth();
+
+  if (role !== 'Student') {
+    return null;
+  }
 
   const userProjects = useMemo(() => {
     if (!projects || projects.length === 0) return [];

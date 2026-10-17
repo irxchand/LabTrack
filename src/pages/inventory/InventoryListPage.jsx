@@ -297,13 +297,15 @@ export function InventoryListPage({ initialClassification = null }) {
           >
             <Eye className="w-3.5 h-3.5" />
           </button>
-          <button
-            onClick={() => addToBasket(row, 1)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-inter text-[11px] font-bold transition-all shadow-sm cursor-pointer"
-          >
-            <ShoppingBag className="w-3 h-3" />
-            <span>Requisition</span>
-          </button>
+          {role === 'Student' && (
+            <button
+              onClick={() => addToBasket(row, 1)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-inter text-[11px] font-bold transition-all shadow-sm cursor-pointer"
+            >
+              <ShoppingBag className="w-3 h-3" />
+              <span>Requisition</span>
+            </button>
+          )}
         </div>
       ),
     },
@@ -472,17 +474,31 @@ export function InventoryListPage({ initialClassification = null }) {
                 </span>
               </div>
 
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  addToBasket(item, 1);
-                }}
-                className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-tight transition-all shadow-lg active:scale-95 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Requisition</span>
-              </button>
+              {role === 'Student' ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addToBasket(item, 1);
+                  }}
+                  className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-tight transition-all shadow-lg active:scale-95 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Requisition</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setInspectedItem(item);
+                  }}
+                  className="px-3.5 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/15 text-white border border-white/10 font-medium text-xs tracking-tight transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
+                >
+                  <Eye className="w-3.5 h-3.5 text-zinc-300" />
+                  <span>Inspect</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -504,7 +520,9 @@ export function InventoryListPage({ initialClassification = null }) {
             Hardware Workstation
           </h1>
           <p className="text-[13px] text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">
-            Browse laboratory computing modules, developer boards, and prototyping stock. Stage components directly into your requisition kit.
+            {role === 'Student'
+              ? 'Browse laboratory computing modules, developer boards, and prototyping stock. Stage components directly into your requisition kit.'
+              : 'Browse laboratory computing modules, developer boards, and prototyping stock. Inspect hardware specifications and storage coordinates.'}
           </p>
         </div>
 
@@ -693,17 +711,19 @@ export function InventoryListPage({ initialClassification = null }) {
               >
                 Close
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  addToBasket(inspectedItem, 1);
-                  setInspectedItem(null);
-                }}
-                className="py-2.5 px-5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs tracking-wide transition-all shadow-sm flex items-center gap-2 cursor-pointer active:scale-[0.99]"
-              >
-                <ShoppingBag className="w-3.5 h-3.5" />
-                <span>Add to Requisition Kit</span>
-              </button>
+              {role === 'Student' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    addToBasket(inspectedItem, 1);
+                    setInspectedItem(null);
+                  }}
+                  className="py-2.5 px-5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs tracking-wide transition-all shadow-sm flex items-center gap-2 cursor-pointer active:scale-[0.99]"
+                >
+                  <ShoppingBag className="w-3.5 h-3.5" />
+                  <span>Add to Requisition Kit</span>
+                </button>
+              )}
             </div>
           </div>
         </Modal>
