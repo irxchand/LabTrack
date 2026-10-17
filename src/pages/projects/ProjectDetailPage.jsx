@@ -176,17 +176,6 @@ export function ProjectDetailPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            {project.isFacultyProject ? (
-              <div className="px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-right backdrop-blur-md">
-                <div className="text-zinc-500 text-[10px] font-sans uppercase tracking-wider">Faculty Governance</div>
-                <div className="font-sans text-xs font-semibold text-[#f5e6c8]">Principal Investigator</div>
-              </div>
-            ) : (
-              <div className="px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-right backdrop-blur-md">
-                <div className="text-zinc-500 text-[10px] font-sans uppercase tracking-wider">Student Team Score</div>
-                <div className="font-sans text-sm font-bold text-white">{project.reliabilityScore || 92}%</div>
-              </div>
-            )}
             <div className="px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-right backdrop-blur-md">
               <div className="text-zinc-500 text-[10px] font-sans uppercase tracking-wider">Custody Quota</div>
               <div className="font-sans text-sm font-semibold text-white">

@@ -488,12 +488,12 @@ export function ProjectDirectoryPage() {
                         <span className="w-1.5 h-1.5 rounded-full bg-white" />
                         <span>Faculty Lab</span>
                       </span>
-                    ) : (
+                    ) : !isFaculty ? (
                       <span className="px-3 py-1 rounded-full text-[11px] font-sans font-medium bg-white/[0.04] text-zinc-300 border border-white/10 flex items-center gap-1.5 shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
                         <span>Team {project.reliabilityScore || 92}%</span>
                       </span>
-                    )}
+                    ) : null}
                   </div>
                 </div>
 
