@@ -170,14 +170,18 @@ export function DefectManagementPage() {
       accessor: 'repairStatus',
       width: '160px',
       render: (row) => {
-        let badgeColor = 'bg-white/[0.04] text-zinc-300 border-white/10';
-        if (row.repairStatus === 'Repaired') badgeColor = 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
-        else if (row.repairStatus === 'Under Inspection') badgeColor = 'bg-amber-500/15 text-amber-300 border-amber-500/30';
-        else if (row.repairStatus === 'Decommissioned') badgeColor = 'bg-rose-500/15 text-rose-300 border-rose-500/30';
-        else if (row.repairStatus === 'Sent to Vendor') badgeColor = 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30';
+        const dotColor =
+          row.repairStatus === 'Repaired'
+            ? 'bg-emerald-400'
+            : row.repairStatus === 'Under Inspection'
+            ? 'bg-amber-400'
+            : row.repairStatus === 'Decommissioned'
+            ? 'bg-rose-400'
+            : 'bg-indigo-400';
 
         return (
-          <span className={`px-2.5 py-0.5 rounded-full font-sans text-[11px] font-semibold border ${badgeColor}`}>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-sans text-[11px] font-medium border border-white/10 bg-white/[0.04] text-zinc-300">
+            <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
             {row.repairStatus}
           </span>
         );
@@ -192,7 +196,7 @@ export function DefectManagementPage() {
           {row.repairStatus !== 'Repaired' && row.repairStatus !== 'Decommissioned' && (
             <button
               onClick={() => handleInstantRestock(row)}
-              className="px-2.5 py-1 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition-all text-[11px] font-semibold flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1 rounded-full bg-white hover:bg-neutral-200 text-black transition-all text-[11px] font-semibold flex items-center gap-1 cursor-pointer shadow-sm"
               title="1-Click Restock to Active Inventory"
             >
               <Check className="w-3 h-3 stroke-[2.5]" />
@@ -270,52 +274,11 @@ export function DefectManagementPage() {
       </div>
 
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* 2. TELEMETRY METRICS CARDS RIBBON                             */}
-      {/* ───────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {/* Total Quarantine */}
-        <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl space-y-1">
-          <div className="text-[11px] font-sans uppercase tracking-wider text-zinc-400 font-semibold">
-            Total Incident Tickets
-          </div>
-          <div className="text-2xl font-bold text-white font-sans">{stats.total}</div>
-          <div className="text-[11px] text-zinc-500">All registered bench defects</div>
-        </div>
-
-        {/* Critical / Bricked */}
-        <div className="p-4 rounded-2xl bg-rose-500/[0.04] border border-rose-500/20 backdrop-blur-xl space-y-1">
-          <div className="text-[11px] font-sans uppercase tracking-wider text-rose-300 font-semibold">
-            Critical / Bricked
-          </div>
-          <div className="text-2xl font-bold text-rose-400 font-sans">{stats.critical}</div>
-          <div className="text-[11px] text-rose-300/60">Severe electrical/physical faults</div>
-        </div>
-
-        {/* Under Inspection */}
-        <div className="p-4 rounded-2xl bg-amber-500/[0.04] border border-amber-500/20 backdrop-blur-xl space-y-1">
-          <div className="text-[11px] font-sans uppercase tracking-wider text-amber-300 font-semibold">
-            Under Inspection
-          </div>
-          <div className="text-2xl font-bold text-amber-400 font-sans">{stats.underInspection}</div>
-          <div className="text-[11px] text-amber-300/60">Active diagnostic queue</div>
-        </div>
-
-        {/* Repaired & Restocked */}
-        <div className="p-4 rounded-2xl bg-emerald-500/[0.04] border border-emerald-500/20 backdrop-blur-xl space-y-1">
-          <div className="text-[11px] font-sans uppercase tracking-wider text-emerald-300 font-semibold">
-            Repaired & Restocked
-          </div>
-          <div className="text-2xl font-bold text-emerald-400 font-sans">{stats.repaired}</div>
-          <div className="text-[11px] text-emerald-300/60">Returned to active circulation</div>
-        </div>
-      </div>
-
-      {/* ───────────────────────────────────────────────────────────── */}
-      {/* 3. SEGMENTED FILTER TOOLBAR & SEARCH                          */}
+      {/* 2. SEGMENTED FILTER TOOLBAR & SEARCH                          */}
       {/* ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Segmented Status Tabs */}
-        <div className="inline-flex p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl overflow-x-auto max-w-full">
+        {/* Segmented Status Tabs: Apple Glass Pill */}
+        <div className="inline-flex p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl overflow-x-auto no-scrollbar">
           {[
             { id: 'ALL', label: 'All Incidents', count: defects.length },
             { id: 'Under Inspection', label: 'Under Inspection', count: stats.underInspection },
@@ -348,7 +311,7 @@ export function DefectManagementPage() {
       </div>
 
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* 4. MAIN CONTENT VIEW: GRID OR TABLE                           */}
+      {/* 3. MAIN CONTENT VIEW: CUPERTINO HARDWARE STAGING OR TABLE     */}
       {/* ───────────────────────────────────────────────────────────── */}
       {viewMode === 'grid' ? (
         filteredDefects.length > 0 ? (
@@ -361,111 +324,140 @@ export function DefectManagementPage() {
               return (
                 <div
                   key={defect.id}
-                  className={`rounded-3xl border backdrop-blur-xl p-5 flex flex-col justify-between transition-all duration-300 hover:border-white/25 shadow-lg space-y-4 ${
-                    isCritical
-                      ? 'bg-rose-500/[0.03] border-rose-500/25'
-                      : isModerate
-                      ? 'bg-amber-500/[0.02] border-amber-500/20'
-                      : 'bg-white/[0.03] border-white/[0.08]'
-                  }`}
+                  className="group relative rounded-3xl overflow-hidden border border-white/10 hover:border-white/25 transition-all duration-300 shadow-2xl bg-[#0d0f12] flex flex-col justify-between min-h-[490px]"
                 >
-                  <div>
-                    {/* Header: Tag & Severity Badge */}
-                    <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
-                      <div className="space-y-0.5">
-                        <span className="text-[11px] font-sans uppercase tracking-wider text-rose-400 font-semibold block">
+                  {/* High-Resolution Component Photography Background */}
+                  <img
+                    src={asset?.image || '/images/hardware/raspberry-pi-5.jpg'}
+                    alt={defect.nomenclature}
+                    className="absolute inset-0 w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700 opacity-60"
+                    onError={(e) => {
+                      e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+                    }}
+                  />
+
+                  {/* Ambient Gradient Scrim for crisp text contrast */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/40 to-black/95 pointer-events-none z-10" />
+
+                  {/* Specular hairline top rim */}
+                  <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none rounded-t-3xl z-20" />
+
+                  {/* Card Content Layered Over Hardware Photo */}
+                  <div className="relative z-20 p-6 flex flex-col justify-between h-full">
+                    {/* Top Row: Defect ID & Severity Badge */}
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 rounded-full text-[11px] font-sans font-semibold border border-white/15 bg-black/60 backdrop-blur-md text-white shadow-lg tracking-wide">
                           {defect.id}
                         </span>
-                        <span className="text-[11px] text-zinc-500">
+                        <span className="text-[11px] font-sans text-zinc-400 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10">
                           {defect.reportedDate?.split(' ')[0]}
                         </span>
                       </div>
-                      <StatusBadge status={defect.severity} type="severity" size="xs" />
+
+                      {/* Refined Severity Badge */}
+                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[11px] font-sans font-medium text-zinc-200 shadow-lg">
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                            isCritical
+                              ? 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]'
+                              : isModerate
+                              ? 'bg-amber-400'
+                              : 'bg-zinc-400'
+                          }`}
+                        />
+                        <span>{defect.severity}</span>
+                      </div>
                     </div>
 
-                    {/* Hardware Information with Picture */}
-                    <div className="mt-3.5 flex items-start gap-3">
-                      <div className="w-14 h-14 rounded-2xl overflow-hidden bg-white/[0.04] border border-white/10 flex-shrink-0 flex items-center justify-center p-1.5 shadow-sm">
-                        <img
-                          src={asset?.image || '/images/hardware/raspberry-pi-5.jpg'}
-                          alt={defect.nomenclature}
-                          className="w-full h-full object-contain"
-                          onError={(e) => {
-                            e.target.src = '/images/hardware/raspberry-pi-5.jpg';
-                          }}
-                        />
-                      </div>
+                    {/* Middle Section: Nomenclature, Tag, and Diagnostic Record */}
+                    <div className="space-y-3.5 pt-16">
                       <div className="space-y-1">
-                        <div className="font-semibold text-white text-xs leading-snug">
+                        <h3 className="font-display text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors drop-shadow-md">
                           {defect.nomenclature}
-                        </div>
-                        <div className="text-[11px] text-zinc-400 flex items-center gap-1.5">
-                          <span className="px-2 py-0.5 rounded-full bg-white/[0.05] border border-white/10 text-white font-medium">
+                        </h3>
+                        <div className="flex items-center gap-2 text-xs text-zinc-300 font-sans">
+                          <span className="px-2.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-[11px] font-medium text-[#c9b8a0]">
                             {defect.assetTag}
                           </span>
-                          <span className="truncate text-zinc-400">{defect.defectCategory}</span>
+                          <span className="text-zinc-400">•</span>
+                          <span className="text-zinc-300 text-xs">{defect.defectCategory}</span>
+                        </div>
+                      </div>
+
+                      {/* Editorial Diagnostic Box */}
+                      <div className="p-3.5 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 space-y-2 text-xs shadow-md">
+                        <div className="flex items-center justify-between text-[10px] uppercase font-semibold text-zinc-400 tracking-wider">
+                          <span>Diagnostic Incident Log</span>
+                          <span className="text-zinc-400 font-normal">PRN: {defect.associatedPrn}</span>
+                        </div>
+                        <p className="text-zinc-200 text-xs leading-relaxed font-sans">
+                          {defect.conditionSummary}
+                        </p>
+                        {defect.resolutionPlan && (
+                          <div className="pt-2 border-t border-white/10 text-[11px] text-zinc-300 flex items-start gap-1.5 font-sans">
+                            <Wrench className="w-3.5 h-3.5 text-[#c9b8a0] flex-shrink-0 mt-0.5" />
+                            <span className="leading-snug">
+                              <span className="text-zinc-400 font-medium">Action:</span> {defect.resolutionPlan}
+                            </span>
+                          </div>
+                        )}
+                        <div className="pt-1.5 border-t border-white/[0.06] text-[10px] text-zinc-400 flex items-center justify-between">
+                          <span>Group: {defect.associatedProject}</span>
+                          <span>Origin: Workbench Check-in</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Flaw Description */}
-                    <div className="mt-3.5 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1 text-xs">
-                      <div className="text-[10px] uppercase font-semibold text-zinc-400 tracking-wider">
-                        Reported Failure & Diagnostic Log
+                    {/* Card Footer: Status & Apple-grade Action Buttons */}
+                    <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-3 mt-4">
+                      {/* Repair Status Badge */}
+                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[11px] font-sans font-medium text-zinc-200 shadow-sm">
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                            defect.repairStatus === 'Repaired'
+                              ? 'bg-emerald-400'
+                              : defect.repairStatus === 'Under Inspection'
+                              ? 'bg-amber-400'
+                              : defect.repairStatus === 'Decommissioned'
+                              ? 'bg-rose-400'
+                              : 'bg-indigo-400'
+                          }`}
+                        />
+                        <span>{defect.repairStatus}</span>
                       </div>
-                      <p className="text-zinc-200 text-xs leading-relaxed">
-                        {defect.conditionSummary}
-                      </p>
-                      {defect.resolutionPlan && (
-                        <div className="pt-1.5 border-t border-white/[0.06] text-[11px] text-zinc-400 flex items-start gap-1.5">
-                          <Wrench className="w-3.5 h-3.5 text-zinc-500 flex-shrink-0 mt-0.5" />
-                          <span className="text-zinc-300">Plan: {defect.resolutionPlan}</span>
-                        </div>
-                      )}
-                    </div>
 
-                    {/* Origin Metadata */}
-                    <div className="mt-3 text-[11px] text-zinc-500 flex justify-between">
-                      <span>Logged PRN: {defect.associatedPrn}</span>
-                      <span>Project: {defect.associatedProject}</span>
-                    </div>
-                  </div>
+                      {/* Action Buttons */}
+                      <div className="flex items-center gap-2">
+                        {defect.repairStatus !== 'Repaired' && defect.repairStatus !== 'Decommissioned' && (
+                          <button
+                            onClick={() => handleInstantRestock(defect)}
+                            className="px-3.5 py-1.5 rounded-full bg-white hover:bg-neutral-200 text-black font-semibold text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+                            title="Verify operational & restock"
+                          >
+                            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                            <span>Restock</span>
+                          </button>
+                        )}
 
-                  {/* Footer: Repair Status & Quick Action Buttons */}
-                  <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border ${
-                        defect.repairStatus === 'Repaired'
-                          ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                          : defect.repairStatus === 'Under Inspection'
-                          ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-                          : defect.repairStatus === 'Decommissioned'
-                          ? 'bg-rose-500/15 text-rose-300 border-rose-500/30'
-                          : 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30'
-                      }`}
-                    >
-                      {defect.repairStatus}
-                    </span>
-
-                    <div className="flex items-center gap-1.5">
-                      {defect.repairStatus !== 'Repaired' && defect.repairStatus !== 'Decommissioned' && (
                         <button
-                          onClick={() => handleInstantRestock(defect)}
-                          className="px-3 py-1.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition-all text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm"
-                          title="Verify operational & restock"
+                          onClick={() => handleOpenStatusModal(defect)}
+                          className="px-3.5 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 hover:text-white border border-white/15 transition-all text-xs font-medium flex items-center gap-1.5 cursor-pointer"
                         >
-                          <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                          <span>Restock</span>
+                          <Sliders className="w-3.5 h-3.5" />
+                          <span>Triage</span>
                         </button>
-                      )}
 
-                      <button
-                        onClick={() => handleOpenStatusModal(defect)}
-                        className="px-3 py-1.5 rounded-full bg-white/[0.05] hover:bg-white/10 text-white border border-white/10 transition-all text-xs font-medium flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <Sliders className="w-3.5 h-3.5" />
-                        <span>Triage</span>
-                      </button>
+                        {role === 'HoD / Admin' && defect.repairStatus !== 'Decommissioned' && (
+                          <button
+                            onClick={() => setRetireDefect(defect)}
+                            className="p-1.5 rounded-full bg-white/[0.04] hover:bg-rose-500/20 text-zinc-400 hover:text-rose-400 border border-white/10 hover:border-rose-500/30 transition-colors cursor-pointer"
+                            title="Decommission & Retire Asset"
+                          >
+                            <Archive className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
