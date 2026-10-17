@@ -43,14 +43,7 @@ export function LoginPage() {
     try {
       const result = await loginWithMySQL(username.trim(), password, selectedRole);
       if (result.success) {
-        const userRole = result.user?.role || selectedRole;
-        if (userRole === 'Lab Assistant') {
-          navigate('/workspace/operations/dispatch');
-        } else if (userRole === 'Faculty' || userRole === 'HoD / Admin') {
-          navigate('/workspace/operations/approvals');
-        } else {
-          navigate('/workspace/inventory');
-        }
+        navigate('/hero');
       } else {
         setErrorMessage(result.error || 'Invalid credentials. Please verify your PRN and password.');
       }
