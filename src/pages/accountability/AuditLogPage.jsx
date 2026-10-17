@@ -200,14 +200,7 @@ export function AuditLogPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* Apple Glass Integrity Seal */}
-          <span className="px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 shadow-sm flex items-center gap-2 text-xs font-sans text-zinc-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span className="text-zinc-400 font-normal">Ledger:</span>
-            <span className="text-white font-medium">Verified SHA-256</span>
-          </span>
-
+        <div>
           {/* Export CSV Button */}
           <button
             onClick={handleExportCSV}
