@@ -14,7 +14,6 @@ import './GooeyGradientBackground.css';
 export function GooeyGradientBackground({
   children,
   className = '',
-  theme = 'vibrant',
 }) {
   const interactiveRef = useRef(null);
 
@@ -50,10 +49,8 @@ export function GooeyGradientBackground({
     };
   }, []);
 
-  const themeClass = theme === 'vibrant' ? 'theme-vibrant' : '';
-
   return (
-    <div className={`gooey-wrapper ${themeClass} ${className}`}>
+    <div className={`gooey-wrapper ${className}`}>
       <div className="gradient-bg">
         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
