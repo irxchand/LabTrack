@@ -52,6 +52,7 @@ export function DispatchDeskPage() {
   const [dispatchSearchPrn, setDispatchSearchPrn] = useState('');
   const [selectedRequisition, setSelectedRequisition] = useState(null);
   const [selectedAssetTag, setSelectedAssetTag] = useState('');
+  const [assignedTags, setAssignedTags] = useState({});
   const [dueDateDays, setDueDateDays] = useState('14');
   const [isDispatching, setIsDispatching] = useState(false);
   const [dispatchSuccess, setDispatchSuccess] = useState(null);
@@ -59,6 +60,7 @@ export function DispatchDeskPage() {
   // CHECKIN STATE
   const [checkinSearchQuery, setCheckinSearchQuery] = useState(urlAssetTag || '');
   const [returnSuccess, setReturnSuccess] = useState(null);
+  const [isBatchReturning, setIsBatchReturning] = useState(false);
   const [selectedReturnLoan, setSelectedReturnLoan] = useState(() => {
     if (urlAssetTag && activeLoans.length > 0) {
       return activeLoans.find((l) => l.assetTag === urlAssetTag) || null;
@@ -408,6 +410,30 @@ export function DispatchDeskPage() {
     return matched.length > 0 ? matched : availableSerializedAssets;
   }, [selectedRequisition, availableSerializedAssets]);
 
+  // Sync assignedTags whenever selectedRequisition changes
+  useEffect(() => {
+    if (selectedRequisition?.componentsRequested?.length) {
+      const initial = {};
+      selectedRequisition.componentsRequested.forEach((comp, idx) => {
+        const match = availableSerializedAssets.find(
+          (a) =>
+            a.nomenclature.toLowerCase().includes(comp.nomenclature.toLowerCase()) ||
+            comp.nomenclature.toLowerCase().includes(a.nomenclature.toLowerCase())
+        );
+        if (match) {
+          initial[idx] = match.assetTag;
+        } else if (availableSerializedAssets[idx]) {
+          initial[idx] = availableSerializedAssets[idx].assetTag;
+        }
+      });
+      setAssignedTags(initial);
+      setSelectedAssetTag(initial[0] || '');
+    } else {
+      setAssignedTags({});
+      setSelectedAssetTag('');
+    }
+  }, [selectedRequisition, availableSerializedAssets]);
+
   // Filter active loans for check-in
   const matchingReturnLoans = useMemo(() => {
     if (!checkinSearchQuery.trim()) return activeLoans;
@@ -422,41 +448,88 @@ export function DispatchDeskPage() {
     });
   }, [activeLoans, checkinSearchQuery]);
 
+  // Detect student kit with multiple loans under active search
+  const groupedBorrowerLoans = useMemo(() => {
+    if (!checkinSearchQuery.trim()) return null;
+    const query = checkinSearchQuery.toLowerCase();
+    const loans = activeLoans.filter(
+      (l) => l.borrowerPrn?.toLowerCase() === query || l.borrowerName?.toLowerCase().includes(query)
+    );
+    return loans.length > 1 ? loans : null;
+  }, [activeLoans, checkinSearchQuery]);
+
+  const handleBatchReturnClean = async (loansToReturn) => {
+    if (!loansToReturn?.length) return;
+    setIsBatchReturning(true);
+    try {
+      const defaultChecklist = {
+        physicalIntegrity: true,
+        powerTest: true,
+        firmwareReset: true,
+        accessoriesPresent: true,
+        esdPackaging: true,
+      };
+      for (const loan of loansToReturn) {
+        await executeReturn(loan.id, defaultChecklist, 'clean', null);
+      }
+      setReturnSuccess({
+        assetTag: `${loansToReturn.length} Units`,
+        nomenclature: `${loansToReturn.length} Kit Items Restocked`,
+        returnType: 'clean',
+        borrowerName: loansToReturn[0].borrowerName,
+        borrowerPrn: loansToReturn[0].borrowerPrn,
+        locationCoordinates: 'Assigned Shelves',
+      });
+      setSelectedReturnLoan(null);
+    } finally {
+      setIsBatchReturning(false);
+    }
+  };
+
   const handleExecuteDispatch = async (e) => {
     e.preventDefault();
-    if (!selectedRequisition || !selectedAssetTag) return;
+    if (!selectedRequisition) return;
     setIsDispatching(true);
 
-    const assetObj = inventory.find((i) => i.assetTag === selectedAssetTag);
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + Number(dueDateDays));
     const formattedDueDate = dueDate.toISOString().replace('T', ' ').substring(0, 19);
 
     try {
-      const payload = {
-        requisitionId: selectedRequisition.id,
-        assetTag: selectedAssetTag,
-        nomenclature:
-          assetObj?.nomenclature ||
-          selectedRequisition.componentsRequested?.[0]?.nomenclature ||
-          'Laboratory Hardware',
-        studentPrn: selectedRequisition.studentPrn,
-        studentName: selectedRequisition.studentName,
-        projectId: selectedRequisition.projectId,
-        courseCode: selectedRequisition.courseCode || 'DCDS-SY-AIML',
-        dueDate: formattedDueDate,
-        coordinates: assetObj?.coordinates || 'Room 402 • Counter Tray',
-      };
+      const dispatchedTags = [];
+      const components = selectedRequisition.componentsRequested?.length
+        ? selectedRequisition.componentsRequested
+        : [{ nomenclature: 'Laboratory Hardware', quantity: 1 }];
 
-      const success = await executeDispatch(payload);
-      if (success) {
+      for (let i = 0; i < components.length; i++) {
+        const comp = components[i];
+        const tag = assignedTags[i] || selectedAssetTag;
+        if (tag) {
+          const assetObj = inventory.find((it) => it.assetTag === tag);
+          await executeDispatch({
+            requisitionId: selectedRequisition.id,
+            assetTag: tag,
+            nomenclature: assetObj?.nomenclature || comp.nomenclature,
+            studentPrn: selectedRequisition.studentPrn,
+            studentName: selectedRequisition.studentName,
+            projectId: selectedRequisition.projectId,
+            courseCode: selectedRequisition.courseCode || 'DCDS-SY-AIML',
+            dueDate: formattedDueDate,
+            coordinates: assetObj?.coordinates || 'Room 402 • Counter Tray',
+          });
+          dispatchedTags.push(tag);
+        }
+      }
+
+      if (dispatchedTags.length > 0) {
         setDispatchSuccess({
-          assetTag: selectedAssetTag,
+          assetTag: dispatchedTags.join(', '),
           borrowerName: selectedRequisition.studentName,
           borrowerPrn: selectedRequisition.studentPrn,
         });
         setSelectedRequisition(null);
         setSelectedAssetTag('');
+        setAssignedTags({});
         setTimeout(() => setDispatchSuccess(null), 4000);
       }
     } finally {
@@ -742,29 +815,60 @@ export function DispatchDeskPage() {
                     </div>
                   </div>
 
-                  {/* Physical Asset Tag Picker */}
-                  <div>
-                    <label className="block text-zinc-400 text-[11px] uppercase tracking-wider font-semibold mb-1.5">
-                      Allocate Physical Hardware Asset <span className="text-rose-400">*</span>
-                    </label>
-                    <select
-                      value={selectedAssetTag}
-                      onChange={(e) => setSelectedAssetTag(e.target.value)}
-                      required
-                      className="w-full bg-[#111317] border border-white/15 rounded-xl px-3.5 py-2.5 font-sans text-xs text-white focus:outline-none focus:border-white/30 transition-all cursor-pointer"
-                    >
-                      <option value="" className="bg-[#111317]">
-                        -- Select physical unit from bench inventory --
-                      </option>
-                      {matchingAssets.map((asset) => (
-                        <option key={asset.id} value={asset.assetTag} className="bg-[#111317]">
-                          {asset.assetTag} — {asset.nomenclature} ({asset.coordinates})
-                        </option>
-                      ))}
-                    </select>
-                    <p className="text-[11px] text-zinc-500 mt-1">
-                      {matchingAssets.length} verified available units matching this requisition.
-                    </p>
+                  {/* Physical Asset Tag Picker (Kit & Single Item Allocation) */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-zinc-400 text-[11px] uppercase tracking-wider font-semibold">
+                        Allocate Physical Hardware Serial(s) <span className="text-rose-400">*</span>
+                      </label>
+                      <span className="text-[10px] text-zinc-500">
+                        {availableSerializedAssets.length} total units on bench
+                      </span>
+                    </div>
+
+                    {(selectedRequisition.componentsRequested?.length
+                      ? selectedRequisition.componentsRequested
+                      : [{ nomenclature: 'Laboratory Hardware', quantity: 1 }]
+                    ).map((comp, idx) => {
+                      const compMatchedAssets = availableSerializedAssets.filter((a) =>
+                        a.nomenclature.toLowerCase().includes(comp.nomenclature.toLowerCase()) ||
+                        comp.nomenclature.toLowerCase().includes(a.nomenclature.toLowerCase())
+                      );
+                      const assetOptions = compMatchedAssets.length > 0 ? compMatchedAssets : availableSerializedAssets;
+                      const currentTag = assignedTags[idx] || (idx === 0 ? selectedAssetTag : '');
+
+                      return (
+                        <div key={idx} className="p-3 bg-white/[0.02] border border-white/[0.08] rounded-xl space-y-1.5">
+                          <div className="flex items-center justify-between text-xs text-white">
+                            <span className="font-medium text-zinc-200">
+                              Item {idx + 1}: {comp.nomenclature}
+                            </span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-400 font-mono">
+                              Qty: {comp.quantity || 1}
+                            </span>
+                          </div>
+                          <select
+                            value={currentTag}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setAssignedTags((prev) => ({ ...prev, [idx]: val }));
+                              if (idx === 0) setSelectedAssetTag(val);
+                            }}
+                            required
+                            className="w-full bg-[#111317] border border-white/15 rounded-xl px-3 py-2 font-sans text-xs text-white focus:outline-none focus:border-white/30 transition-all cursor-pointer"
+                          >
+                            <option value="" className="bg-[#111317]">
+                              -- Select physical unit for {comp.nomenclature} --
+                            </option>
+                            {assetOptions.map((asset) => (
+                              <option key={asset.id} value={asset.assetTag} className="bg-[#111317]">
+                                {asset.assetTag} — {asset.nomenclature} ({asset.coordinates || 'Depot'})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      );
+                    })}
                   </div>
 
                   {/* Loan Duration Window Selector */}
@@ -807,7 +911,12 @@ export function DispatchDeskPage() {
                   {/* Dispatch Commit Button */}
                   <button
                     type="submit"
-                    disabled={isDispatching || !selectedAssetTag}
+                    disabled={
+                      isDispatching ||
+                      !(selectedRequisition.componentsRequested?.length
+                        ? selectedRequisition.componentsRequested.every((_, idx) => assignedTags[idx])
+                        : (selectedAssetTag || assignedTags[0]))
+                    }
                     className="w-full py-3 px-4 rounded-full bg-white hover:bg-neutral-200 disabled:opacity-40 disabled:hover:bg-white text-black font-semibold text-xs tracking-wide transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer mt-auto"
                   >
                     <CheckCircle2 className="w-4 h-4" />
@@ -861,6 +970,30 @@ export function DispatchDeskPage() {
                   />
                 </div>
               </div>
+
+              {/* Multi-Item Kit Quick Batch Return Banner */}
+              {groupedBorrowerLoans && groupedBorrowerLoans.length > 1 && (
+                <div className="p-3 bg-white/[0.04] border border-[#c9b8a0]/30 rounded-xl my-1 flex items-center justify-between text-xs">
+                  <div className="space-y-0.5">
+                    <div className="font-semibold text-white flex items-center gap-1.5">
+                      <Boxes className="w-3.5 h-3.5 text-[#c9b8a0]" />
+                      <span>Student Kit Return Detected</span>
+                    </div>
+                    <div className="text-[11px] text-zinc-400">
+                      {groupedBorrowerLoans[0].borrowerName} holds {groupedBorrowerLoans.length} circulating items
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleBatchReturnClean(groupedBorrowerLoans)}
+                    disabled={isBatchReturning}
+                    className="px-3 py-1.5 rounded-full bg-white hover:bg-neutral-200 text-black font-semibold text-[11px] disabled:opacity-50 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>{isBatchReturning ? 'Restocking...' : `Return All (${groupedBorrowerLoans.length}) Clean`}</span>
+                  </button>
+                </div>
+              )}
 
               {/* Active Loans List */}
               <div className="flex-1 overflow-y-auto space-y-2 mt-2 pr-1 min-h-[360px]">

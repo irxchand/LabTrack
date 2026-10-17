@@ -33,6 +33,17 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
     if (validationError) setValidationError('');
   };
 
+  const handlePassAll = () => {
+    setChecklist({
+      physicalIntegrity: true,
+      powerTest: true,
+      firmwareReset: true,
+      accessoriesPresent: true,
+      esdPackaging: true,
+    });
+    if (validationError) setValidationError('');
+  };
+
   const isChecklistComplete =
     checklist.physicalIntegrity &&
     checklist.powerTest &&
@@ -44,12 +55,11 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
     e.preventDefault();
     setValidationError('');
 
-    if (!isChecklistComplete) {
-      setValidationError('All 5 inspection & reset criteria (including firmware wipe) must be verified before accepting equipment return.');
-      return;
-    }
-
     if (returnMode === 'clean') {
+      if (!isChecklistComplete) {
+        setValidationError('All 5 inspection & reset criteria must be verified before accepting clean equipment return.');
+        return;
+      }
       onComplete({
         checklist,
         returnType: 'clean',
@@ -102,102 +112,8 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
         </div>
       </div>
 
-      {/* Mandatory Condition Checklist */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="block text-[11px] font-sans uppercase tracking-wider text-zinc-400 font-semibold">
-            Multi-Point Physical & Digital Return Checklist
-          </label>
-          <span className="text-[11px] text-zinc-500">
-            {Object.values(checklist).filter(Boolean).length} of 5 confirmed
-          </span>
-        </div>
-
-        <div className="space-y-2">
-          {/* Item 1 */}
-          <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
-            <input
-              type="checkbox"
-              checked={checklist.physicalIntegrity}
-              onChange={() => handleCheckboxChange('physicalIntegrity')}
-              className="mt-0.5 rounded border-white/20 text-white focus:ring-0 bg-white/5 cursor-pointer accent-white"
-            />
-            <div className="space-y-0.5">
-              <span className="font-medium text-white text-xs">Physical PCB & Connector Integrity</span>
-              <p className="text-[11px] text-zinc-400">
-                Pins straight, PCB unbroken, solder joints, GPIO headers & enclosure casing intact
-              </p>
-            </div>
-          </label>
-
-          {/* Item 2 */}
-          <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
-            <input
-              type="checkbox"
-              checked={checklist.powerTest}
-              onChange={() => handleCheckboxChange('powerTest')}
-              className="mt-0.5 rounded border-white/20 text-white focus:ring-0 bg-white/5 cursor-pointer accent-white"
-            />
-            <div className="space-y-0.5">
-              <span className="font-medium text-white text-xs">Functional Power Rail & LED Test</span>
-              <p className="text-[11px] text-zinc-400">
-                Power indicator LED illuminates steadily; no dead shorts detected across 3.3V/5V rails
-              </p>
-            </div>
-          </label>
-
-          {/* Item 3 */}
-          <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
-            <input
-              type="checkbox"
-              checked={checklist.firmwareReset}
-              onChange={() => handleCheckboxChange('firmwareReset')}
-              className="mt-0.5 rounded border-white/20 text-white focus:ring-0 bg-white/5 cursor-pointer accent-white"
-            />
-            <div className="space-y-0.5">
-              <span className="font-medium text-white text-xs">Firmware Sanitization & Memory Reset</span>
-              <p className="text-[11px] text-zinc-400">
-                Flash ROM sanitized, student test code erased, boot microcode verified for next borrower
-              </p>
-            </div>
-          </label>
-
-          {/* Item 4 */}
-          <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
-            <input
-              type="checkbox"
-              checked={checklist.accessoriesPresent}
-              onChange={() => handleCheckboxChange('accessoriesPresent')}
-              className="mt-0.5 rounded border-white/20 text-white focus:ring-0 bg-white/5 cursor-pointer accent-white"
-            />
-            <div className="space-y-0.5">
-              <span className="font-medium text-white text-xs">Accessories & Cabling Accounted For</span>
-              <p className="text-[11px] text-zinc-400">
-                USB-C cable, heatsink, Wi-Fi antenna, power adapter, or oscilloscope probe leads verified
-              </p>
-            </div>
-          </label>
-
-          {/* Item 5 */}
-          <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
-            <input
-              type="checkbox"
-              checked={checklist.esdPackaging}
-              onChange={() => handleCheckboxChange('esdPackaging')}
-              className="mt-0.5 rounded border-white/20 text-white focus:ring-0 bg-white/5 cursor-pointer accent-white"
-            />
-            <div className="space-y-0.5">
-              <span className="font-medium text-white text-xs">ESD Conductive Shielding</span>
-              <p className="text-[11px] text-zinc-400">
-                Returned securely in collegiate anti-static bubble envelope or conductive pouch
-              </p>
-            </div>
-          </label>
-        </div>
-      </div>
-
       {/* Triage Decision Mode */}
-      <div className="pt-2">
+      <div className="pt-1">
         <label className="block text-[11px] font-sans uppercase tracking-wider text-zinc-400 mb-2 font-semibold">
           Triage Decision Mode
         </label>
@@ -235,6 +151,118 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
           </button>
         </div>
       </div>
+
+      {/* Clean Return: Mandatory Condition Checklist */}
+      {returnMode === 'clean' ? (
+        <div className="space-y-2 pt-1">
+          <div className="flex items-center justify-between">
+            <label className="block text-[11px] font-sans uppercase tracking-wider text-zinc-400 font-semibold">
+              Return Inspection Checklist
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-zinc-500">
+                {Object.values(checklist).filter(Boolean).length} of 5 confirmed
+              </span>
+              <button
+                type="button"
+                onClick={handlePassAll}
+                className="px-2.5 py-1 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 hover:text-white border border-white/10 text-[11px] font-semibold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
+                title="Fast verify: Check all 5 criteria at once"
+              >
+                <Check className="w-3 h-3 text-emerald-400" />
+                <span>Pass All 5</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {/* Item 1 */}
+            <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
+              <input
+                type="checkbox"
+                checked={checklist.physicalIntegrity}
+                onChange={() => handleCheckboxChange('physicalIntegrity')}
+                className="mt-0.5 rounded border-white/20 text-white focus:ring-0 bg-white/5 cursor-pointer accent-white"
+              />
+              <div className="space-y-0.5">
+                <span className="font-medium text-white text-xs">Physical PCB & Connector Integrity</span>
+                <p className="text-[11px] text-zinc-400">
+                  Pins straight, PCB unbroken, solder joints, GPIO headers & enclosure casing intact
+                </p>
+              </div>
+            </label>
+
+            {/* Item 2 */}
+            <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
+              <input
+                type="checkbox"
+                checked={checklist.powerTest}
+                onChange={() => handleCheckboxChange('powerTest')}
+                className="mt-0.5 rounded border-white/20 text-white focus:ring-0 bg-white/5 cursor-pointer accent-white"
+              />
+              <div className="space-y-0.5">
+                <span className="font-medium text-white text-xs">Functional Power Rail & LED Test</span>
+                <p className="text-[11px] text-zinc-400">
+                  Power indicator LED illuminates steadily; no dead shorts detected across 3.3V/5V rails
+                </p>
+              </div>
+            </label>
+
+            {/* Item 3 */}
+            <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
+              <input
+                type="checkbox"
+                checked={checklist.firmwareReset}
+                onChange={() => handleCheckboxChange('firmwareReset')}
+                className="mt-0.5 rounded border-white/20 text-white focus:ring-0 bg-white/5 cursor-pointer accent-white"
+              />
+              <div className="space-y-0.5">
+                <span className="font-medium text-white text-xs">Firmware Sanitization & Memory Reset</span>
+                <p className="text-[11px] text-zinc-400">
+                  Flash ROM sanitized, student test code erased, boot microcode verified for next borrower
+                </p>
+              </div>
+            </label>
+
+            {/* Item 4 */}
+            <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
+              <input
+                type="checkbox"
+                checked={checklist.accessoriesPresent}
+                onChange={() => handleCheckboxChange('accessoriesPresent')}
+                className="mt-0.5 rounded border-white/20 text-white focus:ring-0 bg-white/5 cursor-pointer accent-white"
+              />
+              <div className="space-y-0.5">
+                <span className="font-medium text-white text-xs">Accessories & Cabling Accounted For</span>
+                <p className="text-[11px] text-zinc-400">
+                  USB-C cable, heatsink, Wi-Fi antenna, power adapter, or oscilloscope probe leads verified
+                </p>
+              </div>
+            </label>
+
+            {/* Item 5 */}
+            <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
+              <input
+                type="checkbox"
+                checked={checklist.esdPackaging}
+                onChange={() => handleCheckboxChange('esdPackaging')}
+                className="mt-0.5 rounded border-white/20 text-white focus:ring-0 bg-white/5 cursor-pointer accent-white"
+              />
+              <div className="space-y-0.5">
+                <span className="font-medium text-white text-xs">ESD Conductive Shielding</span>
+                <p className="text-[11px] text-zinc-400">
+                  Returned securely in collegiate anti-static bubble envelope or conductive pouch
+                </p>
+              </div>
+            </label>
+          </div>
+        </div>
+      ) : (
+        <div className="p-3 bg-white/[0.02] border border-white/10 rounded-xl text-zinc-400 text-xs flex items-center gap-2">
+          <Info className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+          <span>Clean inspection checklist bypassed. Unit will be routed directly to Defect Quarantine.</span>
+        </div>
+      )}
 
       {/* Defect Details Form when mode === 'defect' */}
       {returnMode === 'defect' && (

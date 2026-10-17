@@ -23,6 +23,7 @@ import {
   ArrowRight,
   ShieldAlert,
   Search,
+  MapPin,
 } from 'lucide-react';
 
 export function DefectManagementPage() {
@@ -95,10 +96,12 @@ export function DefectManagementPage() {
   };
 
   const handleInstantRestock = async (defect) => {
+    const asset = getAssetDetails(defect.assetTag);
+    const location = asset?.coordinates || 'Shelf CB-04';
     await updateDefectStatus(
       defect.id,
       'Repaired',
-      'Diagnostic verification passed at bench. Hardware certified operational and restocked to shelf.'
+      `Diagnostic verification passed at bench. Hardware certified operational and restocked to ${location}.`
     );
   };
 
@@ -405,6 +408,13 @@ export function DefectManagementPage() {
                         <div className="pt-1.5 border-t border-white/[0.06] text-[10px] text-zinc-400 flex items-center justify-between">
                           <span>Group: {defect.associatedProject}</span>
                           <span>Origin: Workbench Check-in</span>
+                        </div>
+                        <div className="pt-2 border-t border-white/10 text-[11px] text-zinc-300 flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 text-zinc-200 font-medium">
+                            <MapPin className="w-3.5 h-3.5 text-[#c9b8a0] flex-shrink-0" />
+                            <span>Target Shelf: {asset?.coordinates || 'Shelf CB-04'}</span>
+                          </div>
+                          <span className="text-[10px] text-zinc-400">{asset?.labRoom ? asset.labRoom.split('(')[0] : 'Main Depot'}</span>
                         </div>
                       </div>
                     </div>
