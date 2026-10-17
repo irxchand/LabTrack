@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { User, Lock, ArrowRight, Eye, EyeOff, AlertCircle, ShieldAlert } from 'lucide-react';
+import { User, Lock, ArrowRight, Eye, EyeOff, AlertCircle, ShieldAlert, Check } from 'lucide-react';
 import { GooeyGradientBackground } from '../../components/canvas/GooeyGradientBackground';
 import { Modal } from '../../components/common/Modal';
 
@@ -9,6 +9,14 @@ export function LoginPage() {
   const navigate = useNavigate();
   const { loginWithMySQL } = useAuth();
 
+  const personas = [
+    { role: 'Student', idTag: '202401048', name: 'Rahul Sharma' },
+    { role: 'Faculty', idTag: 'FAC-AI-019', name: 'Dr. Anjali Dalvi' },
+    { role: 'Lab Assistant', idTag: 'LA-04', name: 'Ramesh Patil' },
+    { role: 'HoD / Admin', idTag: 'HOD-AIML-001', name: 'Dr. K. V. Ramanathan' },
+  ];
+
+  const [selectedRole, setSelectedRole] = useState('Student');
   const [username, setUsername] = useState('202401048');
   const [password, setPassword] = useState('password123');
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +24,12 @@ export function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
+  const handleRoleSelect = (persona) => {
+    setSelectedRole(persona.role);
+    setUsername(persona.idTag);
+    setPassword('password123');
+    setErrorMessage('');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,9 +41,9 @@ export function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      const result = await loginWithMySQL(username.trim(), password);
+      const result = await loginWithMySQL(username.trim(), password, selectedRole);
       if (result.success) {
-        const userRole = result.user?.role;
+        const userRole = result.user?.role || selectedRole;
         if (userRole === 'Lab Assistant') {
           navigate('/workspace/operations/dispatch');
         } else if (userRole === 'Faculty' || userRole === 'HoD / Admin') {
@@ -81,13 +95,42 @@ export function LoginPage() {
         <div className="p-8 sm:p-12 flex flex-col justify-center bg-[#161619]/80">
           <div className="max-w-sm mx-auto w-full">
             {/* Header */}
-            <div className="text-center mb-6">
+            <div className="text-center mb-5">
               <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight font-display">
                 Sign In
               </h2>
               <p className="text-xs text-zinc-400 mt-1.5 font-sans">
                 Access your physical computing workstation
               </p>
+            </div>
+
+            {/* Role / Persona Identity Selector */}
+            <div className="mb-5">
+              <label className="block text-[11px] font-sans uppercase tracking-wider text-zinc-400 font-semibold mb-2">
+                Select Your Role
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {personas.map((p) => {
+                  const isSelected = selectedRole === p.role;
+                  return (
+                    <button
+                      key={p.role}
+                      type="button"
+                      onClick={() => handleRoleSelect(p)}
+                      className={`py-2 px-3 rounded-xl border text-xs font-sans font-medium transition-all flex items-center justify-between cursor-pointer ${
+                        isSelected
+                          ? 'bg-white text-black font-semibold border-white shadow-[0_4px_16px_rgba(255,255,255,0.15)]'
+                          : 'bg-white/[0.03] text-zinc-400 border-white/10 hover:bg-white/[0.06] hover:text-white hover:border-white/20'
+                      }`}
+                    >
+                      <span className="truncate">{p.role}</span>
+                      {isSelected && (
+                        <Check className="w-3.5 h-3.5 text-black stroke-[2.5] flex-shrink-0" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Error Message Alert */}
@@ -99,7 +142,7 @@ export function LoginPage() {
             )}
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3.5">
               {/* Username Input */}
               <div className="bg-[#18191d] border border-white/10 rounded-2xl px-4 py-3 flex items-center space-x-3 transition-all focus-within:ring-1 focus-within:ring-white/30 focus-within:border-white/30 hover:border-white/20">
                 <User className="w-4 h-4 text-zinc-400 flex-shrink-0" />
@@ -107,7 +150,7 @@ export function LoginPage() {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="PRN or Staff ID (e.g. 202401048, LA-04)"
+                  placeholder="PRN or Staff ID"
                   required
                   className="bg-transparent border-none outline-none w-full text-sm text-white placeholder-zinc-500 font-normal font-sans"
                 />
@@ -138,15 +181,15 @@ export function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting || !username.trim() || !password}
-                className="w-full py-3.5 px-6 rounded-full bg-white hover:bg-neutral-200 disabled:opacity-40 disabled:hover:bg-white text-black font-semibold text-sm tracking-wide transition-all shadow-[0_4px_20px_rgba(255,255,255,0.12)] hover:shadow-[0_6px_25px_rgba(255,255,255,0.22)] active:scale-[0.99] cursor-pointer flex items-center justify-center gap-2 mt-5"
+                className="w-full py-3.5 px-6 rounded-full bg-white hover:bg-neutral-200 disabled:opacity-40 disabled:hover:bg-white text-black font-semibold text-xs tracking-wide transition-all shadow-[0_4px_20px_rgba(255,255,255,0.12)] hover:shadow-[0_6px_25px_rgba(255,255,255,0.22)] active:scale-[0.99] cursor-pointer flex items-center justify-center gap-2 mt-4"
               >
-                <span>{isSubmitting ? 'Authenticating...' : 'Sign In'}</span>
+                <span>{isSubmitting ? 'Authenticating...' : `Sign In as ${selectedRole}`}</span>
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />
               </button>
             </form>
 
             {/* Footer Links */}
-            <div className="mt-6 text-center space-y-2">
+            <div className="mt-5 text-center space-y-2">
               <div>
                 <Link
                   to="/auth/reset-password"
