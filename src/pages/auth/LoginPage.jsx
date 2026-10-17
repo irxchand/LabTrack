@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { User, Lock, ArrowRight, Check, AlertCircle } from 'lucide-react';
-import { InteractiveWavesBackground } from '../../components/canvas/InteractiveWavesBackground';
+import { User, Lock, ArrowRight, Eye, EyeOff, AlertCircle, ShieldAlert } from 'lucide-react';
 import { GooeyGradientBackground } from '../../components/canvas/GooeyGradientBackground';
+import { Modal } from '../../components/common/Modal';
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { loginWithMySQL, isAuthenticated } = useAuth();
-
-
+  const { loginWithMySQL } = useAuth();
 
   const [username, setUsername] = useState('202401048');
   const [password, setPassword] = useState('password123');
-  const [selectedRole, setSelectedRole] = useState('Student');
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const personas = [
     { role: 'Student', idTag: '202401048', name: 'Rahul Sharma' },
@@ -24,22 +23,26 @@ export function LoginPage() {
     { role: 'HoD / Admin', idTag: 'HOD-AIML-001', name: 'Dr. K. V. Ramanathan' },
   ];
 
-  const handleRoleSelect = (persona) => {
-    setSelectedRole(persona.role);
-    setUsername(persona.idTag);
-    setErrorMessage('');
-  };
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!username.trim() || !password) {
+      setErrorMessage('Please enter your Institutional PRN or Staff ID and password.');
+      return;
+    }
     setErrorMessage('');
     setIsSubmitting(true);
 
     try {
-      const result = await loginWithMySQL(username, password, selectedRole);
+      const result = await loginWithMySQL(username.trim(), password);
       if (result.success) {
-        navigate('/hero');
+        const userRole = result.user?.role;
+        if (userRole === 'Lab Assistant') {
+          navigate('/workspace/operations/dispatch');
+        } else if (userRole === 'Faculty' || userRole === 'HoD / Admin') {
+          navigate('/workspace/operations/approvals');
+        } else {
+          navigate('/workspace/inventory');
+        }
       } else {
         setErrorMessage(result.error || 'Invalid credentials. Please verify your PRN and password.');
       }
@@ -56,7 +59,6 @@ export function LoginPage() {
       {/* CENTRAL FLOATING GLASS CARD WIDGET                                */}
       {/* ───────────────────────────────────────────────────────────────── */}
       <div className="w-full max-w-4xl rounded-3xl shadow-[0_30px_90px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.12)] border border-white/10 backdrop-blur-2xl bg-[#141416]/90 overflow-hidden grid grid-cols-1 md:grid-cols-2 relative z-10 min-h-[500px]">
-        
         {/* Specular Edge Bevel (Top glass reflection) */}
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
 
@@ -64,7 +66,7 @@ export function LoginPage() {
         {/* LEFT PANEL: Pure Typographic "LabTrack" Display in Glass      */}
         {/* ───────────────────────────────────────────────────────────── */}
         <div className="relative hidden md:flex flex-col items-center justify-center overflow-hidden border-r border-white/10 p-10 bg-[#121215]/80">
-          {/* Ambient Warm Gold Radial Glow shining from behind */}
+          {/* Ambient Warm Radial Glow shining from behind */}
           <div className="absolute w-64 h-64 rounded-full bg-[#a78b71]/20 blur-[80px] pointer-events-none" />
 
           {/* Pure LabTrack Wordmark */}
@@ -86,36 +88,12 @@ export function LoginPage() {
           <div className="max-w-sm mx-auto w-full">
             {/* Header */}
             <div className="text-center mb-6">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight font-display">
                 Sign In
               </h2>
-              <p className="text-xs text-stone-400 mt-1 font-sans">
-                Access your lab workstation
+              <p className="text-xs text-zinc-400 mt-1.5 font-sans">
+                Access your physical computing workstation
               </p>
-            </div>
-
-            {/* Role Selectors */}
-            <div className="mb-6">
-              <div className="grid grid-cols-2 gap-1.5">
-                {personas.map((persona) => {
-                  const isSelected = selectedRole === persona.role;
-                  return (
-                    <button
-                      key={persona.role}
-                      type="button"
-                      onClick={() => handleRoleSelect(persona)}
-                      className={`text-xs py-2 px-3 rounded-xl border font-medium transition-all text-left flex items-center justify-between cursor-pointer ${
-                        isSelected
-                          ? 'bg-[#262528] text-white border-[#c9b8a0] shadow-[0_0_15px_rgba(201,184,160,0.15)]'
-                          : 'bg-[#1c1c1f] text-stone-400 border-white/5 hover:bg-[#232326] hover:text-white'
-                      }`}
-                    >
-                      <span className="truncate">{persona.role}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-[#c9b8a0] flex-shrink-0 stroke-[2.5]" />}
-                    </button>
-                  );
-                })}
-              </div>
             </div>
 
             {/* Error Message Alert */}
@@ -129,69 +107,143 @@ export function LoginPage() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Username Input */}
-              <div className="bg-[#1f2024] border border-white/10 rounded-xl px-4 py-3 flex items-center space-x-3 transition-all focus-within:ring-1 focus-within:ring-[#c9b8a0] focus-within:border-[#c9b8a0] hover:border-white/20">
-                <User className="w-4 h-4 text-stone-400 flex-shrink-0" />
+              <div className="bg-[#18191d] border border-white/10 rounded-2xl px-4 py-3 flex items-center space-x-3 transition-all focus-within:ring-1 focus-within:ring-white/30 focus-within:border-white/30 hover:border-white/20">
+                <User className="w-4 h-4 text-zinc-400 flex-shrink-0" />
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="PRN or ID"
+                  placeholder="PRN or Staff ID (e.g. 202401048, LA-04)"
                   required
-                  className="bg-transparent border-none outline-none w-full text-sm text-white placeholder-stone-500 font-normal font-sans"
+                  className="bg-transparent border-none outline-none w-full text-sm text-white placeholder-zinc-500 font-normal font-sans"
                 />
               </div>
 
               {/* Password Input */}
-              <div className="bg-[#1f2024] border border-white/10 rounded-xl px-4 py-3 flex items-center space-x-3 transition-all focus-within:ring-1 focus-within:ring-[#c9b8a0] focus-within:border-[#c9b8a0] hover:border-white/20">
-                <Lock className="w-4 h-4 text-stone-400 flex-shrink-0" />
+              <div className="bg-[#18191d] border border-white/10 rounded-2xl px-4 py-3 flex items-center space-x-3 transition-all focus-within:ring-1 focus-within:ring-white/30 focus-within:border-white/30 hover:border-white/20">
+                <Lock className="w-4 h-4 text-zinc-400 flex-shrink-0" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
                   required
-                  className="bg-transparent border-none outline-none w-full text-sm text-white placeholder-stone-500 font-normal font-sans"
+                  className="bg-transparent border-none outline-none w-full text-sm text-white placeholder-zinc-500 font-normal font-sans"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer p-0.5"
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
 
-              {/* Login Button with Champagne Gold Gradient */}
+              {/* Apple-grade Pure White Action Button */}
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full py-3 px-6 rounded-full text-[#141416] font-bold text-sm shadow-[0_12px_28px_-6px_rgba(201,184,160,0.4)] hover:shadow-[0_14px_32px_-6px_rgba(201,184,160,0.55)] hover:brightness-105 active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center space-x-2 mt-6 border border-[#f5e6c8]/30 disabled:opacity-60"
-                style={{
-                  background: 'linear-gradient(to right, #bfa07a 0%, #d8c4a5 50%, #ecdcc4 100%)',
-                }}
+                disabled={isSubmitting || !username.trim() || !password}
+                className="w-full py-3.5 px-6 rounded-full bg-white hover:bg-neutral-200 disabled:opacity-40 disabled:hover:bg-white text-black font-semibold text-sm tracking-wide transition-all shadow-[0_4px_20px_rgba(255,255,255,0.12)] hover:shadow-[0_6px_25px_rgba(255,255,255,0.22)] active:scale-[0.99] cursor-pointer flex items-center justify-center gap-2 mt-5"
               >
-                <span>{isSubmitting ? 'Signing In...' : 'Sign In'}</span>
+                <span>{isSubmitting ? 'Authenticating...' : 'Sign In'}</span>
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />
               </button>
             </form>
 
             {/* Footer Links */}
-            <div className="mt-6 text-center space-y-3">
-              <button
-                type="button"
-                onClick={() => alert(`Password recovery requested for ID: ${username}. Please contact your administrator.`)}
-                className="text-xs text-stone-400 hover:text-[#c9b8a0] transition-colors cursor-pointer block mx-auto"
-              >
-                Forgot credentials?
-              </button>
+            <div className="mt-5 text-center space-y-2">
+              <div>
+                <Link
+                  to="/auth/reset-password"
+                  className="text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer inline-block font-sans"
+                >
+                  Forgot credentials?
+                </Link>
+              </div>
 
-              <button
-                type="button"
-                onClick={() => alert('New enrollments must be provisioned by the lab administrator.')}
-                className="text-xs text-stone-400 hover:text-stone-300 font-normal transition-colors cursor-pointer block mx-auto"
-              >
-                Need an account? Contact lab administrator
-              </button>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setIsContactModalOpen(true)}
+                  className="text-xs text-zinc-500 hover:text-zinc-300 font-normal transition-colors cursor-pointer inline-block font-sans"
+                >
+                  Need an account? Contact lab administrator
+                </button>
+              </div>
+            </div>
+
+            {/* Subtle Demo Accounts Quick-Fill Helper */}
+            <div className="mt-6 pt-5 border-t border-white/[0.08] space-y-2">
+              <div className="flex items-center justify-between text-[11px] text-zinc-500 font-sans">
+                <span>Demo Quick-Fill</span>
+                <span className="text-[10px] text-zinc-600 font-mono">1-click test</span>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {personas.map((p) => {
+                  const isSelected = username === p.idTag;
+                  return (
+                    <button
+                      key={p.role}
+                      type="button"
+                      onClick={() => {
+                        setUsername(p.idTag);
+                        setPassword('password123');
+                        setErrorMessage('');
+                      }}
+                      className={`py-1.5 px-1 rounded-xl text-[11px] font-sans transition-all truncate cursor-pointer border text-center ${
+                        isSelected
+                          ? 'bg-white text-black font-semibold border-white shadow-sm'
+                          : 'bg-white/[0.03] text-zinc-400 border-white/5 hover:border-white/20 hover:text-white'
+                      }`}
+                      title={`${p.name} • ${p.role} (${p.idTag})`}
+                    >
+                      {p.role === 'Lab Assistant' ? 'Assistant' : p.role === 'HoD / Admin' ? 'HoD' : p.role}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Institutional Provisioning Dialog Modal */}
+      <Modal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+        title="Institutional Account Clearance"
+        subtitle="Department of Physical Computing & AIML"
+        maxWidth="max-w-md"
+      >
+        <div className="space-y-4 text-xs font-sans text-zinc-300">
+          <div className="p-3.5 bg-white/[0.03] border border-white/10 rounded-2xl space-y-2">
+            <div className="text-white font-medium flex items-center gap-1.5">
+              <ShieldAlert className="w-4 h-4 text-[#c9b8a0]" />
+              <span>Counter Registration Protocol</span>
+            </div>
+            <p className="text-zinc-400 leading-relaxed text-[11px]">
+              Institutional accounts for LabTrack are provisioned directly by the Department Laboratory Custodian and Academic Registrar. Hardware custody clearance requires physical verification of your collegiate photo ID.
+            </p>
+          </div>
+
+          <div className="space-y-1.5 text-[11px] text-zinc-400">
+            <p>• <strong>Students:</strong> Present your photo PRN card at Dispatch Counter 01 (Room 402).</p>
+            <p>• <strong>Faculty & Mentors:</strong> Contact Department Lead Dr. K. V. Ramanathan.</p>
+            <p>• <strong>Lab Assistants:</strong> Contact Custody Lead Ramesh Patil (Staff ID LA-04).</p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsContactModalOpen(false)}
+            className="w-full py-2.5 px-4 rounded-full bg-white hover:bg-neutral-200 text-black font-semibold text-xs transition-all cursor-pointer mt-2"
+          >
+            Acknowledge
+          </button>
+        </div>
+      </Modal>
     </GooeyGradientBackground>
   );
 }
 
 export default LoginPage;
-
