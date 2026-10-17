@@ -1,0 +1,22 @@
+name: LabTrack validation
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22', cache: npm, cache-dependency-path: src/frontend/package-lock.json}
+      - run: pip install -e '.[test]'
+      - run: pytest --junitxml=.artifacts/backend-tests.xml
+      - run: alembic upgrade head
+      - run: python -m labtrack.cli seed
+      - run: python scripts/export_openapi.py
+      - run: npm ci && npm run types && npm run build
+        working-directory: src/frontend
+      - run: git diff --exit-code -- contracts/openapi.yaml src/frontend/src/generated/api.d.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: validation-evidence, path: .artifacts/backend-tests.xml}

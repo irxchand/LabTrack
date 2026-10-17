@@ -1,0 +1,2651 @@
+openapi: 3.1.0
+info:
+  title: LabTrack API
+  version: 0.1.0
+paths:
+  /api/health:
+    get:
+      summary: Health
+      operationId: health_api_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /api/auth/login:
+    post:
+      summary: Login
+      operationId: login_api_auth_login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginView'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /api/auth/logout:
+    post:
+      summary: Logout
+      operationId: logout_api_auth_logout_post
+      parameters:
+      - name: authorization
+        in: header
+        required: true
+        schema:
+          type: string
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/me:
+    get:
+      summary: Me
+      operationId: me_api_me_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserView'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/directory:
+    get:
+      summary: Directory
+      operationId: directory_api_directory_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserView'
+                title: Response Directory Api Directory Get
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/catalogue:
+    get:
+      summary: Catalogue
+      operationId: catalogue_api_catalogue_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItemView'
+                title: Response Catalogue Api Catalogue Get
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/plans:
+    post:
+      summary: Plans
+      operationId: plans_api_plans_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/projects:
+    get:
+      summary: Projects
+      operationId: projects_api_projects_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectView'
+                title: Response Projects Api Projects Get
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+    post:
+      summary: Project Create
+      operationId: project_create_api_projects_post
+      parameters:
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/requests:
+    post:
+      summary: Submit
+      operationId: submit_api_requests_post
+      parameters:
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+    get:
+      summary: Requests List
+      operationId: requests_list_api_requests_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RequestView'
+                title: Response Requests List Api Requests Get
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/requests/{identifier}:
+    get:
+      summary: Request Detail
+      operationId: request_detail_api_requests__identifier__get
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestView'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/requests/{identifier}/decision:
+    post:
+      summary: Decision
+      operationId: decision_api_requests__identifier__decision_post
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/requests/{identifier}/claim:
+    post:
+      summary: Claim
+      operationId: claim_api_requests__identifier__claim_post
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/requests/{identifier}/issue:
+    post:
+      summary: Issue
+      operationId: issue_api_requests__identifier__issue_post
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/requests/{identifier}/cancel:
+    post:
+      summary: Cancel
+      operationId: cancel_api_requests__identifier__cancel_post
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/requests/{identifier}/return:
+    post:
+      summary: Returned
+      operationId: returned_api_requests__identifier__return_post
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReturnInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/requests/{identifier}/acknowledge:
+    post:
+      summary: Acknowledge
+      operationId: acknowledge_api_requests__identifier__acknowledge_post
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/requests/{identifier}/extensions:
+    post:
+      summary: Extension
+      operationId: extension_api_requests__identifier__extensions_post
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtensionInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/extensions/{identifier}/decision:
+    post:
+      summary: Extension Decision
+      operationId: extension_decision_api_extensions__identifier__decision_post
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/reservations:
+    get:
+      summary: Reservations
+      operationId: reservations_api_reservations_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReservationView'
+                title: Response Reservations Api Reservations Get
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+    post:
+      summary: Reserve
+      operationId: reserve_api_reservations_post
+      parameters:
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/reservations/{identifier}/cancel:
+    post:
+      summary: Reservation Cancel
+      operationId: reservation_cancel_api_reservations__identifier__cancel_post
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/requests/{identifier}/retained:
+    post:
+      summary: Retained
+      operationId: retained_api_requests__identifier__retained_post
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/requests/{identifier}/evidence:
+    post:
+      summary: Upload Evidence
+      operationId: upload_evidence_api_requests__identifier__evidence_post
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_evidence_api_requests__identifier__evidence_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/evidence/{identifier}:
+    get:
+      summary: Read Evidence
+      operationId: read_evidence_api_evidence__identifier__get
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/notifications:
+    get:
+      summary: Notifications
+      operationId: notifications_api_notifications_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationView'
+                title: Response Notifications Api Notifications Get
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/demand:
+    post:
+      summary: Demand
+      operationId: demand_api_demand_post
+      parameters:
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Quantity'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/alternatives/{item_id}:
+    get:
+      summary: Alternatives
+      operationId: alternatives_api_alternatives__item_id__get
+      parameters:
+      - name: item_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Item Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItemView'
+                title: Response Alternatives Api Alternatives  Item Id  Get
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/demand/unstocked:
+    post:
+      summary: Unstocked Demand
+      operationId: unstocked_demand_api_demand_unstocked_post
+      parameters:
+      - name: idempotency-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Idempotency-Key
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnstockedDemandInput'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/incidents:
+    get:
+      summary: Incidents
+      operationId: incidents_api_incidents_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/reports/usage:
+    get:
+      summary: Report
+      operationId: report_api_reports_usage_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/reports/demand:
+    get:
+      summary: Demand Report
+      operationId: demand_report_api_reports_demand_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/capabilities:
+    get:
+      summary: Capabilities
+      operationId: capabilities_api_capabilities_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+components:
+  schemas:
+    AssetView:
+      properties:
+        barcode:
+          type: string
+          title: Barcode
+        state:
+          type: string
+          title: State
+        default_id:
+          type: string
+          title: Default Id
+        bill_number:
+          type: string
+          title: Bill Number
+      type: object
+      required:
+      - barcode
+      - state
+      - default_id
+      - bill_number
+      title: AssetView
+    Body_upload_evidence_api_requests__identifier__evidence_post:
+      properties:
+        file:
+          type: string
+          format: binary
+          title: File
+      type: object
+      required:
+      - file
+      title: Body_upload_evidence_api_requests__identifier__evidence_post
+    DecisionInput:
+      properties:
+        decision:
+          type: string
+          enum:
+          - APPROVE
+          - REJECT
+          title: Decision
+        remarks:
+          type: string
+          maxLength: 4000
+          title: Remarks
+          default: ''
+      additionalProperties: false
+      type: object
+      required:
+      - decision
+      title: DecisionInput
+    ErrorDetail:
+      properties:
+        code:
+          type: string
+          title: Code
+        message:
+          type: string
+          title: Message
+        decision:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Decision
+      type: object
+      required:
+      - code
+      - message
+      title: ErrorDetail
+    ErrorEnvelope:
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+      type: object
+      required:
+      - error
+      title: ErrorEnvelope
+    ExtensionInput:
+      properties:
+        new_due_at:
+          type: string
+          format: date-time
+          title: New Due At
+        reason:
+          type: string
+          maxLength: 2000
+          minLength: 1
+          title: Reason
+      additionalProperties: false
+      type: object
+      required:
+      - new_due_at
+      - reason
+      title: ExtensionInput
+    ExtensionView:
+      properties:
+        id:
+          type: integer
+          title: Id
+        state:
+          type: string
+          title: State
+        old_due_at:
+          type: string
+          title: Old Due At
+        new_due_at:
+          type: string
+          title: New Due At
+        reason:
+          type: string
+          title: Reason
+      type: object
+      required:
+      - id
+      - state
+      - old_due_at
+      - new_due_at
+      - reason
+      title: ExtensionView
+    IssueInput:
+      properties:
+        assignments:
+          additionalProperties:
+            items:
+              type: string
+            type: array
+          type: object
+          title: Assignments
+        physical_handover_confirmed:
+          type: boolean
+          const: true
+          title: Physical Handover Confirmed
+      additionalProperties: false
+      type: object
+      required:
+      - physical_handover_confirmed
+      title: IssueInput
+    ItemView:
+      properties:
+        id:
+          type: integer
+          title: Id
+        name:
+          type: string
+          title: Name
+        kind:
+          type: string
+          title: Kind
+        category:
+          type: string
+          title: Category
+        description:
+          type: string
+          title: Description
+        brand:
+          type: string
+          title: Brand
+        specs:
+          additionalProperties: true
+          type: object
+          title: Specs
+        labs:
+          items:
+            $ref: '#/components/schemas/LabStockView'
+          type: array
+          title: Labs
+        available:
+          type: integer
+          title: Available
+      type: object
+      required:
+      - id
+      - name
+      - kind
+      - category
+      - description
+      - brand
+      - specs
+      - labs
+      - available
+      title: ItemView
+    LabStockView:
+      properties:
+        lab_id:
+          type: integer
+          title: Lab Id
+        lab_name:
+          type: string
+          title: Lab Name
+        good:
+          type: integer
+          title: Good
+        bad:
+          type: integer
+          title: Bad
+        total:
+          type: integer
+          title: Total
+        assets:
+          items:
+            $ref: '#/components/schemas/AssetView'
+          type: array
+          title: Assets
+      type: object
+      required:
+      - lab_id
+      - lab_name
+      - good
+      - bad
+      - total
+      title: LabStockView
+    LineView:
+      properties:
+        id:
+          type: integer
+          title: Id
+        item_id:
+          type: integer
+          title: Item Id
+        item_name:
+          type: string
+          title: Item Name
+        lab_id:
+          type: integer
+          title: Lab Id
+        lab_name:
+          type: string
+          title: Lab Name
+        quantity:
+          type: integer
+          title: Quantity
+        barcodes:
+          items:
+            type: string
+          type: array
+          title: Barcodes
+      type: object
+      required:
+      - id
+      - item_id
+      - item_name
+      - lab_id
+      - lab_name
+      - quantity
+      - barcodes
+      title: LineView
+    Login:
+      properties:
+        identifier:
+          type: string
+          maxLength: 40
+          minLength: 1
+          title: Identifier
+        password:
+          type: string
+          maxLength: 200
+          minLength: 1
+          title: Password
+      additionalProperties: false
+      type: object
+      required:
+      - identifier
+      - password
+      title: Login
+    LoginView:
+      properties:
+        token:
+          type: string
+          title: Token
+        user:
+          $ref: '#/components/schemas/UserView'
+      type: object
+      required:
+      - token
+      - user
+      title: LoginView
+    NotificationView:
+      properties:
+        event_id:
+          type: integer
+          title: Event Id
+        user_id:
+          type: integer
+          title: User Id
+        event:
+          type: string
+          title: Event
+        request_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Request Id
+        details:
+          additionalProperties: true
+          type: object
+          title: Details
+        link:
+          type: string
+          title: Link
+        created_at:
+          type: string
+          title: Created At
+      type: object
+      required:
+      - event_id
+      - user_id
+      - event
+      - request_id
+      - details
+      - link
+      - created_at
+      title: NotificationView
+    PlanInput:
+      properties:
+        lines:
+          items:
+            $ref: '#/components/schemas/Quantity'
+          type: array
+          maxItems: 100
+          minItems: 1
+          title: Lines
+      additionalProperties: false
+      type: object
+      required:
+      - lines
+      title: PlanInput
+    ProjectInput:
+      properties:
+        name:
+          type: string
+          maxLength: 160
+          minLength: 1
+          title: Name
+        description:
+          type: string
+          maxLength: 4000
+          title: Description
+          default: ''
+        mentor_id:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: Mentor Id
+        member_ids:
+          items:
+            type: integer
+          type: array
+          maxItems: 100
+          title: Member Ids
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      - mentor_id
+      title: ProjectInput
+    ProjectView:
+      properties:
+        id:
+          type: integer
+          title: Id
+        project_code:
+          type: string
+          title: Project Code
+        name:
+          type: string
+          title: Name
+        description:
+          type: string
+          title: Description
+        lead_id:
+          type: integer
+          title: Lead Id
+        mentor_id:
+          type: integer
+          title: Mentor Id
+        member_ids:
+          items:
+            type: integer
+          type: array
+          title: Member Ids
+      type: object
+      required:
+      - id
+      - project_code
+      - name
+      - description
+      - lead_id
+      - mentor_id
+      - member_ids
+      title: ProjectView
+    Quantity:
+      properties:
+        item_id:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: Item Id
+        quantity:
+          type: integer
+          maximum: 2147483647.0
+          exclusiveMinimum: 0.0
+          title: Quantity
+      additionalProperties: false
+      type: object
+      required:
+      - item_id
+      - quantity
+      title: Quantity
+    RequestInput:
+      properties:
+        lines:
+          items:
+            $ref: '#/components/schemas/Quantity'
+          type: array
+          maxItems: 100
+          minItems: 1
+          title: Lines
+        project_id:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: Project Id
+        duration_hours:
+          type: number
+          exclusiveMinimum: 0.0
+          title: Duration Hours
+        purpose:
+          type: string
+          enum:
+          - BORROW
+          - USE_IN_COLLEGE
+          - TAKE_OUTSIDE
+          title: Purpose
+          default: BORROW
+      additionalProperties: false
+      type: object
+      required:
+      - lines
+      - project_id
+      - duration_hours
+      title: RequestInput
+    RequestView:
+      properties:
+        id:
+          type: integer
+          title: Id
+        project_id:
+          type: integer
+          title: Project Id
+        project_name:
+          type: string
+          title: Project Name
+        project_code:
+          type: string
+          title: Project Code
+        mentor_id:
+          type: integer
+          title: Mentor Id
+        lead_id:
+          type: integer
+          title: Lead Id
+        incharge_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Incharge Id
+        claimed_by:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Claimed By
+        kind:
+          type: string
+          title: Kind
+        purpose:
+          type: string
+          title: Purpose
+        state:
+          type: string
+          title: State
+        duration_hours:
+          type: number
+          title: Duration Hours
+        due_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Due At
+        due_version:
+          type: integer
+          title: Due Version
+        acknowledged_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Acknowledged At
+        lines:
+          items:
+            $ref: '#/components/schemas/LineView'
+          type: array
+          title: Lines
+        timeline:
+          items:
+            $ref: '#/components/schemas/TimelineView'
+          type: array
+          title: Timeline
+        extensions:
+          items:
+            $ref: '#/components/schemas/ExtensionView'
+          type: array
+          title: Extensions
+      type: object
+      required:
+      - id
+      - project_id
+      - project_name
+      - project_code
+      - mentor_id
+      - lead_id
+      - incharge_id
+      - claimed_by
+      - kind
+      - purpose
+      - state
+      - duration_hours
+      - due_at
+      - due_version
+      - acknowledged_at
+      - lines
+      - timeline
+      - extensions
+      title: RequestView
+    ReservationInput:
+      properties:
+        item_id:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: Item Id
+        quantity:
+          type: integer
+          maximum: 2147483647.0
+          exclusiveMinimum: 0.0
+          title: Quantity
+        project_id:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: Project Id
+      additionalProperties: false
+      type: object
+      required:
+      - item_id
+      - quantity
+      - project_id
+      title: ReservationInput
+    ReservationView:
+      properties:
+        id:
+          type: integer
+          title: Id
+        project_id:
+          type: integer
+          title: Project Id
+        item_id:
+          type: integer
+          title: Item Id
+        item_name:
+          type: string
+          title: Item Name
+        quantity:
+          type: integer
+          title: Quantity
+        state:
+          type: string
+          title: State
+        created_at:
+          type: string
+          title: Created At
+      type: object
+      required:
+      - id
+      - project_id
+      - item_id
+      - item_name
+      - quantity
+      - state
+      - created_at
+      title: ReservationView
+    ReturnInput:
+      properties:
+        lines:
+          items:
+            $ref: '#/components/schemas/ReturnLine'
+          type: array
+          maxItems: 100
+          minItems: 1
+          title: Lines
+        remarks:
+          type: string
+          maxLength: 4000
+          title: Remarks
+          default: ''
+      additionalProperties: false
+      type: object
+      required:
+      - lines
+      title: ReturnInput
+    ReturnLine:
+      properties:
+        line_id:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: Line Id
+        good:
+          type: integer
+          minimum: 0.0
+          title: Good
+          default: 0
+        bad:
+          type: integer
+          minimum: 0.0
+          title: Bad
+          default: 0
+        missing:
+          type: integer
+          minimum: 0.0
+          title: Missing
+          default: 0
+        functional:
+          type: string
+          enum:
+          - PASS
+          - FAIL
+          - NOT_TESTED
+          title: Functional
+          default: NOT_TESTED
+        asset_conditions:
+          additionalProperties:
+            type: string
+            enum:
+            - GOOD
+            - DAMAGED
+            - DEFECTIVE
+            - LOST
+          type: object
+          title: Asset Conditions
+        missing_parts:
+          type: string
+          maxLength: 2000
+          title: Missing Parts
+          default: ''
+        evidence_ids:
+          items:
+            type: string
+          type: array
+          maxItems: 30
+          title: Evidence Ids
+      additionalProperties: false
+      type: object
+      required:
+      - line_id
+      title: ReturnLine
+    TimelineView:
+      properties:
+        id:
+          type: integer
+          title: Id
+        actor:
+          type: string
+          title: Actor
+        action:
+          type: string
+          title: Action
+        previous_state:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Previous State
+        new_state:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: New State
+        details:
+          additionalProperties: true
+          type: object
+          title: Details
+        created_at:
+          type: string
+          title: Created At
+      type: object
+      required:
+      - id
+      - actor
+      - action
+      - previous_state
+      - new_state
+      - details
+      - created_at
+      title: TimelineView
+    UnstockedDemandInput:
+      properties:
+        component_name:
+          type: string
+          maxLength: 160
+          minLength: 1
+          title: Component Name
+        quantity:
+          type: integer
+          maximum: 2147483647.0
+          exclusiveMinimum: 0.0
+          title: Quantity
+      additionalProperties: false
+      type: object
+      required:
+      - component_name
+      - quantity
+      title: UnstockedDemandInput
+    UserView:
+      properties:
+        id:
+          type: integer
+          title: Id
+        name:
+          type: string
+          title: Name
+        identifier:
+          type: string
+          title: Identifier
+        roles:
+          items:
+            type: string
+          type: array
+          title: Roles
+        lab_ids:
+          items:
+            type: integer
+          type: array
+          title: Lab Ids
+      type: object
+      required:
+      - id
+      - name
+      - identifier
+      - roles
+      - lab_ids
+      title: UserView

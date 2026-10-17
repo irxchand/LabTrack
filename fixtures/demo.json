@@ -1,0 +1,32 @@
+{
+  "users": [
+    {"id":1,"name":"Aarav Shah · Demo","identifier":"DEMO-STU-001","email":"student1@example.invalid","roles":["STUDENT"],"lab_ids":[]},
+    {"id":2,"name":"Mira Rao · Demo","identifier":"DEMO-STU-002","email":"student2@example.invalid","roles":["STUDENT"],"lab_ids":[]},
+    {"id":3,"name":"Faculty Mentor · Demo","identifier":"T00001","email":"mentor@example.invalid","roles":["MENTOR"],"lab_ids":[]},
+    {"id":4,"name":"Lab In-Charge · Demo","identifier":"T00002","email":"incharge@example.invalid","roles":["INCHARGE"],"lab_ids":[1,2]},
+    {"id":5,"name":"Head of Department · Demo","identifier":"T00003","email":"hod@example.invalid","roles":["HOD"],"lab_ids":[]},
+    {"id":6,"name":"Lab Assistant · Demo","identifier":"N00001","email":"assistant@example.invalid","roles":["ASSISTANT"],"lab_ids":[1,2]},
+    {"id":7,"name":"Second Assistant · Demo","identifier":"N00002","email":"assistant2@example.invalid","roles":["ASSISTANT"],"lab_ids":[1,2]},
+    {"id":8,"name":"Technical Admin · Demo","identifier":"DEMO-ADMIN","email":"admin@example.invalid","roles":["ADMIN"],"lab_ids":[]},
+    {"id":99,"name":"Scheduler · System","identifier":"SYSTEM","email":"system@example.invalid","roles":["SYSTEM"],"lab_ids":[]}
+  ],
+  "labs": [{"id":1,"name":"Robotics Lab","incharge_id":4},{"id":2,"name":"Automation Lab","incharge_id":4}],
+  "items": [
+    {"id":1,"name":"Ultrasonic Sensor HC-SR04","kind":"CONSUMABLE","category":"Sensor","description":"Returnable distance sensor for obstacle detection.","brand":"Generic","specs":{"function":"distance","interface":"trigger-echo","range":"2–400 cm","voltage":"5 V"},"alternative_ids":[2]},
+    {"id":2,"name":"Waterproof Sensor JSN-SR04T","kind":"CONSUMABLE","category":"Sensor","description":"Curated distance-sensing alternative; verify range and mounting for your project.","brand":"Generic","specs":{"function":"distance","interface":"trigger-echo","range":"20–600 cm","voltage":"5 V"},"alternative_ids":[1]},
+    {"id":3,"name":"DC Gear Motor","kind":"CONSUMABLE","category":"Motors","description":"Returnable project actuator, tracked by lab quantity.","brand":"Demo","specs":{"function":"rotation","interface":"DC","voltage":"12 V"},"alternative_ids":[]},
+    {"id":4,"name":"Jetson Nano","kind":"ASSET","category":"Compute","description":"Individually barcode-tracked embedded AI development unit.","brand":"NVIDIA","specs":{"function":"compute","interface":"USB / GPIO"},"alternative_ids":[]},
+    {"id":5,"name":"Robotic Arm","kind":"ASSET","category":"Robotics","description":"Institutional asset for authorized lab use or separately approved outside use.","brand":"Demo","specs":{"function":"manipulation","interface":"USB"},"alternative_ids":[]},
+    {"id":6,"name":"LiDAR Module","kind":"CONSUMABLE","category":"Sensor","description":"Catalogue item currently out of stock, used to demonstrate FIFO queue and unmet demand.","brand":"Demo","specs":{"function":"distance","interface":"UART"},"alternative_ids":[]}
+  ],
+  "stock": [
+    {"item_id":1,"lab_id":1,"good":8,"bad":2},{"item_id":1,"lab_id":2,"good":5,"bad":0},
+    {"item_id":2,"lab_id":2,"good":4,"bad":1},{"item_id":3,"lab_id":1,"good":2,"bad":0},
+    {"item_id":3,"lab_id":2,"good":6,"bad":1},{"item_id":6,"lab_id":1,"good":0,"bad":0}
+  ],
+  "assets": [
+    {"item_id":4,"lab_id":1,"barcode":"SIT-DEMO-JN-001","default_id":"JETSON-001","bill_number":"DEMO-BILL-2026-01","state":"AVAILABLE"},
+    {"item_id":4,"lab_id":2,"barcode":"SIT-DEMO-JN-002","default_id":"JETSON-002","bill_number":"DEMO-BILL-2026-01","state":"AVAILABLE"},
+    {"item_id":5,"lab_id":1,"barcode":"SIT-DEMO-ARM-001","default_id":"ARM-001","bill_number":"DEMO-BILL-2026-02","state":"AVAILABLE"}
+  ]
+}

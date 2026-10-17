@@ -1,0 +1,55 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: labtrack
+      MYSQL_USER: labtrack
+      MYSQL_PASSWORD: ${LABTRACK_SQL_PASSWORD:?Set LABTRACK_SQL_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${LABTRACK_SQL_ROOT_PASSWORD:?Set LABTRACK_SQL_ROOT_PASSWORD in .env}
+    volumes: ["mysql-data:/var/lib/mysql"]
+    ports: ["127.0.0.1:3307:3306"]
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h localhost --silent"]
+      interval: 5s
+      retries: 30
+  mongo:
+    image: mongo:8.0
+    volumes: ["mongo-data:/data/db"]
+    ports: ["127.0.0.1:27018:27017"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      retries: 30
+  migrate:
+    build: .
+    environment: &environment
+      LABTRACK_DATABASE_URL: mysql+pymysql://labtrack:${LABTRACK_SQL_PASSWORD}@mysql:3306/labtrack
+      LABTRACK_DOCUMENT_STORE: mongo
+      LABTRACK_MONGO_URL: mongodb://mongo:27017
+      LABTRACK_EMAIL_PROVIDER: local
+      LABTRACK_OBJECT_STORE: local
+      LABTRACK_SCHEDULER_ENABLED: "false"
+      LABTRACK_READ_ONLY: ${LABTRACK_READ_ONLY:-false}
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      mysql: {condition: service_healthy}
+  api:
+    build: .
+    environment: *environment
+    ports: ["127.0.0.1:8000:8000"]
+    volumes: ["app-data:/app/.local"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      mongo: {condition: service_healthy}
+  worker:
+    build: .
+    environment: *environment
+    entrypoint: ["python", "-m", "labtrack.run_worker"]
+    volumes: ["app-data:/app/.local"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      mongo: {condition: service_healthy}
+volumes:
+  mysql-data:
+  mongo-data:
+  app-data:

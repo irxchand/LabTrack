@@ -1,0 +1,213 @@
+ASTRA — PROJECT EXECUTION + PRESENTATION MODE
+
+Read and follow:
+
+docs/ASTRA/ASTRA_MASTER_PROMPT.txt
+
+Also read the existing persistent ASTRA artifacts:
+
+docs/ASTRA/00_SOURCE_MANIFEST.md
+docs/ASTRA/01_REFERENCE_GRAPH.md
+docs/ASTRA/02_REQUIREMENT_LEDGER.md
+docs/ASTRA/03_RECONCILIATION_REPORT.md
+docs/ASTRA/04_CONTEXT_REVIEW.md
+docs/ASTRA/05_OPEN_DECISIONS.md
+
+IMPORTANT:
+
+My current objective is NOT SDD authoring.
+
+Do NOT generate the canonical SDD.
+Do NOT perform another discovery/understanding cycle.
+Do NOT wait for Gate 1 merely because the SDD workflow has a pending
+AWAITING_USER_VALIDATION state.
+
+For this session, enter:
+
+PROJECT_EXECUTION + PRESENTATION MODE
+
+The immediate objective is to execute the already-defined project and
+presentation work using the repository's persistent project material.
+
+============================================================
+PART 1 — PROJECT EXECUTION
+============================================================
+
+Read the current project context and all relevant existing project documents
+needed to implement LabTrack.
+
+Treat the current Master Context and explicitly validated/current project
+material as the product basis.
+
+Do not invent new business policy.
+
+Do not silently resolve an open product decision.
+
+When implementation encounters an unresolved business rule:
+
+STOP that specific decision,
+record it clearly,
+and continue with independently implementable work where possible.
+
+Do not use historical pitch material as product requirements or architecture.
+
+Do not treat presentation artifacts as implementation specifications.
+
+Determine the current implementable scope from the existing project material.
+
+Then:
+
+1. inspect the current repository implementation state;
+2. identify what is already implemented;
+3. identify what is missing;
+4. establish the implementation roadmap required to execute the project;
+5. implement the project in coherent phases;
+6. create/update the required application files;
+7. create/update schemas, APIs, database structures, tests, configuration and
+   deployment artifacts as required by the approved/current project direction;
+8. maintain traceability to the existing requirement ledger;
+9. update execution/continuity documentation as implementation progresses;
+10. run validation and tests continuously.
+
+The repository currently contains the project's persistent design evidence.
+Do not recreate that evidence unnecessarily.
+
+============================================================
+PART 2 — PRESENTATION EXECUTION
+============================================================
+
+Separately execute the presentation work using the presentation requirements
+already present in the project documentation.
+
+The presentation is a communication deliverable, not a source of product
+requirements.
+
+Use the documented presentation/PPT direction to produce the presentation.
+
+The presentation must communicate the real project:
+
+- the problem;
+- existing/manual process;
+- proposed LabTrack solution;
+- users and workflow;
+- project-based component management;
+- assets vs consumables;
+- availability/request/reservation behavior;
+- approval and physical processing;
+- due dates/reminders/extensions;
+- return/inspection/accountability;
+- audit/history;
+- notifications/unmet demand;
+- AI-assisted support;
+- technical architecture where actually supported by the project;
+- academic relevance;
+- running example/live demo;
+- future scope.
+
+Do not manufacture statistics.
+
+Do not present unresolved policies as final facts.
+
+Do not let the pitch deck redefine the product.
+
+Use the presentation material/documentation as presentation guidance only.
+
+============================================================
+PART 3 — EXECUTION ORDER
+============================================================
+
+Execute in this order:
+
+PROJECT BASELINE
+→ IMPLEMENTATION PLAN
+→ BACKEND / DATABASE FOUNDATION
+→ CORE DOMAIN WORKFLOWS
+→ FRONTEND
+→ INTEGRATION
+→ TESTING / VALIDATION
+→ DEMO DATA / DEMO FLOW
+→ PRESENTATION
+→ PRESENTATION VALIDATION
+
+Keep project implementation and presentation content synchronized.
+
+Whenever a demonstrated feature changes, update the presentation/demo narrative
+where necessary.
+
+============================================================
+PART 4 — DOCUMENT / IMPLEMENTATION DISCIPLINE
+============================================================
+
+Do not create an SDD as a substitute for implementation.
+
+Do not rewrite the Master Context merely to make implementation easier.
+
+Do not silently convert assumptions into requirements.
+
+Do not remove historical artifacts.
+
+Do not use old pitch architecture to justify implementation.
+
+Where the repository contains conflicting information, prefer the established
+current project direction and preserve unresolved decisions explicitly.
+
+============================================================
+PART 5 — DELIVERABLES
+============================================================
+
+The immediate deliverables are:
+
+A. Working LabTrack implementation
+B. Tests and validation evidence
+C. Required project/configuration/deployment artifacts
+D. Working demonstration flow
+E. Final presentation
+F. Updated execution/continuity records
+
+The SDD is NOT an immediate deliverable.
+
+============================================================
+PART 6 — EXECUTION BEHAVIOR
+============================================================
+
+Do not stop merely because the ASTRA SDD approval gate is still pending.
+
+That gate applies to canonical SDD authoring.
+
+For this execution track, remain within the existing documented product
+boundaries and do not invent unresolved business policy.
+
+When a technical implementation detail is unspecified but does not change
+business policy, select a reasonable engineering implementation and document
+the choice.
+
+When a business rule is unspecified or contradictory, do not invent it.
+
+============================================================
+FINAL SESSION STATE
+============================================================
+
+At the end, report:
+
+PROJECT STATUS
+- implemented
+- in progress
+- blocked
+
+PRESENTATION STATUS
+- completed
+- in progress
+- blocked
+
+OPEN BUSINESS DECISIONS
+- only decisions that genuinely block or materially affect execution
+
+TECHNICAL DECISIONS
+- decisions made for implementation convenience
+
+TEST / VALIDATION STATUS
+
+DEMO STATUS
+
+Do NOT generate or modify the canonical SDD unless I explicitly request
+the SDD workflow later.
