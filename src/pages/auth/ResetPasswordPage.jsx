@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, KeyRound, CheckCircle2 } from 'lucide-react';
 import { useNotification } from '../../context/NotificationContext';
 import { InteractiveWavesBackground } from '../../components/canvas/InteractiveWavesBackground';
+import { GooeyGradientBackground } from '../../components/canvas/GooeyGradientBackground';
 
 export function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -21,30 +22,8 @@ export function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen w-screen flex flex-col justify-center items-center bg-[#070709] p-4 sm:p-6 text-white relative overflow-hidden">
-      {/* Whole-Page Interactive Waves Background */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <InteractiveWavesBackground
-          lineColor="rgba(201, 184, 160, 0.22)"
-          backgroundColor="transparent"
-          waveSpeedX={0.016}
-          waveSpeedY={0.007}
-          waveAmpX={38}
-          waveAmpY={18}
-          friction={0.925}
-          tension={0.007}
-          maxCursorMove={120}
-          xGap={12}
-          yGap={34}
-          cursorDotColor="rgba(232, 213, 183, 0.85)"
-          showCursorDot={true}
-        />
-      </div>
-
-      {/* Background Ambient Glow */}
-      <div className="absolute w-96 h-96 rounded-full bg-[#c9b8a0]/10 blur-[120px] pointer-events-none" />
-
-      <div className="w-full max-w-md bg-[#111215]/90 border border-white/10 rounded-3xl p-8 shadow-2xl space-y-6 backdrop-blur-2xl relative z-10">
+    <GooeyGradientBackground className="min-h-screen w-screen flex flex-col justify-center items-center p-4 sm:p-6 text-white relative overflow-hidden font-sans">
+      <div className="w-full max-w-md bg-[#111215]/80 border border-white/15 rounded-3xl p-8 shadow-[0_30px_90px_rgba(0,0,0,0.7)] space-y-6 backdrop-blur-2xl relative z-10">
         <div className="space-y-2">
           <Link
             to="/auth/login"
@@ -103,7 +82,7 @@ export function ResetPasswordPage() {
           </form>
         )}
       </div>
-    </div>
+    </GooeyGradientBackground>
   );
 }
 

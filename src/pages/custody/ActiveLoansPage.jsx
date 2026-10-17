@@ -404,10 +404,10 @@ export function ActiveLoansPage() {
           <div className="space-y-3.5 pt-20">
             {/* Product Title & Subtitle */}
             <div className="space-y-1">
-              <h3 className="text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors drop-shadow-md">
+              <h3 className="font-display text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors drop-shadow-md">
                 {loan.nomenclature}
               </h3>
-              <p className="text-xs text-zinc-300 font-normal line-clamp-2 leading-relaxed drop-shadow-sm">
+              <p className="text-xs text-zinc-300 font-sans font-normal line-clamp-2 leading-relaxed drop-shadow-sm">
                 {invItem?.subSpecs || 'Institutional lab hardware unit issued for project development.'}
               </p>
             </div>
@@ -442,10 +442,10 @@ export function ActiveLoansPage() {
                   <span
                     className={`w-2 h-2 rounded-full flex-shrink-0 ${
                       loan.daysRemaining < 0
-                        ? 'bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.9)]'
+                        ? 'bg-rose-400'
                         : loan.daysRemaining <= 3
-                        ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)]'
-                        : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]'
+                        ? 'bg-amber-400'
+                        : 'bg-emerald-400'
                     }`}
                   />
                   <span className="text-xs font-semibold text-white truncate">

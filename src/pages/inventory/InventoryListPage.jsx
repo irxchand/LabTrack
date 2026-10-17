@@ -405,10 +405,10 @@ export function InventoryListPage({ initialClassification = null }) {
           <div className="space-y-3.5 pt-20">
             {/* Product Title & Subtitle */}
             <div className="space-y-1">
-              <h3 className="text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors drop-shadow-md">
+              <h3 className="font-display text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors drop-shadow-md">
                 {item.nomenclature}
               </h3>
-              <p className="text-xs text-zinc-300 font-normal line-clamp-2 leading-relaxed drop-shadow-sm">
+              <p className="text-xs text-zinc-300 font-sans font-normal line-clamp-2 leading-relaxed drop-shadow-sm">
                 {item.subSpecs}
               </p>
             </div>
@@ -437,7 +437,7 @@ export function InventoryListPage({ initialClassification = null }) {
             {/* Card Footer Actions */}
             <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)] flex-shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
                 <span className="text-xs text-white font-semibold">
                   In Stock
                 </span>

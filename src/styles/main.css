@@ -2,27 +2,34 @@
 @import "./tokens.css";
 
 @theme {
-  --font-sans: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-  --font-display: 'Clash Display', 'Satoshi', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", "Satoshi", "Helvetica Neue", sans-serif;
+  --font-display: "Clash Display", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
-  --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-mono: "SF Mono", SFMono-Regular, ui-monospace, "Geist Mono", "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
 }
 
 :root {
   --bg: #000000;
   --fg: #ffffff;
+  --font-display: "Clash Display", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+  --font-clash: "Clash Display", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", "Satoshi", "Helvetica Neue", sans-serif;
 }
 
 .font-display {
-  font-family: var(--font-display, 'Clash Display', 'Satoshi', sans-serif);
+  font-family: "Clash Display", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+}
+
+.font-clash {
+  font-family: "Clash Display", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
 }
 
 .font-sans {
-  font-family: var(--font-sans, 'Satoshi', 'Inter', sans-serif);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", "Satoshi", "Helvetica Neue", sans-serif;
 }
 
 .font-mono {
-  font-family: 'Geist Mono', 'JetBrains Mono', monospace;
+  font-family: "SF Mono", SFMono-Regular, ui-monospace, "Geist Mono", "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -158,6 +165,8 @@
     letter-spacing: -0.015em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     min-height: 100vh;
     background-image: 
       radial-gradient(ellipse 80% 40% at 50% -15%, rgba(94, 106, 210, 0.1), transparent 75%),

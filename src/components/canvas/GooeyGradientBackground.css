@@ -1,0 +1,151 @@
+.gooey-wrapper {
+  /* Exact Champagne Gold & Deep Velvet Black Palette sampled from Card UI */
+  --color-bg1: rgb(0, 0, 0);
+  --color-bg2: rgb(0, 0, 0);
+  --color1: 201, 184, 160;        /* #c9b8a0 - Champagne Gold */
+  --color2: 167, 139, 113;        /* #a78b71 - Warm Molten Bronze */
+  --color3: 245, 230, 200;        /* #f5e6c8 - Luminous Pale Cream Gold */
+  --color4: 140, 105, 75;         /* Deep Warm Cognac Bronze */
+  --color5: 191, 160, 122;        /* #bfa07a - Metallic Button Gold */
+  --color-interactive: 216, 196, 165; /* #d8c4a5 - Interactive Champagne Light */
+  --circle-size: 70%;
+  --blending: screen;
+  
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes moveInCircle {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes moveVertical {
+  0% { transform: translateY(-50%); }
+  50% { transform: translateY(50%); }
+  100% { transform: translateY(-50%); }
+}
+
+@keyframes moveHorizontal {
+  0% { transform: translateX(-50%) translateY(-10%); }
+  50% { transform: translateX(50%) translateY(10%); }
+  100% { transform: translateX(-50%) translateY(-10%); }
+}
+
+.gradient-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  overflow: hidden;
+  background: #000000;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.gradient-bg svg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.gradients-container {
+  filter: blur(40px);
+  filter: url(#goo) blur(40px);
+  -webkit-filter: url(#goo) blur(40px);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.g1 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--color1), 0.45) 0, rgba(var(--color1), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  top: calc(50% - var(--circle-size) / 2);
+  left: calc(50% - var(--circle-size) / 2);
+  transform-origin: center center;
+  animation: moveVertical 30s ease infinite;
+  opacity: 0.85;
+  will-change: transform;
+}
+
+.g2 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--color2), 0.45) 0, rgba(var(--color2), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  top: calc(50% - var(--circle-size) / 2);
+  left: calc(50% - var(--circle-size) / 2);
+  transform-origin: calc(50% - 400px);
+  animation: moveInCircle 20s reverse infinite;
+  opacity: 0.85;
+  will-change: transform;
+}
+
+.g3 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--color3), 0.4) 0, rgba(var(--color3), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  top: calc(50% - var(--circle-size) / 2 + 200px);
+  left: calc(50% - var(--circle-size) / 2 - 500px);
+  transform-origin: calc(50% + 400px);
+  animation: moveInCircle 40s linear infinite;
+  opacity: 0.75;
+  will-change: transform;
+}
+
+.g4 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--color4), 0.35) 0, rgba(var(--color4), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  top: calc(50% - var(--circle-size) / 2);
+  left: calc(50% - var(--circle-size) / 2);
+  transform-origin: calc(50% - 200px);
+  animation: moveHorizontal 40s ease infinite;
+  opacity: 0.65;
+  will-change: transform;
+}
+
+.g5 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--color5), 0.45) 0, rgba(var(--color5), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: calc(var(--circle-size) * 1.5);
+  height: calc(var(--circle-size) * 1.5);
+  top: calc(50% - var(--circle-size) * 0.75);
+  left: calc(50% - var(--circle-size) * 0.75);
+  transform-origin: calc(50% - 800px) calc(50% + 200px);
+  animation: moveInCircle 20s ease infinite;
+  opacity: 0.8;
+  will-change: transform;
+}
+
+.interactive {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--color-interactive), 0.5) 0, rgba(var(--color-interactive), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: 100%;
+  height: 100%;
+  top: -50%;
+  left: -50%;
+  opacity: 0.7;
+  will-change: transform;
+}

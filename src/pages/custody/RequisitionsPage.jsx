@@ -141,14 +141,13 @@ export function RequisitionsPage() {
       {/* Editorial Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-            ORDERS & ALLOCATIONS
-          </div>
-          <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-white mt-1">
+          <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
+            Orders & Allocations
+          </span>
+          <h1 className="text-3xl font-bold tracking-[-0.025em] text-white mt-1 font-display">
             Requisitions
           </h1>
-          <p className="text-sm font-sans text-zinc-400 mt-1 max-w-xl">
+          <p className="text-[13px] text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">
             Track hardware orders moving through faculty mentor endorsement, counter staging, and dispatch handover.
           </p>
         </div>
@@ -232,7 +231,7 @@ export function RequisitionsPage() {
           <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto text-zinc-500 shadow-inner">
             <Inbox className="w-7 h-7 stroke-[1.5]" />
           </div>
-          <h3 className="font-sans text-lg font-bold text-white">No Requisitions Found</h3>
+          <h3 className="font-display text-lg font-bold text-white">No Requisitions Found</h3>
           <p className="text-xs text-zinc-400 max-w-sm mx-auto font-sans leading-relaxed">
             No hardware orders match the selected filter. Browse the Workstation catalog to stage components into your requisition kit.
           </p>
@@ -291,14 +290,14 @@ export function RequisitionsPage() {
 
                     {/* Cupertino Status Pill */}
                     {(stageInfo.color === 'champagne' || stageInfo.color === 'amber') && (
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#c9b8a0]/15 backdrop-blur-md text-[#f5e6c8] border border-[#c9b8a0]/35 flex items-center gap-1.5 shadow-[0_0_12px_rgba(201,184,160,0.25)]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8] shadow-[0_0_8px_rgba(245,230,200,0.95)] animate-pulse" />
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#c9b8a0]/15 backdrop-blur-md text-[#f5e6c8] border border-[#c9b8a0]/35 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8]" />
                         <span>{stageInfo.label}</span>
                       </span>
                     )}
                     {stageInfo.color === 'emerald' && (
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 backdrop-blur-md text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 shadow-lg">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 backdrop-blur-md text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                         <span>{stageInfo.label}</span>
                       </span>
                     )}
@@ -329,7 +328,7 @@ export function RequisitionsPage() {
                     </div>
 
                     <div className="flex items-start justify-between gap-3">
-                      <h3 className="font-sans text-xl sm:text-2xl font-bold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors leading-snug drop-shadow-md">
+                      <h3 className="font-display text-xl sm:text-2xl font-bold text-white tracking-tight group-hover:text-[#f5e6c8] transition-colors leading-snug drop-shadow-md">
                         {primaryItem.nomenclature}
                       </h3>
                       <span className="px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-white font-sans font-bold text-xs border border-white/20 shadow-md flex-shrink-0">
