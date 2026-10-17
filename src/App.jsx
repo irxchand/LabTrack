@@ -78,8 +78,22 @@ export function App() {
                   <Route index element={<Navigate to="active" replace />} />
                   <Route path="active" element={<ActiveLoansPage />} />
                   <Route path="bench" element={<ActiveLoansPage />} />
-                  <Route path="requests" element={<RequisitionsPage />} />
-                  <Route path="reservations" element={<ReservationsPage />} />
+                  <Route
+                    path="requests"
+                    element={
+                      <RoleGuard allowedRoles={['Student', 'Faculty', 'HoD / Admin']}>
+                        <RequisitionsPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="reservations"
+                    element={
+                      <RoleGuard allowedRoles={['Student', 'Faculty', 'HoD / Admin']}>
+                        <ReservationsPage />
+                      </RoleGuard>
+                    }
+                  />
                 </Route>
 
                 {/* Accountability & Reliability */}

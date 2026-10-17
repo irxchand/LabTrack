@@ -69,8 +69,6 @@ export const ROLE_PERMISSIONS = {
     allowedRoutes: [
       '/workspace/inventory',
       '/workspace/custody/active',
-      '/workspace/custody/requests',
-      '/workspace/custody/reservations',
       '/workspace/accountability/reliability',
       '/workspace/accountability/audit-log',
       '/workspace/projects/overview',
