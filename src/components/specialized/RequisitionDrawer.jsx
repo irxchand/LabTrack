@@ -50,18 +50,18 @@ export function RequisitionDrawer() {
     return projects.filter(
       (p) =>
         !p.isFacultyProject &&
-        p.mentorName &&
-        currentUser?.name &&
-        (p.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-          currentUser.name.toLowerCase().includes(p.mentorName.toLowerCase()))
+        ((p.mentorId && currentUser?.prn && p.mentorId === currentUser.prn) ||
+          (p.mentorName &&
+            currentUser?.name &&
+            (p.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+              currentUser.name.toLowerCase().includes(p.mentorName.toLowerCase()))))
     );
   }, [projects, isFaculty, currentUser]);
 
   const userProjects = useMemo(() => {
     if (!projects || projects.length === 0) return [];
     if (isFaculty) {
-      const combined = [...facultyProjects, ...mentoredTeams];
-      return combined.length > 0 ? combined : projects;
+      return [...facultyProjects, ...mentoredTeams];
     }
     const myPrn = currentUser?.prn || '202401048';
     const filtered = projects.filter(
@@ -450,7 +450,9 @@ export function RequisitionDrawer() {
                     {isSubmitting
                       ? 'Processing...'
                       : isFaculty
-                      ? 'Direct-Allocate & Dispatch'
+                      ? activeSelectedProject?.isFacultyProject
+                        ? 'Direct-Allocate to Research Lab'
+                        : `Direct-Allocate to ${activeSelectedProject?.title || 'Mentored Team'}`
                       : 'Submit for Faculty Approval'}
                   </span>
                 </button>

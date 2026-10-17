@@ -82,10 +82,11 @@ export function ProjectDirectoryPage() {
   const isMentorOf = (project) => {
     return (
       !project.isFacultyProject &&
-      project.mentorName &&
-      currentUser?.name &&
-      (project.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-        currentUser.name.toLowerCase().includes(project.mentorName.toLowerCase()))
+      ((project.mentorId && currentUser?.prn && project.mentorId === currentUser.prn) ||
+        (project.mentorName &&
+          currentUser?.name &&
+          (project.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+            currentUser.name.toLowerCase().includes(project.mentorName.toLowerCase()))))
     );
   };
 
@@ -467,7 +468,7 @@ export function ProjectDirectoryPage() {
                         </span>
                       ) : (
                         <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-white/[0.04] text-zinc-400 border border-white/10">
-                          {project.courseCode}
+                          Guide: {project.mentorName}
                         </span>
                       )
                     ) : isLeader ? (
@@ -596,7 +597,7 @@ export function ProjectDirectoryPage() {
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/workspace/projects/${project.id}`);
+                        navigate(`/workspace/projects/${project.id}`, { state: { openAllocate: true } });
                       }}
                       className="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/[0.08] hover:bg-white text-zinc-200 hover:text-black border border-white/10 transition-all flex items-center gap-1 cursor-pointer active:scale-95"
                     >

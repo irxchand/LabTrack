@@ -180,6 +180,28 @@ export function LabDataProvider({ children }) {
 
     const isFaculty = currentUser?.role === 'Faculty';
 
+    if (isFaculty && selectedProject) {
+      const isLead =
+        selectedProject.isFacultyProject ||
+        selectedProject.facultyLead === currentUser?.name ||
+        selectedProject.teamLeaderPrn === currentUser?.prn;
+      const isMentor =
+        (selectedProject.mentorId && currentUser?.prn && selectedProject.mentorId === currentUser.prn) ||
+        (selectedProject.mentorName &&
+          currentUser?.name &&
+          (selectedProject.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+            currentUser.name.toLowerCase().includes(selectedProject.mentorName.toLowerCase())));
+
+      if (!isLead && !isMentor) {
+        addToast({
+          title: 'Allocation Restricted',
+          message: `Faculty can only allocate hardware to their research labs or student teams under their mentorship wing. "${selectedProject.title}" is mentored by ${selectedProject.mentorName || 'another faculty member'}.`,
+          type: 'danger',
+        });
+        return false;
+      }
+    }
+
     const res = await custodyApi.submitRequisition({
       studentPrn: isFaculty ? (selectedProject?.teamLeaderPrn || currentUser?.prn || 'FAC-AI-019') : (currentUser?.prn || '202401048'),
       studentName: isFaculty ? (selectedProject?.members?.[0]?.name || currentUser?.name || 'Dr. Anjali Dalvi') : (currentUser?.name || 'Rahul Sharma'),
@@ -192,17 +214,74 @@ export function LabDataProvider({ children }) {
     });
 
     if (res.ok) {
-      if (isFaculty) {
+      if (isFaculty && selectedProject) {
         // Faculty auto-endorses requests they create for their project or mentored teams
         await custodyApi.approveRequisition(res.data.id, `Faculty Direct Authorization by ${currentUser?.name || 'Mentor'}`);
+
+        // Direct-allocate: immediately bind staged kit components into active loans and project allocation roster
+        const todayStr = new Date().toISOString().split('T')[0];
+        const dueDateStr = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+        const newLoans = basket.map((item, idx) => ({
+          id: `LN-FAC-${Date.now().toString().slice(-5)}-${idx}`,
+          assetTag: item.assetTag || item.id,
+          nomenclature: item.nomenclature || 'Hardware Component',
+          studentPrn: selectedProject.isFacultyProject ? (currentUser?.prn || 'FAC-AI-019') : (selectedProject.teamLeaderPrn || '202401048'),
+          studentName: selectedProject.isFacultyProject ? (currentUser?.name || 'Dr. Anjali Dalvi') : (selectedProject.members?.[0]?.name || 'Project Team'),
+          projectId: selectedProject.id,
+          checkoutDate: todayStr,
+          dueDate: dueDateStr,
+          daysRemaining: 45,
+          status: 'Active',
+          allocatedByFaculty: currentUser?.name || 'Dr. Anjali Dalvi',
+          notes: technicalPurpose || (selectedProject.isFacultyProject ? 'Faculty laboratory research deployment' : 'Allocated by faculty mentor for capstone sprint'),
+        }));
+        setActiveLoans((prev) => [...newLoans, ...prev]);
+
+        const newAllocatedItems = basket.map((item) => ({
+          assetTag: item.assetTag || item.id,
+          nomenclature: item.nomenclature || 'Hardware Component',
+          checkedOut: todayStr,
+          due: dueDateStr,
+          notes: technicalPurpose || 'Directly allocated by faculty mentor',
+          allocatedBy: currentUser?.name || 'Dr. Anjali Dalvi',
+          allocatedByRole: 'Faculty',
+        }));
+
+        setProjects((prev) =>
+          prev.map((p) => {
+            if (p.id === selectedProject.id) {
+              return {
+                ...p,
+                allocatedItems: [...(p.allocatedItems || []), ...newAllocatedItems],
+                currentAllocatedCount: (p.currentAllocatedCount || 0) + basket.reduce((acc, i) => acc + (i.quantity || 1), 0),
+              };
+            }
+            return p;
+          })
+        );
+
+        setInventory((prev) =>
+          prev.map((inv) => {
+            const match = basket.find((b) => b.id === inv.id || b.assetTag === inv.assetTag);
+            if (match) {
+              return {
+                ...inv,
+                availableStock: Math.max(0, (inv.availableStock || 1) - (match.quantity || 1)),
+              };
+            }
+            return inv;
+          })
+        );
       }
+
       clearBasket();
       setIsBasketOpen(false);
       await loadData();
       addToast({
-        title: isFaculty ? 'Equipment Allocation Authorized' : 'Requisition Submitted',
+        title: isFaculty ? 'Hardware Directly Allocated' : 'Requisition Submitted',
         message: isFaculty
-          ? `Kit bound to "${selectedProject?.title || selectedProject?.id}". Pre-approved and staged for counter pickup.`
+          ? `Components directly allocated and active in "${selectedProject?.title || selectedProject?.id}".`
           : `Order #${res.data.id} bound to ${selectedProject?.id || 'Project'}. Forwarded to ${selectedProject?.mentorName || 'Faculty'} for endorsement.`,
         type: 'success',
       });
@@ -223,6 +302,29 @@ export function LabDataProvider({ children }) {
         type: 'danger',
       });
       return false;
+    }
+
+    const isFacultyUser = currentUser?.role === 'Faculty';
+    if (isFacultyUser) {
+      const isLead =
+        targetProject.isFacultyProject ||
+        targetProject.facultyLead === currentUser?.name ||
+        targetProject.teamLeaderPrn === currentUser?.prn;
+      const isMentor =
+        (targetProject.mentorId && currentUser?.prn && targetProject.mentorId === currentUser.prn) ||
+        (targetProject.mentorName &&
+          currentUser?.name &&
+          (targetProject.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+            currentUser.name.toLowerCase().includes(targetProject.mentorName.toLowerCase())));
+
+      if (!isLead && !isMentor) {
+        addToast({
+          title: 'Allocation Prohibited',
+          message: `Faculty can only allocate hardware to their own lab or teams under their mentorship wing. "${targetProject.title}" is mentored by ${targetProject.mentorName || 'another guide'}.`,
+          type: 'danger',
+        });
+        return false;
+      }
     }
 
     const todayStr = new Date().toISOString().split('T')[0];

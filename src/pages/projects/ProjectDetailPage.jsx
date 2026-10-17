@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -21,6 +21,7 @@ import {
 
 export function ProjectDetailPage() {
   const { projectId } = useParams();
+  const location = useLocation();
   const { projects, activeLoans, inventory, allocateHardwareToProject, updateProjectTitle } = useLabData();
   const { currentUser, role } = useAuth();
   const isStudent = !role || role === 'Student';
@@ -41,18 +42,40 @@ export function ProjectDetailPage() {
   const project = projects.find((p) => p.id === projectId);
   const assignedLoans = activeLoans.filter((l) => l.projectId === projectId);
 
-  const isFacultyLeadOrMentor = useMemo(() => {
+  const isMentor = useMemo(() => {
+    if (!isFaculty || !project || project.isFacultyProject) return false;
+    if (project.mentorId && currentUser?.prn && project.mentorId === currentUser.prn) return true;
+    if (project.mentorName && currentUser?.name) {
+      const pName = project.mentorName.toLowerCase();
+      const uName = currentUser.name.toLowerCase();
+      return pName.includes(uName) || uName.includes(pName);
+    }
+    return false;
+  }, [isFaculty, project, currentUser]);
+
+  const isFacultyLead = useMemo(() => {
     if (!isFaculty || !project) return false;
-    const isMentor = project.mentorName && currentUser?.name && (
-      project.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-      currentUser.name.toLowerCase().includes(project.mentorName.toLowerCase())
-    );
-    const isLead =
+    return (
+      project.isFacultyProject ||
       project.facultyLead === currentUser?.name ||
       project.teamLeaderPrn === currentUser?.prn ||
-      project.id === currentUser?.projectId;
-    return isMentor || isLead;
+      project.id === currentUser?.projectId
+    );
   }, [isFaculty, project, currentUser]);
+
+  const isFacultyLeadOrMentor = isFacultyLead || isMentor;
+
+  // Auto-open allocation modal if routed with openAllocate intent
+  useEffect(() => {
+    if (location.state?.openAllocate && isFacultyLeadOrMentor) {
+      const firstAvailable = inventory.find((i) => i.availableStock > 0) || inventory[0];
+      setSelectedAssetId(firstAvailable?.id || '');
+      setAllocQty(1);
+      setAllocNotes(project?.isFacultyProject ? 'Allocated for faculty laboratory research' : 'Allocated by faculty mentor for capstone sprint');
+      setAllocError('');
+      setIsAllocModalOpen(true);
+    }
+  }, [location.state, isFacultyLeadOrMentor, project, inventory]);
 
   const canEditProject = useMemo(() => {
     if (!project) return false;
@@ -240,6 +263,62 @@ export function ProjectDetailPage() {
               </div>
             )}
           </div>
+
+          {/* Header Action Badges & Faculty CTAs */}
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {isFaculty ? (
+              project.isFacultyProject ? (
+                <>
+                  <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20 flex items-center gap-1.5 shadow-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                    <span>Principal Investigator (Your Lab)</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const firstAvailable = inventory.find((i) => i.availableStock > 0) || inventory[0];
+                      setSelectedAssetId(firstAvailable?.id || '');
+                      setAllocQty(1);
+                      setAllocNotes('Allocated for faculty laboratory research');
+                      setAllocError('');
+                      setIsAllocModalOpen(true);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-[0_2px_12px_rgba(255,255,255,0.25)] cursor-pointer active:scale-95"
+                  >
+                    <Plus className="w-4 h-4 text-black" />
+                    <span>Allocate Hardware</span>
+                  </button>
+                </>
+              ) : isMentor ? (
+                <>
+                  <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1.5 shadow-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8]" />
+                    <span>Mentored Team • Under Your Wing</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const firstAvailable = inventory.find((i) => i.availableStock > 0) || inventory[0];
+                      setSelectedAssetId(firstAvailable?.id || '');
+                      setAllocQty(1);
+                      setAllocNotes('Allocated by faculty mentor for capstone sprint');
+                      setAllocError('');
+                      setIsAllocModalOpen(true);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-[0_2px_12px_rgba(255,255,255,0.25)] cursor-pointer active:scale-95"
+                  >
+                    <Plus className="w-4 h-4 text-black" />
+                    <span>Allocate Hardware to Team</span>
+                  </button>
+                </>
+              ) : (
+                <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/[0.04] text-zinc-400 border border-white/10 flex items-center gap-1.5 shadow-sm">
+                  <ShieldAlert className="w-3.5 h-3.5 text-zinc-500" />
+                  <span>Mentored by {project.mentorName} • View-Only</span>
+                </span>
+              )
+            ) : null}
+          </div>
         </div>
       </div>
 
@@ -264,7 +343,7 @@ export function ProjectDetailPage() {
                 </span>
               </div>
 
-              {isFacultyLeadOrMentor && (
+              {isFacultyLeadOrMentor ? (
                 <button
                   type="button"
                   onClick={() => {
@@ -278,9 +357,14 @@ export function ProjectDetailPage() {
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-[0_2px_10px_rgba(255,255,255,0.2)] cursor-pointer active:scale-95"
                 >
                   <Plus className="w-3.5 h-3.5 text-black" />
-                  <span>Allocate Hardware</span>
+                  <span>{project.isFacultyProject ? 'Allocate Hardware' : 'Allocate to Team'}</span>
                 </button>
-              )}
+              ) : isFaculty ? (
+                <span className="text-[11px] text-zinc-500 font-sans italic flex items-center gap-1.5">
+                  <ShieldAlert className="w-3.5 h-3.5 text-zinc-500 flex-shrink-0" />
+                  <span>Allocation reserved for designated guide ({project.mentorName})</span>
+                </span>
+              ) : null}
             </div>
 
             {assignedLoans.length > 0 ? (
@@ -387,7 +471,7 @@ export function ProjectDetailPage() {
                   Direct Allocate to {project.title}
                 </h3>
                 <p className="text-zinc-400 text-xs mt-0.5">
-                  {project.isFacultyProject ? 'Deploying to Faculty Research Lab' : `Mentored Team • ${project.courseCode}`}
+                  {project.isFacultyProject ? 'Deploying to Faculty Research Lab' : `Mentored Student Team Under Your Wing • ${project.courseCode}`}
                 </p>
               </div>
 
