@@ -314,7 +314,7 @@ export function ProjectDetailPage() {
             ) : (
               <div className="text-zinc-500 py-8 text-center text-xs font-sans space-y-1">
                 <div>No active hardware loans currently checked out to this project team.</div>
-                <div className="text-zinc-600">Browse the Workstation catalog to request hardware under this project's allocation quota.</div>
+                <div className="text-zinc-600">Browse the Workstation catalog to requisition hardware for this project.</div>
               </div>
             )}
           </div>

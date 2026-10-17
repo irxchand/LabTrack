@@ -344,7 +344,7 @@ export function RequisitionDrawer() {
                               const assignedCount = (activeLoans || []).filter((l) => l.projectId === p.id).length;
                               return (
                                 <option key={p.id} value={p.id} className="bg-[#141417] text-white py-1">
-                                  {p.id} • {p.title} ({assignedCount}/{p.hardwareBudgetCap} units active)
+                                  {p.id} • {p.title} ({assignedCount} in custody)
                                 </option>
                               );
                             })}
@@ -356,7 +356,7 @@ export function RequisitionDrawer() {
                               const assignedCount = (activeLoans || []).filter((l) => l.projectId === p.id).length;
                               return (
                                 <option key={p.id} value={p.id} className="bg-[#141417] text-white py-1">
-                                  {p.id} • {p.title} ({assignedCount}/{p.hardwareBudgetCap} units active)
+                                  {p.id} • {p.title} ({assignedCount} in custody)
                                 </option>
                               );
                             })}
@@ -368,7 +368,7 @@ export function RequisitionDrawer() {
                         const assignedCount = (activeLoans || []).filter((l) => l.projectId === p.id).length;
                         return (
                           <option key={p.id} value={p.id} className="bg-[#141417] text-white py-1">
-                            {p.id} • {p.title} ({assignedCount}/{p.hardwareBudgetCap} units active)
+                            {p.id} • {p.title} ({assignedCount} in custody)
                           </option>
                         );
                       })
@@ -381,12 +381,9 @@ export function RequisitionDrawer() {
 
                 {activeSelectedProject && (
                   <div className="flex items-center justify-between text-[11px] text-zinc-500 px-0.5 pt-0.5">
-                    <span>{activeSelectedProject.isFacultyProject ? 'Facility Project' : `Course: ${activeSelectedProject.courseCode}`}</span>
+                    <span>{activeSelectedProject.isFacultyProject ? 'Faculty Project' : `Course: ${activeSelectedProject.courseCode}`}</span>
                     <span className="text-zinc-400">
-                      Remaining Quota:{' '}
-                      {activeSelectedProject.hardwareBudgetCap -
-                        (activeLoans || []).filter((l) => l.projectId === activeSelectedProject.id).length}{' '}
-                      units
+                      {(activeLoans || []).filter((l) => l.projectId === activeSelectedProject.id).length} items currently in custody
                     </span>
                   </div>
                 )}

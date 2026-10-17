@@ -241,7 +241,7 @@ export function ProjectDirectoryPage() {
             My Academic Projects
           </h1>
           <p className="text-sm font-sans text-zinc-400 mt-1 max-w-xl">
-            Active capstone research teams, mentor bindings, and authorized hardware quota allocations for your credentials.
+            Active capstone research teams, mentor bindings, and authorized project hardware allocations for your credentials.
           </p>
         </div>
 
@@ -432,7 +432,6 @@ export function ProjectDirectoryPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filteredProjects.map((project) => {
             const isLeader = project.teamLeaderPrn === userPrn;
-            const quotaPercentage = Math.round((project.currentAllocatedCount / project.hardwareBudgetCap) * 100);
 
             return (
               <div
@@ -515,7 +514,7 @@ export function ProjectDirectoryPage() {
                     <span>Allocated Hardware Staging</span>
                   </span>
                   <span className="text-zinc-400 font-sans text-xs">
-                    {project.currentAllocatedCount} of {project.hardwareBudgetCap} Units Used
+                    {project.currentAllocatedCount || 0} Assets Assigned
                   </span>
                 </div>
 
@@ -550,19 +549,9 @@ export function ProjectDirectoryPage() {
                 ) : (
                   <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 text-xs text-zinc-400 font-sans flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
-                    <span>All {project.hardwareBudgetCap} hardware allocation slots currently available.</span>
+                    <span>No hardware currently assigned to this project.</span>
                   </div>
                 )}
-
-                {/* Quota Progress Bar (Luxury Gold Matching Brand Design) */}
-                <div className="space-y-1 pt-1">
-                  <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
-                    <div
-                      className="bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] h-full rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(201,184,160,0.6)]"
-                      style={{ width: `${Math.min(100, quotaPercentage)}%` }}
-                    />
-                  </div>
-                </div>
               </div>
 
               {/* Footer with Team Roster & Inspect CTA */}

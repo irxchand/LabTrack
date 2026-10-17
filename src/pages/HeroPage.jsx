@@ -359,7 +359,7 @@ export function HeroPage() {
         </>
       ),
       subtext:
-        'The faculty oversight control plane. One-tap student BOM endorsement, capstone milestone tracking, cross-team component quotas, and institutional defect auditing.',
+        'The faculty oversight control plane. One-tap student BOM endorsement, capstone milestone tracking, cross-team component allocations, and institutional defect auditing.',
       primaryCta: {
         label: 'Open Approvals Queue',
         path: '/workspace/operations/approvals',
@@ -889,7 +889,7 @@ export function HeroPage() {
               Lab Circular & Bulletins
             </div>
             <p className="text-xs text-stone-400 font-normal leading-relaxed font-sans">
-              Subscribe for semester procurement arrivals, maintenance blackouts, and hackathon component quota reservations.
+              Subscribe for semester procurement arrivals, maintenance blackouts, and hackathon component requisitions.
             </p>
             {/* Sleek Apple-style pill input with luxury gold submit button */}
             <form

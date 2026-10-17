@@ -424,8 +424,8 @@ export function ScrollNarrative({
               <span className="text-[#c8963e]">TEAM HYPERION (AERO-24)</span>
             </div>
             <div className="flex items-center justify-between text-xs font-mono-tech">
-              <span className="text-zinc-400">HARDWARE QUOTA:</span>
-              <span className="text-emerald-400">{basket?.length || 0} of 4 Assets in Staging Basket</span>
+              <span className="text-zinc-400">HARDWARE STAGING:</span>
+              <span className="text-emerald-400">{basket?.length || 0} Assets in Staging Basket</span>
             </div>
             <div className="flex items-center justify-between text-xs font-mono-tech">
               <span className="text-zinc-400">SUPERVISOR MENTOR:</span>
@@ -522,7 +522,7 @@ export function ScrollNarrative({
 
           <p className="text-sm md:text-base text-zinc-300 font-light leading-relaxed">
             Every loan, on-time return, and incident condition report contributes to the student’s compliance rating.
-            Students in Exemplary standing enjoy expanded allocation quotas.
+            Students in Exemplary standing enjoy priority hardware allocations.
           </p>
 
           {/* Interactive Penalty Simulator Slider */}
@@ -599,7 +599,7 @@ export function ScrollNarrative({
 
           <p className="text-sm md:text-base text-zinc-300 font-light leading-relaxed">
             Hardware allocations bind directly to academic courses and research initiatives.
-            Select a project cohort to inspect active custody quotas and assigned equipment:
+            Select a project cohort to inspect active custody rosters and assigned equipment:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">

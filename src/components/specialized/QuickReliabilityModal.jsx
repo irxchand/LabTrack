@@ -57,7 +57,7 @@ export function QuickReliabilityModal({ isOpen, onClose }) {
               </div>
               <div className="text-xs text-emerald-400 mt-1 flex items-center space-x-1.5">
                 <Award className="w-3.5 h-3.5" />
-                <span>Eligibility: Priority hardware booking & expanded 4-asset quota.</span>
+                <span>Eligibility: Priority hardware booking & expanded equipment access privileges.</span>
               </div>
             </div>
           </div>
