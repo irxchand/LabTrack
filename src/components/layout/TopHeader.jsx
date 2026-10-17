@@ -118,18 +118,11 @@ export function TopHeader() {
             isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
           },
           {
-            label: 'Dispatch Desk',
+            label: 'Counter Desk',
             to: '/workspace/operations/dispatch',
             icon: Terminal,
             count: requisitions.filter((r) => r.status === 'Ready for Counter Pickup' || r.status === 'Faculty Endorsed').length,
             isActive: (pathname) => pathname.includes('/operations/dispatch'),
-          },
-          {
-            label: 'Active Loans',
-            to: '/workspace/custody/active',
-            icon: Clock,
-            count: activeLoans.length,
-            isActive: (pathname) => pathname.includes('/custody/active') || pathname.includes('/custody/bench'),
           },
           {
             label: 'Defect Bench',
@@ -164,7 +157,7 @@ export function TopHeader() {
             isActive: (pathname) => pathname.includes('/operations/approvals'),
           },
           {
-            label: 'Dispatch Desk',
+            label: 'Counter Desk',
             to: '/workspace/operations/dispatch',
             icon: Terminal,
             isActive: (pathname) => pathname.includes('/operations/dispatch'),
