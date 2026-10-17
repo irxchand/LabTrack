@@ -4,6 +4,31 @@ This file is a high-density, chronological record of decisions, file reorganizat
 
 ---
 
+## 2026-10-17 — Phase 02: Catalogue, Inventory Model & Project Governance Sealed
+
+**Summary**
+Implemented and sealed Phase 02 of the LabTrack implementation program. Established authoritative departmental hardware catalogue with dual-class inventory model (consumables and serialized physical assets), lab-scoped stock tracking with good/bad non-negativity enforcement, unique barcode lookups, and project creation with sequential deployment-global IDs (`PROJ-000001` format) and verified team governance. Authored dedicated test suite (`tests/test_phase_02_catalogue_projects.py`) with all 6 tests passing and zero regressions across existing test baseline.
+
+**Decisions & Boundaries**
+- Enforced database check constraints: `ck_item_kind` (`kind IN ('ASSET', 'CONSUMABLE')`) and `ck_stock_nonnegative` (`good >= 0 AND bad >= 0`).
+- Serialized physical assets enforced with unique barcodes, default IDs, bill tracking numbers, and lifecycle states (`AVAILABLE`, `UNDER_REPAIR`, `RETIRED`, `IN_USE`).
+- Implemented catalogue category and search query filtering on `GET /api/catalogue?category={cat}&q={query}` preserving full backward compatibility.
+- Added dedicated asset barcode lookup endpoint `GET /api/catalogue/assets/{barcode}` and project detail endpoint `GET /api/projects/{identifier}` with role scoping.
+- Enforced project creation RBAC: Student role required; student creator automatically assigned as project lead; mentor must be active user with `MENTOR` role; members must be active students.
+- Preserved open business policy boundaries: OD-05 (project lead transfers/revisions blocked), OD-15 (live stock admin editing blocked), OD-06 (mixed asset/consumable class separation preserved).
+
+**Changes**
+- Updated `src/backend/labtrack/service.py`: Added category/search filtering to `catalogue()`, added `lookup_asset()`, and `get_project()`.
+- Updated `src/backend/labtrack/api.py`: Added query parameters to `/api/catalogue`, added `/api/catalogue/assets/{barcode}`, and added `/api/projects/{identifier}`.
+- Created `tests/test_phase_02_catalogue_projects.py`: 6 exhaustive tests covering constraints, barcodes, project sequential IDs, RBAC, and catalogue search.
+- Created `implementation_plans/phase_02/implementation_plan.md` and `implementation_plans/phase_02/validation_report.md`.
+- Updated `docs/ASTRA/IMPLEMENTATION_STATE.md`: Marked `PHASE_02` as `COMPLETED & SEALED`, updated test counts, and set next executable phase to `PHASE_03`.
+
+**Next Context**
+Phase 02 is complete and sealed. Ready for **PHASE_03: Request Submission, Minimum-Lab Planning & Multi-Stage Approvals**.
+
+---
+
 ## 2026-10-16 — State 1: Authentication Engine & Dual Storage (Excel & MySQL) Verification
 
 **Summary**

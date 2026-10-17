@@ -148,9 +148,15 @@ def directory(uid=Depends(actor)):
 
 
 @app.get("/api/catalogue", response_model=list[ItemView])
-def catalogue(uid=Depends(actor)):
+def catalogue(category: str | None = None, q: str | None = None, uid=Depends(actor)):
     with db.Session() as s:
-        return svc.catalogue(s)
+        return svc.catalogue(s, category=category, q=q)
+
+
+@app.get("/api/catalogue/assets/{barcode}")
+def asset_lookup(barcode: str, uid=Depends(actor)):
+    with db.Session() as s:
+        return svc.lookup_asset(s, barcode)
 
 
 @app.post("/api/plans")
@@ -164,6 +170,13 @@ def projects(uid=Depends(actor)):
     with db.Session() as s:
         u = s.get(User, uid)
         return [{"id": p.id, "project_code": f"PROJ-{p.id:06d}", "name": p.name, "description": p.description, "lead_id": p.lead_id, "mentor_id": p.mentor_id, "member_ids": list(s.scalars(select(Member.user_id).where(Member.project_id == p.id)))} for p in s.scalars(select(Project).order_by(Project.id.desc())) if svc.can_view_project(s, u, p)]
+
+
+@app.get("/api/projects/{identifier}", response_model=ProjectView)
+def project_detail(identifier: int, uid=Depends(actor)):
+    with db.Session() as s:
+        u = s.get(User, uid)
+        return svc.get_project(s, u, identifier)
 
 
 @app.post("/api/projects")

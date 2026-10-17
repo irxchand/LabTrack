@@ -106,9 +106,19 @@ def change(session, user, request, state, action, remarks=""):
     emit(session, action, recipients(session, request, action), request, {"previous_state": previous, "state": state, "remarks": remarks}, key=f"audit:{record.id}")
 
 
-def catalogue(session):
+def catalogue(session, category=None, q=None):
     result = []
-    for item in session.scalars(select(Item).order_by(Item.name)):
+    query = select(Item).order_by(Item.name)
+    if category and category.strip():
+        query = query.where(func.lower(Item.category) == category.strip().lower())
+    for item in session.scalars(query):
+        if q and q.strip():
+            term = q.strip().lower()
+            name_match = term in item.name.lower()
+            desc_match = term in (item.description or "").lower()
+            brand_match = term in (item.brand or "").lower()
+            if not (name_match or desc_match or brand_match):
+                continue
         labs = []
         for lab in session.scalars(select(Lab).order_by(Lab.id)):
             if item.kind == "CONSUMABLE":
@@ -121,6 +131,37 @@ def catalogue(session):
                     labs.append({"lab_id": lab.id, "lab_name": lab.name, "good": sum(a.state == "AVAILABLE" for a in assets), "bad": sum(a.state in ["DEFECTIVE", "UNDER_REPAIR"] for a in assets), "total": len(assets), "assets": [{"barcode": a.barcode, "state": a.state, "default_id": a.default_id, "bill_number": a.bill_number} for a in assets]})
         result.append({"id": item.id, "name": item.name, "kind": item.kind, "category": item.category, "description": item.description, "brand": item.brand, "specs": item.specs, "labs": labs, "available": sum(l["good"] for l in labs)})
     return result
+
+
+def lookup_asset(session, barcode):
+    asset = session.scalar(select(Asset).where(Asset.barcode == barcode))
+    require(asset is not None, f"Asset with barcode '{barcode}' not found", "NOT_FOUND", 404)
+    item = get(session, Item, asset.item_id)
+    lab = get(session, Lab, asset.lab_id)
+    return {
+        "barcode": asset.barcode,
+        "item_id": item.id,
+        "item_name": item.name,
+        "lab_id": lab.id,
+        "lab_name": lab.name,
+        "state": asset.state,
+        "default_id": asset.default_id,
+        "bill_number": asset.bill_number
+    }
+
+
+def get_project(session, user, project_id):
+    p = visible_project(session, user, project_id)
+    members = list(session.scalars(select(Member.user_id).where(Member.project_id == p.id)))
+    return {
+        "id": p.id,
+        "project_code": f"PROJ-{p.id:06d}",
+        "name": p.name,
+        "description": p.description,
+        "lead_id": p.lead_id,
+        "mentor_id": p.mentor_id,
+        "member_ids": members
+    }
 
 
 def plan(session, input_lines):
