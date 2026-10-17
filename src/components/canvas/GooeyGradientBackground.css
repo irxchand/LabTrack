@@ -1,13 +1,13 @@
 .gooey-wrapper {
-  /* Default: Luxury Dark Obsidian & Champagne Amber Gold matching LabTrack Brand */
-  --color-bg1: rgb(10, 10, 12);
-  --color-bg2: rgb(4, 4, 5);
-  --color1: 201, 184, 160;        /* Warm Champagne Gold */
-  --color2: 167, 139, 113;        /* Warm Molten Bronze */
-  --color3: 245, 230, 200;        /* Pale Luminous Gold Highlight */
-  --color4: 130, 90, 50;          /* Deep Cognac Amber */
-  --color5: 185, 155, 110;        /* Metallic Bronze/Gold */
-  --color-interactive: 225, 200, 160; /* Interactive Gold Mouse Glow */
+  /* Strictly Pure Black & Radiant Molten Gold Palette */
+  --color-bg1: rgb(0, 0, 0);
+  --color-bg2: rgb(4, 4, 4);
+  --color1: 255, 195, 35;        /* Radiant 24K Gold */
+  --color2: 212, 155, 25;        /* Deep Warm Molten Gold */
+  --color3: 255, 225, 120;       /* Luminous Pale Champagne Gold */
+  --color4: 180, 120, 20;        /* Rich Burnished Antique Gold */
+  --color5: 235, 175, 40;        /* Imperial Metallic Gold */
+  --color-interactive: 255, 215, 80; /* Interactive Molten Gold Spotlight */
   --circle-size: 80%;
   --blending: screen;
   
