@@ -56,12 +56,13 @@
   --oryzo-border: rgba(255, 237, 214, 0.12);
   --oryzo-muted: #8E857B;
 
-  /* Geometry & Typography — Apple Senior Frontend Engineer Design Stack */
+  /* Geometry & Typography — Bespoke Luxury Brand Stack */
   --font-apple: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: 'Satoshi', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
   --font-mono: "SF Mono", SFMono-Regular, ui-monospace, "Geist Mono", "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
-  --font-clash: "Clash Display", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Inter", "Helvetica Neue", sans-serif;
-  --font-satoshi: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Inter", "Helvetica Neue", sans-serif;
+  --font-clash: "Clash Display", 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-satoshi: 'Satoshi', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Clash Display", 'Space Grotesk', 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif-italic: 'Newsreader', Georgia, serif;
 
   /* Swiss Minimalist Luxury-Brutalist Palette */

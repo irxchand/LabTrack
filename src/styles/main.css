@@ -2,8 +2,8 @@
 @import "./tokens.css";
 
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-display: "Clash Display", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Inter", "Helvetica Neue", sans-serif;
+  --font-sans: 'Satoshi', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+  --font-display: "Clash Display", 'Space Grotesk', 'Satoshi', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-mono: "SF Mono", SFMono-Regular, ui-monospace, "Geist Mono", "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
 }
@@ -11,21 +11,21 @@
 :root {
   --bg: #000000;
   --fg: #ffffff;
-  --font-display: "Clash Display", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Inter", "Helvetica Neue", sans-serif;
-  --font-clash: "Clash Display", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Inter", "Helvetica Neue", sans-serif;
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: "Clash Display", 'Space Grotesk', 'Satoshi', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  --font-clash: "Clash Display", 'Space Grotesk', 'Satoshi', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  --font-sans: 'Satoshi', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
 }
 
 .font-display {
-  font-family: "Clash Display", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Inter", "Helvetica Neue", sans-serif;
+  font-family: "Clash Display", 'Space Grotesk', 'Satoshi', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
 }
 
 .font-clash {
-  font-family: "Clash Display", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Inter", "Helvetica Neue", sans-serif;
+  font-family: "Clash Display", 'Space Grotesk', 'Satoshi', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
 }
 
 .font-sans {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Satoshi', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
 }
 
 .font-mono {

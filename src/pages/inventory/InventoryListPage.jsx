@@ -405,10 +405,10 @@ export function InventoryListPage({ initialClassification = null }) {
           <div className="space-y-3.5 pt-20">
             {/* Product Title & Subtitle */}
             <div className="space-y-1">
-              <h3 className="text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors drop-shadow-md">
+              <h3 className="font-display text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors drop-shadow-md">
                 {item.nomenclature}
               </h3>
-              <p className="text-xs text-zinc-300 font-normal line-clamp-2 leading-relaxed drop-shadow-sm">
+              <p className="text-xs text-zinc-300 font-sans font-normal line-clamp-2 leading-relaxed drop-shadow-sm">
                 {item.subSpecs}
               </p>
             </div>
