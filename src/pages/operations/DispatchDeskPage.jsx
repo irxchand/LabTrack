@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
 import { StatusBadge } from '../../components/common/StatusBadge';
@@ -16,6 +17,10 @@ import {
 } from 'lucide-react';
 
 export function DispatchDeskPage() {
+  const [searchParams] = useSearchParams();
+  const urlMode = searchParams.get('mode');
+  const urlAssetTag = searchParams.get('assetTag');
+
   const {
     inventory,
     requisitions,
@@ -26,7 +31,7 @@ export function DispatchDeskPage() {
   const { currentUser } = useAuth();
 
   // Mode switcher: 'dispatch' | 'checkin'
-  const [terminalMode, setTerminalMode] = useState('dispatch');
+  const [terminalMode, setTerminalMode] = useState(urlMode === 'checkin' ? 'checkin' : 'dispatch');
 
   // DISPATCH STATE
   const [dispatchSearchPrn, setDispatchSearchPrn] = useState('');
@@ -37,8 +42,27 @@ export function DispatchDeskPage() {
   const [dispatchSuccess, setDispatchSuccess] = useState(null);
 
   // CHECKIN STATE
-  const [checkinSearchQuery, setCheckinSearchQuery] = useState('');
-  const [selectedReturnLoan, setSelectedReturnLoan] = useState(null);
+  const [checkinSearchQuery, setCheckinSearchQuery] = useState(urlAssetTag || '');
+  const [selectedReturnLoan, setSelectedReturnLoan] = useState(() => {
+    if (urlAssetTag && activeLoans.length > 0) {
+      return activeLoans.find((l) => l.assetTag === urlAssetTag) || null;
+    }
+    return null;
+  });
+
+  // Keep synced if url search params change
+  useEffect(() => {
+    if (urlMode === 'checkin') {
+      setTerminalMode('checkin');
+    }
+    if (urlAssetTag) {
+      setCheckinSearchQuery(urlAssetTag);
+      const matched = activeLoans.find((l) => l.assetTag === urlAssetTag);
+      if (matched) {
+        setSelectedReturnLoan(matched);
+      }
+    }
+  }, [urlMode, urlAssetTag, activeLoans]);
 
   // Strictly filter pre-approved requisitions ready for physical counter handover
   const readyRequisitions = useMemo(() => {

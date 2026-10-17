@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
 import { DataTable } from '../../components/common/DataTable';
@@ -26,9 +27,11 @@ import {
   HelpCircle,
   ArrowRight,
   Wrench,
+  RotateCcw,
 } from 'lucide-react';
 
 export function ActiveLoansPage() {
+  const navigate = useNavigate();
   const { activeLoans, inventory, requestExtension, reportDefect } = useLabData();
   const { currentUser, role } = useAuth();
 
@@ -250,7 +253,7 @@ export function ActiveLoansPage() {
     },
     {
       header: 'Action',
-      width: '150px',
+      width: '160px',
       align: 'right',
       render: (row) => {
         const isBorrower = row.borrowerPrn === currentUser?.prn;
@@ -265,18 +268,29 @@ export function ActiveLoansPage() {
             >
               <Eye className="w-3.5 h-3.5" />
             </button>
-            <button
-              onClick={() => handleOpenExtension(row)}
-              disabled={isDisabled}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${
-                isDisabled
-                  ? 'bg-white/[0.03] text-zinc-600 border border-white/5 cursor-not-allowed'
-                  : 'bg-white hover:bg-zinc-200 text-black shadow-sm active:scale-95 cursor-pointer font-semibold'
-              }`}
-            >
-              <CalendarPlus className="w-3.5 h-3.5" />
-              <span>Extend</span>
-            </button>
+            {role === 'Student' ? (
+              <button
+                onClick={() => handleOpenExtension(row)}
+                disabled={isDisabled}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${
+                  isDisabled
+                    ? 'bg-white/[0.03] text-zinc-600 border border-white/5 cursor-not-allowed'
+                    : 'bg-white hover:bg-zinc-200 text-black shadow-sm active:scale-95 cursor-pointer font-semibold'
+                }`}
+              >
+                <CalendarPlus className="w-3.5 h-3.5" />
+                <span>Extend</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate(`/workspace/operations/dispatch?mode=checkin&assetTag=${row.assetTag}`)}
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-black shadow-sm active:scale-95 cursor-pointer flex items-center gap-1.5"
+                title="Process counter check-in & inspection"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Intake Return</span>
+              </button>
+            )}
           </div>
         );
       },
@@ -467,32 +481,47 @@ export function ActiveLoansPage() {
                     setDefectLoan(loan);
                   }}
                   className="px-3 py-2 rounded-full text-xs font-medium bg-white/[0.06] hover:bg-rose-500/15 text-zinc-300 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
-                  title="Report a defect or issue with this hardware unit"
+                  title="Report or flag a defect with this hardware unit"
                 >
                   <Wrench className="w-3.5 h-3.5 text-zinc-400 group-hover:text-rose-300" />
-                  <span>Report Fault</span>
+                  <span>{role === 'Student' ? 'Report Fault' : 'Flag Defect'}</span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleOpenExtension(loan);
-                  }}
-                  disabled={isExtensionDisabled}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all shadow-lg active:scale-95 flex-shrink-0 cursor-pointer ${
-                    isExtensionDisabled
-                      ? 'bg-white/[0.06] text-zinc-500 border border-white/10 cursor-not-allowed'
-                      : 'bg-white hover:bg-zinc-200 text-black'
-                  }`}
-                  title={
-                    isExtensionDisabled
-                      ? 'Extension locked: overdue item pending return'
-                      : 'Request Term Extension'
-                  }
-                >
-                  Extend
-                </button>
+                {role === 'Student' ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenExtension(loan);
+                    }}
+                    disabled={isExtensionDisabled}
+                    className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all shadow-lg active:scale-95 flex-shrink-0 cursor-pointer ${
+                      isExtensionDisabled
+                        ? 'bg-white/[0.06] text-zinc-500 border border-white/10 cursor-not-allowed'
+                        : 'bg-white hover:bg-zinc-200 text-black'
+                    }`}
+                    title={
+                      isExtensionDisabled
+                        ? 'Extension locked: overdue item pending return'
+                        : 'Request Term Extension'
+                    }
+                  >
+                    Extend
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/workspace/operations/dispatch?mode=checkin&assetTag=${loan.assetTag}`);
+                    }}
+                    className="px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-black tracking-tight transition-all shadow-lg active:scale-95 flex-shrink-0 cursor-pointer flex items-center gap-1.5"
+                    title="Process counter check-in & inspection"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Intake Return</span>
+                  </button>
+                )}
               </div>
           </div>
         </div>
@@ -509,13 +538,15 @@ export function ActiveLoansPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
           <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            Station & Field Deployments
+            {role === 'Student' ? 'Station & Field Deployments' : 'Active Custody Circulation'}
           </span>
           <h1 className="text-3xl font-bold tracking-[-0.025em] text-white mt-1 font-display">
-            My Bench
+            {role === 'Student' ? 'My Bench' : 'Institutional Custody Ledger'}
           </h1>
           <p className="text-[13px] text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">
-            Hardware modules and bench instrumentation currently in your possession.
+            {role === 'Student'
+              ? 'Hardware modules and bench instrumentation currently in your possession.'
+              : 'Real-time custody tracking across active student circulations, project allocations, and due return schedules.'}
           </p>
         </div>
       </div>
@@ -523,7 +554,7 @@ export function ActiveLoansPage() {
       {/* ───────────────────────────────────────────────────────────── */}
       {/* 2. OVERDUE ACCOUNTABILITY NOTICE (Apple Style Minimal Toast)  */}
       {/* ───────────────────────────────────────────────────────────── */}
-      {userHasOverdue && (
+      {role === 'Student' && userHasOverdue && (
         <div className="px-5 py-3.5 rounded-2xl bg-white/[0.03] border border-rose-500/20 backdrop-blur-xl flex items-center justify-between text-xs">
           <div className="flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse flex-shrink-0" />
@@ -534,6 +565,24 @@ export function ActiveLoansPage() {
           <span className="text-[11px] font-sans text-zinc-400 font-medium hidden sm:inline">
             Extensions Locked
           </span>
+        </div>
+      )}
+
+      {role !== 'Student' && stats.overdue > 0 && (
+        <div className="px-5 py-3.5 rounded-2xl bg-white/[0.03] border border-amber-500/20 backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
+            <span className="text-zinc-300 text-[12px]">
+              {stats.overdue} circulating {stats.overdue === 1 ? 'hardware unit is' : 'hardware units are'} currently overdue for return. Counter intake or inspection can be processed directly at the Dispatch Desk.
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/workspace/operations/dispatch?mode=checkin')}
+            className="px-3.5 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-amber-300 border border-amber-500/30 font-semibold text-xs transition-all cursor-pointer whitespace-nowrap self-start sm:self-auto"
+          >
+            Open Return Intake Desk →
+          </button>
         </div>
       )}
 
@@ -645,9 +694,13 @@ export function ActiveLoansPage() {
         ) : (
           <div className="text-center py-20 text-zinc-400 text-sm bg-white/[0.02] border border-white/[0.08] rounded-3xl backdrop-blur-xl">
             <Boxes className="w-8 h-8 text-zinc-500 mx-auto mb-3" />
-            <p className="font-medium text-white">No hardware staged at your bench</p>
+            <p className="font-medium text-white">
+              {role === 'Student' ? 'No hardware staged at your bench' : 'No active hardware loans in circulation'}
+            </p>
             <p className="text-xs text-zinc-500 mt-1">
-              Browse the Hardware Workstation to requisition components for your projects.
+              {role === 'Student'
+                ? 'Browse the Hardware Workstation to requisition components for your projects.'
+                : 'All collegiate hardware units are currently resting in laboratory storage bays.'}
             </p>
           </div>
         )

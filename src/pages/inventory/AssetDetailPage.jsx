@@ -1,6 +1,7 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
+import { useAuth } from '../../context/AuthContext';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import {
   ArrowLeft,
@@ -14,11 +15,14 @@ import {
   Layers,
   Sparkles,
   ShieldCheck,
+  Wrench,
 } from 'lucide-react';
 
 export function AssetDetailPage() {
   const { itemId } = useParams();
+  const navigate = useNavigate();
   const { inventory, addToBasket, joinWaitlist } = useLabData();
+  const { role } = useAuth();
 
   const item = inventory.find((i) => i.id === itemId || i.assetTag === itemId);
 
@@ -81,26 +85,57 @@ export function AssetDetailPage() {
 
         {/* Action Button */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          {item.stockStatus === 'Available' ? (
-            <button
-              onClick={() => addToBasket(item, 1)}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black font-semibold text-xs tracking-wide transition-all shadow-[0_0_15px_rgba(201,184,160,0.3)] cursor-pointer active:scale-95"
-            >
-              <ShoppingBag className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span>Add to Requisition Kit</span>
-            </button>
-          ) : item.stockStatus === 'Allocated' ? (
-            <button
-              onClick={() => joinWaitlist(item)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-[#f5e6c8] border border-[#c9b8a0]/30 font-semibold text-xs transition-colors cursor-pointer"
-            >
-              <BookmarkPlus className="w-3.5 h-3.5 text-[#c9b8a0]" />
-              <span>Join FIFO Backlog Queue (Pos #{item.queueDepth + 1})</span>
-            </button>
+          {role === 'Student' ? (
+            item.stockStatus === 'Available' ? (
+              <button
+                onClick={() => addToBasket(item, 1)}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black font-semibold text-xs tracking-wide transition-all shadow-[0_0_15px_rgba(201,184,160,0.3)] cursor-pointer active:scale-95"
+              >
+                <ShoppingBag className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Add to Requisition Kit</span>
+              </button>
+            ) : item.stockStatus === 'Allocated' ? (
+              <button
+                onClick={() => joinWaitlist(item)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-[#f5e6c8] border border-[#c9b8a0]/30 font-semibold text-xs transition-colors cursor-pointer"
+              >
+                <BookmarkPlus className="w-3.5 h-3.5 text-[#c9b8a0]" />
+                <span>Join FIFO Backlog Queue (Pos #{item.queueDepth + 1})</span>
+              </button>
+            ) : (
+              <span className="px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/20 font-sans text-xs text-rose-400 font-medium">
+                Locked for Maintenance
+              </span>
+            )
           ) : (
-            <span className="px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/20 font-sans text-xs text-rose-400 font-medium">
-              Locked for Maintenance
-            </span>
+            // Staff / Lab Assistant Custodian Actions
+            <div className="flex items-center gap-2">
+              {item.stockStatus === 'Available' ? (
+                <button
+                  onClick={() => navigate('/workspace/operations/dispatch')}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-all shadow-sm cursor-pointer"
+                >
+                  <Cpu className="w-3.5 h-3.5" />
+                  <span>Dispatch at Counter</span>
+                </button>
+              ) : item.stockStatus === 'Allocated' ? (
+                <button
+                  onClick={() => navigate(`/workspace/operations/dispatch?mode=checkin&assetTag=${item.assetTag}`)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-all shadow-sm cursor-pointer"
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>Intake Return at Desk</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => navigate('/workspace/operations/defects')}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 font-semibold text-xs transition-all cursor-pointer"
+                >
+                  <Wrench className="w-3.5 h-3.5" />
+                  <span>Inspect at Defect Bench</span>
+                </button>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -270,7 +305,9 @@ export function AssetDetailPage() {
               </div>
             ) : (
               <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-center text-xs font-sans text-emerald-400">
-                Unit currently resting in assigned physical bin coordinates. Ready for immediate requisition.
+                {role === 'Student'
+                  ? 'Unit currently resting in assigned physical bin coordinates. Ready for immediate requisition.'
+                  : 'Unit resting in assigned physical shelf coordinates. Ready for counter checkout dispatch.'}
               </div>
             )}
           </div>
