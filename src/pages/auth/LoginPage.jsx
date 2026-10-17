@@ -218,15 +218,6 @@ export function LoginPage() {
               >
                 Need an account? Contact lab administrator
               </button>
-
-              <button
-                type="button"
-                onClick={() => navigate('/hero')}
-                className="text-xs text-[#c9b8a0] hover:text-[#f5e6c8] font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 mx-auto pt-1"
-              >
-                <span>View Neural Architecture & Showcase</span>
-                <ArrowRight className="w-3 h-3" />
-              </button>
             </div>
           </div>
         </div>
