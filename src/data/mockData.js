@@ -26,6 +26,8 @@ export const INITIAL_USERS = [
     role: 'Faculty',
     department: 'Artificial Intelligence & Machine Learning',
     designation: 'Associate Professor & Lab Mentor',
+    projectId: 'PRJ-FAC-01',
+    facultyProjectTitle: 'Edge AI & Embedded Systems Research Lab',
     supervisedCourses: ['DCDS-SY-AIML', 'CCE-TY-AIML'],
     pendingApprovalsCount: 3,
   },
@@ -502,6 +504,30 @@ export const INITIAL_RESERVATIONS = [
 ];
 
 export const INITIAL_PROJECTS = [
+  {
+    id: 'PRJ-FAC-01',
+    title: 'Edge AI & Embedded Systems Research Lab',
+    courseCode: 'FAC-RES-AIML',
+    academicTerm: 'Academic Year 2026-27',
+    department: 'Artificial Intelligence & Machine Learning',
+    mentorId: 'FAC-AI-019',
+    mentorName: 'Dr. Anjali Dalvi',
+    facultyLead: 'Dr. Anjali Dalvi',
+    isFacultyProject: true,
+    teamLeaderPrn: 'FAC-AI-019',
+    members: [
+      { prn: 'FAC-AI-019', name: 'Dr. Anjali Dalvi', role: 'Principal Investigator & Faculty Lead' },
+      { prn: '202401048', name: 'Rahul Sharma', role: 'Student Research Assistant' },
+      { prn: '202401052', name: 'Priya Nair', role: 'Graduate Fellow' },
+    ],
+    hardwareBudgetCap: 6,
+    currentAllocatedCount: 2,
+    allocatedItems: [
+      { assetTag: 'AT-JET-0012', nomenclature: 'NVIDIA Jetson Nano 4GB B01 Developer Kit', checkedOut: '2026-09-15', due: '2026-12-15' },
+      { assetTag: 'AT-RP5-0008', nomenclature: 'Raspberry Pi 5 Model B 8GB RAM', checkedOut: '2026-10-01', due: '2026-12-01' },
+    ],
+    abstract: 'Institutional research facility investigating low-latency edge tensor processing, heterogeneous sensor fusion, and TinyML micro-architectures for academic publications and sponsored capstones.',
+  },
   {
     id: 'PRJ-AIML-08',
     title: 'IoT Pipeline for Sensor Logging',

@@ -77,13 +77,31 @@ export function ProjectDirectoryPage() {
     return project.members?.some((m) => m.prn === userPrn) && project.teamLeaderPrn !== userPrn;
   };
 
-  const isUserProject = (project) => {
-    const isMentor = project.mentorName && currentUser?.name && (
-      project.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-      currentUser.name.toLowerCase().includes(project.mentorName.toLowerCase())
+  const isFaculty = role === 'Faculty';
+
+  const isMentorOf = (project) => {
+    return (
+      !project.isFacultyProject &&
+      project.mentorName &&
+      currentUser?.name &&
+      (project.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+        currentUser.name.toLowerCase().includes(project.mentorName.toLowerCase()))
     );
+  };
+
+  const isFacultyLeadOf = (project) => {
+    return (
+      project.isFacultyProject ||
+      project.facultyLead === currentUser?.name ||
+      project.teamLeaderPrn === currentUser?.prn
+    );
+  };
+
+  const isUserProject = (project) => {
+    const isMentor = isMentorOf(project);
     return (
       isMentor ||
+      isFacultyLeadOf(project) ||
       project.teamLeaderPrn === userPrn ||
       project.members?.some((m) => m.prn === userPrn) ||
       project.id === currentUser?.projectId
@@ -106,12 +124,19 @@ export function ProjectDirectoryPage() {
         collaborating: visibleProjectsPool.filter(isUserMember).length,
       };
     }
+    if (isFaculty) {
+      return {
+        all: projects.length,
+        facultyLabs: projects.filter(isFacultyLeadOf).length,
+        mentored: projects.filter(isMentorOf).length,
+      };
+    }
     return {
       all: projects.length,
       myTeam: projects.filter(isUserProject).length,
       aiml: projects.filter((p) => p.department?.includes('AIML') || p.courseCode?.includes('AIML')).length,
     };
-  }, [visibleProjectsPool, projects, isStudent, userPrn]);
+  }, [visibleProjectsPool, projects, isStudent, isFaculty, userPrn, currentUser]);
 
   const filteredProjects = useMemo(() => {
     if (isStudent) {
@@ -123,6 +148,15 @@ export function ProjectDirectoryPage() {
       }
       return visibleProjectsPool;
     }
+    if (isFaculty) {
+      if (activeFilter === 'facultyLabs') {
+        return projects.filter(isFacultyLeadOf);
+      }
+      if (activeFilter === 'mentored') {
+        return projects.filter(isMentorOf);
+      }
+      return projects;
+    }
     if (activeFilter === 'myTeam') {
       return projects.filter(isUserProject);
     }
@@ -130,7 +164,7 @@ export function ProjectDirectoryPage() {
       return projects.filter((p) => p.department?.includes('AIML') || p.courseCode?.includes('AIML'));
     }
     return projects;
-  }, [visibleProjectsPool, projects, activeFilter, isStudent, userPrn]);
+  }, [visibleProjectsPool, projects, activeFilter, isStudent, isFaculty, userPrn, currentUser]);
 
   const handleAddFriend = (e) => {
     e.preventDefault();
@@ -272,6 +306,53 @@ export function ProjectDirectoryPage() {
               </span>
             </button>
           </>
+        ) : isFaculty ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setActiveFilter('all')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeFilter === 'all'
+                  ? 'bg-white text-black font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>All Projects</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'all' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+                {counts.all}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFilter('facultyLabs')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeFilter === 'facultyLabs'
+                  ? 'bg-white text-black font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>My Faculty Research Labs</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'facultyLabs' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+                {counts.facultyLabs}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFilter('mentored')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeFilter === 'mentored'
+                  ? 'bg-white text-black font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>Teams Under My Wing</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'mentored' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+                {counts.mentored}
+              </span>
+            </button>
+          </>
         ) : (
           <>
             <button
@@ -298,7 +379,7 @@ export function ProjectDirectoryPage() {
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
-              <span>{role === 'Faculty' ? 'My Mentored Teams' : 'My Department Teams'}</span>
+              <span>My Department Teams</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'myTeam' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
                 {counts.myTeam}
               </span>
@@ -374,7 +455,23 @@ export function ProjectDirectoryPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {isLeader ? (
+                    {isFaculty ? (
+                      project.isFacultyProject ? (
+                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/10 text-white border border-white/20 flex items-center gap-1.5 shadow-sm">
+                          <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                          <span>Principal Investigator (You)</span>
+                        </span>
+                      ) : isMentorOf(project) ? (
+                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1.5 shadow-sm">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8]" />
+                          <span>Under Your Wing</span>
+                        </span>
+                      ) : (
+                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-white/[0.04] text-zinc-400 border border-white/10">
+                          {project.courseCode}
+                        </span>
+                      )
+                    ) : isLeader ? (
                       <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1.5 shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8]" />
                         <span>Team Lead (You)</span>
@@ -385,10 +482,18 @@ export function ProjectDirectoryPage() {
                         <span>Working In</span>
                       </span>
                     )}
-                    <span className="px-3 py-1 rounded-full text-[11px] font-sans font-medium bg-white/[0.04] text-zinc-300 border border-white/10 flex items-center gap-1.5 shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-                      <span>{project.reliabilityScore}% Integrity</span>
-                    </span>
+
+                    {project.isFacultyProject ? (
+                      <span className="px-3 py-1 rounded-full text-[11px] font-sans font-medium bg-white/[0.06] text-[#f5e6c8] border border-white/10 flex items-center gap-1.5 shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                        <span>Faculty Lab</span>
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 rounded-full text-[11px] font-sans font-medium bg-white/[0.04] text-zinc-300 border border-white/10 flex items-center gap-1.5 shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+                        <span>Team {project.reliabilityScore || 92}%</span>
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -496,17 +601,33 @@ export function ProjectDirectoryPage() {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/workspace/projects/${project.id}`);
-                  }}
-                  className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black transition-all flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95 flex-shrink-0"
-                >
-                  <span>Inspect Team</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {isFaculty && (project.isFacultyProject || isMentorOf(project)) && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/workspace/projects/${project.id}`);
+                      }}
+                      className="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/[0.08] hover:bg-white text-zinc-200 hover:text-black border border-white/10 transition-all flex items-center gap-1 cursor-pointer active:scale-95"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Allocate</span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/workspace/projects/${project.id}`);
+                    }}
+                    className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black transition-all flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95 flex-shrink-0"
+                  >
+                    <span>Inspect</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </div>
           );

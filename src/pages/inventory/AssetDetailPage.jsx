@@ -85,14 +85,14 @@ export function AssetDetailPage() {
 
         {/* Action Button */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          {role === 'Student' ? (
+          {role === 'Student' || role === 'Faculty' ? (
             item.stockStatus === 'Available' ? (
               <button
                 onClick={() => addToBasket(item, 1)}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black font-semibold text-xs tracking-wide transition-all shadow-[0_0_15px_rgba(201,184,160,0.3)] cursor-pointer active:scale-95"
               >
                 <ShoppingBag className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>Add to Requisition Kit</span>
+                <span>{role === 'Faculty' ? 'Add to Allocation Kit' : 'Add to Requisition Kit'}</span>
               </button>
             ) : item.stockStatus === 'Allocated' ? (
               <button

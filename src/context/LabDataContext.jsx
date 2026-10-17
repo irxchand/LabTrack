@@ -178,29 +178,130 @@ export function LabDataProvider({ children }) {
       projects.find((p) => p.id === currentUser?.projectId) ||
       projects[0];
 
+    const isFaculty = currentUser?.role === 'Faculty';
+
     const res = await custodyApi.submitRequisition({
-      studentPrn: currentUser?.prn || '202401048',
-      studentName: currentUser?.name || 'Rahul Sharma',
+      studentPrn: isFaculty ? (selectedProject?.teamLeaderPrn || currentUser?.prn || 'FAC-AI-019') : (currentUser?.prn || '202401048'),
+      studentName: isFaculty ? (selectedProject?.members?.[0]?.name || currentUser?.name || 'Dr. Anjali Dalvi') : (currentUser?.name || 'Rahul Sharma'),
       projectId: selectedProject?.id || currentUser?.projectId || 'PRJ-AIML-08',
       courseCode: selectedProject?.courseCode || currentUser?.courseCode || 'DCDS-SY-AIML',
       mentorId: selectedProject?.mentorId || currentUser?.mentorId || 'FAC-AI-019',
-      mentorName: selectedProject?.mentorName || currentUser?.mentorName || 'Dr. Anjali Dalvi',
-      technicalPurpose,
+      mentorName: selectedProject?.mentorName || currentUser?.name || 'Dr. Anjali Dalvi',
+      technicalPurpose: isFaculty ? `[Faculty Endorsement] ${technicalPurpose}` : technicalPurpose,
       componentsRequested,
     });
 
     if (res.ok) {
+      if (isFaculty) {
+        // Faculty auto-endorses requests they create for their project or mentored teams
+        await custodyApi.approveRequisition(res.data.id, `Faculty Direct Authorization by ${currentUser?.name || 'Mentor'}`);
+      }
       clearBasket();
       setIsBasketOpen(false);
       await loadData();
       addToast({
-        title: 'Requisition Submitted',
-        message: `Order #${res.data.id} bound to ${selectedProject?.id || 'Project'}. Forwarded to ${selectedProject?.mentorName || 'Faculty'} for endorsement.`,
+        title: isFaculty ? 'Equipment Allocation Authorized' : 'Requisition Submitted',
+        message: isFaculty
+          ? `Kit bound to "${selectedProject?.title || selectedProject?.id}". Pre-approved and staged for counter pickup.`
+          : `Order #${res.data.id} bound to ${selectedProject?.id || 'Project'}. Forwarded to ${selectedProject?.mentorName || 'Faculty'} for endorsement.`,
         type: 'success',
       });
       return true;
     }
     return false;
+  };
+
+  // Direct Hardware Allocation by Faculty to Project (Faculty's own lab or mentored team)
+  const allocateHardwareToProject = async ({ projectId, itemId, quantity = 1, notes = '' }) => {
+    const targetProject = projects.find((p) => p.id === projectId);
+    const invItem = inventory.find((i) => i.id === itemId || i.assetTag === itemId);
+
+    if (!targetProject) {
+      addToast({
+        title: 'Allocation Failed',
+        message: `Project ${projectId} not found in institutional repository.`,
+        type: 'danger',
+      });
+      return false;
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const dueDateStr = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    const newAllocatedItem = {
+      assetTag: invItem?.assetTag || itemId,
+      nomenclature: invItem?.nomenclature || 'Hardware Component',
+      checkedOut: todayStr,
+      due: dueDateStr,
+      notes: notes || 'Directly allocated by faculty mentor',
+      allocatedBy: currentUser?.name || 'Dr. Anjali Dalvi',
+      allocatedByRole: currentUser?.role || 'Faculty',
+    };
+
+    // Update target project
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id === projectId) {
+          return {
+            ...p,
+            allocatedItems: [...(p.allocatedItems || []), newAllocatedItem],
+            currentAllocatedCount: (p.currentAllocatedCount || 0) + quantity,
+          };
+        }
+        return p;
+      })
+    );
+
+    // Add active loan
+    const newLoan = {
+      id: `LN-FAC-${Date.now().toString().slice(-5)}`,
+      assetTag: invItem?.assetTag || itemId,
+      nomenclature: invItem?.nomenclature || 'Hardware Component',
+      studentPrn: targetProject.isFacultyProject ? (currentUser?.prn || 'FAC-AI-019') : (targetProject.teamLeaderPrn || '202401048'),
+      studentName: targetProject.isFacultyProject
+        ? (currentUser?.name || 'Dr. Anjali Dalvi')
+        : (targetProject.members?.[0]?.name || 'Project Team'),
+      projectId: targetProject.id,
+      checkoutDate: todayStr,
+      dueDate: dueDateStr,
+      daysRemaining: 45,
+      status: 'Active',
+      allocatedByFaculty: currentUser?.name || 'Dr. Anjali Dalvi',
+      notes: notes || 'Faculty direct allocation',
+    };
+    setActiveLoans((prev) => [newLoan, ...prev]);
+
+    // Decrement available inventory stock
+    if (invItem) {
+      setInventory((prev) =>
+        prev.map((item) =>
+          item.id === invItem.id
+            ? { ...item, availableStock: Math.max(0, (item.availableStock || 1) - quantity) }
+            : item
+        )
+      );
+    }
+
+    // Record institutional audit log
+    const newAudit = {
+      id: `AUD-FAC-${Date.now().toString().slice(-5)}`,
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      eventType: 'FACULTY_DIRECT_ALLOCATION',
+      actor: currentUser?.name || 'Dr. Anjali Dalvi',
+      actorRole: 'Faculty Mentor',
+      assetTag: invItem?.assetTag || itemId,
+      target: targetProject.title || projectId,
+      details: `Directly allocated ${quantity}x ${invItem?.nomenclature || 'Hardware'} to "${targetProject.title}". Notes: ${notes || 'Academic authorization'}`,
+    };
+    setAuditLogs((prev) => [newAudit, ...prev]);
+
+    addToast({
+      title: 'Hardware Allocated',
+      message: `${quantity}x ${invItem?.nomenclature || 'Component'} allocated to "${targetProject.title}".`,
+      type: 'success',
+    });
+
+    return true;
   };
 
   // Approval methods
@@ -475,6 +576,7 @@ export function LabDataProvider({ children }) {
         clearBasket,
         submitBasketRequisition,
         // Workflows
+        allocateHardwareToProject,
         approveRequisition,
         rejectRequisition,
         modifyRequisitionQuantity,

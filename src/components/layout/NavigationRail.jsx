@@ -81,6 +81,7 @@ export function NavigationRail() {
           label: 'Reliability Desk',
           to: '/workspace/accountability/reliability',
           icon: ShieldCheck,
+          requiredRoles: ['Student'],
         },
         {
           label: 'Audit Trail',

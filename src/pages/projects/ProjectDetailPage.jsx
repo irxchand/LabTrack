@@ -1,18 +1,53 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
-import { ArrowLeft, Users, Cpu, ShieldCheck, ShieldAlert, Check, Sparkles } from 'lucide-react';
+import {
+  ArrowLeft,
+  Users,
+  Cpu,
+  ShieldCheck,
+  ShieldAlert,
+  Check,
+  Sparkles,
+  Plus,
+  X,
+  Package,
+  Layers,
+  AlertCircle,
+  FileCheck2,
+} from 'lucide-react';
 
 export function ProjectDetailPage() {
   const { projectId } = useParams();
-  const { projects, activeLoans, inventory } = useLabData();
+  const { projects, activeLoans, inventory, allocateHardwareToProject } = useLabData();
   const { currentUser, role } = useAuth();
   const isStudent = !role || role === 'Student';
+  const isFaculty = role === 'Faculty';
   const userPrn = currentUser?.prn || '202401048';
+
+  const [isAllocModalOpen, setIsAllocModalOpen] = useState(false);
+  const [selectedAssetId, setSelectedAssetId] = useState('');
+  const [allocQty, setAllocQty] = useState(1);
+  const [allocNotes, setAllocNotes] = useState('Allocated by faculty mentor for sprint validation');
+  const [isSubmittingAlloc, setIsSubmittingAlloc] = useState(false);
+  const [allocError, setAllocError] = useState('');
 
   const project = projects.find((p) => p.id === projectId);
   const assignedLoans = activeLoans.filter((l) => l.projectId === projectId);
+
+  const isFacultyLeadOrMentor = useMemo(() => {
+    if (!isFaculty || !project) return false;
+    const isMentor = project.mentorName && currentUser?.name && (
+      project.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+      currentUser.name.toLowerCase().includes(project.mentorName.toLowerCase())
+    );
+    const isLead =
+      project.facultyLead === currentUser?.name ||
+      project.teamLeaderPrn === currentUser?.prn ||
+      project.id === currentUser?.projectId;
+    return isMentor || isLead;
+  }, [isFaculty, project, currentUser]);
 
   const isUserProject = (p) => {
     if (!p) return false;
@@ -141,14 +176,21 @@ export function ProjectDetailPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-right backdrop-blur-md">
-              <div className="text-zinc-500 text-[10px] font-sans uppercase tracking-wider">Integrity Score</div>
-              <div className="font-sans text-sm font-bold text-white">{project.reliabilityScore}%</div>
-            </div>
+            {project.isFacultyProject ? (
+              <div className="px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-right backdrop-blur-md">
+                <div className="text-zinc-500 text-[10px] font-sans uppercase tracking-wider">Faculty Governance</div>
+                <div className="font-sans text-xs font-semibold text-[#f5e6c8]">Principal Investigator</div>
+              </div>
+            ) : (
+              <div className="px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-right backdrop-blur-md">
+                <div className="text-zinc-500 text-[10px] font-sans uppercase tracking-wider">Student Team Score</div>
+                <div className="font-sans text-sm font-bold text-white">{project.reliabilityScore || 92}%</div>
+              </div>
+            )}
             <div className="px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-right backdrop-blur-md">
               <div className="text-zinc-500 text-[10px] font-sans uppercase tracking-wider">Custody Quota</div>
               <div className="font-sans text-sm font-semibold text-white">
-                {project.currentAllocatedCount} / {project.hardwareBudgetCap} units
+                {assignedLoans.length} / {project.hardwareBudgetCap} units
               </div>
               <div className="w-full bg-white/10 rounded-full h-1 overflow-hidden mt-1.5">
                 <div
@@ -174,14 +216,34 @@ export function ProjectDetailPage() {
 
           {/* Assigned Hardware */}
           <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl space-y-4 backdrop-blur-xl shadow-lg">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <span className="text-[#f5e6c8] uppercase text-[11px] font-semibold tracking-wider font-sans flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-[#c9b8a0]" />
-                Active Hardware Borrowings ({assignedLoans.length})
-              </span>
-              <span className="text-zinc-400 font-sans text-xs">
-                Remaining Quota: {project.hardwareBudgetCap - assignedLoans.length}
-              </span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-3 gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-[#f5e6c8] uppercase text-[11px] font-semibold tracking-wider font-sans flex items-center gap-2">
+                  <Cpu className="w-4 h-4 text-[#c9b8a0]" />
+                  Active Hardware Borrowings ({assignedLoans.length})
+                </span>
+                <span className="text-zinc-500 font-sans text-xs">
+                  • Quota: {project.hardwareBudgetCap - assignedLoans.length} remaining
+                </span>
+              </div>
+
+              {isFacultyLeadOrMentor && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const firstAvailable = inventory.find((i) => i.availableStock > 0) || inventory[0];
+                    setSelectedAssetId(firstAvailable?.id || '');
+                    setAllocQty(1);
+                    setAllocNotes(project.isFacultyProject ? 'Allocated for faculty laboratory research' : 'Allocated by faculty mentor for capstone sprint');
+                    setAllocError('');
+                    setIsAllocModalOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-[0_2px_10px_rgba(255,255,255,0.2)] cursor-pointer active:scale-95"
+                >
+                  <Plus className="w-3.5 h-3.5 text-black" />
+                  <span>Allocate Hardware</span>
+                </button>
+              )}
             </div>
 
             {assignedLoans.length > 0 ? (
@@ -270,6 +332,197 @@ export function ProjectDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Faculty Direct Allocation Modal */}
+      {isAllocModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="relative w-full max-w-xl rounded-3xl bg-gradient-to-b from-[#141417] to-[#0c0c0e] border border-white/15 p-6 sm:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.9)] space-y-5 animate-in fade-in zoom-in-95 duration-150">
+            {/* Top specular reflection */}
+            <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
+
+            <div className="flex items-start justify-between border-b border-white/10 pb-4">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[10px] font-medium text-zinc-300 mb-1.5">
+                  <FileCheck2 className="w-3 h-3 text-[#c9b8a0]" />
+                  <span>Faculty Allocation Authority</span>
+                </div>
+                <h3 className="font-display text-lg font-semibold text-white">
+                  Direct Allocate to {project.title}
+                </h3>
+                <p className="text-zinc-400 text-xs mt-0.5">
+                  {project.isFacultyProject ? 'Deploying to Faculty Research Lab' : `Mentored Team • ${project.courseCode}`}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsAllocModalOpen(false)}
+                className="w-8 h-8 rounded-full border border-white/10 bg-white/[0.04] hover:bg-white/[0.1] text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Component Selector */}
+              <div>
+                <label className="text-xs font-medium text-zinc-200 block mb-2">
+                  Select Laboratory Hardware Asset
+                </label>
+                <div className="space-y-2 max-h-56 overflow-y-auto pr-1 no-scrollbar">
+                  {inventory.map((item) => {
+                    const isSelected = (selectedAssetId || inventory[0]?.id) === item.id;
+                    const isAvailable = item.availableStock > 0;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setSelectedAssetId(item.id)}
+                        className={`w-full p-2.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 cursor-pointer ${
+                          isSelected
+                            ? 'bg-white/[0.08] border-white/30 shadow-sm'
+                            : 'bg-white/[0.02] border-white/10 hover:bg-white/[0.04]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-xl bg-black/60 border border-white/10 p-1 flex items-center justify-center flex-shrink-0">
+                            <img
+                              src={getItemImage(item)}
+                              alt={item.nomenclature}
+                              className="max-h-full max-w-full object-contain"
+                              onError={(e) => {
+                                e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+                              }}
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-semibold text-white truncate">
+                              {item.nomenclature}
+                            </div>
+                            <div className="text-[11px] text-[#c9b8a0]">{item.assetTag}</div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span
+                            className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                              isAvailable
+                                ? 'bg-white/10 text-white'
+                                : 'bg-rose-500/10 text-rose-300'
+                            }`}
+                          >
+                            {item.availableStock} in depot
+                          </span>
+                          {isSelected && <Check className="w-4 h-4 text-white" />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Quantity Stepper */}
+              <div>
+                <label className="text-xs font-medium text-zinc-200 block mb-1.5">
+                  Allocation Quantity
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={allocQty}
+                    onChange={(e) => setAllocQty(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-24 px-3 py-2 bg-white/[0.04] border border-white/15 rounded-xl text-xs text-white text-center focus:outline-none focus:border-white/30"
+                  />
+                  <span className="text-xs text-zinc-400">
+                    Maximum units allowed per project: {project.hardwareBudgetCap}
+                  </span>
+                </div>
+              </div>
+
+              {/* Purpose / Rationale */}
+              <div>
+                <label className="text-xs font-medium text-zinc-200 block mb-1.5">
+                  Faculty Authorization Rationale
+                </label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {[
+                    'Sprint 3 Milestone Hardware',
+                    'High-Priority Bench Validation',
+                    'Lab 402 Practical Kit',
+                  ].map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => setAllocNotes(preset)}
+                      className="px-2.5 py-1 rounded-full bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-[11px] text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                    >
+                      {preset}
+                    </button>
+                  ))}
+                </div>
+                <textarea
+                  value={allocNotes}
+                  onChange={(e) => setAllocNotes(e.target.value)}
+                  placeholder="Enter notes or conditions for this allocation..."
+                  rows={2}
+                  className="w-full px-3.5 py-2.5 bg-white/[0.03] border border-white/15 rounded-xl text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/30 leading-relaxed"
+                />
+              </div>
+
+              {allocError && (
+                <div className="flex items-center gap-1.5 text-xs text-rose-400">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  <span>{allocError}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => setIsAllocModalOpen(false)}
+                className="px-4 py-2 rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] text-xs font-medium text-zinc-300 hover:text-white transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isSubmittingAlloc}
+                onClick={async () => {
+                  const targetItemId = selectedAssetId || inventory[0]?.id;
+                  if (!targetItemId) {
+                    setAllocError('Please select a hardware component.');
+                    return;
+                  }
+                  setIsSubmittingAlloc(true);
+                  setAllocError('');
+                  try {
+                    const ok = await allocateHardwareToProject({
+                      projectId: project.id,
+                      itemId: targetItemId,
+                      quantity: allocQty,
+                      notes: allocNotes,
+                    });
+                    if (ok) {
+                      setIsAllocModalOpen(false);
+                    }
+                  } catch (err) {
+                    setAllocError(err.message || 'Failed to allocate hardware.');
+                  } finally {
+                    setIsSubmittingAlloc(false);
+                  }
+                }}
+                className="px-5 py-2 rounded-full bg-white text-black font-semibold text-xs transition-transform active:scale-95 shadow-[0_2px_12px_rgba(255,255,255,0.25)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <Plus className="w-3.5 h-3.5 text-black" />
+                <span>{isSubmittingAlloc ? 'Allocating...' : 'Confirm Direct Allocation'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
 import { ReliabilityGauge } from '../../components/specialized/ReliabilityGauge';
@@ -12,6 +13,9 @@ import {
   Sliders,
   CheckCircle2,
   Sparkles,
+  Award,
+  CheckSquare,
+  FolderGit2,
 } from 'lucide-react';
 
 export function ReliabilityReportPage() {
@@ -21,6 +25,50 @@ export function ReliabilityReportPage() {
   const [highThreshold, setHighThreshold] = useState(90);
   const [flaggedThreshold, setFlaggedThreshold] = useState(75);
   const [isEditingThresholds, setIsEditingThresholds] = useState(false);
+
+  // Faculty exemption guard: Faculty have no demerit score
+  if (currentUser?.role === 'Faculty') {
+    return (
+      <div className="max-w-4xl mx-auto py-12 px-4 space-y-8 font-sans">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#141417]/95 via-[#0e0e11]/95 to-[#08080a]/95 border border-white/10 p-8 sm:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.8)] backdrop-blur-2xl">
+          <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+          
+          <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-white mb-6 shadow-inner">
+            <Award className="w-8 h-8 text-white" />
+          </div>
+
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.06] border border-white/10 text-xs font-medium text-zinc-300">
+              <span>Academic Governance Exemption</span>
+            </div>
+            <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+              Faculty Standing & Mentor Governance
+            </h1>
+            <p className="text-zinc-400 text-sm sm:text-base leading-relaxed">
+              Institutional demerit scoring and strike ratings apply exclusively to undergraduate student hardware loans. As an appointed faculty member (<span className="text-white font-medium">{currentUser.name}</span>, {currentUser.department}), your laboratory oversight operates under academic mentorship standards.
+            </p>
+          </div>
+
+          <div className="mt-8 pt-8 border-t border-white/10 flex flex-wrap items-center gap-4">
+            <Link
+              to="/workspace/operations/approvals"
+              className="px-5 py-2.5 rounded-full bg-white text-black font-semibold text-xs transition-transform active:scale-95 shadow-[0_2px_12px_rgba(255,255,255,0.25)] flex items-center gap-2 cursor-pointer"
+            >
+              <CheckSquare className="w-4 h-4 text-black" />
+              <span>Go to Approvals Queue</span>
+            </Link>
+            <Link
+              to="/workspace/projects"
+              className="px-5 py-2.5 rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-white font-medium text-xs transition-colors flex items-center gap-2 cursor-pointer"
+            >
+              <FolderGit2 className="w-4 h-4 text-zinc-300" />
+              <span>Review Mentored Projects</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const score = currentUser?.reliabilityScore || reliabilityData?.score || 94;
 

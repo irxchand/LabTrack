@@ -28,13 +28,41 @@ export function RequisitionDrawer() {
     activeLoans,
   } = useLabData();
   const { currentUser, role } = useAuth();
+  const isFaculty = role === 'Faculty';
 
-  if (role !== 'Student') {
+  if (role !== 'Student' && role !== 'Faculty') {
     return null;
   }
 
+  // Dual project resolution for faculty vs student
+  const facultyProjects = useMemo(() => {
+    if (!isFaculty || !projects) return [];
+    return projects.filter(
+      (p) =>
+        p.isFacultyProject ||
+        p.facultyLead === currentUser?.name ||
+        p.teamLeaderPrn === currentUser?.prn
+    );
+  }, [projects, isFaculty, currentUser]);
+
+  const mentoredTeams = useMemo(() => {
+    if (!isFaculty || !projects) return [];
+    return projects.filter(
+      (p) =>
+        !p.isFacultyProject &&
+        p.mentorName &&
+        currentUser?.name &&
+        (p.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+          currentUser.name.toLowerCase().includes(p.mentorName.toLowerCase()))
+    );
+  }, [projects, isFaculty, currentUser]);
+
   const userProjects = useMemo(() => {
     if (!projects || projects.length === 0) return [];
+    if (isFaculty) {
+      const combined = [...facultyProjects, ...mentoredTeams];
+      return combined.length > 0 ? combined : projects;
+    }
     const myPrn = currentUser?.prn || '202401048';
     const filtered = projects.filter(
       (p) =>
@@ -43,7 +71,7 @@ export function RequisitionDrawer() {
         p.id === currentUser?.projectId
     );
     return filtered.length > 0 ? filtered : projects;
-  }, [projects, currentUser]);
+  }, [projects, currentUser, isFaculty, facultyProjects, mentoredTeams]);
 
   const [selectedProjectId, setSelectedProjectId] = useState(
     currentUser?.projectId || 'PRJ-AIML-08'
@@ -64,11 +92,17 @@ export function RequisitionDrawer() {
 
   if (!isBasketOpen) return null;
 
-  const quickPills = [
-    'Mini-project defense',
-    'Lab practicals & sensor logging',
-    'Firmware validation & bench test',
-  ];
+  const quickPills = isFaculty
+    ? [
+        'Faculty Lab Research Deployment',
+        'Capstone Sprint 3 Endorsement',
+        'Lab 402 Practical Bench Station',
+      ]
+    : [
+        'Mini-project defense',
+        'Lab practicals & sensor logging',
+        'Firmware validation & bench test',
+      ];
 
   const handleCopyTag = (tag) => {
     navigator.clipboard?.writeText(tag);
@@ -79,7 +113,7 @@ export function RequisitionDrawer() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!purpose.trim()) {
-      setError('Please provide a brief justification for faculty approval.');
+      setError(isFaculty ? 'Please enter a brief allocation rationale.' : 'Please provide a brief justification for faculty approval.');
       return;
     }
     setError('');
@@ -119,7 +153,7 @@ export function RequisitionDrawer() {
           <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-semibold text-white tracking-tight">
-                Requisition Kit
+                {isFaculty ? 'Hardware Allocation Kit' : 'Requisition Kit'}
               </h2>
               <span className="px-2.5 py-0.5 rounded-full bg-white/[0.08] text-xs font-medium text-zinc-300 border border-white/10">
                 {totalUnits} {totalUnits === 1 ? 'item' : 'items'}
@@ -136,25 +170,34 @@ export function RequisitionDrawer() {
           </div>
 
           {/* ───────────────────────────────────────────────────────── */}
-          {/* 3. Requester Strip (Subtle & Refined)                      */}
+          {/* 3. Requester Strip (Subtle & Refined - No Score for Faculty) */}
           {/* ───────────────────────────────────────────────────────── */}
           <div className="px-6 py-3.5 bg-white/[0.02] border-b border-white/10 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-full bg-white/10 text-white font-medium text-[11px] flex items-center justify-center">
                 {(currentUser?.name || 'R').charAt(0)}
               </div>
-              <span className="font-medium text-white">{currentUser?.name || 'Rahul Sharma'}</span>
+              <span className="font-medium text-white">{currentUser?.name || 'Dr. Anjali Dalvi'}</span>
               <span className="text-zinc-500 font-sans text-[11px]">
-                {currentUser?.prn || '202401048'}
+                {currentUser?.prn || 'FAC-AI-019'}
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-zinc-500 text-[11px]">Reliability</span>
-              <span className="font-semibold text-[#f5e6c8]">
-                {currentUser?.reliabilityScore || 94}%
-              </span>
-            </div>
+            {isFaculty ? (
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-500 text-[11px]">Standing</span>
+                <span className="font-medium text-white text-[11px] px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/10">
+                  Faculty Mentor
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-500 text-[11px]">Reliability</span>
+                <span className="font-semibold text-[#f5e6c8]">
+                  {currentUser?.reliabilityScore || 94}%
+                </span>
+              </div>
+            )}
           </div>
 
           {/* ───────────────────────────────────────────────────────── */}
@@ -278,11 +321,11 @@ export function RequisitionDrawer() {
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-medium text-zinc-200 flex items-center gap-1.5">
                     <FolderGit2 className="w-3.5 h-3.5 text-[#c9b8a0]" />
-                    <span>Target Academic Project Group</span>
+                    <span>{isFaculty ? 'Target Faculty Lab or Mentored Team' : 'Target Academic Project Group'}</span>
                   </label>
                   {activeSelectedProject && (
                     <span className="text-[10px] text-zinc-400 font-sans">
-                      Mentor: {activeSelectedProject.mentorName}
+                      {activeSelectedProject.isFacultyProject ? 'Faculty Lead' : `Mentor: ${activeSelectedProject.mentorName}`}
                     </span>
                   )}
                 </div>
@@ -293,14 +336,43 @@ export function RequisitionDrawer() {
                     onChange={(e) => setSelectedProjectId(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/15 rounded-xl text-xs text-white focus:outline-none focus:border-[#c9b8a0] transition-all cursor-pointer font-sans appearance-none pr-8"
                   >
-                    {userProjects.map((p) => {
-                      const assignedCount = (activeLoans || []).filter((l) => l.projectId === p.id).length;
-                      return (
-                        <option key={p.id} value={p.id} className="bg-[#141417] text-white py-1">
-                          {p.id} • {p.title} ({assignedCount}/{p.hardwareBudgetCap} units active)
-                        </option>
-                      );
-                    })}
+                    {isFaculty ? (
+                      <>
+                        {facultyProjects.length > 0 && (
+                          <optgroup label="My Faculty Research Labs" className="bg-[#141417] text-[#c9b8a0] font-semibold">
+                            {facultyProjects.map((p) => {
+                              const assignedCount = (activeLoans || []).filter((l) => l.projectId === p.id).length;
+                              return (
+                                <option key={p.id} value={p.id} className="bg-[#141417] text-white py-1">
+                                  {p.id} • {p.title} ({assignedCount}/{p.hardwareBudgetCap} units active)
+                                </option>
+                              );
+                            })}
+                          </optgroup>
+                        )}
+                        {mentoredTeams.length > 0 && (
+                          <optgroup label="Teams Under My Wing (Mentored Teams)" className="bg-[#141417] text-[#c9b8a0] font-semibold">
+                            {mentoredTeams.map((p) => {
+                              const assignedCount = (activeLoans || []).filter((l) => l.projectId === p.id).length;
+                              return (
+                                <option key={p.id} value={p.id} className="bg-[#141417] text-white py-1">
+                                  {p.id} • {p.title} ({assignedCount}/{p.hardwareBudgetCap} units active)
+                                </option>
+                              );
+                            })}
+                          </optgroup>
+                        )}
+                      </>
+                    ) : (
+                      userProjects.map((p) => {
+                        const assignedCount = (activeLoans || []).filter((l) => l.projectId === p.id).length;
+                        return (
+                          <option key={p.id} value={p.id} className="bg-[#141417] text-white py-1">
+                            {p.id} • {p.title} ({assignedCount}/{p.hardwareBudgetCap} units active)
+                          </option>
+                        );
+                      })
+                    )}
                   </select>
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500 text-[10px]">
                     ▼
@@ -309,7 +381,7 @@ export function RequisitionDrawer() {
 
                 {activeSelectedProject && (
                   <div className="flex items-center justify-between text-[11px] text-zinc-500 px-0.5 pt-0.5">
-                    <span>Course: {activeSelectedProject.courseCode}</span>
+                    <span>{activeSelectedProject.isFacultyProject ? 'Facility Project' : `Course: ${activeSelectedProject.courseCode}`}</span>
                     <span className="text-zinc-400">
                       Remaining Quota:{' '}
                       {activeSelectedProject.hardwareBudgetCap -
@@ -323,7 +395,7 @@ export function RequisitionDrawer() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-medium text-zinc-200">
-                    Project Purpose & Justification
+                    {isFaculty ? 'Faculty Allocation Rationale' : 'Project Purpose & Justification'}
                   </label>
                   <span className="text-[11px] text-zinc-500">Required</span>
                 </div>
@@ -348,7 +420,7 @@ export function RequisitionDrawer() {
                     setPurpose(e.target.value);
                     if (error) setError('');
                   }}
-                  placeholder="Describe how this hardware will be used in your project..."
+                  placeholder={isFaculty ? "State allocation rationale or technical purpose for this team..." : "Describe how this hardware will be used in your project..."}
                   rows={2}
                   className="w-full px-3.5 py-2.5 bg-white/[0.03] border border-white/15 rounded-xl text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#c9b8a0] focus:ring-1 focus:ring-[#c9b8a0]/30 transition-all leading-relaxed"
                 />
@@ -378,7 +450,11 @@ export function RequisitionDrawer() {
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>
-                    {isSubmitting ? 'Submitting...' : 'Submit for Faculty Approval'}
+                    {isSubmitting
+                      ? 'Processing...'
+                      : isFaculty
+                      ? 'Direct-Allocate & Dispatch'
+                      : 'Submit for Faculty Approval'}
                   </span>
                 </button>
               </div>
