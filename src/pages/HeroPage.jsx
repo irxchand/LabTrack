@@ -103,6 +103,86 @@ const POLICIES = {
       },
     ],
   },
+  instrumentSop: {
+    id: 'instrumentSop',
+    tag: 'Bench Operating Procedure',
+    title: 'Instrument Calibration SOP',
+    subtitle: 'Standardized calibration protocols for oscilloscopes, logic analyzers, and programmable supplies.',
+    sections: [
+      {
+        heading: '10x Probe Attenuation & Compensation',
+        body: 'Connect probe to the 1kHz square-wave calibration terminal. Adjust trimmer capacitor until leading edge shows zero overshoot or undershoot before probing active digital buses.',
+      },
+      {
+        heading: 'DC Current Compliance Pre-Setting',
+        body: 'Short the supply leads at zero voltage, dial current limit to the calculated safety ceiling (e.g. 250mA for microcontrollers), then disengage short before powering circuits.',
+      },
+      {
+        heading: 'Common Ground Isolation',
+        body: 'Ensure oscilloscope earth clip connects exclusively to system ground reference. Never connect probe ground to hot or floating power rail potentials.',
+      },
+    ],
+  },
+  toolchains: {
+    id: 'toolchains',
+    tag: 'Laboratory Software & Drivers',
+    title: 'Embedded Toolchains & SDKs',
+    subtitle: 'Verified compiler environments, synthesis tools, and hardware programming drivers.',
+    sections: [
+      {
+        heading: 'FPGA Synthesis Environments',
+        body: 'Lab workstations feature pre-licensed AMD Xilinx Vivado ML Enterprise and Lattice Diamond synthesis suites with Cable Driver USB drivers.',
+      },
+      {
+        heading: 'Microcontroller Toolchains',
+        body: 'Official support packages for STM32CubeIDE (ARM Cortex-M), ESP-IDF v5.2 (Xtensa / RISC-V), and Raspberry Pi Pico C/C++ SDK are synced across benches.',
+      },
+      {
+        heading: 'Hardware JTAG/SWD Debuggers',
+        body: 'OpenOCD and SEGGER J-Link debugging servers are accessible locally. Debug probes can be requisitioned via standard bench checkouts.',
+      },
+    ],
+  },
+  pinouts: {
+    id: 'pinouts',
+    tag: 'Hardware Reference Repository',
+    title: 'Pinouts & Schematic Archive',
+    subtitle: 'Official hardware reference diagrams, electrical characteristics, and interface timing.',
+    sections: [
+      {
+        heading: 'Official GPIO Pin Maps',
+        body: 'Verified pin multiplexing diagrams for Jetson Orin Nano, STM32F4 Discovery, ESP32-S3 DevKit, and Zynq-7000 FPGA development headers.',
+      },
+      {
+        heading: 'Electrical Voltage Tolerances',
+        body: 'Confirm 3.3V vs 5.0V I/O level tolerance tables before connecting mixed-voltage sensors. Use on-bench bi-directional level shifters where required.',
+      },
+      {
+        heading: 'Communication Protocol Standards',
+        body: 'Standard reference sheets for I2C pull-up resistor calculation, SPI clock polarity/phase (CPOL/CPHA), and differential CAN bus termination.',
+      },
+    ],
+  },
+  defectTriage: {
+    id: 'defectTriage',
+    tag: 'RMA & Quality Control Guide',
+    title: 'Zero-Penalty Defect Triage',
+    subtitle: 'Step-by-step protocol for defective or damaged components with guaranteed strike immunity.',
+    sections: [
+      {
+        heading: 'Immediate Bench De-Energization',
+        body: 'Switch off main DC supply breakers immediately upon observing component smoking, excessive package temperature (>85°C), or supply short-circuit buzzing.',
+      },
+      {
+        heading: 'Logging RMA in Workspace',
+        body: 'Navigate to My Bench → Active Custody → Report Defect. Select the failure mode (e.g. fried GPIO, dead bootloader, thermal overrun) with a brief note.',
+      },
+      {
+        heading: 'Turn-In & Immediate Replacement',
+        body: 'Present the quarantined hardware to Counter Station LA-04. The triage tag ensures 0 penalty strikes and priority issuance of an operational replacement.',
+      },
+    ],
+  },
 };
 
 export function HeroPage() {
@@ -488,47 +568,67 @@ export function HeroPage() {
             </p>
           </div>
 
-          {/* Column 2: Physical Facilities & Operating Windows */}
+          {/* Column 2: Bench SOPs & Technical Toolchains */}
           <div>
             <div className="text-xs font-semibold tracking-wider text-stone-300 font-sans uppercase mb-4">
-              Facilities & Schedules
+              Bench SOPs & Guides
             </div>
-            <ul className="space-y-3.5 text-xs text-stone-400 font-normal font-sans">
-              <li className="flex flex-col gap-0.5">
-                <span className="text-stone-200 font-medium hover:text-[#e8d5b7] transition-colors cursor-default">
-                  AIML & Robotics Suite (Lab 304)
-                </span>
-                <span className="text-[11px] text-stone-500">
-                  GPU Rigs • LiDAR Sensors • Robotic Arms
-                </span>
+            <ul className="space-y-3 text-xs text-stone-400 font-normal font-sans">
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setActivePolicyModal(POLICIES.instrumentSop)}
+                  className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
+                >
+                  <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
+                    Instrument Calibration SOP
+                  </span>
+                  <span className="text-[11px] text-stone-500">
+                    Oscilloscope 10x probe grounding & DC current limits
+                  </span>
+                </button>
               </li>
-              <li className="flex flex-col gap-0.5">
-                <span className="text-stone-200 font-medium hover:text-[#e8d5b7] transition-colors cursor-default">
-                  IoT & Sensor Mesh Lab (Lab 212)
-                </span>
-                <span className="text-[11px] text-stone-500">
-                  LoRaWAN Gateway • Spectrum Analyzers • RF Testbeds
-                </span>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setActivePolicyModal(POLICIES.toolchains)}
+                  className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
+                >
+                  <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
+                    Embedded Toolchains & SDKs
+                  </span>
+                  <span className="text-[11px] text-stone-500">
+                    Vivado, STM32Cube, and ESP-IDF board packages
+                  </span>
+                </button>
               </li>
-              <li className="flex flex-col gap-0.5">
-                <span className="text-stone-200 font-medium hover:text-[#e8d5b7] transition-colors cursor-default">
-                  VLSI & Silicon Synthesis (Lab 401)
-                </span>
-                <span className="text-[11px] text-stone-500">
-                  FPGA Workstations • Logic Analyzers
-                </span>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setActivePolicyModal(POLICIES.pinouts)}
+                  className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
+                >
+                  <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
+                    Pinouts & Schematic Archive
+                  </span>
+                  <span className="text-[11px] text-stone-500">
+                    High-res GPIO pin maps & component timing sheets
+                  </span>
+                </button>
               </li>
-              <li className="flex flex-col gap-0.5">
-                <span className="text-stone-200 font-medium hover:text-[#e8d5b7] transition-colors cursor-default">
-                  Rapid Prototyping Bay (Shop B)
-                </span>
-                <span className="text-[11px] text-stone-500">
-                  PCB Milling • Soldering Stations • 3D Printing
-                </span>
-              </li>
-              <li className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-[#c9b8a0]">
-                <span>Counter Dispatch Windows</span>
-                <span className="font-medium text-stone-300">08:30 – 19:30 IST</span>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setActivePolicyModal(POLICIES.defectTriage)}
+                  className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
+                >
+                  <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
+                    Zero-Penalty Defect Triage
+                  </span>
+                  <span className="text-[11px] text-stone-500">
+                    Safe bench shutdown & RMA replacement guide
+                  </span>
+                </button>
               </li>
             </ul>
           </div>
