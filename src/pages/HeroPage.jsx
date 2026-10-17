@@ -193,7 +193,7 @@ export function HeroPage() {
       },
       navItems: [
         { label: 'Capabilities', href: '#capabilities' },
-        { label: 'Workstation Depot', path: '/workspace/inventory' },
+        { label: 'Workstation', path: '/workspace/inventory' },
         { label: 'Counter Desk', path: '/workspace/operations/dispatch' },
         { label: 'Defect Bench', path: '/workspace/operations/defects' },
         { label: 'Audit Log', path: '/workspace/operations/audit' },
@@ -539,28 +539,28 @@ export function HeroPage() {
       {/* ─────────────────────────────────────────────────────────────────────────
           FIXED TOP NAVBAR (Matching LabTrack Brand Typography & Dynamic Role)
       ───────────────────────────────────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-[10px] bg-[#0a0a0a]/80 border-b border-white/10 px-6 sm:px-12 h-20 flex items-center justify-between transition-all duration-300">
+      <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-[10px] bg-[#0a0a0a]/80 border-b border-white/10 px-6 sm:px-12 h-16 flex items-center justify-between transition-all duration-300">
         {/* Left: Brand Monogram in Clash Display with Champagne Gold Gradient */}
         <div
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="flex items-center gap-2.5 cursor-pointer group select-none"
+          className="flex items-center gap-2.5 cursor-pointer group select-none flex-shrink-0"
         >
           <span className="font-display font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
             LabTrack
           </span>
-          <span className="text-[10px] uppercase tracking-[0.16em] text-[#c9b8a0] bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/10 font-sans hidden sm:inline-block">
+          <span className="text-[10px] uppercase tracking-[0.16em] text-[#c9b8a0] bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/10 font-sans hidden xl:inline-block whitespace-nowrap">
             {currentConfig.roleBadge}
           </span>
         </div>
 
         {/* Center: Apple-Grade Glass Segmented Navigation Pill Tailored to Persona */}
-        <nav className="hidden lg:flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+        <nav className="hidden lg:flex items-center gap-0.5 px-1.5 py-1 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.3)] flex-shrink-0 flex-nowrap">
           {currentConfig.navItems.map((item, idx) =>
             item.href ? (
               <a
                 key={idx}
                 href={item.href}
-                className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all font-sans"
+                className="text-xs font-medium text-stone-300 hover:text-white px-3 py-1.5 rounded-full hover:bg-white/[0.06] transition-all font-sans whitespace-nowrap leading-none select-none"
               >
                 {item.label}
               </a>
@@ -569,7 +569,7 @@ export function HeroPage() {
                 key={idx}
                 type="button"
                 onClick={() => navigate(item.path)}
-                className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
+                className="text-xs font-medium text-stone-300 hover:text-white px-3 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans whitespace-nowrap leading-none select-none"
               >
                 {item.label}
               </button>
