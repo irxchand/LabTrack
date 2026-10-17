@@ -78,7 +78,12 @@ export function ProjectDirectoryPage() {
   };
 
   const isUserProject = (project) => {
+    const isMentor = project.mentorName && currentUser?.name && (
+      project.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+      currentUser.name.toLowerCase().includes(project.mentorName.toLowerCase())
+    );
     return (
+      isMentor ||
       project.teamLeaderPrn === userPrn ||
       project.members?.some((m) => m.prn === userPrn) ||
       project.id === currentUser?.projectId
@@ -293,7 +298,7 @@ export function ProjectDirectoryPage() {
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
-              <span>My Department Teams</span>
+              <span>{role === 'Faculty' ? 'My Mentored Teams' : 'My Department Teams'}</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'myTeam' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
                 {counts.myTeam}
               </span>

@@ -373,7 +373,7 @@ export function HeroPage() {
         { label: 'Capabilities', href: '#capabilities' },
         { label: 'Workstation', path: '/workspace/inventory' },
         { label: 'Approvals', path: '/workspace/operations/approvals' },
-        { label: 'Projects', path: '/workspace/projects' },
+        { label: 'Projects', path: '/workspace/projects/overview' },
         { label: 'Defects', path: '/workspace/operations/defects' },
       ],
       capabilitiesTitle: (
@@ -397,7 +397,7 @@ export function HeroPage() {
         },
         {
           id: 'projects',
-          path: '/workspace/projects',
+          path: '/workspace/projects/overview',
           icon: FolderGit2,
           tag: 'PROJECT MENTORSHIP',
           title: 'Projects Directory',
@@ -427,7 +427,7 @@ export function HeroPage() {
         },
         {
           id: 'audit',
-          path: '/workspace/operations/audit',
+          path: '/workspace/accountability/audit-log',
           icon: Shield,
           tag: 'CHAIN OF CUSTODY',
           title: 'Audit Log',
