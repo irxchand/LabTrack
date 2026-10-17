@@ -4,6 +4,7 @@ import { custodyApi } from '../api/custody.api';
 import { accountabilityApi } from '../api/accountability.api';
 import { useNotification } from './NotificationContext';
 import { useAuth } from './AuthContext';
+import { isMentorOfProject, isFacultyLeadOfProject } from '../utils/facultyAuth';
 
 export const LAB_FACILITIES = [
   {
@@ -181,23 +182,8 @@ export function LabDataProvider({ children }) {
     const isFaculty = currentUser?.role === 'Faculty';
 
     if (isFaculty && selectedProject) {
-      const isLead =
-        selectedProject.isFacultyProject &&
-        ((selectedProject.teamLeaderPrn && currentUser?.prn && selectedProject.teamLeaderPrn === currentUser.prn) ||
-          (selectedProject.mentorId && currentUser?.prn && selectedProject.mentorId === currentUser.prn) ||
-          (selectedProject.facultyLead &&
-            currentUser?.name &&
-            (selectedProject.facultyLead.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-              currentUser.name.toLowerCase().includes(selectedProject.facultyLead.toLowerCase()))) ||
-          selectedProject.id === currentUser?.projectId);
-
-      const isMentor =
-        !selectedProject.isFacultyProject &&
-        ((selectedProject.mentorId && currentUser?.prn && selectedProject.mentorId === currentUser.prn) ||
-          (selectedProject.mentorName &&
-            currentUser?.name &&
-            (selectedProject.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-              currentUser.name.toLowerCase().includes(selectedProject.mentorName.toLowerCase()))));
+      const isLead = isFacultyLeadOfProject(selectedProject, currentUser);
+      const isMentor = isMentorOfProject(selectedProject, currentUser);
 
       if (!isLead && !isMentor) {
         addToast({
@@ -315,23 +301,8 @@ export function LabDataProvider({ children }) {
 
     const isFacultyUser = currentUser?.role === 'Faculty';
     if (isFacultyUser) {
-      const isLead =
-        targetProject.isFacultyProject &&
-        ((targetProject.teamLeaderPrn && currentUser?.prn && targetProject.teamLeaderPrn === currentUser.prn) ||
-          (targetProject.mentorId && currentUser?.prn && targetProject.mentorId === currentUser.prn) ||
-          (targetProject.facultyLead &&
-            currentUser?.name &&
-            (targetProject.facultyLead.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-              currentUser.name.toLowerCase().includes(targetProject.facultyLead.toLowerCase()))) ||
-          targetProject.id === currentUser?.projectId);
-
-      const isMentor =
-        !targetProject.isFacultyProject &&
-        ((targetProject.mentorId && currentUser?.prn && targetProject.mentorId === currentUser.prn) ||
-          (targetProject.mentorName &&
-            currentUser?.name &&
-            (targetProject.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-              currentUser.name.toLowerCase().includes(targetProject.mentorName.toLowerCase()))));
+      const isLead = isFacultyLeadOfProject(targetProject, currentUser);
+      const isMentor = isMentorOfProject(targetProject, currentUser);
 
       if (!isLead && !isMentor) {
         addToast({

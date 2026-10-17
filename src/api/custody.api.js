@@ -82,7 +82,23 @@ export const custodyApi = {
   // REQUISITIONS
   getRequisitions: async () => {
     return apiClient.simulatedFetch('GET_REQUISITIONS', () => {
-      return getStored(REQ_KEY, INITIAL_REQUISITIONS);
+      const stored = getStored(REQ_KEY, INITIAL_REQUISITIONS);
+      let modified = false;
+      const sanitized = stored.map((r) => {
+        if (r.mentorName && r.mentorName.includes('Sneha Kulkarni') && r.mentorId !== 'FAC-CCE-004') {
+          modified = true;
+          return { ...r, mentorId: 'FAC-CCE-004' };
+        }
+        if (r.projectId === 'PRJ-AIML-08' && r.mentorName && r.mentorName.includes('Sneha Kulkarni')) {
+          modified = true;
+          return { ...r, mentorName: 'Dr. Anjali Dalvi', mentorId: 'FAC-AI-019' };
+        }
+        return r;
+      });
+      if (modified) {
+        saveStored(REQ_KEY, sanitized);
+      }
+      return sanitized;
     });
   },
 
@@ -97,7 +113,7 @@ export const custodyApi = {
         projectId: requisitionData.projectId || 'PRJ-AIML-08',
         courseCode: requisitionData.courseCode || 'DCDS-SY-AIML',
         mentorId: requisitionData.mentorId || 'FAC-AI-019',
-        mentorName: requisitionData.mentorName || 'Prof. Sneha Kulkarni',
+        mentorName: requisitionData.mentorName || 'Dr. Anjali Dalvi',
         teamReliabilityScore: 94,
         technicalPurpose: requisitionData.technicalPurpose,
         componentsRequested: requisitionData.componentsRequested,

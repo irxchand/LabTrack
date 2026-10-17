@@ -391,7 +391,7 @@ export const INITIAL_REQUISITIONS = [
     projectId: 'PRJ-AIML-08',
     courseCode: 'DCDS-SY-AIML',
     mentorId: 'FAC-AI-019',
-    mentorName: 'Prof. Sneha Kulkarni',
+    mentorName: 'Dr. Anjali Dalvi',
     teamReliabilityScore: 94,
     technicalPurpose: 'Edge model profiling for real-time traffic obstacle classification using TensorRT on Jetson platform.',
     componentsRequested: [
@@ -414,7 +414,7 @@ export const INITIAL_REQUISITIONS = [
     projectId: 'PRJ-AIML-08',
     courseCode: 'DCDS-SY-AIML',
     mentorId: 'FAC-AI-019',
-    mentorName: 'Prof. Sneha Kulkarni',
+    mentorName: 'Dr. Anjali Dalvi',
     teamReliabilityScore: 94,
     technicalPurpose: 'Benchmarking I2C telemetry refresh rate under high CPU load.',
     componentsRequested: [
@@ -423,7 +423,7 @@ export const INITIAL_REQUISITIONS = [
     status: 'Ready for Counter Pickup',
     timeline: [
       { step: 'Submitted', timestamp: '2026-10-14 11:20:00', actor: 'Aryan Sharma', note: 'Project lab validation phase' },
-      { step: 'Faculty Endorsed', timestamp: '2026-10-14 14:10:00', actor: 'Prof. Sneha Kulkarni', note: 'Approved for course lab evaluation. Safe handling authorized.' },
+      { step: 'Faculty Endorsed', timestamp: '2026-10-14 14:10:00', actor: 'Dr. Anjali Dalvi', note: 'Approved for course lab evaluation. Safe handling authorized.' },
       { step: 'Ready for Counter Pickup', timestamp: '2026-10-15 09:30:00', actor: 'Ramesh Patil (Lab Assistant)', note: 'Items allocated from Tray L2-CB3-R2 and staged at Counter Desk 2.' },
     ],
     supervisorNotes: 'Approved for course lab evaluation. Safe handling authorized.',
@@ -436,7 +436,7 @@ export const INITIAL_REQUISITIONS = [
     studentName: 'Pooja Varma',
     projectId: 'PRJ-CCE-03',
     courseCode: 'CCE-TY',
-    mentorId: 'FAC-AI-019',
+    mentorId: 'FAC-CCE-004',
     mentorName: 'Prof. Sneha Kulkarni',
     teamReliabilityScore: 78,
     technicalPurpose: 'High frequency signal capture for Cloud Edge protocol verification.',
@@ -458,7 +458,7 @@ export const INITIAL_REQUISITIONS = [
     studentName: 'Vikram Joshi',
     projectId: 'PRJ-IOT-14',
     courseCode: 'DCDS-SY-AIML',
-    mentorId: 'FAC-AI-019',
+    mentorId: 'FAC-CCE-004',
     mentorName: 'Prof. Sneha Kulkarni',
     teamReliabilityScore: 68, // Low score < 75!
     technicalPurpose: 'Stress testing stepper motors using high amperage bench power supply.',
@@ -663,7 +663,7 @@ export const INITIAL_PROJECTS = [
     courseCode: 'DCDS-SY-AIML',
     academicTerm: 'Autumn 2026 (Semester IV)',
     department: 'Artificial Intelligence & Machine Learning',
-    mentorId: 'FAC-AI-019',
+    mentorId: 'FAC-CCE-004',
     mentorName: 'Prof. Sneha Kulkarni',
     teamLeaderPrn: '202409912',
     members: [
@@ -675,6 +675,28 @@ export const INITIAL_PROJECTS = [
     reliabilityScore: 68,
     allocatedItems: [],
     abstract: 'Battery-optimized multi-hop LPWAN mesh node network delivering ambient humidity and solar irradiance parameters to an on-campus meteorological database.',
+  },
+  {
+    id: 'PRJ-CCE-03',
+    title: 'Fault-Tolerant Hybrid Cloud Edge Telemetry Gateway',
+    courseCode: 'CCE-TY',
+    academicTerm: 'Autumn 2026 (Semester VI)',
+    department: 'Computer Science & Cloud Engineering',
+    mentorId: 'FAC-CCE-004',
+    mentorName: 'Prof. Sneha Kulkarni',
+    teamLeaderPrn: '202302882',
+    members: [
+      { prn: '202302882', name: 'Pooja Varma', role: 'Team Lead & Cloud Architect' },
+      { prn: '202302891', name: 'Rahul Sengupta', role: 'Distributed Systems & Broker Integration' },
+    ],
+    hardwareBudgetCap: 4,
+    currentAllocatedCount: 2,
+    reliabilityScore: 78,
+    allocatedItems: [
+      { assetTag: 'AT-DSO-0031', nomenclature: 'Rigol DS1054Z 50MHz Digital Storage Oscilloscope', checkedOut: '2026-10-13', due: '2026-10-31' },
+      { assetTag: 'AT-RP5-0008', nomenclature: 'Raspberry Pi 5 Model B 8GB RAM', checkedOut: '2026-10-04', due: '2026-10-18' },
+    ],
+    abstract: 'Design of containerized edge gateway nodes executing microservices with dynamic failover between on-premise Kubernetes clusters and AWS IoT Core.',
   },
 ];
 
@@ -757,7 +779,7 @@ export const INITIAL_AUDIT_LOGS = [
     timestamp: '2026-10-14 14:10:00',
     actorPrn: 'FAC-AI-019',
     actorRole: 'Faculty',
-    actorName: 'Prof. Sneha Kulkarni',
+    actorName: 'Dr. Anjali Dalvi',
     action: 'REQUISITION_APPROVED',
     targetId: 'REQ-2026-104',
     details: 'Endorsed hardware request for DCDS-SY-AIML student team',

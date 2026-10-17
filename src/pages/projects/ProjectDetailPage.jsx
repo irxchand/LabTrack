@@ -19,6 +19,8 @@ import {
   Pencil,
 } from 'lucide-react';
 
+import { isMentorOfProject, isFacultyLeadOfProject } from '../../utils/facultyAuth';
+
 export function ProjectDetailPage() {
   const { projectId } = useParams();
   const location = useLocation();
@@ -43,28 +45,13 @@ export function ProjectDetailPage() {
   const assignedLoans = activeLoans.filter((l) => l.projectId === projectId);
 
   const isMentor = useMemo(() => {
-    if (!isFaculty || !project || project.isFacultyProject) return false;
-    if (project.mentorId && currentUser?.prn && project.mentorId === currentUser.prn) return true;
-    if (project.mentorName && currentUser?.name) {
-      const pName = project.mentorName.toLowerCase();
-      const uName = currentUser.name.toLowerCase();
-      return pName.includes(uName) || uName.includes(pName);
-    }
-    return false;
+    if (!isFaculty) return false;
+    return isMentorOfProject(project, currentUser);
   }, [isFaculty, project, currentUser]);
 
   const isFacultyLead = useMemo(() => {
-    if (!isFaculty || !project) return false;
-    return (
-      project.isFacultyProject &&
-      ((project.teamLeaderPrn && currentUser?.prn && project.teamLeaderPrn === currentUser.prn) ||
-        (project.mentorId && currentUser?.prn && project.mentorId === currentUser.prn) ||
-        (project.facultyLead &&
-          currentUser?.name &&
-          (project.facultyLead.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-            currentUser.name.toLowerCase().includes(project.facultyLead.toLowerCase()))) ||
-        project.id === currentUser?.projectId)
-    );
+    if (!isFaculty) return false;
+    return isFacultyLeadOfProject(project, currentUser);
   }, [isFaculty, project, currentUser]);
 
   const isFacultyLeadOrMentor = isFacultyLead || isMentor;

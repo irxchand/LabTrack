@@ -12,6 +12,7 @@ import {
   Sparkles,
   Layers,
 } from 'lucide-react';
+import { isRequisitionMentoredByUser } from '../../utils/facultyAuth';
 
 export function RequisitionsPage() {
   const { requisitions, setIsBasketOpen, inventory } = useLabData();
@@ -81,9 +82,7 @@ export function RequisitionsPage() {
       return requisitions.filter((r) => r.studentPrn === currentUser?.prn);
     }
     if (role === 'Faculty') {
-      return requisitions.filter(
-        (r) => r.mentorId === currentUser?.prn || r.mentorName === currentUser?.name
-      );
+      return requisitions.filter((r) => isRequisitionMentoredByUser(r, currentUser));
     }
     return requisitions;
   }, [requisitions, role, currentUser]);

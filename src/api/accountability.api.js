@@ -155,14 +155,42 @@ export const accountabilityApi = {
   // PROJECTS
   getProjects: async () => {
     return apiClient.simulatedFetch('GET_PROJECTS', () => {
-      return getStored(PROJECTS_KEY, INITIAL_PROJECTS);
+      const stored = getStored(PROJECTS_KEY, INITIAL_PROJECTS);
+      let modified = false;
+      let sanitized = stored.map((p) => {
+        if (p.mentorName && p.mentorName.includes('Sneha Kulkarni') && p.mentorId !== 'FAC-CCE-004') {
+          modified = true;
+          return { ...p, mentorId: 'FAC-CCE-004' };
+        }
+        return p;
+      });
+
+      if (!sanitized.some((p) => p.id === 'PRJ-CCE-03')) {
+        const cceProject = INITIAL_PROJECTS.find((p) => p.id === 'PRJ-CCE-03');
+        if (cceProject) {
+          sanitized = [...sanitized, cceProject];
+          modified = true;
+        }
+      }
+
+      if (modified) {
+        saveStored(PROJECTS_KEY, sanitized);
+      }
+      return sanitized;
     });
   },
 
   getProjectById: async (projectId) => {
     return apiClient.simulatedFetch('GET_PROJECT_DOSSIER', () => {
-      const projects = getStored(PROJECTS_KEY, INITIAL_PROJECTS);
-      return projects.find((p) => p.id === projectId) || null;
+      const stored = getStored(PROJECTS_KEY, INITIAL_PROJECTS);
+      let project = stored.find((p) => p.id === projectId);
+      if (!project && projectId === 'PRJ-CCE-03') {
+        project = INITIAL_PROJECTS.find((p) => p.id === 'PRJ-CCE-03');
+      }
+      if (project && project.mentorName && project.mentorName.includes('Sneha Kulkarni') && project.mentorId !== 'FAC-CCE-004') {
+        return { ...project, mentorId: 'FAC-CCE-004' };
+      }
+      return project || null;
     });
   },
 

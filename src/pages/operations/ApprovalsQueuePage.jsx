@@ -24,6 +24,7 @@ import {
   ArrowRight,
   ExternalLink,
 } from 'lucide-react';
+import { isRequisitionMentoredByUser } from '../../utils/facultyAuth';
 
 export function ApprovalsQueuePage() {
   const navigate = useNavigate();
@@ -104,10 +105,7 @@ export function ApprovalsQueuePage() {
   }, [requisitions]);
 
   const isMentorMatch = (req) => {
-    if (!req.mentorName) return false;
-    const m = req.mentorName.toLowerCase();
-    const f = facultyName.toLowerCase();
-    return m.includes(f) || f.includes(m) || req.mentorId === currentUser?.prn;
+    return isRequisitionMentoredByUser(req, currentUser);
   };
 
   const mentoredPending = useMemo(() => {

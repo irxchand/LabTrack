@@ -17,6 +17,7 @@ import {
   UserPlus,
   AlertCircle,
 } from 'lucide-react';
+import { isMentorOfProject, isFacultyLeadOfProject } from '../../utils/facultyAuth';
 
 export function ProjectDirectoryPage() {
   const navigate = useNavigate();
@@ -80,26 +81,13 @@ export function ProjectDirectoryPage() {
   const isFaculty = role === 'Faculty';
 
   const isMentorOf = (project) => {
-    return (
-      !project.isFacultyProject &&
-      ((project.mentorId && currentUser?.prn && project.mentorId === currentUser.prn) ||
-        (project.mentorName &&
-          currentUser?.name &&
-          (project.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-            currentUser.name.toLowerCase().includes(project.mentorName.toLowerCase()))))
-    );
+    if (!isFaculty) return false;
+    return isMentorOfProject(project, currentUser);
   };
 
   const isFacultyLeadOf = (project) => {
-    if (!project || !project.isFacultyProject) return false;
-    const isPiByPrn = (project.teamLeaderPrn && currentUser?.prn && project.teamLeaderPrn === currentUser.prn);
-    const isPiByMentorId = (project.mentorId && currentUser?.prn && project.mentorId === currentUser.prn);
-    const isPiByName = (project.facultyLead && currentUser?.name && (
-      project.facultyLead.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-      currentUser.name.toLowerCase().includes(project.facultyLead.toLowerCase())
-    ));
-    const isUserProject = project.id && currentUser?.projectId && project.id === currentUser.projectId;
-    return isPiByPrn || isPiByMentorId || isPiByName || isUserProject;
+    if (!isFaculty) return false;
+    return isFacultyLeadOfProject(project, currentUser);
   };
 
   const isUserProject = (project) => {

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
+import { isMentorOfProject, isFacultyLeadOfProject } from '../../utils/facultyAuth';
 
 export function RequisitionDrawer() {
   const {
@@ -37,30 +38,12 @@ export function RequisitionDrawer() {
   // Dual project resolution for faculty vs student
   const facultyProjects = useMemo(() => {
     if (!isFaculty || !projects) return [];
-    return projects.filter(
-      (p) =>
-        p.isFacultyProject &&
-        ((p.teamLeaderPrn && currentUser?.prn && p.teamLeaderPrn === currentUser.prn) ||
-          (p.mentorId && currentUser?.prn && p.mentorId === currentUser.prn) ||
-          (p.facultyLead &&
-            currentUser?.name &&
-            (p.facultyLead.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-              currentUser.name.toLowerCase().includes(p.facultyLead.toLowerCase()))) ||
-          p.id === currentUser?.projectId)
-    );
+    return projects.filter((p) => isFacultyLeadOfProject(p, currentUser));
   }, [projects, isFaculty, currentUser]);
 
   const mentoredTeams = useMemo(() => {
     if (!isFaculty || !projects) return [];
-    return projects.filter(
-      (p) =>
-        !p.isFacultyProject &&
-        ((p.mentorId && currentUser?.prn && p.mentorId === currentUser.prn) ||
-          (p.mentorName &&
-            currentUser?.name &&
-            (p.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-              currentUser.name.toLowerCase().includes(p.mentorName.toLowerCase()))))
-    );
+    return projects.filter((p) => isMentorOfProject(p, currentUser));
   }, [projects, isFaculty, currentUser]);
 
   const userProjects = useMemo(() => {
