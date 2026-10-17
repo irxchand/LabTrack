@@ -610,41 +610,42 @@ export function DispatchDeskPage() {
       {/* MODE 1: DISPATCH DESK                                                     */}
       {/* ========================================================================= */}
       {terminalMode === 'dispatch' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           {/* Left Column: Student Lookup & Endorsed Orders (6 cols) */}
-          <div className="lg:col-span-6 space-y-4">
-            {/* Search Box */}
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl space-y-2.5">
-              <label className="block text-[11px] font-sans uppercase tracking-wider text-zinc-400 font-semibold">
-                Step 1: Rapid Student PRN / Order Search
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3.5 top-3 w-4 h-4 text-zinc-500" />
-                <input
-                  type="text"
-                  value={dispatchSearchPrn}
-                  onChange={(e) => setDispatchSearchPrn(e.target.value)}
-                  placeholder="Enter Student PRN (e.g. 202401048) or Requisition ID..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl font-sans text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/30 transition-all"
-                />
-              </div>
-              <p className="text-[11px] text-zinc-500">
-                Shows faculty-approved requisitions awaiting physical counter handover.
-              </p>
-            </div>
-
-            {/* Pre-Approved Requisitions Pool */}
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl space-y-3 font-sans text-xs">
-              <div className="flex items-center justify-between text-zinc-400 uppercase text-[11px] font-semibold border-b border-white/[0.06] pb-2.5">
-                <span>Pre-Approved Hardware Orders</span>
-                <span className="text-white px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/10 font-medium">
+          <div className="lg:col-span-6 flex flex-col">
+            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl h-full flex flex-col min-h-[580px]">
+              {/* Header */}
+              <div className="flex items-center justify-between text-zinc-400 uppercase text-xs font-semibold border-b border-white/[0.06] pb-3 font-sans">
+                <div className="flex items-center gap-2">
+                  <Terminal className="w-4 h-4 text-[#c9b8a0]" />
+                  <span>Step 1: Rapid Student PRN / Order Search</span>
+                </div>
+                <span className="text-white px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[11px] font-medium font-sans">
                   {readyRequisitions.length} Ready for Pickup
                 </span>
               </div>
 
-              {readyRequisitions.length > 0 ? (
-                <div className="space-y-2.5 max-h-[540px] overflow-y-auto pr-1">
-                  {readyRequisitions.map((req) => {
+              {/* Integrated Search Bar */}
+              <div className="pt-3 pb-2 space-y-1.5">
+                <div className="relative">
+                  <Search className="absolute left-3.5 top-3 w-4 h-4 text-zinc-500" />
+                  <input
+                    type="text"
+                    value={dispatchSearchPrn}
+                    onChange={(e) => setDispatchSearchPrn(e.target.value)}
+                    placeholder="Enter Student PRN (e.g. 202401048) or Requisition ID..."
+                    className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl font-sans text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/30 transition-all"
+                  />
+                </div>
+                <p className="text-[11px] text-zinc-500 font-sans">
+                  Shows faculty-approved requisitions awaiting physical counter handover.
+                </p>
+              </div>
+
+              {/* Pre-Approved Requisitions List */}
+              <div className="flex-1 overflow-y-auto space-y-2.5 mt-2 pr-1 min-h-[360px]">
+                {readyRequisitions.length > 0 ? (
+                  readyRequisitions.map((req) => {
                     const isSelected = selectedRequisition?.id === req.id;
                     return (
                       <div
@@ -687,35 +688,43 @@ export function DispatchDeskPage() {
                         </div>
                       </div>
                     );
-                  })}
-                </div>
-              ) : (
-                <div className="py-12 text-center text-zinc-500 text-xs space-y-1">
-                  <Package className="w-7 h-7 mx-auto opacity-30 stroke-[1.5]" />
-                  <p>No pre-approved requisitions awaiting counter pickup.</p>
-                  {dispatchSearchPrn && (
-                    <button
-                      onClick={() => setDispatchSearchPrn('')}
-                      className="text-xs text-white underline hover:opacity-80 pt-1 cursor-pointer"
-                    >
-                      Clear search filter
-                    </button>
-                  )}
-                </div>
-              )}
+                  })
+                ) : (
+                  <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-zinc-500 text-xs space-y-1">
+                    <Package className="w-8 h-8 opacity-30 stroke-[1.5]" />
+                    <p>No pre-approved requisitions awaiting counter pickup.</p>
+                    {dispatchSearchPrn && (
+                      <button
+                        onClick={() => setDispatchSearchPrn('')}
+                        className="text-xs text-white underline hover:opacity-80 pt-1 cursor-pointer"
+                      >
+                        Clear search filter
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Right Column: Physical Asset Assignment & Checkout Commit (6 cols) */}
-          <div className="lg:col-span-6 space-y-4">
-            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl space-y-4 font-sans text-xs">
-              <div className="text-xs uppercase tracking-wider text-zinc-400 font-semibold border-b border-white/[0.06] pb-2.5 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Step 2: Physical Serialized Allocation & Checkout</span>
+          <div className="lg:col-span-6 flex flex-col">
+            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl h-full flex flex-col min-h-[580px] font-sans text-xs">
+              {/* Header */}
+              <div className="text-xs uppercase tracking-wider text-zinc-400 font-semibold border-b border-white/[0.06] pb-3 flex items-center justify-between font-sans">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>Step 2: Physical Serialized Allocation & Checkout</span>
+                </div>
+                {selectedRequisition && (
+                  <span className="text-[#c9b8a0] font-sans text-[11px]">
+                    Order {selectedRequisition.id}
+                  </span>
+                )}
               </div>
 
               {selectedRequisition ? (
-                <form onSubmit={handleExecuteDispatch} className="space-y-4">
+                <form onSubmit={handleExecuteDispatch} className="flex-1 flex flex-col justify-between pt-3 space-y-4">
                   {/* Selected Requisition Summary */}
                   <div className="p-4 bg-white/[0.02] rounded-xl border border-white/[0.08] space-y-1.5">
                     <div className="flex items-center justify-between text-[11px] text-zinc-400">
@@ -799,7 +808,7 @@ export function DispatchDeskPage() {
                   <button
                     type="submit"
                     disabled={isDispatching || !selectedAssetTag}
-                    className="w-full py-3 px-4 rounded-full bg-white hover:bg-neutral-200 disabled:opacity-40 disabled:hover:bg-white text-black font-semibold text-xs tracking-wide transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+                    className="w-full py-3 px-4 rounded-full bg-white hover:bg-neutral-200 disabled:opacity-40 disabled:hover:bg-white text-black font-semibold text-xs tracking-wide transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer mt-auto"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>
@@ -808,9 +817,12 @@ export function DispatchDeskPage() {
                   </button>
                 </form>
               ) : (
-                <div className="py-20 text-center text-zinc-500 font-sans text-xs space-y-2">
-                  <Package className="w-9 h-9 mx-auto opacity-30 stroke-[1.5]" />
-                  <p>Select a pre-approved requisition from the left panel to begin physical equipment dispatch.</p>
+                <div className="flex-1 flex flex-col items-center justify-center text-center text-zinc-500 font-sans text-xs space-y-2 p-6 min-h-[360px]">
+                  <Package className="w-10 h-10 mx-auto opacity-30 stroke-[1.5]" />
+                  <div className="text-sm font-medium text-white">No Order Selected</div>
+                  <p className="max-w-xs text-zinc-400">
+                    Select a pre-approved requisition from the left panel to begin physical equipment dispatch and asset allocation.
+                  </p>
                 </div>
               )}
             </div>
@@ -822,87 +834,103 @@ export function DispatchDeskPage() {
       {/* MODE 2: CHECK-IN & RETURN MODE                                            */}
       {/* ========================================================================= */}
       {terminalMode === 'checkin' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           {/* Left Column: Rapid Search & Active Loan Selection (5 cols) */}
-          <div className="lg:col-span-5 space-y-4">
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl space-y-2.5">
-              <label className="block text-[11px] font-sans uppercase tracking-wider text-zinc-400 font-semibold">
-                Equipment Box Identifier / PRN Search
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3.5 top-3 w-4 h-4 text-zinc-500" />
-                <input
-                  type="text"
-                  value={checkinSearchQuery}
-                  onChange={(e) => setCheckinSearchQuery(e.target.value)}
-                  placeholder="Enter Asset Tag (e.g. AT-JET-0012) or Student PRN..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl font-sans text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/30 transition-all"
-                />
-              </div>
-            </div>
-
-            {/* Active Loans List */}
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl space-y-2 font-sans text-xs max-h-[540px] overflow-y-auto">
-              <div className="flex items-center justify-between text-zinc-400 uppercase text-[11px] font-semibold border-b border-white/[0.06] pb-2">
-                <span>Active Loans in Circulation</span>
-                <span className="text-white px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/10 font-medium">
+          <div className="lg:col-span-5 flex flex-col">
+            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl h-full flex flex-col min-h-[580px] font-sans text-xs">
+              <div className="flex items-center justify-between text-zinc-400 uppercase text-xs font-semibold border-b border-white/[0.06] pb-3">
+                <div className="flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4 text-[#c9b8a0]" />
+                  <span>Active Circulation Pool</span>
+                </div>
+                <span className="text-white px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[11px] font-medium">
                   {matchingReturnLoans.length}
                 </span>
               </div>
 
-              {matchingReturnLoans.length > 0 ? (
-                matchingReturnLoans.map((loan) => {
-                  const isSelected = selectedReturnLoan?.id === loan.id;
-                  return (
-                    <div
-                      key={loan.id}
-                      onClick={() => setSelectedReturnLoan(loan)}
-                      className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
-                        isSelected
-                          ? 'bg-white/[0.08] border-white/30 shadow-[0_8px_30px_rgba(0,0,0,0.5)]'
-                          : 'bg-white/[0.02] border-white/[0.06] hover:border-white/20 text-zinc-300'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-white tracking-wide">{loan.assetTag}</span>
-                        <StatusBadge status={loan.status} type="due" size="xs" />
-                      </div>
-                      <div className="mt-1 font-medium text-xs text-white truncate">
-                        {loan.nomenclature}
-                      </div>
-                      <div className="mt-1 text-[11px] text-zinc-400 flex justify-between">
-                        <span>PRN: {loan.borrowerPrn} ({loan.borrowerName})</span>
-                        <span>Due: {loan.dueDate?.split(' ')[0]}</span>
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="py-12 text-center text-zinc-500 text-xs">
-                  No active loans found matching query "{checkinSearchQuery}".
+              {/* Integrated Search Bar */}
+              <div className="pt-3 pb-2 space-y-1.5">
+                <div className="relative">
+                  <Search className="absolute left-3.5 top-3 w-4 h-4 text-zinc-500" />
+                  <input
+                    type="text"
+                    value={checkinSearchQuery}
+                    onChange={(e) => setCheckinSearchQuery(e.target.value)}
+                    placeholder="Enter Asset Tag (e.g. AT-JET-0012) or Student PRN..."
+                    className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl font-sans text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/30 transition-all"
+                  />
                 </div>
-              )}
+              </div>
+
+              {/* Active Loans List */}
+              <div className="flex-1 overflow-y-auto space-y-2 mt-2 pr-1 min-h-[360px]">
+                {matchingReturnLoans.length > 0 ? (
+                  matchingReturnLoans.map((loan) => {
+                    const isSelected = selectedReturnLoan?.id === loan.id;
+                    return (
+                      <div
+                        key={loan.id}
+                        onClick={() => setSelectedReturnLoan(loan)}
+                        className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                          isSelected
+                            ? 'bg-white/[0.08] border-white/30 shadow-[0_8px_30px_rgba(0,0,0,0.5)]'
+                            : 'bg-white/[0.02] border-white/[0.06] hover:border-white/20 text-zinc-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-white tracking-wide">{loan.assetTag}</span>
+                          <StatusBadge status={loan.status} type="due" size="xs" />
+                        </div>
+                        <div className="mt-1 font-medium text-xs text-white truncate">
+                          {loan.nomenclature}
+                        </div>
+                        <div className="mt-1 text-[11px] text-zinc-400 flex justify-between">
+                          <span>PRN: {loan.borrowerPrn} ({loan.borrowerName})</span>
+                          <span>Due: {loan.dueDate?.split(' ')[0]}</span>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-zinc-500 text-xs">
+                    <Package className="w-8 h-8 opacity-30 stroke-[1.5] mb-2" />
+                    No active loans found matching query "{checkinSearchQuery}".
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Right Column: Digital Condition Checklist InspectionForm (7 cols) */}
-          <div className="lg:col-span-7">
-            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl space-y-4">
-              <div className="text-xs uppercase tracking-wider text-zinc-400 font-semibold border-b border-white/[0.06] pb-2 flex items-center gap-2 font-sans">
-                <RotateCcw className="w-4 h-4 text-zinc-300" />
-                <span>Physical Return Inspection & Triage Station</span>
+          <div className="lg:col-span-7 flex flex-col">
+            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl h-full flex flex-col min-h-[580px] space-y-4">
+              <div className="text-xs uppercase tracking-wider text-zinc-400 font-semibold border-b border-white/[0.06] pb-3 flex items-center justify-between font-sans">
+                <div className="flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4 text-zinc-300" />
+                  <span>Physical Return Inspection & Triage Station</span>
+                </div>
+                {selectedReturnLoan && (
+                  <span className="text-[#c9b8a0] font-sans text-[11px]">
+                    Asset {selectedReturnLoan.assetTag}
+                  </span>
+                )}
               </div>
 
               {selectedReturnLoan ? (
-                <InspectionForm
-                  loan={selectedReturnLoan}
-                  onComplete={handleCompleteInspection}
-                  onCancel={() => setSelectedReturnLoan(null)}
-                />
+                <div className="flex-1 flex flex-col">
+                  <InspectionForm
+                    loan={selectedReturnLoan}
+                    onComplete={handleCompleteInspection}
+                    onCancel={() => setSelectedReturnLoan(null)}
+                  />
+                </div>
               ) : (
-                <div className="py-24 text-center text-zinc-500 font-sans text-xs space-y-2">
-                  <Package className="w-9 h-9 mx-auto opacity-30 stroke-[1.5]" />
-                  <p>Select an active loan record from the left list to initiate return inspection.</p>
+                <div className="flex-1 flex flex-col items-center justify-center text-center text-zinc-500 font-sans text-xs space-y-2 p-6 min-h-[360px]">
+                  <Package className="w-10 h-10 mx-auto opacity-30 stroke-[1.5]" />
+                  <div className="text-sm font-medium text-white">No Return Item Selected</div>
+                  <p className="max-w-xs text-zinc-400">
+                    Select an active loan record from the left list to initiate physical condition inspection, firmware reset, and dynamic stock restock.
+                  </p>
                 </div>
               )}
             </div>
