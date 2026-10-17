@@ -352,11 +352,19 @@ export function LabDataProvider({ children }) {
   const updateDefectStatus = async (defectId, status, actionPlan) => {
     const res = await accountabilityApi.updateRepairStatus(defectId, status, actionPlan);
     if (res.ok) {
+      if (status === 'Repaired') {
+        const item = defects.find((d) => d.id === defectId);
+        if (item?.assetTag) {
+          await inventoryApi.updateStockStatus(item.assetTag, 'Available', null);
+        }
+      }
       await loadData();
       addToast({
-        title: 'Defect Status Updated',
-        message: `Ticket ${defectId} updated to ${status}.`,
-        type: 'info',
+        title: status === 'Repaired' ? 'Hardware Restocked to Inventory' : 'Defect Status Updated',
+        message: status === 'Repaired'
+          ? `Asset verified operational and returned to active shelf inventory.`
+          : `Ticket ${defectId} updated to ${status}.`,
+        type: status === 'Repaired' ? 'success' : 'info',
       });
     }
   };

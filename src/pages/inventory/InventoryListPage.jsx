@@ -88,19 +88,44 @@ export function InventoryListPage({ initialClassification = null }) {
   // Modal for adding new inventory item
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newItemData, setNewItemData] = useState({
-    assetTag: '',
+    assetTag: 'AT-ESP-204',
     nomenclature: '',
     subSpecs: '',
     manufacturer: '',
     classification: 'Asset',
     category: 'Microcontrollers & SBCs',
     labRoom: 'Lab 2 - IoT',
-    coordinates: 'L2-CB1-R1',
+    coordinates: 'Room 305 • Cabinet C • Shelf 2',
     totalStock: 1,
     availableStock: 1,
     image: '/images/hardware/raspberry-pi-5.jpg',
     notes: '',
   });
+
+  const handleAutoGenerateTag = () => {
+    let prefix = 'AT-HW';
+    const nom = (newItemData.nomenclature || '').toUpperCase();
+    if (nom.includes('PI')) prefix = 'AT-RPI5';
+    else if (nom.includes('JETSON')) prefix = 'AT-JET';
+    else if (nom.includes('ESP')) prefix = 'AT-ESP32';
+    else if (nom.includes('ARDUINO')) prefix = 'AT-ARD';
+    else if (nom.includes('OSCILLOSCOPE') || nom.includes('RIGOL')) prefix = 'AT-OSC';
+    else if (newItemData.classification === 'Consumable') prefix = 'CON-KIT';
+
+    const randomNum = Math.floor(100 + Math.random() * 900);
+    setNewItemData((prev) => ({
+      ...prev,
+      assetTag: `${prefix}-${randomNum}`,
+    }));
+  };
+
+  const handleApplyPresetTemplate = (tpl) => {
+    setNewItemData({
+      ...newItemData,
+      ...tpl,
+      assetTag: `${tpl.prefix}-${Math.floor(100 + Math.random() * 900)}`,
+    });
+  };
 
   const handleCopyTag = (tag, e) => {
     e.stopPropagation();
@@ -690,27 +715,117 @@ export function InventoryListPage({ initialClassification = null }) {
       <Modal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        title="Register Hardware to Inventory"
-        subtitle="Catalog serialized assets or bulk consumable components into the institutional database."
+        title="Register Hardware Batch to Inventory"
+        subtitle="Catalog serialized assets or bulk prototyping stock into collegiate shelf coordinates."
+        maxWidth="max-w-xl"
       >
         <form onSubmit={handleAddNewItem} className="space-y-4 text-xs font-sans">
+          {/* Quick-Fill Preset Templates */}
+          <div>
+            <label className="block text-[11px] font-sans uppercase font-semibold text-zinc-400 mb-2">
+              Quick-Fill Hardware Template
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                {
+                  label: 'Raspberry Pi 5',
+                  nomenclature: 'Raspberry Pi 5 (8GB RAM)',
+                  manufacturer: 'Raspberry Pi Ltd',
+                  classification: 'Asset',
+                  category: 'Microcontrollers & SBCs',
+                  labRoom: 'Lab 1 - AI',
+                  coordinates: 'Room 402 • Cabinet A • Shelf 1',
+                  subSpecs: 'Broadcom BCM2712 Quad Cortex-A76 @ 2.4GHz, 8GB LPDDR4X, Dual 4Kp60 HDMI, PCIe 2.0',
+                  image: '/images/hardware/raspberry-pi-5.jpg',
+                  prefix: 'AT-RPI5',
+                },
+                {
+                  label: 'Jetson Nano',
+                  nomenclature: 'NVIDIA Jetson Nano Developer Kit (4GB)',
+                  manufacturer: 'NVIDIA Corporation',
+                  classification: 'Asset',
+                  category: 'Edge AI & Robotics',
+                  labRoom: 'Lab 1 - AI',
+                  coordinates: 'Room 402 • Cabinet B • Shelf 2',
+                  subSpecs: '128-core Maxwell GPU, Quad-core ARM A57, 4GB 64-bit LPDDR4, MIPI CSI-2, 472 GFLOPS',
+                  image: '/images/hardware/jetson-nano.jpg',
+                  prefix: 'AT-JET',
+                },
+                {
+                  label: 'ESP32-S3',
+                  nomenclature: 'ESP32-S3-DevKitC-1 Dual-Core',
+                  manufacturer: 'Espressif Systems',
+                  classification: 'Asset',
+                  category: 'Microcontrollers & SBCs',
+                  labRoom: 'Lab 2 - IoT',
+                  coordinates: 'Room 305 • Cabinet C • Tray 4',
+                  subSpecs: 'Xtensa 32-bit LX7 Dual-Core 240MHz, 2.4GHz Wi-Fi & Bluetooth 5 (LE), 8MB PSRAM, 45 GPIOs',
+                  image: '/images/hardware/esp32.jpg',
+                  prefix: 'AT-ESP',
+                },
+                {
+                  label: 'Arduino Uno R4',
+                  nomenclature: 'Arduino Uno R4 WiFi Dev Board',
+                  manufacturer: 'Arduino LLC',
+                  classification: 'Asset',
+                  category: 'Microcontrollers & SBCs',
+                  labRoom: 'Lab 3 - Embedded',
+                  coordinates: 'Room 214 • Cabinet A • Shelf 3',
+                  subSpecs: 'Renesas RA4M1 32-bit ARM Cortex-M4, ESP32-S3-MINI WiFi/BLE, 12x8 LED Matrix, USB-C',
+                  image: '/images/hardware/arduino-uno.jpg',
+                  prefix: 'AT-ARD',
+                },
+                {
+                  label: 'Oscilloscope',
+                  nomenclature: 'Rigol DS1054Z 50MHz Digital Oscilloscope',
+                  manufacturer: 'Rigol Technologies',
+                  classification: 'Asset',
+                  category: 'Test & Measurement',
+                  labRoom: 'Lab 3 - Embedded',
+                  coordinates: 'Room 214 • Rack 1 • Bench 2',
+                  subSpecs: '4 Analog Channels, 50MHz Bandwidth, 1GSa/s Real-time Sample Rate, 24Mpts Memory Depth',
+                  image: '/images/hardware/oscilloscope.jpg',
+                  prefix: 'AT-OSC',
+                },
+              ].map((tpl, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleApplyPresetTemplate(tpl)}
+                  className="px-2.5 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-300 hover:text-white transition-all text-[11px] font-medium cursor-pointer"
+                >
+                  + {tpl.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
-                Asset Tag / SKU <span className="text-rose-400">*</span>
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-[10px] font-sans uppercase font-semibold text-zinc-400">
+                  Asset Tag / SKU <span className="text-rose-400">*</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={handleAutoGenerateTag}
+                  className="text-[10px] text-zinc-400 hover:text-white underline cursor-pointer"
+                >
+                  Auto-Gen
+                </button>
+              </div>
               <input
                 type="text"
                 required
                 value={newItemData.assetTag}
                 onChange={(e) => setNewItemData({ ...newItemData, assetTag: e.target.value })}
-                placeholder="e.g. AT-ESP-0205"
-                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded font-sans text-white text-xs"
+                placeholder="e.g. AT-ESP32-0205"
+                className="w-full px-3 py-2 bg-[#111317] border border-white/15 rounded-xl font-sans text-white text-xs focus:outline-none focus:border-white/30"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
+              <label className="block text-[10px] font-sans uppercase font-semibold text-zinc-400 mb-1">
                 Manufacturer / Brand
               </label>
               <input
@@ -718,77 +833,79 @@ export function InventoryListPage({ initialClassification = null }) {
                 value={newItemData.manufacturer}
                 onChange={(e) => setNewItemData({ ...newItemData, manufacturer: e.target.value })}
                 placeholder="e.g. Espressif Systems"
-                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white text-xs font-sans"
+                className="w-full px-3 py-2 bg-[#111317] border border-white/15 rounded-xl text-white text-xs font-sans focus:outline-none focus:border-white/30"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
-              Component Name <span className="text-rose-400">*</span>
+            <label className="block text-[10px] font-sans uppercase font-semibold text-zinc-400 mb-1">
+              Component Name & Model <span className="text-rose-400">*</span>
             </label>
             <input
               type="text"
               required
               value={newItemData.nomenclature}
               onChange={(e) => setNewItemData({ ...newItemData, nomenclature: e.target.value })}
-              placeholder="e.g. ESP32-WROOM-32D DevBoard"
-              className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white text-xs font-sans"
+              placeholder="e.g. ESP32-WROOM-32D Development Board"
+              className="w-full px-3 py-2 bg-[#111317] border border-white/15 rounded-xl text-white text-xs font-sans focus:outline-none focus:border-white/30"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
+              <label className="block text-[10px] font-sans uppercase font-semibold text-zinc-400 mb-1">
                 Classification
               </label>
               <select
                 value={newItemData.classification}
                 onChange={(e) => setNewItemData({ ...newItemData, classification: e.target.value })}
-                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white text-xs font-sans"
+                className="w-full px-3 py-2 bg-[#111317] border border-white/15 rounded-xl text-white text-xs font-sans focus:outline-none focus:border-white/30 cursor-pointer"
               >
-                <option value="Asset">Asset (Serialized)</option>
-                <option value="Consumable">Consumable (Bulk)</option>
+                <option value="Asset" className="bg-[#111317]">Asset (Serialized Loan Unit)</option>
+                <option value="Consumable" className="bg-[#111317]">Consumable (Prototyping Stock)</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
+              <label className="block text-[10px] font-sans uppercase font-semibold text-zinc-400 mb-1">
                 Laboratory Location
               </label>
               <select
                 value={newItemData.labRoom}
                 onChange={(e) => setNewItemData({ ...newItemData, labRoom: e.target.value })}
-                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white text-xs font-sans"
+                className="w-full px-3 py-2 bg-[#111317] border border-white/15 rounded-xl text-white text-xs font-sans focus:outline-none focus:border-white/30 cursor-pointer"
               >
-                <option value="Lab 1 - AI">Lab 1 - AI</option>
-                <option value="Lab 2 - IoT">Lab 2 - IoT</option>
-                <option value="Lab 3 - Embedded">Lab 3 - Embedded</option>
+                <option value="Lab 1 - AI" className="bg-[#111317]">Lab 1 - AI (Room 402)</option>
+                <option value="Lab 2 - IoT" className="bg-[#111317]">Lab 2 - IoT (Room 305)</option>
+                <option value="Lab 3 - Embedded" className="bg-[#111317]">Lab 3 - Embedded (Room 214)</option>
               </select>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
-                Storage Coordinates
+              <label className="block text-[10px] font-sans uppercase font-semibold text-zinc-400 mb-1">
+                Physical Storage Coordinates <span className="text-rose-400">*</span>
               </label>
               <input
                 type="text"
+                required
                 value={newItemData.coordinates}
                 onChange={(e) => setNewItemData({ ...newItemData, coordinates: e.target.value })}
-                placeholder="e.g. L2-CB1-R1"
-                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded font-sans text-white text-xs"
+                placeholder="e.g. Room 402 • Cabinet C • Shelf 2"
+                className="w-full px-3 py-2 bg-[#111317] border border-white/15 rounded-xl font-sans text-white text-xs focus:outline-none focus:border-white/30"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
-                Available Stock Count
+              <label className="block text-[10px] font-sans uppercase font-semibold text-zinc-400 mb-1">
+                Available Stock Count <span className="text-rose-400">*</span>
               </label>
               <input
                 type="number"
                 min="1"
+                required
                 value={newItemData.availableStock}
                 onChange={(e) =>
                   setNewItemData({
@@ -797,25 +914,25 @@ export function InventoryListPage({ initialClassification = null }) {
                     totalStock: parseInt(e.target.value) || 1,
                   })
                 }
-                className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded font-sans text-white text-xs"
+                className="w-full px-3 py-2 bg-[#111317] border border-white/15 rounded-xl font-sans text-white text-xs focus:outline-none focus:border-white/30"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
+            <label className="block text-[10px] font-sans uppercase font-semibold text-zinc-400 mb-1">
               Technical Sub-Specifications
             </label>
             <textarea
               rows="3"
               value={newItemData.subSpecs}
               onChange={(e) => setNewItemData({ ...newItemData, subSpecs: e.target.value })}
-              placeholder="Processor clock, interface bus, pin count, operating voltages..."
-              className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded text-white font-sans text-xs"
+              placeholder="Processor architecture, RAM, GPIO pin count, operating voltages, interface buses..."
+              className="w-full px-3 py-2 bg-[#111317] border border-white/15 rounded-xl text-white font-sans text-xs focus:outline-none focus:border-white/30 leading-relaxed"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-white/[0.1]">
+          <div className="flex justify-end gap-2.5 pt-3 border-t border-white/10">
             <button
               type="button"
               onClick={() => setIsAddModalOpen(false)}
@@ -825,9 +942,9 @@ export function InventoryListPage({ initialClassification = null }) {
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-bold text-xs transition-colors cursor-pointer"
+              className="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black font-semibold text-xs transition-colors cursor-pointer shadow-md"
             >
-              Catalog Hardware
+              Catalog Hardware Batch
             </button>
           </div>
         </form>
