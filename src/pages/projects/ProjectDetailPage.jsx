@@ -174,21 +174,6 @@ export function ProjectDetailPage() {
               {project.title}
             </h1>
           </div>
-
-          <div className="flex items-center gap-3">
-            <div className="px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-right backdrop-blur-md">
-              <div className="text-zinc-500 text-[10px] font-sans uppercase tracking-wider">Custody Quota</div>
-              <div className="font-sans text-sm font-semibold text-white">
-                {assignedLoans.length} / {project.hardwareBudgetCap} units
-              </div>
-              <div className="w-full bg-white/10 rounded-full h-1 overflow-hidden mt-1.5">
-                <div
-                  className="bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(201,184,160,0.6)]"
-                  style={{ width: `${Math.min(100, (assignedLoans.length / (project.hardwareBudgetCap || 1)) * 100)}%` }}
-                />
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -210,9 +195,6 @@ export function ProjectDetailPage() {
                 <span className="text-[#f5e6c8] uppercase text-[11px] font-semibold tracking-wider font-sans flex items-center gap-2">
                   <Cpu className="w-4 h-4 text-[#c9b8a0]" />
                   Active Hardware Borrowings ({assignedLoans.length})
-                </span>
-                <span className="text-zinc-500 font-sans text-xs">
-                  • Quota: {project.hardwareBudgetCap - assignedLoans.length} remaining
                 </span>
               </div>
 
@@ -425,7 +407,7 @@ export function ProjectDetailPage() {
                     className="w-24 px-3 py-2 bg-white/[0.04] border border-white/15 rounded-xl text-xs text-white text-center focus:outline-none focus:border-white/30"
                   />
                   <span className="text-xs text-zinc-400">
-                    Maximum units allowed per project: {project.hardwareBudgetCap}
+                    Faculty direct bench allocation
                   </span>
                 </div>
               </div>
