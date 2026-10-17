@@ -91,11 +91,15 @@ export function ProjectDirectoryPage() {
   };
 
   const isFacultyLeadOf = (project) => {
-    return (
-      project.isFacultyProject ||
-      project.facultyLead === currentUser?.name ||
-      project.teamLeaderPrn === currentUser?.prn
-    );
+    if (!project || !project.isFacultyProject) return false;
+    const isPiByPrn = (project.teamLeaderPrn && currentUser?.prn && project.teamLeaderPrn === currentUser.prn);
+    const isPiByMentorId = (project.mentorId && currentUser?.prn && project.mentorId === currentUser.prn);
+    const isPiByName = (project.facultyLead && currentUser?.name && (
+      project.facultyLead.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+      currentUser.name.toLowerCase().includes(project.facultyLead.toLowerCase())
+    ));
+    const isUserProject = project.id && currentUser?.projectId && project.id === currentUser.projectId;
+    return isPiByPrn || isPiByMentorId || isPiByName || isUserProject;
   };
 
   const isUserProject = (project) => {
@@ -457,10 +461,17 @@ export function ProjectDirectoryPage() {
                   <div className="flex items-center gap-2">
                     {isFaculty ? (
                       project.isFacultyProject ? (
-                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/10 text-white border border-white/20 flex items-center gap-1.5 shadow-sm">
-                          <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                          <span>Principal Investigator (You)</span>
-                        </span>
+                        isFacultyLeadOf(project) ? (
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/10 text-white border border-white/20 flex items-center gap-1.5 shadow-sm">
+                            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                            <span>Principal Investigator (You)</span>
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-white/[0.04] text-zinc-400 border border-white/10 flex items-center gap-1.5">
+                            <ShieldAlert className="w-3 h-3 text-zinc-500" />
+                            <span>PI: {project.facultyLead || project.mentorName}</span>
+                          </span>
+                        )
                       ) : isMentorOf(project) ? (
                         <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1.5 shadow-sm">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8]" />
@@ -592,7 +603,7 @@ export function ProjectDirectoryPage() {
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  {isFaculty && (project.isFacultyProject || isMentorOf(project)) && (
+                  {isFaculty && (isFacultyLeadOf(project) || isMentorOf(project)) && (
                     <button
                       type="button"
                       onClick={(e) => {

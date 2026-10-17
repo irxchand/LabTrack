@@ -529,6 +529,28 @@ export const INITIAL_PROJECTS = [
     abstract: 'Institutional research facility investigating low-latency edge tensor processing, heterogeneous sensor fusion, and TinyML micro-architectures for academic publications and sponsored capstones.',
   },
   {
+    id: 'PRJ-FAC-02',
+    title: 'Autonomous Robotics & Kinematics Research Lab',
+    courseCode: 'FAC-RES-ROBO',
+    academicTerm: 'Academic Year 2026-27',
+    department: 'Artificial Intelligence & Machine Learning',
+    mentorId: 'FAC-AI-022',
+    mentorName: 'Dr. Sumanto Dutta',
+    facultyLead: 'Dr. Sumanto Dutta',
+    isFacultyProject: true,
+    teamLeaderPrn: 'FAC-AI-022',
+    members: [
+      { prn: 'FAC-AI-022', name: 'Dr. Sumanto Dutta', role: 'Principal Investigator & Faculty Lead' },
+      { prn: '202302882', name: 'Pooja Varma', role: 'Graduate Research Fellow' },
+    ],
+    hardwareBudgetCap: 6,
+    currentAllocatedCount: 1,
+    allocatedItems: [
+      { assetTag: 'AT-RP5-0008', nomenclature: 'Raspberry Pi 5 Model B 8GB', checkedOut: '2026-09-20', due: '2026-12-20' },
+    ],
+    abstract: 'High-torque robotic limb actuation, dynamic inverse kinematics, and spatial SLAM computing bench for academic research publications.',
+  },
+  {
     id: 'PRJ-AIML-08',
     title: 'IoT Pipeline for Sensor Logging',
     courseCode: 'DCDS-SY-AIML',

@@ -56,10 +56,14 @@ export function ProjectDetailPage() {
   const isFacultyLead = useMemo(() => {
     if (!isFaculty || !project) return false;
     return (
-      project.isFacultyProject ||
-      project.facultyLead === currentUser?.name ||
-      project.teamLeaderPrn === currentUser?.prn ||
-      project.id === currentUser?.projectId
+      project.isFacultyProject &&
+      ((project.teamLeaderPrn && currentUser?.prn && project.teamLeaderPrn === currentUser.prn) ||
+        (project.mentorId && currentUser?.prn && project.mentorId === currentUser.prn) ||
+        (project.facultyLead &&
+          currentUser?.name &&
+          (project.facultyLead.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+            currentUser.name.toLowerCase().includes(project.facultyLead.toLowerCase()))) ||
+        project.id === currentUser?.projectId)
     );
   }, [isFaculty, project, currentUser]);
 
@@ -267,7 +271,7 @@ export function ProjectDetailPage() {
           {/* Header Action Badges & Faculty CTAs */}
           <div className="flex items-center gap-2.5 flex-wrap">
             {isFaculty ? (
-              project.isFacultyProject ? (
+              isFacultyLead ? (
                 <>
                   <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20 flex items-center gap-1.5 shadow-sm">
                     <span className="w-1.5 h-1.5 rounded-full bg-white" />
@@ -314,7 +318,11 @@ export function ProjectDetailPage() {
               ) : (
                 <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/[0.04] text-zinc-400 border border-white/10 flex items-center gap-1.5 shadow-sm">
                   <ShieldAlert className="w-3.5 h-3.5 text-zinc-500" />
-                  <span>Mentored by {project.mentorName} • View-Only</span>
+                  <span>
+                    {project.isFacultyProject
+                      ? `PI: ${project.facultyLead || project.mentorName} • Other Faculty Research Lab`
+                      : `Mentored by ${project.mentorName} • View-Only`}
+                  </span>
                 </span>
               )
             ) : null}
@@ -362,7 +370,11 @@ export function ProjectDetailPage() {
               ) : isFaculty ? (
                 <span className="text-[11px] text-zinc-500 font-sans italic flex items-center gap-1.5">
                   <ShieldAlert className="w-3.5 h-3.5 text-zinc-500 flex-shrink-0" />
-                  <span>Allocation reserved for designated guide ({project.mentorName})</span>
+                  <span>
+                    {project.isFacultyProject
+                      ? `Allocation reserved for Principal Investigator (${project.facultyLead || project.mentorName})`
+                      : `Allocation reserved for designated faculty mentor (${project.mentorName})`}
+                  </span>
                 </span>
               ) : null}
             </div>

@@ -39,9 +39,14 @@ export function RequisitionDrawer() {
     if (!isFaculty || !projects) return [];
     return projects.filter(
       (p) =>
-        p.isFacultyProject ||
-        p.facultyLead === currentUser?.name ||
-        p.teamLeaderPrn === currentUser?.prn
+        p.isFacultyProject &&
+        ((p.teamLeaderPrn && currentUser?.prn && p.teamLeaderPrn === currentUser.prn) ||
+          (p.mentorId && currentUser?.prn && p.mentorId === currentUser.prn) ||
+          (p.facultyLead &&
+            currentUser?.name &&
+            (p.facultyLead.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+              currentUser.name.toLowerCase().includes(p.facultyLead.toLowerCase()))) ||
+          p.id === currentUser?.projectId)
     );
   }, [projects, isFaculty, currentUser]);
 

@@ -182,20 +182,29 @@ export function LabDataProvider({ children }) {
 
     if (isFaculty && selectedProject) {
       const isLead =
-        selectedProject.isFacultyProject ||
-        selectedProject.facultyLead === currentUser?.name ||
-        selectedProject.teamLeaderPrn === currentUser?.prn;
+        selectedProject.isFacultyProject &&
+        ((selectedProject.teamLeaderPrn && currentUser?.prn && selectedProject.teamLeaderPrn === currentUser.prn) ||
+          (selectedProject.mentorId && currentUser?.prn && selectedProject.mentorId === currentUser.prn) ||
+          (selectedProject.facultyLead &&
+            currentUser?.name &&
+            (selectedProject.facultyLead.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+              currentUser.name.toLowerCase().includes(selectedProject.facultyLead.toLowerCase()))) ||
+          selectedProject.id === currentUser?.projectId);
+
       const isMentor =
-        (selectedProject.mentorId && currentUser?.prn && selectedProject.mentorId === currentUser.prn) ||
-        (selectedProject.mentorName &&
-          currentUser?.name &&
-          (selectedProject.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-            currentUser.name.toLowerCase().includes(selectedProject.mentorName.toLowerCase())));
+        !selectedProject.isFacultyProject &&
+        ((selectedProject.mentorId && currentUser?.prn && selectedProject.mentorId === currentUser.prn) ||
+          (selectedProject.mentorName &&
+            currentUser?.name &&
+            (selectedProject.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+              currentUser.name.toLowerCase().includes(selectedProject.mentorName.toLowerCase()))));
 
       if (!isLead && !isMentor) {
         addToast({
           title: 'Allocation Restricted',
-          message: `Faculty can only allocate hardware to their research labs or student teams under their mentorship wing. "${selectedProject.title}" is mentored by ${selectedProject.mentorName || 'another faculty member'}.`,
+          message: selectedProject.isFacultyProject
+            ? `You cannot allocate hardware to another professor's research facility. "${selectedProject.title}" is directed by ${selectedProject.facultyLead || selectedProject.mentorName}.`
+            : `Faculty can only allocate hardware to student teams under their mentorship wing. "${selectedProject.title}" is mentored by ${selectedProject.mentorName || 'another faculty member'}.`,
           type: 'danger',
         });
         return false;
@@ -307,20 +316,29 @@ export function LabDataProvider({ children }) {
     const isFacultyUser = currentUser?.role === 'Faculty';
     if (isFacultyUser) {
       const isLead =
-        targetProject.isFacultyProject ||
-        targetProject.facultyLead === currentUser?.name ||
-        targetProject.teamLeaderPrn === currentUser?.prn;
+        targetProject.isFacultyProject &&
+        ((targetProject.teamLeaderPrn && currentUser?.prn && targetProject.teamLeaderPrn === currentUser.prn) ||
+          (targetProject.mentorId && currentUser?.prn && targetProject.mentorId === currentUser.prn) ||
+          (targetProject.facultyLead &&
+            currentUser?.name &&
+            (targetProject.facultyLead.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+              currentUser.name.toLowerCase().includes(targetProject.facultyLead.toLowerCase()))) ||
+          targetProject.id === currentUser?.projectId);
+
       const isMentor =
-        (targetProject.mentorId && currentUser?.prn && targetProject.mentorId === currentUser.prn) ||
-        (targetProject.mentorName &&
-          currentUser?.name &&
-          (targetProject.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
-            currentUser.name.toLowerCase().includes(targetProject.mentorName.toLowerCase())));
+        !targetProject.isFacultyProject &&
+        ((targetProject.mentorId && currentUser?.prn && targetProject.mentorId === currentUser.prn) ||
+          (targetProject.mentorName &&
+            currentUser?.name &&
+            (targetProject.mentorName.toLowerCase().includes(currentUser.name.toLowerCase()) ||
+              currentUser.name.toLowerCase().includes(targetProject.mentorName.toLowerCase()))));
 
       if (!isLead && !isMentor) {
         addToast({
           title: 'Allocation Prohibited',
-          message: `Faculty can only allocate hardware to their own lab or teams under their mentorship wing. "${targetProject.title}" is mentored by ${targetProject.mentorName || 'another guide'}.`,
+          message: targetProject.isFacultyProject
+            ? `You cannot allocate hardware to another faculty member's research lab. "${targetProject.title}" is directed by ${targetProject.facultyLead || targetProject.mentorName}.`
+            : `Faculty can only allocate hardware to student teams under their mentorship wing. "${targetProject.title}" is mentored by ${targetProject.mentorName || 'another guide'}.`,
           type: 'danger',
         });
         return false;
