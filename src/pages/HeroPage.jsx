@@ -639,54 +639,6 @@ export function HeroPage() {
         onMouseMove={handleMouseMove}
         className="relative pt-36 pb-28 px-6 sm:px-12 flex flex-col items-center z-10 min-h-screen"
       >
-        {/* Apple Segmented Persona Perspective Selector */}
-        <div className="inline-flex p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl mb-8 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-          <button
-            type="button"
-            onClick={() => setActivePersona('assistant')}
-            className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all cursor-pointer flex items-center gap-2 ${
-              activePersona === 'assistant'
-                ? 'bg-white text-black shadow-md'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            <Terminal className="w-3.5 h-3.5" />
-            <span>Lab Assistant Operations</span>
-            {currentUser?.role === 'Lab Assistant' && (
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActivePersona('student')}
-            className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all cursor-pointer flex items-center gap-2 ${
-              activePersona === 'student'
-                ? 'bg-white text-black shadow-md'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            <Clock className="w-3.5 h-3.5" />
-            <span>Student Custody & Bench</span>
-            {currentUser?.role === 'Student' && (
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActivePersona('faculty')}
-            className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all cursor-pointer flex items-center gap-2 ${
-              activePersona === 'faculty'
-                ? 'bg-white text-black shadow-md'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            <Shield className="w-3.5 h-3.5" />
-            <span>Faculty & Mentorship</span>
-            {(currentUser?.role === 'Faculty' || currentUser?.role === 'HoD / Admin') && (
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            )}
-          </button>
-        </div>
 
         {/* Headline: Matched to Clash Display */}
         <h1
