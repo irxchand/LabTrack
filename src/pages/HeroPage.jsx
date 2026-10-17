@@ -232,7 +232,7 @@ export function HeroPage() {
                 Form Capstone and Mini Project teams, assemble collaborative rosters, and compile required hardware Bills of Materials.
               </p>
             </div>
-            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-[#a78b71]">
+            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[11px] font-sans font-medium tracking-wide text-[#c9b8a0] group-hover:text-[#e8d5b7] transition-colors">
               <span>CAPSTONES & BOM</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
@@ -254,7 +254,7 @@ export function HeroPage() {
                 Search real-time inventory across AIML, IoT, and Embedded labs for available FPGAs, microcontrollers, sensors, and instruments.
               </p>
             </div>
-            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-[#a78b71]">
+            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[11px] font-sans font-medium tracking-wide text-[#c9b8a0] group-hover:text-[#e8d5b7] transition-colors">
               <span>LAB INVENTORY</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
@@ -276,7 +276,7 @@ export function HeroPage() {
                 Submit component baskets for faculty guide review, track one-tap approvals, and route approved items to the dispatch desk.
               </p>
             </div>
-            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-[#a78b71]">
+            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[11px] font-sans font-medium tracking-wide text-[#c9b8a0] group-hover:text-[#e8d5b7] transition-colors">
               <span>FACULTY APPROVALS</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
@@ -298,7 +298,7 @@ export function HeroPage() {
                 Reserve high-demand equipment, monitor live queue positioning, and automatically claim available instruments upon check-in.
               </p>
             </div>
-            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-[#a78b71]">
+            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[11px] font-sans font-medium tracking-wide text-[#c9b8a0] group-hover:text-[#e8d5b7] transition-colors">
               <span>EQUIPMENT QUEUE</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
@@ -320,7 +320,7 @@ export function HeroPage() {
                 Monitor active equipment custody, observe real-time countdown return timers, and report component defects with zero penalty strikes.
               </p>
             </div>
-            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-[#a78b71]">
+            <div className="mt-6 pt-3.5 border-t border-white/5 flex items-center justify-between text-[11px] font-sans font-medium tracking-wide text-[#c9b8a0] group-hover:text-[#e8d5b7] transition-colors">
               <span>ACTIVE CUSTODY</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
@@ -374,10 +374,10 @@ export function HeroPage() {
 
           {/* Column 2: Hardware Telemetry */}
           <div>
-            <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
-              HARDWARE
+            <div className="text-xs font-semibold tracking-wider text-neutral-300 font-sans uppercase mb-4">
+              Hardware
             </div>
-            <ul className="space-y-2.5 text-xs text-neutral-400 font-normal font-sans">
+            <ul className="space-y-3 text-sm text-neutral-400 font-normal font-sans">
               <li>
                 <button
                   onClick={() => navigate('/workspace/inventory/assets')}
@@ -413,12 +413,12 @@ export function HeroPage() {
             </ul>
           </div>
 
-          {/* Column 4: Operations & Governance */}
+          {/* Column 3: Operations & Governance */}
           <div>
-            <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase mb-4">
-              OPERATIONS
+            <div className="text-xs font-semibold tracking-wider text-neutral-300 font-sans uppercase mb-4">
+              Operations
             </div>
-            <ul className="space-y-2.5 text-xs text-neutral-400 font-normal font-sans">
+            <ul className="space-y-3 text-sm text-neutral-400 font-normal font-sans">
               <li>
                 <button
                   onClick={() => navigate('/workspace/operations/dispatch')}
@@ -454,18 +454,18 @@ export function HeroPage() {
             </ul>
           </div>
 
-          {/* Column 5: Lab Circular Digest */}
+          {/* Column 4: Lab Circular Digest */}
           <div className="space-y-4">
-            <div className="text-[11px] font-mono tracking-[0.25em] text-[#a78b71] uppercase">
-              LAB CIRCULAR
+            <div className="text-xs font-semibold tracking-wider text-neutral-300 font-sans uppercase">
+              Lab Circular
             </div>
-            <p className="text-xs text-gray-400 font-normal font-sans">
+            <p className="text-sm text-neutral-400 font-normal leading-relaxed font-sans">
               Subscribe for equipment availability, maintenance schedules, and lab facility notices.
             </p>
-            {/* Low-opacity search bar with circular arrow-submit button */}
+            {/* Sleek Apple-style pill input with luxury gold submit button */}
             <form
               onSubmit={handleDigestSubmit}
-              className="bg-white/[0.03] border border-white/10 rounded-full pl-4 pr-1.5 py-1.5 flex items-center justify-between focus-within:border-[#a78b71] transition-all backdrop-blur-md"
+              className="relative flex items-center rounded-full bg-white/[0.04] border border-white/10 hover:border-white/20 focus-within:border-[#c9b8a0]/60 focus-within:bg-white/[0.06] transition-all duration-200 p-1.5 pl-4 backdrop-blur-md"
             >
               <input
                 type="email"
@@ -473,18 +473,18 @@ export function HeroPage() {
                 value={digestEmail}
                 onChange={(e) => setDigestEmail(e.target.value)}
                 required
-                className="bg-transparent text-xs text-white placeholder:text-neutral-500 focus:outline-none w-full mr-2 font-mono"
+                className="w-full bg-transparent text-sm text-white placeholder:text-neutral-500 font-sans focus:outline-none pr-2"
               />
               <button
                 type="submit"
-                className="w-8 h-8 rounded-full bg-[#a78b71] text-black flex items-center justify-center hover:bg-[#e8d5b7] transition-colors flex-shrink-0 cursor-pointer shadow-md"
+                className="w-8 h-8 rounded-full bg-gradient-to-br from-[#f5e6c8] to-[#c9b8a0] text-black flex items-center justify-center hover:opacity-95 active:scale-95 transition-all flex-shrink-0 cursor-pointer shadow-sm"
                 title="Subscribe to Circular"
               >
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
             {digestSubscribed && (
-              <div className="text-[10px] font-mono text-emerald-400 tracking-wide animate-fadeIn">
+              <div className="text-xs font-sans text-emerald-400 tracking-normal animate-fadeIn">
                 ✓ Enrolled into LabTrack Maintenance Circular.
               </div>
             )}
@@ -492,13 +492,14 @@ export function HeroPage() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-neutral-500 gap-4">
+        <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-xs font-sans text-neutral-500 gap-4">
           <div>
-            © {new Date().getFullYear()} LABTRACK ACADEMIC HARDWARE OS. ALL RIGHTS RESERVED.
+            © {new Date().getFullYear()} LabTrack Academic Hardware OS. All rights reserved.
           </div>
           <div className="flex items-center gap-6">
-            <span>LAB CLUSTERS NOMINAL</span>
-            <span>ZERO-TRUST VERIFIED</span>
+            <span>Lab Clusters Nominal</span>
+            <span>•</span>
+            <span>Zero-Trust Verified</span>
           </div>
         </div>
       </footer>
