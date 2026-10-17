@@ -2,20 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLabData } from '../../context/LabDataContext';
 import { DataTable } from '../../components/common/DataTable';
 import { SearchInput } from '../../components/common/SearchInput';
-import {
-  FileText,
-  ShieldCheck,
-  Hash,
-  UserCheck,
-  Sparkles,
-  Download,
-  Copy,
-  Check,
-  Calendar,
-  Layers,
-  ArrowUpRight,
-  Filter,
-} from 'lucide-react';
+import { Download, Copy, Check } from 'lucide-react';
 
 export function AuditLogPage() {
   const { auditLogs } = useLabData();
@@ -30,6 +17,37 @@ export function AuditLogPage() {
     setCopiedHash(hash);
     setTimeout(() => setCopiedHash(null), 1500);
   };
+
+  // Metrics calculation for segmented filter tabs
+  const stats = useMemo(() => {
+    const total = auditLogs.length;
+    const dispatches = auditLogs.filter((l) => l.action?.includes('DISPATCH')).length;
+    const returns = auditLogs.filter((l) => l.action?.includes('RETURN')).length;
+    const defects = auditLogs.filter((l) => l.action?.includes('DEFECT')).length;
+    const approvals = auditLogs.filter((l) => l.action?.includes('APPROVED')).length;
+    const retirements = auditLogs.filter((l) => l.action?.includes('RETIRED')).length;
+    return { total, dispatches, returns, defects, approvals, retirements };
+  }, [auditLogs]);
+
+  const filteredLogs = useMemo(() => {
+    return auditLogs.filter((log) => {
+      if (filterAction !== 'ALL' && !log.action?.includes(filterAction)) {
+        return false;
+      }
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        return (
+          log.id?.toLowerCase().includes(q) ||
+          log.actorPrn?.toLowerCase().includes(q) ||
+          log.actorName?.toLowerCase().includes(q) ||
+          log.targetId?.toLowerCase().includes(q) ||
+          log.details?.toLowerCase().includes(q) ||
+          log.action?.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [auditLogs, filterAction, searchQuery]);
 
   // Export Audit Ledger to CSV
   const handleExportCSV = () => {
@@ -57,35 +75,6 @@ export function AuditLogPage() {
     document.body.removeChild(link);
   };
 
-  // Metrics calculation
-  const stats = useMemo(() => {
-    const total = auditLogs.length;
-    const dispatches = auditLogs.filter((l) => l.action?.includes('DISPATCH')).length;
-    const returns = auditLogs.filter((l) => l.action?.includes('RETURN')).length;
-    const defects = auditLogs.filter((l) => l.action?.includes('DEFECT')).length;
-    return { total, dispatches, returns, defects };
-  }, [auditLogs]);
-
-  const filteredLogs = useMemo(() => {
-    return auditLogs.filter((log) => {
-      if (filterAction !== 'ALL' && log.action !== filterAction) {
-        return false;
-      }
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        return (
-          log.id?.toLowerCase().includes(q) ||
-          log.actorPrn?.toLowerCase().includes(q) ||
-          log.actorName?.toLowerCase().includes(q) ||
-          log.targetId?.toLowerCase().includes(q) ||
-          log.details?.toLowerCase().includes(q) ||
-          log.action?.toLowerCase().includes(q)
-        );
-      }
-      return true;
-    });
-  }, [auditLogs, filterAction, searchQuery]);
-
   const columns = [
     {
       header: 'Event ID & Timestamp',
@@ -93,22 +82,20 @@ export function AuditLogPage() {
       width: '180px',
       render: (row) => (
         <div className="font-sans text-xs">
-          <div className="font-semibold text-white tracking-wide">{row.id}</div>
-          <div className="text-zinc-500 text-[11px] mt-0.5">{row.timestamp}</div>
+          <div className="font-semibold text-[#c9b8a0] tracking-wide">{row.id}</div>
+          <div className="text-zinc-400 text-[11px] mt-0.5">{row.timestamp}</div>
         </div>
       ),
     },
     {
-      header: 'Actor & Department Role',
+      header: 'Actor & Role',
       accessor: 'actorName',
       width: '200px',
       render: (row) => (
         <div className="font-sans text-xs">
-          <div className="text-white font-medium flex items-center gap-1.5">
-            <span>{row.actorName}</span>
-          </div>
+          <div className="text-white font-medium">{row.actorName}</div>
           <div className="text-zinc-400 text-[11px] mt-0.5">
-            PRN: <span className="text-zinc-300">{row.actorPrn}</span> • {row.actorRole}
+            PRN: <span className="text-zinc-300">{row.actorPrn}</span> • <span className="text-zinc-400">{row.actorRole}</span>
           </div>
         </div>
       ),
@@ -118,16 +105,36 @@ export function AuditLogPage() {
       accessor: 'action',
       width: '190px',
       render: (row) => {
-        let badgeColor = 'bg-white/[0.04] text-zinc-300 border-white/10';
-        if (row.action.includes('DISPATCH')) badgeColor = 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
-        else if (row.action.includes('DEFECT')) badgeColor = 'bg-rose-500/15 text-rose-300 border-rose-500/30';
-        else if (row.action.includes('RETURN')) badgeColor = 'bg-sky-500/15 text-sky-300 border-sky-500/30';
-        else if (row.action.includes('APPROVED')) badgeColor = 'bg-amber-500/15 text-amber-300 border-amber-500/30';
-        else if (row.action.includes('RETIRED')) badgeColor = 'bg-rose-500/20 text-rose-300 border-rose-500/30';
+        const isDispatch = row.action?.includes('DISPATCH');
+        const isReturn = row.action?.includes('RETURN');
+        const isDefect = row.action?.includes('DEFECT');
+        const isApprove = row.action?.includes('APPROVED');
+        const isRetired = row.action?.includes('RETIRED');
+
+        const dotColor = isDispatch
+          ? 'bg-emerald-400'
+          : isReturn
+          ? 'bg-sky-400'
+          : isDefect
+          ? 'bg-rose-400'
+          : isApprove
+          ? 'bg-amber-400'
+          : isRetired
+          ? 'bg-rose-400'
+          : 'bg-zinc-400';
+
+        const actionLabel = row.action
+          ? row.action
+              .toLowerCase()
+              .split('_')
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ')
+          : 'Event';
 
         return (
-          <span className={`px-2.5 py-0.5 rounded-full font-sans text-[10px] uppercase font-semibold border ${badgeColor}`}>
-            {row.action.replace(/_/g, ' ')}
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-sans text-[11px] font-medium border border-white/10 bg-white/[0.04] text-zinc-300">
+            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dotColor}`} />
+            <span>{actionLabel}</span>
           </span>
         );
       },
@@ -136,10 +143,13 @@ export function AuditLogPage() {
       header: 'Audit Target & Operational Details',
       accessor: 'details',
       render: (row) => (
-        <div className="space-y-0.5 font-sans text-xs">
-          <div className="text-zinc-200 leading-snug">{row.details}</div>
-          <div className="text-zinc-400 text-[11px]">
-            Target Entity: <span className="text-white font-medium">{row.targetId}</span>
+        <div className="space-y-1 font-sans text-xs">
+          <div className="text-zinc-200 leading-relaxed">{row.details}</div>
+          <div className="text-zinc-400 text-[11px] flex items-center gap-1.5">
+            <span className="text-zinc-500">Target:</span>
+            <span className="px-2 py-0.5 rounded-md bg-white/[0.05] border border-white/10 text-zinc-300 font-medium">
+              {row.targetId}
+            </span>
           </div>
         </div>
       ),
@@ -149,13 +159,16 @@ export function AuditLogPage() {
       accessor: 'checksum',
       width: '180px',
       render: (row) => (
-        <div className="flex items-center gap-1.5 group">
-          <span className="font-sans text-[11px] text-zinc-500 truncate block max-w-[130px]" title={row.checksum}>
+        <div className="flex items-center gap-2 group">
+          <span
+            className="font-sans text-[11px] text-zinc-400 truncate block max-w-[120px] bg-black/40 px-2.5 py-1 rounded-md border border-white/10"
+            title={row.checksum}
+          >
             {row.checksum?.slice(0, 16)}...
           </span>
           <button
             onClick={(e) => handleCopyChecksum(row.checksum, e)}
-            className="p-1 rounded hover:bg-white/10 text-zinc-500 hover:text-white transition-all cursor-pointer opacity-70 group-hover:opacity-100"
+            className="p-1.5 rounded-full bg-white/[0.04] hover:bg-white/10 text-zinc-400 hover:text-white border border-white/10 transition-all cursor-pointer"
             title="Copy SHA-256 hash"
           >
             {copiedHash === row.checksum ? (
@@ -177,7 +190,7 @@ export function AuditLogPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
           <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            Immutable Custody Ledger • Executive Accountability
+            Immutable Custody Ledger • Operations
           </span>
           <h1 className="text-3xl font-bold tracking-tight text-white mt-1 font-display">
             Institutional Audit Log
@@ -188,11 +201,11 @@ export function AuditLogPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Integrity Seal */}
-          <span className="px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/10 shadow-sm flex items-center gap-2 text-xs font-sans">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-zinc-400">Ledger Status:</span>
-            <span className="text-white font-semibold">VERIFIED SHA-256</span>
+          {/* Apple Glass Integrity Seal */}
+          <span className="px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 shadow-sm flex items-center gap-2 text-xs font-sans text-zinc-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className="text-zinc-400 font-normal">Ledger:</span>
+            <span className="text-white font-medium">Verified SHA-256</span>
           </span>
 
           {/* Export CSV Button */}
@@ -207,55 +220,18 @@ export function AuditLogPage() {
       </div>
 
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* 2. TELEMETRY STATS RIBBON                                     */}
-      {/* ───────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl space-y-1">
-          <div className="text-[11px] font-sans uppercase tracking-wider text-zinc-400 font-semibold">
-            Recorded Ledger Events
-          </div>
-          <div className="text-2xl font-bold text-white font-sans">{stats.total}</div>
-          <div className="text-[11px] text-zinc-500">Immutable transaction count</div>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-emerald-500/[0.04] border border-emerald-500/20 backdrop-blur-xl space-y-1">
-          <div className="text-[11px] font-sans uppercase tracking-wider text-emerald-300 font-semibold">
-            Dispatches Committed
-          </div>
-          <div className="text-2xl font-bold text-emerald-400 font-sans">{stats.dispatches}</div>
-          <div className="text-[11px] text-emerald-300/60">Verified counter handovers</div>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-sky-500/[0.04] border border-sky-500/20 backdrop-blur-xl space-y-1">
-          <div className="text-[11px] font-sans uppercase tracking-wider text-sky-300 font-semibold">
-            Inspected Returns
-          </div>
-          <div className="text-2xl font-bold text-sky-400 font-sans">{stats.returns}</div>
-          <div className="text-[11px] text-sky-300/60">Condition checklists executed</div>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-rose-500/[0.04] border border-rose-500/20 backdrop-blur-xl space-y-1">
-          <div className="text-[11px] font-sans uppercase tracking-wider text-rose-300 font-semibold">
-            Defect Incident Logs
-          </div>
-          <div className="text-2xl font-bold text-rose-400 font-sans">{stats.defects}</div>
-          <div className="text-[11px] text-rose-300/60">Quarantine triage records</div>
-        </div>
-      </div>
-
-      {/* ───────────────────────────────────────────────────────────── */}
-      {/* 3. SEARCH & SEGMENTED ACTION FILTER                           */}
+      {/* 2. SEARCH & SEGMENTED ACTION FILTER                           */}
       {/* ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Segmented Action Filters */}
-        <div className="inline-flex p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl overflow-x-auto max-w-full">
+        {/* Segmented Action Filters: Apple Glass Pill */}
+        <div className="inline-flex p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl overflow-x-auto no-scrollbar">
           {[
-            { id: 'ALL', label: 'All Transactions' },
-            { id: 'EQUIPMENT_DISPATCH', label: 'Dispatches' },
-            { id: 'EQUIPMENT_RETURNED', label: 'Returns' },
-            { id: 'DEFECT_LOGGED', label: 'Defects' },
-            { id: 'REQUISITION_APPROVED', label: 'Approvals' },
-            { id: 'ASSET_RETIRED', label: 'Retirements' },
+            { id: 'ALL', label: 'All Transactions', count: stats.total },
+            { id: 'DISPATCH', label: 'Dispatches', count: stats.dispatches },
+            { id: 'RETURN', label: 'Returns', count: stats.returns },
+            { id: 'DEFECT', label: 'Defects', count: stats.defects },
+            { id: 'APPROVED', label: 'Approvals', count: stats.approvals },
+            { id: 'RETIRED', label: 'Retirements', count: stats.retirements },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -266,7 +242,7 @@ export function AuditLogPage() {
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
-              {tab.label}
+              {tab.label} ({tab.count})
             </button>
           ))}
         </div>
@@ -276,18 +252,18 @@ export function AuditLogPage() {
           <SearchInput
             value={searchQuery}
             onChange={setSearchQuery}
-            placeholder="Search Actor PRN, Name, Tag, or Description..."
+            placeholder="Search Actor PRN, Name, Tag, or flaw..."
           />
         </div>
       </div>
 
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* 4. DATA TABLE                                                 */}
+      {/* 3. DATA TABLE                                                 */}
       {/* ───────────────────────────────────────────────────────────── */}
       <DataTable
         columns={columns}
         data={filteredLogs}
-        pageSize={10}
+        pageSize={12}
         emptyMessage="No cryptographic audit records found matching your filter criteria."
       />
     </div>
