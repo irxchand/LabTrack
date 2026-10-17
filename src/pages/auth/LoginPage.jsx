@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { User, Lock, ArrowRight, Check, AlertCircle } from 'lucide-react';
 import { InteractiveWavesBackground } from '../../components/canvas/InteractiveWavesBackground';
+import { GooeyGradientBackground } from '../../components/canvas/GooeyGradientBackground';
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -52,43 +53,18 @@ export function LoginPage() {
   return (
     <div className="min-h-screen w-screen overflow-hidden flex items-center justify-center p-4 sm:p-8 relative select-none font-sans bg-[#09090b]">
       {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 1. AMBIENT BACKDROP LIGHTING (Visible through the transparent glass) */}
+      {/* 1. GOOEY GRADIENT LIQUID BACKGROUND (Shining behind the glass)    */}
       {/* ───────────────────────────────────────────────────────────────── */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-        {/* Soft background tone */}
-        <div className="absolute inset-0 bg-[#08080a]" />
-
-        {/* Interactive Waves Background */}
-        <InteractiveWavesBackground
-          lineColor="rgba(201, 184, 160, 0.22)"
-          backgroundColor="transparent"
-          waveSpeedX={0.016}
-          waveSpeedY={0.007}
-          waveAmpX={38}
-          waveAmpY={18}
-          friction={0.925}
-          tension={0.007}
-          maxCursorMove={120}
-          xGap={12}
-          yGap={34}
-          cursorDotColor="rgba(232, 213, 183, 0.85)"
-          showCursorDot={true}
-        />
-
-        {/* Floating warm gold & champagne luminous orbs shining through the glass */}
-        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full bg-gradient-to-br from-[#c9b8a0]/25 via-[#a78b71]/15 to-transparent blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 translate-x-1/3 translate-y-1/3 w-[620px] h-[620px] rounded-full bg-gradient-to-tl from-[#e8d5b7]/20 via-[#8a6845]/15 to-transparent blur-[140px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[680px] h-[360px] rounded-full bg-[#f5e6c8]/10 blur-[130px]" />
-
-        {/* Subtle glass optic geometry */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[880px] h-[880px] rounded-full border border-white/[0.03] pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1140px] h-[1140px] rounded-full border border-white/[0.015] pointer-events-none" />
+        <GooeyGradientBackground className="w-full h-full" />
+        {/* Subtle dark vignette overlay so the central card and text pop with ultra-high contrast */}
+        <div className="absolute inset-0 bg-black/25 pointer-events-none" />
       </div>
 
       {/* ───────────────────────────────────────────────────────────────── */}
       {/* 2. CENTRAL TRANSPARENT GLASS CARD                                 */}
       {/* ───────────────────────────────────────────────────────────────── */}
-      <div className="w-full max-w-4xl rounded-3xl shadow-[0_30px_90px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.35),inset_0_0_20px_rgba(255,255,255,0.02)] border border-white/20 backdrop-blur-2xl bg-white/[0.03] overflow-hidden grid grid-cols-1 md:grid-cols-2 relative z-10 min-h-[500px]">
+      <div className="w-full max-w-4xl rounded-3xl shadow-[0_30px_90px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.35),inset_0_0_20px_rgba(255,255,255,0.02)] border border-white/20 backdrop-blur-2xl bg-white/[0.04] overflow-hidden grid grid-cols-1 md:grid-cols-2 relative z-10 min-h-[500px]">
         
         {/* Specular Edge Bevel (Top glass reflection) */}
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
