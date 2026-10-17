@@ -50,8 +50,9 @@ export function DefectManagementPage() {
     const total = defects.length;
     const critical = defects.filter((d) => d.severity?.includes('Critical') || d.severity?.includes('Bricked')).length;
     const underInspection = defects.filter((d) => d.repairStatus === 'Under Inspection').length;
+    const awaitingParts = defects.filter((d) => d.repairStatus === 'Awaiting Parts').length;
     const repaired = defects.filter((d) => d.repairStatus === 'Repaired').length;
-    return { total, critical, underInspection, repaired };
+    return { total, critical, underInspection, awaitingParts, repaired };
   }, [defects]);
 
   // Filtered defects
@@ -282,8 +283,7 @@ export function DefectManagementPage() {
           {[
             { id: 'ALL', label: 'All Incidents', count: defects.length },
             { id: 'Under Inspection', label: 'Under Inspection', count: stats.underInspection },
-            { id: 'Awaiting Parts', label: 'Awaiting Parts' },
-            { id: 'Sent to Vendor', label: 'Vendor RMA' },
+            { id: 'Awaiting Parts', label: 'Awaiting Parts', count: stats.awaitingParts },
             { id: 'Repaired', label: 'Repaired', count: stats.repaired },
           ].map((tab) => (
             <button
@@ -506,9 +506,6 @@ export function DefectManagementPage() {
               </option>
               <option value="Awaiting Parts" className="bg-[#111317]">
                 Awaiting Parts (Replacement MCU/Headers on order)
-              </option>
-              <option value="Sent to Vendor" className="bg-[#111317]">
-                Sent to Vendor (Manufacturer Warranty RMA)
               </option>
               <option value="Repaired" className="bg-[#111317]">
                 Repaired (Verified Operational & 1-Click Restocked)
