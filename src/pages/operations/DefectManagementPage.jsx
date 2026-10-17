@@ -141,7 +141,7 @@ export function DefectManagementPage() {
             <div>
               <div className="font-medium text-white text-xs">{row.nomenclature}</div>
               <div className="text-[11px] text-zinc-400 mt-0.5">
-                Tag: <span className="text-zinc-300 font-semibold">{row.assetTag}</span> • {row.defectCategory}
+                Tag: <span className="text-zinc-300 font-semibold">{row.assetTag}</span> <span className="text-zinc-600">/</span> {row.defectCategory}
               </div>
             </div>
           </div>
@@ -235,7 +235,7 @@ export function DefectManagementPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
           <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            Bench Triage & Quarantine • Hardware Ops
+            Hardware Triage & Quarantine
           </span>
           <h1 className="text-3xl font-bold tracking-tight text-white mt-1 font-display">
             Hardware Defect & Maintenance Bench
@@ -380,7 +380,7 @@ export function DefectManagementPage() {
                           <span className="px-2.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-[11px] font-medium text-[#c9b8a0]">
                             {defect.assetTag}
                           </span>
-                          <span className="text-zinc-400">•</span>
+                          <span className="text-zinc-600">/</span>
                           <span className="text-zinc-300 text-xs">{defect.defectCategory}</span>
                         </div>
                       </div>

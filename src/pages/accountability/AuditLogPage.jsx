@@ -95,7 +95,7 @@ export function AuditLogPage() {
         <div className="font-sans text-xs">
           <div className="text-white font-medium">{row.actorName}</div>
           <div className="text-zinc-400 text-[11px] mt-0.5">
-            PRN: <span className="text-zinc-300">{row.actorPrn}</span> • <span className="text-zinc-400">{row.actorRole}</span>
+            PRN: <span className="text-zinc-300">{row.actorPrn}</span> <span className="text-zinc-600">/</span> <span className="text-zinc-400">{row.actorRole}</span>
           </div>
         </div>
       ),
@@ -190,7 +190,7 @@ export function AuditLogPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
           <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            Immutable Custody Ledger • Operations
+            Immutable Custody Ledger
           </span>
           <h1 className="text-3xl font-bold tracking-tight text-white mt-1 font-display">
             Institutional Audit Log
