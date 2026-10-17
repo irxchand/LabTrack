@@ -50,7 +50,7 @@ export function GooeyGradientBackground({
     };
   }, []);
 
-  const themeClass = theme === 'gold' ? 'theme-gold' : '';
+  const themeClass = theme === 'vibrant' ? 'theme-vibrant' : '';
 
   return (
     <div className={`gooey-wrapper ${themeClass} ${className}`}>

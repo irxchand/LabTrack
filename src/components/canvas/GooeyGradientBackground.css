@@ -1,5 +1,24 @@
 .gooey-wrapper {
-  /* Default: Vibrant Palette matching Reference Implementation */
+  /* Default: Luxury Dark Obsidian & Champagne Amber Gold matching LabTrack Brand */
+  --color-bg1: rgb(10, 10, 12);
+  --color-bg2: rgb(4, 4, 5);
+  --color1: 201, 184, 160;        /* Warm Champagne Gold */
+  --color2: 167, 139, 113;        /* Warm Molten Bronze */
+  --color3: 245, 230, 200;        /* Pale Luminous Gold Highlight */
+  --color4: 130, 90, 50;          /* Deep Cognac Amber */
+  --color5: 185, 155, 110;        /* Metallic Bronze/Gold */
+  --color-interactive: 225, 200, 160; /* Interactive Gold Mouse Glow */
+  --circle-size: 80%;
+  --blending: screen;
+  
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Optional Vibrant Palette */
+.gooey-wrapper.theme-vibrant {
   --color-bg1: rgb(108, 0, 162);
   --color-bg2: rgb(0, 17, 82);
   --color1: 18, 113, 255;
@@ -8,25 +27,7 @@
   --color4: 200, 50, 50;
   --color5: 180, 180, 50;
   --color-interactive: 140, 100, 255;
-  --circle-size: 80%;
   --blending: hard-light;
-  
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Optional Luxury Gold Theme */
-.gooey-wrapper.theme-gold {
-  --color-bg1: rgb(18, 14, 10);
-  --color-bg2: rgb(6, 6, 8);
-  --color1: 201, 184, 160;
-  --color2: 167, 139, 113;
-  --color3: 232, 213, 183;
-  --color4: 130, 95, 60;
-  --color5: 245, 230, 200;
-  --color-interactive: 232, 213, 183;
 }
 
 @keyframes moveInCircle {
