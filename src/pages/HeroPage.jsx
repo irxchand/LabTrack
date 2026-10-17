@@ -23,85 +23,33 @@ import { InteractiveWavesBackground } from '../components/canvas/InteractiveWave
 import { useAuth } from '../context/AuthContext';
 
 const POLICIES = {
-  sla: {
-    id: 'sla',
-    tag: 'Institutional Custody Charter',
-    title: 'Fair-Use Lending Terms & SLA',
-    subtitle: 'Autonomous allocation, standard checkout limits, and renewal regulations.',
-    sections: [
-      {
-        heading: 'Standard Bench Duration',
-        body: 'Short-term equipment loans are provisioned for an initial duration of 72 hours. Equipment must be checked back in at Counter Station LA-04 or renewed digitally.',
-      },
-      {
-        heading: 'Capstone & Research Allocation',
-        body: 'Dedicated Capstone teams with faculty-approved Bills of Materials (BOM) receive semester-long bench allocation subject to bi-weekly progress checks.',
-      },
-      {
-        heading: 'Grace Period & Strike Immunity',
-        body: 'No overdue penalty strikes are assessed if an extension permit is submitted at least 24 hours prior to the scheduled return deadline.',
-      },
-    ],
+  privacy: {
+    id: 'privacy',
+    tag: 'Privacy & Legal',
+    title: 'Privacy Policy',
+    subtitle: 'Institutional data protection, student PRN encryption, and telemetry handling.',
+    sections: [],
   },
-  esd: {
-    id: 'esd',
-    tag: 'Laboratory Safety Directives',
-    title: 'ESD & Clean Bench Protocol',
-    subtitle: 'Static grounding, voltage regulation, and physical hardware protection rules.',
-    sections: [
-      {
-        heading: 'Anti-Static Grounding',
-        body: 'Conductive ESD wrist straps connected to earth ground are strictly mandatory before handling unshielded FPGA boards, RF testbeds, or CMOS microcontrollers.',
-      },
-      {
-        heading: 'Current-Limited Power Supplies',
-        body: 'All programmable DC bench power supplies must be pre-configured with current compliance limits prior to connecting student prototype circuits.',
-      },
-      {
-        heading: 'Defect Immediate Reporting',
-        body: 'In the event of thermal runaway, burnt traces, or component smoking, cut power immediately and log the incident through Defect Triage with zero penalty.',
-      },
-    ],
+  terms: {
+    id: 'terms',
+    tag: 'Privacy & Legal',
+    title: 'Terms of Service',
+    subtitle: 'Platform acceptable use, laboratory hardware custody agreements, and account standards.',
+    sections: [],
   },
-  appeals: {
-    id: 'appeals',
-    tag: 'Custody Resolution Matrix',
-    title: 'Dispute Appeals & Penalty Waivers',
-    subtitle: 'Transparent, zero-retaliation review for unintended delays or hardware anomalies.',
-    sections: [
-      {
-        heading: 'No-Fault Defect Triage',
-        body: 'Hardware failures discovered during standard laboratory bench operation carry 0 penalty strikes when reported promptly via the RMA bench.',
-      },
-      {
-        heading: 'Exam & Institutional Waivers',
-        body: 'Return delays caused by certified institutional examinations, hospitalizations, or departmental hackathons qualify for expedited strike waivers.',
-      },
-      {
-        heading: 'Academic Council Review',
-        body: 'Formal appeals are reviewed every Friday by the Department Academic Council and Faculty Mentors. Approvals immediately restore pristine custody ratings.',
-      },
-    ],
+  cookies: {
+    id: 'cookies',
+    tag: 'Privacy & Legal',
+    title: 'Cookie & Data Policy',
+    subtitle: 'Session tokens, JWT authentication caching, and local storage standards.',
+    sections: [],
   },
-  ip: {
-    id: 'ip',
-    tag: 'Intellectual Property Policy',
-    title: 'Capstone IP & Open Source Attribution',
-    subtitle: 'Institutional asset custody boundaries and 100% student code ownership.',
-    sections: [
-      {
-        heading: 'Hardware Institutional Ownership',
-        body: 'All physical evaluation boards, development kits, test equipment, and non-consumable components remain the permanent property of the institution.',
-      },
-      {
-        heading: 'Student Intellectual Property',
-        body: 'All firmware, Verilog/VHDL code, machine learning weights, schematic designs, and software algorithms created by students belong 100% to the student team.',
-      },
-      {
-        heading: 'Academic Publication Credit',
-        body: 'Conference papers and patent disclosures using LabTrack facility equipment are requested to include the standard institutional facility acknowledgement.',
-      },
-    ],
+  security: {
+    id: 'security',
+    tag: 'Privacy & Legal',
+    title: 'Security & Compliance',
+    subtitle: 'Access controls, immutable audit logging, and vulnerability disclosure protocols.',
+    sections: [],
   },
   instrumentSop: {
     id: 'instrumentSop',
@@ -633,65 +581,65 @@ export function HeroPage() {
             </ul>
           </div>
 
-          {/* Column 3: Custody Charter & Governance Policies */}
+          {/* Column 3: Privacy & Legal Policies */}
           <div>
             <div className="text-xs font-semibold tracking-wider text-stone-300 font-sans uppercase mb-4">
-              Governance & Policies
+              Privacy & Legal
             </div>
             <ul className="space-y-3 text-xs text-stone-400 font-normal font-sans">
               <li>
                 <button
                   type="button"
-                  onClick={() => setActivePolicyModal(POLICIES.sla)}
+                  onClick={() => setActivePolicyModal(POLICIES.privacy)}
                   className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
                 >
                   <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
-                    Fair-Use Lending SLA
+                    Privacy Policy
                   </span>
                   <span className="text-[11px] text-stone-500">
-                    72h standard bench checkout & extension rules
+                    Data protection & student identity handling
                   </span>
                 </button>
               </li>
               <li>
                 <button
                   type="button"
-                  onClick={() => setActivePolicyModal(POLICIES.esd)}
+                  onClick={() => setActivePolicyModal(POLICIES.terms)}
                   className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
                 >
                   <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
-                    ESD & Clean Bench Protocol
+                    Terms of Service
                   </span>
                   <span className="text-[11px] text-stone-500">
-                    Static grounding & oscilloscope voltage limits
+                    Acceptable use & laboratory access guidelines
                   </span>
                 </button>
               </li>
               <li>
                 <button
                   type="button"
-                  onClick={() => setActivePolicyModal(POLICIES.appeals)}
+                  onClick={() => setActivePolicyModal(POLICIES.cookies)}
                   className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
                 >
                   <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
-                    Dispute Appeals & Waivers
+                    Cookie & Data Policy
                   </span>
                   <span className="text-[11px] text-stone-500">
-                    Zero-penalty triage contestation process
+                    Session tokens & local browser storage
                   </span>
                 </button>
               </li>
               <li>
                 <button
                   type="button"
-                  onClick={() => setActivePolicyModal(POLICIES.ip)}
+                  onClick={() => setActivePolicyModal(POLICIES.security)}
                   className="hover:text-white transition-colors text-left cursor-pointer flex flex-col gap-0.5 group w-full"
                 >
                   <span className="text-stone-200 font-medium group-hover:text-[#e8d5b7] transition-colors">
-                    Capstone IP Attribution
+                    Security & Compliance
                   </span>
                   <span className="text-[11px] text-stone-500">
-                    Open hardware licensing & student project IP
+                    Access control & institutional data standards
                   </span>
                 </button>
               </li>
@@ -791,23 +739,37 @@ export function HeroPage() {
               {activePolicyModal.subtitle}
             </p>
 
-            {/* Policy Sections */}
-            <div className="space-y-3 mb-6">
-              {activePolicyModal.sections.map((section, idx) => (
-                <div
-                  key={idx}
-                  className="p-3.5 rounded-2xl bg-white/[0.025] border border-white/5 space-y-1"
-                >
-                  <div className="text-xs font-medium text-stone-200 font-sans flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-[#c9b8a0]" />
-                    <span>{section.heading}</span>
+            {/* Policy Sections or Clean Empty State */}
+            {activePolicyModal.sections && activePolicyModal.sections.length > 0 ? (
+              <div className="space-y-3 mb-6">
+                {activePolicyModal.sections.map((section, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3.5 rounded-2xl bg-white/[0.025] border border-white/5 space-y-1"
+                  >
+                    <div className="text-xs font-medium text-stone-200 font-sans flex items-center gap-2">
+                      <span className="w-1 h-1 rounded-full bg-[#c9b8a0]" />
+                      <span>{section.heading}</span>
+                    </div>
+                    <p className="text-[12px] text-stone-400 font-normal leading-relaxed font-sans pl-3">
+                      {section.body}
+                    </p>
                   </div>
-                  <p className="text-[12px] text-stone-400 font-normal leading-relaxed font-sans pl-3">
-                    {section.body}
-                  </p>
+                ))}
+              </div>
+            ) : (
+              <div className="py-12 px-6 rounded-2xl bg-white/[0.02] border border-white/5 text-center mb-6">
+                <div className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto mb-3 text-stone-400">
+                  <Shield className="w-5 h-5 text-[#c9b8a0]" />
                 </div>
-              ))}
-            </div>
+                <h4 className="text-sm font-medium text-white mb-1 font-sans">
+                  Section In Preparation
+                </h4>
+                <p className="text-xs text-stone-400 font-sans max-w-sm mx-auto leading-relaxed">
+                  Official policy terms are currently empty and scheduled for publication. Full legal text will be posted here.
+                </p>
+              </div>
+            )}
 
             {/* Dismiss CTA */}
             <div className="flex justify-end pt-2 border-t border-white/5">
