@@ -15,6 +15,7 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
   const [checklist, setChecklist] = useState({
     physicalIntegrity: false,
     powerTest: false,
+    firmwareReset: false,
     accessoriesPresent: false,
     esdPackaging: false,
   });
@@ -35,6 +36,7 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
   const isChecklistComplete =
     checklist.physicalIntegrity &&
     checklist.powerTest &&
+    checklist.firmwareReset &&
     checklist.accessoriesPresent &&
     checklist.esdPackaging;
 
@@ -43,7 +45,7 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
     setValidationError('');
 
     if (!isChecklistComplete) {
-      setValidationError('All 4 physical inspection criteria must be verified before accepting equipment return.');
+      setValidationError('All 5 inspection & reset criteria (including firmware wipe) must be verified before accepting equipment return.');
       return;
     }
 
@@ -104,10 +106,10 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="block text-[11px] font-sans uppercase tracking-wider text-zinc-400 font-semibold">
-            Multi-Point Physical Return Checklist
+            Multi-Point Physical & Digital Return Checklist
           </label>
           <span className="text-[11px] text-zinc-500">
-            {Object.values(checklist).filter(Boolean).length} of 4 confirmed
+            {Object.values(checklist).filter(Boolean).length} of 5 confirmed
           </span>
         </div>
 
@@ -148,6 +150,22 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
           <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
             <input
               type="checkbox"
+              checked={checklist.firmwareReset}
+              onChange={() => handleCheckboxChange('firmwareReset')}
+              className="mt-0.5 rounded border-white/20 text-white focus:ring-0 bg-white/5 cursor-pointer accent-white"
+            />
+            <div className="space-y-0.5">
+              <span className="font-medium text-white text-xs">Firmware Sanitization & Memory Reset</span>
+              <p className="text-[11px] text-zinc-400">
+                Flash ROM sanitized, student test code erased, boot microcode verified for next borrower
+              </p>
+            </div>
+          </label>
+
+          {/* Item 4 */}
+          <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
+            <input
+              type="checkbox"
               checked={checklist.accessoriesPresent}
               onChange={() => handleCheckboxChange('accessoriesPresent')}
               className="mt-0.5 rounded border-white/20 text-white focus:ring-0 bg-white/5 cursor-pointer accent-white"
@@ -160,7 +178,7 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
             </div>
           </label>
 
-          {/* Item 4 */}
+          {/* Item 5 */}
           <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer">
             <input
               type="checkbox"
@@ -273,6 +291,21 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
         </div>
       )}
 
+      {/* Restock Impact Telemetry Preview */}
+      {returnMode === 'clean' && (
+        <div className="p-3 bg-emerald-500/[0.08] border border-emerald-500/20 rounded-2xl flex items-center justify-between text-xs text-emerald-300">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
+            <span>
+              Restock Impact: Status transitions to <strong className="text-white">Available</strong> and available stock increments by <strong className="text-white">+1</strong>.
+            </span>
+          </div>
+          <span className="text-[11px] font-sans text-emerald-400/80 hidden sm:inline">
+            Coordinates: {loan.locationCoordinates || 'Room 402 • Shelf CB-04'}
+          </span>
+        </div>
+      )}
+
       {/* Inline Validation Warning (Replaces window.alert) */}
       {validationError && (
         <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl flex items-center gap-2 text-rose-300 text-xs">
@@ -302,7 +335,7 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
           {returnMode === 'clean' ? (
             <>
               <CheckCircle2 className="w-4 h-4" />
-              <span>Verify & Restock to Active Inventory</span>
+              <span>Certify Operational & Reset to Inventory</span>
             </>
           ) : (
             <>

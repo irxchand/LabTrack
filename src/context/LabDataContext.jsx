@@ -304,17 +304,29 @@ export function LabDataProvider({ children }) {
           conditionSummary: defectDetails?.conditionSummary || 'Hardware failed counter physical test',
           actionPlan: 'Routed to triage bench for diagnostic inspection',
         });
-        await inventoryApi.updateStockStatus(res.data.loan.assetTag, 'Maintenance', null);
+        await inventoryApi.updateStockStatus(res.data.loan.assetTag, 'Maintenance', null, {
+          event: 'Returned with Defect',
+          actor: currentUser?.name || 'Ramesh Patil (Lab Assistant)',
+          prn: res.data.loan.borrowerPrn,
+          condition: 'Maintenance Required',
+          notes: defectDetails?.conditionSummary || 'Failed return inspection; routed to triage bench',
+        });
       } else if (res.data.loan) {
-        // Clean return restock
-        await inventoryApi.updateStockStatus(res.data.loan.assetTag, 'Available', null);
+        // Clean return restock - reset hardware state & increment available stock
+        await inventoryApi.updateStockStatus(res.data.loan.assetTag, 'Available', null, {
+          event: 'Restocked to Inventory',
+          actor: currentUser?.name || 'Ramesh Patil (Lab Assistant)',
+          prn: res.data.loan.borrowerPrn,
+          condition: 'Operational',
+          notes: 'Multi-point inspection passed. Hardware sanitized, reset, and restocked to shelf.',
+        });
       }
 
       await loadData();
       addToast({
-        title: returnType === 'clean' ? 'Clean Return Accepted' : 'Defect Logged on Return',
+        title: returnType === 'clean' ? 'Hardware Verified & Stock Reset' : 'Defect Logged on Return',
         message: returnType === 'clean'
-          ? 'Hardware restocked to inventory pool. FIFO waitlist queue updated.'
+          ? `Asset ${res.data.loan?.assetTag || 'unit'} certified operational. Available stock incremented in inventory.`
           : 'Asset routed to maintenance bench and defect recorded against student project.',
         type: returnType === 'clean' ? 'success' : 'warning',
       });
@@ -354,9 +366,13 @@ export function LabDataProvider({ children }) {
     if (res.ok) {
       if (status === 'Repaired') {
         const item = defects.find((d) => d.id === defectId);
-        if (item?.assetTag) {
-          await inventoryApi.updateStockStatus(item.assetTag, 'Available', null);
-        }
+          await inventoryApi.updateStockStatus(item.assetTag, 'Available', null, {
+            event: 'Bench Repair & Restock',
+            actor: currentUser?.name || 'Ramesh Patil (Lab Assistant)',
+            prn: item.associatedPrn || 'Bench Tech',
+            condition: 'Operational (Repaired)',
+            notes: actionPlan || 'Diagnostic verification passed at bench. Hardware certified operational and restocked to shelf.',
+          });
       }
       await loadData();
       addToast({

@@ -464,9 +464,21 @@ export function InventoryListPage({ initialClassification = null }) {
             {/* Card Footer Actions */}
             <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                <span
+                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                    item.stockStatus === 'Maintenance'
+                      ? 'bg-rose-400'
+                      : item.availableStock === 0
+                      ? 'bg-amber-400'
+                      : 'bg-emerald-400'
+                  }`}
+                />
                 <span className="text-xs text-white font-semibold">
-                  In Stock
+                  {item.stockStatus === 'Maintenance'
+                    ? 'Maintenance'
+                    : item.availableStock === 0
+                    ? 'Allocated'
+                    : 'In Stock'}
                 </span>
                 <span className="text-zinc-500">•</span>
                 <span className="text-[11px] text-zinc-300">

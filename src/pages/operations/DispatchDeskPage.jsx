@@ -43,6 +43,7 @@ export function DispatchDeskPage() {
 
   // CHECKIN STATE
   const [checkinSearchQuery, setCheckinSearchQuery] = useState(urlAssetTag || '');
+  const [returnSuccess, setReturnSuccess] = useState(null);
   const [selectedReturnLoan, setSelectedReturnLoan] = useState(() => {
     if (urlAssetTag && activeLoans.length > 0) {
       return activeLoans.find((l) => l.assetTag === urlAssetTag) || null;
@@ -166,8 +167,20 @@ export function DispatchDeskPage() {
 
   const handleCompleteInspection = async ({ checklist, returnType, defectDetails }) => {
     if (!selectedReturnLoan) return;
-    await executeReturn(selectedReturnLoan.id, checklist, returnType, defectDetails);
-    setSelectedReturnLoan(null);
+    const loanRef = selectedReturnLoan;
+    const success = await executeReturn(loanRef.id, checklist, returnType, defectDetails);
+    if (success) {
+      setReturnSuccess({
+        assetTag: loanRef.assetTag,
+        nomenclature: loanRef.nomenclature,
+        returnType,
+        borrowerName: loanRef.borrowerName,
+        borrowerPrn: loanRef.borrowerPrn,
+        locationCoordinates: loanRef.locationCoordinates,
+      });
+      setSelectedReturnLoan(null);
+      setTimeout(() => setReturnSuccess(null), 6000);
+    }
   };
 
   return (
@@ -240,6 +253,37 @@ export function DispatchDeskPage() {
           </div>
           <button
             onClick={() => setDispatchSuccess(null)}
+            className="text-emerald-400 hover:text-white text-xs cursor-pointer ml-4"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Return & Stock Reset Success Alert Banner */}
+      {returnSuccess && (
+        <div className="p-4 bg-emerald-500/10 border border-emerald-500/25 rounded-2xl flex items-center justify-between text-emerald-300 text-xs animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+            <div>
+              <span className="font-semibold text-white">
+                {returnSuccess.returnType === 'clean' ? 'Hardware Verified & Stock Reset:' : 'Defect Logged & Quarantined:'}
+              </span>{' '}
+              Asset <span className="font-semibold text-emerald-300">{returnSuccess.assetTag}</span> ({returnSuccess.nomenclature}) returned by{' '}
+              <span className="text-white font-medium">{returnSuccess.borrowerName}</span> (PRN {returnSuccess.borrowerPrn}).{' '}
+              {returnSuccess.returnType === 'clean' ? (
+                <span>
+                  Physical inspection & firmware reset passed. Available stock incremented by <span className="font-bold text-white">+1</span> at {returnSuccess.locationCoordinates || 'Shelf CB-04'}.
+                </span>
+              ) : (
+                <span>
+                  Hardware quarantined to Defect Bench. Recorded in institutional repair ledger.
+                </span>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={() => setReturnSuccess(null)}
             className="text-emerald-400 hover:text-white text-xs cursor-pointer ml-4"
           >
             Dismiss

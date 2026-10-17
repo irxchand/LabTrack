@@ -6,6 +6,7 @@ import { DataTable } from '../../components/common/DataTable';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { SearchInput } from '../../components/common/SearchInput';
 import { Modal } from '../../components/common/Modal';
+import { InspectionForm } from '../../components/specialized/InspectionForm';
 import {
   Clock,
   AlertTriangle,
@@ -32,12 +33,13 @@ import {
 
 export function ActiveLoansPage() {
   const navigate = useNavigate();
-  const { activeLoans, inventory, requestExtension, reportDefect } = useLabData();
+  const { activeLoans, inventory, requestExtension, reportDefect, executeReturn } = useLabData();
   const { currentUser, role } = useAuth();
 
   const [selectedLoan, setSelectedLoan] = useState(null);
   const [inspectedLoan, setInspectedLoan] = useState(null);
   const [defectLoan, setDefectLoan] = useState(null);
+  const [returnIntakeLoan, setReturnIntakeLoan] = useState(null);
   const [defectCategory, setDefectCategory] = useState('Component Fault');
   const [defectSeverity, setDefectSeverity] = useState('Moderate');
   const [defectDescription, setDefectDescription] = useState('');
@@ -283,7 +285,7 @@ export function ActiveLoansPage() {
               </button>
             ) : (
               <button
-                onClick={() => navigate(`/workspace/operations/dispatch?mode=checkin&assetTag=${row.assetTag}`)}
+                onClick={() => setReturnIntakeLoan(row)}
                 className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-black shadow-sm active:scale-95 cursor-pointer flex items-center gap-1.5"
                 title="Process counter check-in & inspection"
               >
@@ -513,7 +515,7 @@ export function ActiveLoansPage() {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/workspace/operations/dispatch?mode=checkin&assetTag=${loan.assetTag}`);
+                      setReturnIntakeLoan(loan);
                     }}
                     className="px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-black tracking-tight transition-all shadow-lg active:scale-95 flex-shrink-0 cursor-pointer flex items-center gap-1.5"
                     title="Process counter check-in & inspection"
@@ -1030,6 +1032,28 @@ export function ActiveLoansPage() {
               </button>
             </div>
           </form>
+        </Modal>
+      )}
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* 8. INLINE RETURN & INSPECTION MODAL (Lab Assistant)           */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {returnIntakeLoan && (
+        <Modal
+          isOpen={!!returnIntakeLoan}
+          onClose={() => setReturnIntakeLoan(null)}
+          title="Hardware Return Intake & Inspection"
+          subtitle={`Unit: ${returnIntakeLoan.nomenclature} • Asset Tag: ${returnIntakeLoan.assetTag}`}
+          maxWidth="max-w-xl"
+        >
+          <InspectionForm
+            loan={returnIntakeLoan}
+            onCancel={() => setReturnIntakeLoan(null)}
+            onComplete={async ({ checklist, returnType, defectDetails }) => {
+              await executeReturn(returnIntakeLoan.id, checklist, returnType, defectDetails);
+              setReturnIntakeLoan(null);
+            }}
+          />
         </Modal>
       )}
     </div>

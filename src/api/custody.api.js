@@ -259,10 +259,19 @@ export const custodyApi = {
         saveStored(LOANS_KEY, loans);
       }
 
-      if (returnType === 'clean') {
-        appendAudit('RETURN_ACCEPTED', loanId, `Accepted clean return for ${loan ? loan.assetTag : 'Hardware'}. FIFO waitlist notified.`, 'Lab Assistant', 'STAFF-L2-004');
+      if (returnType === 'clean' && loan) {
+        // Advance FIFO waitlist for this hardware asset if queued
+        const reservations = getStored(RES_KEY, INITIAL_RESERVATIONS);
+        const waitingForThis = reservations.filter(
+          (r) => (r.itemId === loan.assetTag || r.nomenclature === loan.nomenclature) && r.status === 'Active Waitlist'
+        );
+        if (waitingForThis.length > 0) {
+          waitingForThis[0].status = 'Ready for Requisition';
+          saveStored(RES_KEY, reservations);
+        }
+        appendAudit('RETURN_ACCEPTED', loanId, `Accepted clean return & reset for ${loan.assetTag}. Restocked to available inventory.`, 'Lab Assistant', 'STAFF-L2-004');
       } else {
-        appendAudit('DEFECT_ROUTED', loanId, `Flagged defect on return: ${defectDetails || 'Condition failed'}. Sent to triage.`, 'Lab Assistant', 'STAFF-L2-004');
+        appendAudit('DEFECT_ROUTED', loanId, `Flagged defect on return for ${loan ? loan.assetTag : 'Hardware'}. Routed to Defect Bench.`, 'Lab Assistant', 'STAFF-L2-004');
       }
 
       return { success: true, returnType, loan };
