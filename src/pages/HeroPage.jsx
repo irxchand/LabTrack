@@ -486,16 +486,6 @@ export function HeroPage() {
             <p className="text-xs text-stone-400 font-normal leading-relaxed font-sans">
               Department of Computer Science & Engineering • Physical Computing & Embedded Systems Division.
             </p>
-
-            {/* Live Station Status Pill - Apple Cupertino Dark Glass */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-[11px] font-sans font-medium text-stone-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-              <span>Counter Station: LA-04 • Operational</span>
-            </div>
-
-            <div className="flex items-center gap-2.5 pt-1 text-stone-400 text-xs font-sans">
-              <span>Counter Extension: <strong className="text-white">Ex-408</strong></span>
-            </div>
           </div>
 
           {/* Column 2: Physical Facilities & Operating Windows */}
