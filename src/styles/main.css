@@ -1,14 +1,87 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
 @import "tailwindcss";
 @import "./tokens.css";
+
+@theme {
+  --font-sans: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  --font-display: 'Clash Display', 'Satoshi', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
 
 :root {
   --bg: #000000;
   --fg: #ffffff;
 }
 
-.font-serif-instrument {
-  font-family: 'Instrument Serif', Georgia, serif;
+.font-display {
+  font-family: var(--font-display, 'Clash Display', 'Satoshi', sans-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans, 'Satoshi', 'Inter', sans-serif);
+}
+
+.font-mono {
+  font-family: 'Geist Mono', 'JetBrains Mono', monospace;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LUXURY GOLD & NEURAL DESIGN SYSTEM SPEC
+───────────────────────────────────────────────────────────────────────────── */
+.font-playfair {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.bg-dots {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1.25px, transparent 1.25px);
+  background-size: 32px 32px;
+}
+
+.gold-glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.central-glow {
+  box-shadow: 0 0 100px rgba(167, 139, 113, 0.2);
+}
+
+.satellite-glow-hover {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.satellite-glow-hover:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 60px rgba(167, 139, 113, 0.3);
+}
+
+.node-line {
+  stroke-width: 2.5;
+  animation: pulsing-branch 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+}
+
+@keyframes pulsing-branch {
+  0% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+.flow-dash {
+  stroke-dasharray: 5 15;
+  animation: flow-run 2s linear infinite;
+}
+
+@keyframes flow-run {
+  from {
+    stroke-dashoffset: 40;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 .liquid-glass {

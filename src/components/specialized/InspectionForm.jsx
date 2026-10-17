@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { CheckCircle2, AlertTriangle, ShieldCheck, Wrench } from 'lucide-react';
+import {
+  CheckCircle2,
+  Wrench,
+  AlertTriangle,
+  ShieldCheck,
+} from 'lucide-react';
 
 export function InspectionForm({ loan, onComplete, onCancel }) {
   const [checklist, setChecklist] = useState({
@@ -15,111 +20,120 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
     conditionSummary: '',
   });
 
-  const allPassed =
-    checklist.physicalIntegrity && checklist.powerTest && checklist.accessoriesPresent;
-
-  const handleCheckboxChange = (field) => {
-    setChecklist((prev) => {
-      const updated = { ...prev, [field]: !prev[field] };
-      // If any unchecked, default suggested mode is defect, else clean
-      const willPass = updated.physicalIntegrity && updated.powerTest && updated.accessoriesPresent;
-      if (!willPass && returnMode === 'clean') {
-        // user can still choose
-      }
-      return updated;
-    });
+  const handleCheckboxChange = (key) => {
+    setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
   };
+
+  const isChecklistComplete =
+    checklist.physicalIntegrity &&
+    checklist.powerTest &&
+    checklist.accessoriesPresent;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onComplete({
-      checklist,
-      returnType: returnMode,
-      defectDetails: returnMode === 'defect' ? defectDetails : null,
-    });
+    if (!isChecklistComplete) {
+      alert('All physical verification checklist items must be confirmed before check-in.');
+      return;
+    }
+
+    if (returnMode === 'clean') {
+      onComplete({
+        mode: 'clean',
+        condition: 'Nominal / Certified Restock',
+      });
+    } else {
+      if (!defectDetails.conditionSummary.trim()) {
+        alert('Please provide diagnosis summary for the defect log.');
+        return;
+      }
+      onComplete({
+        mode: 'defect',
+        ...defectDetails,
+      });
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-xs font-sans">
       {/* Loan Summary Badge */}
-      <div className="p-3 bg-zinc-950 border border-zinc-800 rounded-md space-y-1 font-mono">
+      <div className="p-4 bg-white/[0.03] border border-white/10 rounded-2xl space-y-2 font-sans">
         <div className="flex justify-between items-center text-zinc-400">
           <span>Asset Tag:</span>
-          <span className="font-bold text-blue-400">{loan.assetTag}</span>
+          <span className="font-semibold text-[#c9b8a0]">{loan.assetTag}</span>
         </div>
         <div className="flex justify-between items-center text-zinc-400">
           <span>Hardware:</span>
-          <span className="text-zinc-200 truncate max-w-[240px]">{loan.nomenclature}</span>
+          <span className="text-white font-medium truncate max-w-[240px]">{loan.nomenclature}</span>
         </div>
         <div className="flex justify-between items-center text-zinc-400">
           <span>Borrower PRN:</span>
-          <span className="text-zinc-200">{loan.borrowerPrn} ({loan.borrowerName})</span>
+          <span className="text-zinc-300">{loan.borrowerPrn} ({loan.borrowerName})</span>
         </div>
         <div className="flex justify-between items-center text-zinc-400">
           <span>Project Team:</span>
-          <span className="text-zinc-200">{loan.projectId}</span>
+          <span className="text-zinc-300">{loan.projectId}</span>
         </div>
       </div>
 
       {/* Mandatory Condition Checklist */}
       <div className="space-y-2.5">
-        <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+        <label className="block text-[11px] font-sans uppercase tracking-wider text-[#c9b8a0] font-semibold">
           Digital Return Verification Checklist
         </label>
 
-        <label className="flex items-start gap-2.5 p-2.5 rounded bg-zinc-950/60 border border-zinc-800 cursor-pointer hover:bg-zinc-800/40 transition-colors">
+        <label className="flex items-start gap-2.5 p-3 rounded-2xl bg-white/[0.02] border border-white/10 cursor-pointer hover:bg-white/[0.04] transition-colors">
           <input
             type="checkbox"
             checked={checklist.physicalIntegrity}
             onChange={() => handleCheckboxChange('physicalIntegrity')}
-            className="mt-0.5 rounded border-zinc-700 text-blue-600 focus:ring-0 focus:ring-offset-0 bg-zinc-900"
+            className="mt-0.5 rounded border-white/20 text-[#c9b8a0] focus:ring-0 focus:ring-offset-0 bg-white/5"
           />
           <div className="space-y-0.5">
-            <span className="font-medium text-zinc-200">Physical Integrity</span>
-            <p className="text-[11px] text-zinc-500 font-mono">Pins straight, PCB unbroken, solder joints & enclosure intact</p>
+            <span className="font-medium text-white">Physical Integrity</span>
+            <p className="text-[11px] text-zinc-400 font-sans">Pins straight, PCB unbroken, solder joints & enclosure intact</p>
           </div>
         </label>
 
-        <label className="flex items-start gap-2.5 p-2.5 rounded bg-zinc-950/60 border border-zinc-800 cursor-pointer hover:bg-zinc-800/40 transition-colors">
+        <label className="flex items-start gap-2.5 p-3 rounded-2xl bg-white/[0.02] border border-white/10 cursor-pointer hover:bg-white/[0.04] transition-colors">
           <input
             type="checkbox"
             checked={checklist.powerTest}
             onChange={() => handleCheckboxChange('powerTest')}
-            className="mt-0.5 rounded border-zinc-700 text-blue-600 focus:ring-0 focus:ring-offset-0 bg-zinc-900"
+            className="mt-0.5 rounded border-white/20 text-[#c9b8a0] focus:ring-0 focus:ring-offset-0 bg-white/5"
           />
           <div className="space-y-0.5">
-            <span className="font-medium text-zinc-200">Functional Power Test</span>
-            <p className="text-[11px] text-zinc-500 font-mono">Power LED illuminates, no short-circuits on 3.3V/5V rails</p>
+            <span className="font-medium text-white">Functional Power Test</span>
+            <p className="text-[11px] text-zinc-400 font-sans">Power LED illuminates, no short-circuits on 3.3V/5V rails</p>
           </div>
         </label>
 
-        <label className="flex items-start gap-2.5 p-2.5 rounded bg-zinc-950/60 border border-zinc-800 cursor-pointer hover:bg-zinc-800/40 transition-colors">
+        <label className="flex items-start gap-2.5 p-3 rounded-2xl bg-white/[0.02] border border-white/10 cursor-pointer hover:bg-white/[0.04] transition-colors">
           <input
             type="checkbox"
             checked={checklist.accessoriesPresent}
             onChange={() => handleCheckboxChange('accessoriesPresent')}
-            className="mt-0.5 rounded border-zinc-700 text-blue-600 focus:ring-0 focus:ring-offset-0 bg-zinc-900"
+            className="mt-0.5 rounded border-white/20 text-[#c9b8a0] focus:ring-0 focus:ring-offset-0 bg-white/5"
           />
           <div className="space-y-0.5">
-            <span className="font-medium text-zinc-200">Accessories & Cables Present</span>
-            <p className="text-[11px] text-zinc-500 font-mono">USB cable, antenna, cooling shroud, or probe leads accounted for</p>
+            <span className="font-medium text-white">Accessories & Cables Present</span>
+            <p className="text-[11px] text-zinc-400 font-sans">USB cable, antenna, cooling shroud, or probe leads accounted for</p>
           </div>
         </label>
       </div>
 
       {/* Mode Selector */}
       <div className="pt-2">
-        <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
+        <label className="block text-[11px] font-sans uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
           Triage Decision Mode
         </label>
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => setReturnMode('clean')}
-            className={`p-2.5 rounded border flex items-center justify-center gap-2 font-mono text-xs transition-all ${
+            className={`p-3 rounded-2xl border flex items-center justify-center gap-2 font-sans text-xs transition-all cursor-pointer ${
               returnMode === 'clean'
-                ? 'bg-emerald-950/80 border-emerald-600 text-emerald-300 font-semibold shadow-sm'
-                : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:bg-zinc-800'
+                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold shadow-sm'
+                : 'bg-white/[0.02] border-white/10 text-zinc-400 hover:bg-white/[0.05]'
             }`}
           >
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
@@ -129,10 +143,10 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
           <button
             type="button"
             onClick={() => setReturnMode('defect')}
-            className={`p-2.5 rounded border flex items-center justify-center gap-2 font-mono text-xs transition-all ${
+            className={`p-3 rounded-2xl border flex items-center justify-center gap-2 font-sans text-xs transition-all cursor-pointer ${
               returnMode === 'defect'
-                ? 'bg-rose-950/80 border-rose-600 text-rose-300 font-semibold shadow-sm'
-                : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:bg-zinc-800'
+                ? 'bg-rose-500/15 border-rose-500/40 text-rose-300 font-semibold shadow-sm'
+                : 'bg-white/[0.02] border-white/10 text-zinc-400 hover:bg-white/[0.05]'
             }`}
           >
             <Wrench className="w-4 h-4 text-rose-400" />
@@ -143,19 +157,19 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
 
       {/* Defect Details Form when mode === 'defect' */}
       {returnMode === 'defect' && (
-        <div className="p-3 bg-rose-950/30 border border-rose-900/50 rounded-md space-y-2.5 pt-2">
-          <div className="flex items-center gap-1.5 text-rose-300 font-mono text-xs font-semibold">
+        <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl space-y-3 pt-3">
+          <div className="flex items-center gap-1.5 text-rose-300 font-sans text-xs font-semibold">
             <AlertTriangle className="w-3.5 h-3.5" />
             Defect Condition Logging Parameters
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-[10px] font-mono text-zinc-400 uppercase">Defect Severity</label>
+              <label className="block text-[10px] font-sans text-zinc-400 uppercase font-semibold">Defect Severity</label>
               <select
                 value={defectDetails.severity}
                 onChange={(e) => setDefectDetails({ ...defectDetails, severity: e.target.value })}
-                className="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-xs text-zinc-200"
+                className="w-full mt-1 bg-[#141417] border border-white/15 rounded-xl px-3 py-2 text-xs text-white"
               >
                 <option value="Minor">Minor (Scratches/Bent pin)</option>
                 <option value="Moderate">Moderate (Port damaged/Intermittent)</option>
@@ -163,11 +177,11 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-mono text-zinc-400 uppercase">Category</label>
+              <label className="block text-[10px] font-sans text-zinc-400 uppercase font-semibold">Category</label>
               <select
                 value={defectDetails.defectCategory}
                 onChange={(e) => setDefectDetails({ ...defectDetails, defectCategory: e.target.value })}
-                className="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-xs text-zinc-200"
+                className="w-full mt-1 bg-[#141417] border border-white/15 rounded-xl px-3 py-2 text-xs text-white"
               >
                 <option value="Physical Damage (Port/Connector)">Physical Damage</option>
                 <option value="Electrical Overstress (EOS)">Electrical Overstress</option>
@@ -178,7 +192,7 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
           </div>
 
           <div>
-            <label className="block text-[10px] font-mono text-zinc-400 uppercase">
+            <label className="block text-[10px] font-sans text-zinc-400 uppercase font-semibold">
               Technician Diagnostic Notes
             </label>
             <textarea
@@ -186,39 +200,39 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
               value={defectDetails.conditionSummary}
               onChange={(e) => setDefectDetails({ ...defectDetails, conditionSummary: e.target.value })}
               placeholder="Describe physical flaw or electrical test result..."
-              className="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded px-2.5 py-1.5 text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-rose-500"
+              className="w-full mt-1 bg-[#141417] border border-white/15 rounded-xl px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-rose-500 font-sans"
             />
           </div>
         </div>
       )}
 
       {/* Action Footer */}
-      <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+      <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
         <button
           type="button"
           onClick={onCancel}
-          className="px-3 py-1.5 rounded border border-zinc-700 font-mono text-xs text-zinc-400 hover:bg-zinc-800 transition-colors"
+          className="px-4 py-2 rounded-full border border-white/10 font-sans text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
         >
           Cancel
         </button>
 
         <button
           type="submit"
-          className={`flex items-center gap-1.5 px-4 py-1.5 rounded font-mono text-xs font-semibold tracking-tight transition-all shadow-sm ${
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-sans text-xs font-semibold tracking-wide transition-all shadow-sm cursor-pointer ${
             returnMode === 'clean'
-              ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+              ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:opacity-95 text-white'
               : 'bg-rose-600 hover:bg-rose-500 text-white'
           }`}
         >
           {returnMode === 'clean' ? (
             <>
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              Restock & Advance FIFO Queue
+              <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Restock & Advance FIFO Queue</span>
             </>
           ) : (
             <>
               <Wrench className="w-3.5 h-3.5" />
-              Flag Defect & Route to Bench
+              <span>Flag Defect & Route to Bench</span>
             </>
           )}
         </button>
@@ -226,3 +240,5 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
     </form>
   );
 }
+
+export default InspectionForm;

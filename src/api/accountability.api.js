@@ -165,4 +165,30 @@ export const accountabilityApi = {
       return projects.find((p) => p.id === projectId) || null;
     });
   },
+
+  createProject: async (projectData) => {
+    return apiClient.simulatedFetch('CREATE_PROJECT', () => {
+      const projects = getStored(PROJECTS_KEY, INITIAL_PROJECTS);
+      const newProject = {
+        id: `PRJ-AIML-${Math.floor(20 + Math.random() * 80)}`,
+        title: projectData.title,
+        courseCode: projectData.courseCode || 'DCDS-SY-AIML',
+        academicTerm: projectData.academicTerm || 'Autumn 2026 (Semester III)',
+        department: projectData.department || 'Artificial Intelligence & Machine Learning',
+        mentorId: projectData.mentorId || 'FAC-AI-019',
+        mentorName: projectData.mentorName || 'Dr. Anjali Dalvi',
+        teamLeaderPrn: projectData.teamLeaderPrn || '202401048',
+        members: projectData.members || [],
+        hardwareBudgetCap: projectData.hardwareBudgetCap || 3,
+        currentAllocatedCount: 0,
+        reliabilityScore: 95.0,
+        allocatedItems: [],
+        abstract: projectData.abstract || 'Academic hardware research and laboratory project.',
+      };
+      const updated = [newProject, ...projects];
+      saveStored(PROJECTS_KEY, updated);
+      appendAudit('PROJECT_REGISTERED', newProject.id, `Created project group: ${newProject.title} with ${newProject.members.length} members`, 'Student', newProject.teamLeaderPrn);
+      return newProject;
+    });
+  },
 };

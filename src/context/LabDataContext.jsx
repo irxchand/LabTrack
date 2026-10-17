@@ -5,11 +5,59 @@ import { accountabilityApi } from '../api/accountability.api';
 import { useNotification } from './NotificationContext';
 import { useAuth } from './AuthContext';
 
+export const LAB_FACILITIES = [
+  {
+    id: 'AIML',
+    name: 'AIML LAB',
+    room: 'Lab 1 - AI',
+    subTitle: 'Room 402 • Dept. of AI & Data Science',
+    type: 'Core AI & Vision Systems',
+  },
+  {
+    id: 'IOT',
+    name: 'IOT LAB',
+    room: 'Lab 2 - IoT',
+    subTitle: 'Room 305 • Connected Sensors & Edge MCU',
+    type: 'IoT & Telemetry Depot',
+  },
+  {
+    id: 'EMBEDDED',
+    name: 'EMBEDDED LAB',
+    room: 'Lab 3 - Embedded',
+    subTitle: 'Room 214 • Robotics & Microcontrollers',
+    type: 'Robotics & Control Racks',
+  },
+  {
+    id: 'ALL',
+    name: 'ALL LABS',
+    room: 'All Labs',
+    subTitle: 'Central Hardware Depot • Integrated Overview',
+    type: 'Unified Registry',
+  },
+];
+
 const LabDataContext = createContext(null);
 
 export function LabDataProvider({ children }) {
   const { addToast } = useNotification();
   const { currentUser } = useAuth();
+
+  const [selectedFacility, setSelectedFacility] = useState(() => {
+    try {
+      return localStorage.getItem('labtrack_active_facility') || 'AIML LAB';
+    } catch {
+      return 'AIML LAB';
+    }
+  });
+
+  const changeFacility = (facility) => {
+    setSelectedFacility(facility);
+    try {
+      localStorage.setItem('labtrack_active_facility', facility);
+    } catch (e) {
+      console.error('Failed to save selected facility:', e);
+    }
+  };
 
   const [inventory, setInventory] = useState([]);
   const [activeLoans, setActiveLoans] = useState([]);
@@ -22,9 +70,24 @@ export function LabDataProvider({ children }) {
   const [incidentLedger, setIncidentLedger] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Requisition basket state for batch project requests
-  const [basket, setBasket] = useState([]);
+  // Requisition basket state for batch project requests (persisted in localStorage)
+  const [basket, setBasket] = useState(() => {
+    try {
+      const saved = localStorage.getItem('labtrack_requisition_basket');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [isBasketOpen, setIsBasketOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('labtrack_requisition_basket', JSON.stringify(basket));
+    } catch (e) {
+      console.error('Failed to persist basket to localStorage:', e);
+    }
+  }, [basket]);
 
   // Load all initial data
   const loadData = useCallback(async () => {
@@ -100,7 +163,7 @@ export function LabDataProvider({ children }) {
   };
 
   // Submit batch requisition
-  const submitBasketRequisition = async (technicalPurpose) => {
+  const submitBasketRequisition = async (technicalPurpose, targetProjectId) => {
     if (basket.length === 0) return false;
     const componentsRequested = basket.map((item) => ({
       itemId: item.id,
@@ -109,13 +172,19 @@ export function LabDataProvider({ children }) {
       type: item.classification,
     }));
 
+    // Find the targeted project if specified, or match to current user
+    const selectedProject =
+      projects.find((p) => p.id === targetProjectId) ||
+      projects.find((p) => p.id === currentUser?.projectId) ||
+      projects[0];
+
     const res = await custodyApi.submitRequisition({
       studentPrn: currentUser?.prn || '202401048',
-      studentName: currentUser?.name || 'Aryan Sharma',
-      projectId: currentUser?.projectId || 'PRJ-AIML-08',
-      courseCode: currentUser?.courseCode || 'DCDS-SY-AIML',
-      mentorId: currentUser?.mentorId || 'FAC-AI-019',
-      mentorName: currentUser?.mentorName || 'Prof. Sneha Kulkarni',
+      studentName: currentUser?.name || 'Rahul Sharma',
+      projectId: selectedProject?.id || currentUser?.projectId || 'PRJ-AIML-08',
+      courseCode: selectedProject?.courseCode || currentUser?.courseCode || 'DCDS-SY-AIML',
+      mentorId: selectedProject?.mentorId || currentUser?.mentorId || 'FAC-AI-019',
+      mentorName: selectedProject?.mentorName || currentUser?.mentorName || 'Dr. Anjali Dalvi',
       technicalPurpose,
       componentsRequested,
     });
@@ -126,7 +195,7 @@ export function LabDataProvider({ children }) {
       await loadData();
       addToast({
         title: 'Requisition Submitted',
-        message: `Order #${res.data.id} has been transmitted to faculty mentor for endorsement.`,
+        message: `Order #${res.data.id} bound to ${selectedProject?.id || 'Project'}. Forwarded to ${selectedProject?.mentorName || 'Faculty'} for endorsement.`,
         type: 'success',
       });
       return true;
@@ -304,6 +373,30 @@ export function LabDataProvider({ children }) {
     }
   };
 
+  // Report Defect from Active Loan
+  const reportDefect = async (defectData) => {
+    const newDefect = {
+      id: `DEF-2026-${String(defects.length + 101).padStart(3, '0')}`,
+      assetTag: defectData.assetTag,
+      nomenclature: defectData.nomenclature,
+      associatedPrn: currentUser?.prn || '202401048',
+      associatedProject: defectData.projectId || 'PRJ-AIML-2026-08',
+      severity: defectData.severity || 'Moderate',
+      defectCategory: defectData.defectCategory || 'Component Fault',
+      conditionSummary: defectData.description || 'Reported by borrower during active loan',
+      reportedDate: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      repairStatus: 'Under Inspection',
+      resolutionPlan: 'Staged for technician bench triage',
+    };
+    setDefects((prev) => [newDefect, ...prev]);
+    addToast({
+      title: 'Fault Report Submitted',
+      message: `Defect ticket ${newDefect.id} logged for technician bench inspection.`,
+      type: 'warning',
+    });
+    return newDefect;
+  };
+
   // Inventory additions
   const addNewInventoryItem = async (newItem) => {
     const res = await inventoryApi.addItem(newItem);
@@ -317,6 +410,21 @@ export function LabDataProvider({ children }) {
       return true;
     }
     return false;
+  };
+
+  // Create Project Group
+  const createProject = async (projectData) => {
+    const res = await accountabilityApi.createProject(projectData);
+    if (res.ok) {
+      await loadData();
+      addToast({
+        title: 'Project Group Registered',
+        message: `Group "${projectData.title}" registered with ${projectData.members.length} members.`,
+        type: 'success',
+      });
+      return res.data;
+    }
+    return null;
   };
 
   return (
@@ -353,8 +461,14 @@ export function LabDataProvider({ children }) {
         joinWaitlist,
         leaveWaitlist,
         updateDefectStatus,
+        reportDefect,
         retireAsset,
         addNewInventoryItem,
+        createProject,
+        // Facility State
+        selectedFacility,
+        setSelectedFacility: changeFacility,
+        facilities: LAB_FACILITIES,
       }}
     >
       {children}

@@ -71,7 +71,7 @@ export function ApprovalsQueuePage() {
       accessor: 'id',
       width: '160px',
       render: (row) => (
-        <div className="font-mono text-xs">
+        <div className="font-sans text-xs">
           <div className="font-semibold text-[#c9b8a0]">{row.id}</div>
           <div className="text-zinc-500 text-[11px]">{row.requestDate?.split(' ')[0]}</div>
         </div>
@@ -82,7 +82,7 @@ export function ApprovalsQueuePage() {
       accessor: 'studentName',
       width: '190px',
       render: (row) => (
-        <div className="font-mono text-xs">
+        <div className="font-sans text-xs">
           <div className="text-white font-semibold">{row.studentName}</div>
           <div className="text-zinc-400 text-[11px]">{row.projectId} • {row.courseCode}</div>
         </div>
@@ -95,7 +95,7 @@ export function ApprovalsQueuePage() {
       render: (row) => {
         const isFlagged = row.teamReliabilityScore < 75;
         return (
-          <div className="flex items-center gap-1.5 font-mono text-xs">
+          <div className="flex items-center gap-1.5 font-sans text-xs">
             <span
               className={`px-2 py-0.5 rounded-full font-bold border ${
                 isFlagged
@@ -114,7 +114,7 @@ export function ApprovalsQueuePage() {
       header: 'Requested Components & Stated Purpose',
       accessor: 'technicalPurpose',
       render: (row) => (
-        <div className="space-y-1.5 font-mono text-xs">
+        <div className="space-y-1.5 font-sans text-xs">
           <div className="flex flex-wrap gap-1.5">
             {row.componentsRequested.map((c, i) => (
               <span key={i} className="px-2.5 py-0.5 bg-white/[0.04] text-zinc-300 rounded-full border border-white/10 text-[11px]">
@@ -243,7 +243,7 @@ export function ApprovalsQueuePage() {
         <form onSubmit={handleConfirmModify} className="space-y-4 text-xs font-inter">
           <div className="space-y-3">
             {modifyModalReq?.componentsRequested.map((comp, idx) => (
-              <div key={idx} className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/10 rounded-2xl font-mono">
+              <div key={idx} className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/10 rounded-2xl font-sans">
                 <span className="text-white text-xs truncate max-w-[260px]">{comp.nomenclature}</span>
                 <div className="flex items-center gap-2">
                   <label className="text-zinc-500 text-[11px]">Approved Qty:</label>

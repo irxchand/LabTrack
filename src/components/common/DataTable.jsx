@@ -101,16 +101,16 @@ export function DataTable({
           <tbody className="divide-y divide-white/5">
             {isLoading ? (
               <tr>
-                <td colSpan={columns.length} className="px-6 py-14 text-center text-zinc-400 font-mono text-xs">
+                <td colSpan={columns.length} className="px-6 py-14 text-center text-zinc-400 font-sans text-xs">
                   <div className="inline-flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#a78b71] animate-ping" />
+                    <span className="w-2 h-2 rounded-full bg-[#c9b8a0] animate-ping" />
                     Querying institutional relational datastore...
                   </div>
                 </td>
               </tr>
             ) : paginatedData.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-6 py-14 text-center text-[#62666d] font-mono text-xs">
+                <td colSpan={columns.length} className="px-6 py-14 text-center text-zinc-500 font-sans text-xs">
                   {emptyMessage}
                 </td>
               </tr>
@@ -129,6 +129,7 @@ export function DataTable({
                       className={`px-4 py-3 text-[#d1d5db] ${
                         col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'
                       }`}
+                      style={col.width ? { width: col.width, minWidth: col.width } : {}}
                     >
                       {col.render ? col.render(row) : row[col.accessor] ?? '—'}
                     </td>
@@ -141,7 +142,7 @@ export function DataTable({
       </div>
 
       {/* Pagination & Status Bar */}
-      <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.08] bg-[#0a0b0e] text-xs text-[#8a8f98] font-mono">
+      <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.08] bg-[#0a0b0e] text-xs text-[#8a8f98] font-sans">
         <div>
           Showing {sortedData.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} -{' '}
           {Math.min(currentPage * pageSize, sortedData.length)} of {sortedData.length} records

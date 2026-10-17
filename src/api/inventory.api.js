@@ -1,7 +1,7 @@
 import { apiClient } from './client';
 import { INITIAL_INVENTORY } from '../data/mockData';
 
-const STORAGE_KEY = 'labtrack_inventory_db';
+const STORAGE_KEY = 'labtrack_inventory_v4';
 
 function getStoredInventory() {
   const data = localStorage.getItem(STORAGE_KEY);

@@ -28,41 +28,23 @@ export function NavigationRail() {
 
   const navSections = [
     {
-      title: 'SHOWCASE',
+      title: 'HARDWARE WORKSPACE',
       items: [
         {
-          label: 'Neural Hero Showcase',
-          to: '/hero',
-          icon: Sparkles,
-          exact: true,
-          badge: 'EXPERIENCE',
-        },
-      ],
-    },
-    {
-      title: 'REGISTRY',
-      items: [
-        {
-          label: 'Master Inventory',
+          label: 'Hardware Depot',
           to: '/workspace/inventory',
           icon: Boxes,
           exact: true,
           count: inventory.length,
         },
         {
-          label: 'Serialized Assets',
+          label: 'Assets (Serialized)',
           to: '/workspace/inventory/assets',
           icon: Cpu,
           count: inventory.filter((i) => i.classification === 'Asset').length,
         },
         {
-          label: 'Bulk Components',
-          to: '/workspace/inventory/components',
-          icon: Package,
-          count: inventory.filter((i) => i.classification === 'Component').length,
-        },
-        {
-          label: 'Consumables',
+          label: 'Consumables & Stock',
           to: '/workspace/inventory/consumables',
           icon: Package,
           count: inventory.filter((i) => i.classification === 'Consumable').length,
@@ -213,7 +195,7 @@ export function NavigationRail() {
                       <div className="flex-1 flex items-center justify-between truncate">
                         <span className="truncate">{item.label}</span>
                         {item.count !== undefined && item.count > 0 && (
-                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/10 text-zinc-300">
+                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-sans font-bold bg-white/10 text-zinc-300">
                             {item.count}
                           </span>
                         )}
@@ -235,9 +217,9 @@ export function NavigationRail() {
       {/* Footer: Node Status & Collapse Toggle */}
       <div className="p-3 border-t border-white/10 flex items-center justify-between text-xs text-zinc-500">
         {!isCollapsed && (
-          <div className="flex items-center gap-2 text-[11px] font-mono">
+          <div className="flex items-center gap-2 text-[11px] font-sans">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-zinc-400">Node L2-A Cluster</span>
+            <span className="text-zinc-400 font-medium">Node L2-A Cluster</span>
           </div>
         )}
         <button

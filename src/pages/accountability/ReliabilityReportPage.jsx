@@ -10,13 +10,13 @@ import {
   AlertOctagon,
   FileSpreadsheet,
   Sliders,
-  CheckCircle,
+  CheckCircle2,
   Sparkles,
 } from 'lucide-react';
 
 export function ReliabilityReportPage() {
   const { reliabilityData, incidentLedger } = useLabData();
-  const { currentUser, role, permissions } = useAuth();
+  const { currentUser, permissions } = useAuth();
 
   const [highThreshold, setHighThreshold] = useState(90);
   const [flaggedThreshold, setFlaggedThreshold] = useState(75);
@@ -24,15 +24,33 @@ export function ReliabilityReportPage() {
 
   const score = currentUser?.reliabilityScore || reliabilityData?.score || 94;
 
+  const formatHumanDate = (dateStr) => {
+    if (!dateStr) return 'N/A';
+    try {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+        return d.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
+      }
+      return dateStr;
+    } catch {
+      return dateStr;
+    }
+  };
+
   const incidentColumns = [
     {
       header: 'Incident ID & Date',
       accessor: 'id',
       width: '160px',
       render: (row) => (
-        <div className="font-mono text-xs">
-          <div className="font-semibold text-[#c9b8a0]">{row.id}</div>
-          <div className="text-zinc-500 text-[11px]">{row.date}</div>
+        <div className="font-sans text-xs">
+          <div className="font-semibold text-white">{row.id}</div>
+          <div className="text-zinc-400 text-[11px] mt-0.5">{formatHumanDate(row.date)}</div>
         </div>
       ),
     },
@@ -40,93 +58,162 @@ export function ReliabilityReportPage() {
       header: 'Hardware Asset',
       accessor: 'nomenclature',
       render: (row) => (
-        <div>
-          <div className="font-semibold text-white text-xs">{row.nomenclature}</div>
-          <div className="font-mono text-[11px] text-zinc-400">Tag: {row.assetTag}</div>
+        <div className="font-sans">
+          <div className="font-medium text-white text-xs">{row.nomenclature}</div>
+          <div className="text-[11px] text-[#c9b8a0] mt-0.5 font-medium">{row.assetTag}</div>
         </div>
       ),
     },
     {
       header: 'Return Rating',
       accessor: 'conditionRating',
-      width: '180px',
-      render: (row) => (
-        <span
-          className={`font-mono text-xs font-semibold px-2.5 py-0.5 rounded-full border ${
-            row.onTime
-              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-              : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-          }`}
-        >
-          {row.conditionRating}
-        </span>
-      ),
+      width: '210px',
+      render: (row) => {
+        const raw = row.conditionRating || row.returnCondition || (row.onTime ? 'Clean Return' : 'Late Return');
+
+        let title = raw;
+        let tag = null;
+        const match = raw.match(/^(.*?)\s*\((.*?)\)$/);
+        if (match) {
+          title = match[1].trim();
+          tag = match[2].trim();
+          if (tag.toLowerCase().includes('day grace')) {
+            tag = tag.replace(/day grace/i, '1d Grace').replace(/^1\s*1d/i, '1d');
+          }
+        }
+
+        const isLate = !row.onTime || raw.toLowerCase().includes('late');
+        const isDefect = raw.toLowerCase().includes('defect') || raw.toLowerCase().includes('damage');
+
+        if (isDefect) {
+          return (
+            <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-rose-500/[0.06] border border-rose-500/20 text-xs font-sans">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shadow-[0_0_6px_rgba(244,63,94,0.6)] shrink-0" />
+              <span className="font-medium text-rose-200">{title}</span>
+              {tag && (
+                <span className="text-[10px] font-semibold tracking-tight text-rose-300 bg-rose-500/15 border border-rose-500/25 px-1.5 py-0.5 rounded">
+                  {tag}
+                </span>
+              )}
+            </div>
+          );
+        }
+
+        if (isLate) {
+          return (
+            <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-amber-500/[0.06] border border-amber-500/20 text-xs font-sans">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.6)] shrink-0" />
+              <span className="font-medium text-amber-200">{title}</span>
+              {tag && (
+                <span className="text-[10px] font-semibold tracking-tight text-amber-300 bg-amber-500/15 border border-amber-500/25 px-1.5 py-0.5 rounded">
+                  {tag}
+                </span>
+              )}
+            </div>
+          );
+        }
+
+        return (
+          <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-emerald-500/[0.06] border border-emerald-500/20 text-xs font-sans">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)] shrink-0" />
+            <span className="font-medium text-emerald-200">{title}</span>
+            {tag && (
+              <span className="text-[10px] font-semibold tracking-tight text-emerald-300 bg-emerald-500/15 border border-emerald-500/25 px-1.5 py-0.5 rounded">
+                {tag}
+              </span>
+            )}
+          </div>
+        );
+      },
     },
     {
       header: 'Technician Inspection Notes',
       accessor: 'technicianNotes',
       render: (row) => (
-        <div className="font-mono text-xs text-zinc-300">
-          <div>{row.technicianNotes}</div>
-          <div className="text-[10px] text-zinc-500">Verified by: {row.technicianPrn}</div>
+        <div className="font-sans text-xs text-zinc-300 leading-relaxed max-w-sm">
+          <div className="text-zinc-200">{row.technicianNotes || row.returnCondition || 'Inspection completed; asset integrity verified.'}</div>
+          <div className="text-[11px] text-zinc-500 mt-0.5">Verified by {row.technicianPrn || row.technicianSignOff || 'Depot Staff'}</div>
         </div>
       ),
     },
     {
-      header: 'Impact',
+      header: 'Score Impact',
       accessor: 'pointsImpact',
-      width: '150px',
-      render: (row) => (
-        <span
-          className={`font-mono text-xs font-medium ${
-            row.pointsImpact?.startsWith('+') ? 'text-emerald-400' : 'text-rose-400'
-          }`}
-        >
-          {row.pointsImpact}
-        </span>
-      ),
+      width: '160px',
+      render: (row) => {
+        const impact = row.pointsImpact || '+0 Pts';
+        const isPositive = impact.startsWith('+') && !impact.startsWith('+0');
+        const isNegative = impact.startsWith('-');
+
+        let sublabel = 'Standard Clearance';
+        if (isPositive) sublabel = 'Punctual Incentive';
+        else if (isNegative) sublabel = 'Policy Deduction';
+
+        if (impact.includes('(')) {
+          sublabel = impact.slice(impact.indexOf('(') + 1, -1);
+        }
+
+        return (
+          <div className="font-sans text-xs">
+            <div
+              className={`font-semibold tracking-tight ${
+                isPositive
+                  ? 'text-emerald-400'
+                  : isNegative
+                  ? 'text-rose-400'
+                  : 'text-zinc-400'
+              }`}
+            >
+              {impact.split(' ')[0]} Pts
+            </div>
+            <div className="text-[11px] text-zinc-500 mt-0.5">
+              {sublabel}
+            </div>
+          </div>
+        );
+      },
     },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
+    <div className="space-y-6 max-w-6xl mx-auto">
+      {/* Editorial Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full glass-neural text-[10px] font-inter uppercase tracking-[0.2em] text-[#c9b8a0] mb-2">
-            <Sparkles className="w-3 h-3 text-[#a78b71]" />
-            <span>ACCOUNTABILITY INTELLIGENCE</span>
+          <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2 mb-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+            COLLEGIATE ACCOUNTABILITY • REPUTATION SCORE
           </div>
-          <h1 className="text-2xl font-playfair font-normal italic text-white flex items-center gap-2.5">
-            <ShieldCheck className="w-6 h-6 text-[#a78b71]" />
-            Accountability & Reliability Desk
+          <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
+            <ShieldCheck className="w-7 h-7 text-[#c9b8a0]" />
+            Reputation & Reliability Score
           </h1>
-          <p className="text-xs font-inter text-zinc-400 mt-1 max-w-2xl">
-            Algorithmic compliance scoring tracking hardware return punctuality, condition integrity, and FIFO priority tiers.
+          <p className="text-sm font-sans text-zinc-400 mt-1 max-w-2xl leading-relaxed">
+            Algorithmic compliance scoring tracking hardware return punctuality, condition integrity, and borrowing priority tiers.
           </p>
         </div>
 
         {permissions.canAdjustThresholds && (
           <button
             onClick={() => setIsEditingThresholds(!isEditingThresholds)}
-            className="px-4 py-2 rounded-full glass-neural hover:border-[#a78b71]/50 text-xs font-inter text-[#c9b8a0] hover:text-white transition-neural flex items-center gap-2 self-start sm:self-auto"
+            className="px-4 py-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-sans text-[#c9b8a0] hover:text-white transition-all flex items-center gap-2 self-start sm:self-auto cursor-pointer flex-shrink-0"
           >
-            <Sliders className="w-3.5 h-3.5 text-[#a78b71]" />
-            {isEditingThresholds ? 'Close Policy Config' : 'Adjust Policy Thresholds'}
+            <Sliders className="w-3.5 h-3.5 text-[#c9b8a0]" />
+            <span>{isEditingThresholds ? 'Close Policy Config' : 'Adjust Policy Thresholds'}</span>
           </button>
         )}
       </div>
 
       {/* Admin Threshold Policy Editor */}
       {isEditingThresholds && permissions.canAdjustThresholds && (
-        <div className="glass-neural p-5 rounded-2xl border border-[#a78b71]/30 space-y-4 font-inter text-xs">
-          <div className="flex items-center gap-2 font-bold text-[#c9b8a0] uppercase tracking-wider">
-            <Sliders className="w-4 h-4 text-[#a78b71]" />
+        <div className="p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-[#c9b8a0]/30 rounded-3xl space-y-4 font-sans text-xs backdrop-blur-xl shadow-lg">
+          <div className="flex items-center gap-2 font-bold text-[#c9b8a0] uppercase tracking-wider text-xs">
+            <Sliders className="w-4 h-4 text-[#c9b8a0]" />
             Department Compliance Threshold Configuration (Auditor Mode)
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-1">
             <div>
-              <label className="block text-zinc-400 text-[11px] mb-2">
+              <label className="block text-zinc-400 text-xs mb-2">
                 High Compliance Tier Cutoff (Current: {highThreshold}+)
               </label>
               <input
@@ -135,11 +222,11 @@ export function ReliabilityReportPage() {
                 max="98"
                 value={highThreshold}
                 onChange={(e) => setHighThreshold(Number(e.target.value))}
-                className="w-full accent-[#a78b71]"
+                className="w-full accent-[#c9b8a0] cursor-pointer"
               />
             </div>
             <div>
-              <label className="block text-zinc-400 text-[11px] mb-2">
+              <label className="block text-zinc-400 text-xs mb-2">
                 Flagged / Restriction Cutoff (Current: &lt;{flaggedThreshold})
               </label>
               <input
@@ -148,11 +235,11 @@ export function ReliabilityReportPage() {
                 max="85"
                 value={flaggedThreshold}
                 onChange={(e) => setFlaggedThreshold(Number(e.target.value))}
-                className="w-full accent-rose-500"
+                className="w-full accent-rose-500 cursor-pointer"
               />
             </div>
           </div>
-          <p className="text-[11px] text-zinc-500">
+          <p className="text-[11px] text-zinc-500 pt-1 border-t border-white/5">
             Changes immediately take effect across all course sections and auto-restrict student counter dispatches.
           </p>
         </div>
@@ -161,59 +248,74 @@ export function ReliabilityReportPage() {
       {/* Primary Visual Element: Gauge and Key Metrics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Gauge (5 cols) */}
-        <div className="lg:col-span-5">
-          <ReliabilityGauge score={score} interactive={true} />
+        <div className="lg:col-span-5 p-6 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 rounded-3xl backdrop-blur-xl shadow-lg flex flex-col items-center justify-center">
+          <ReliabilityGauge score={score} interactive={false} />
         </div>
 
         {/* Supporting Metric Cards (7 cols) */}
         <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="glass-neural p-5 rounded-2xl flex flex-col justify-between border border-white/10 hover:border-[#a78b71]/30 transition-neural">
-            <div className="flex items-center justify-between text-zinc-400 font-inter text-xs">
-              <span className="uppercase tracking-wider text-[11px]">Term Allocation History</span>
-              <TrendingUp className="w-4 h-4 text-[#a78b71]" />
+          <div className="p-5 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 hover:border-white/20 rounded-3xl backdrop-blur-xl shadow-lg flex flex-col justify-between transition-all">
+            <div className="flex items-center justify-between text-zinc-400 font-sans text-xs">
+              <span className="uppercase tracking-wider text-[11px] font-semibold text-zinc-400">Term Allocation History</span>
+              <TrendingUp className="w-4 h-4 text-[#c9b8a0]" />
             </div>
             <div className="mt-4">
-              <div className="text-3xl font-playfair font-bold italic text-white">14 Items</div>
-              <p className="text-xs text-zinc-400 font-inter mt-1">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-bold font-sans text-white tracking-tight">14</span>
+                <span className="text-sm font-medium font-sans text-zinc-400">Units</span>
+              </div>
+              <p className="text-xs text-zinc-400 font-sans mt-1">
                 Issued across 3 coursework cycles
               </p>
             </div>
           </div>
 
-          <div className="glass-neural p-5 rounded-2xl flex flex-col justify-between border border-white/10 hover:border-[#a78b71]/30 transition-neural">
-            <div className="flex items-center justify-between text-zinc-400 font-inter text-xs">
-              <span className="uppercase tracking-wider text-[11px]">On-Time Return Rate</span>
-              <Clock className="w-4 h-4 text-emerald-400" />
+          <div className="p-5 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 hover:border-white/20 rounded-3xl backdrop-blur-xl shadow-lg flex flex-col justify-between transition-all">
+            <div className="flex items-center justify-between text-zinc-400 font-sans text-xs">
+              <span className="uppercase tracking-wider text-[11px] font-semibold text-zinc-400">On-Time Return Rate</span>
+              <Clock className="w-4 h-4 text-[#c9b8a0]" />
             </div>
             <div className="mt-4">
-              <div className="text-3xl font-mono font-bold text-emerald-400">92.8%</div>
-              <p className="text-xs text-zinc-400 font-inter mt-1">
+              <div className="flex items-center gap-2.5">
+                <span className="text-3xl font-bold font-sans text-white tracking-tight">92.8%</span>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-sans font-medium bg-emerald-500/[0.08] text-emerald-300 border border-emerald-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  On-Time
+                </span>
+              </div>
+              <p className="text-xs text-zinc-400 font-sans mt-1">
                 13 on-time returns • 1 grace return
               </p>
             </div>
           </div>
 
-          <div className="glass-neural p-5 rounded-2xl flex flex-col justify-between border border-white/10 hover:border-[#a78b71]/30 transition-neural">
-            <div className="flex items-center justify-between text-zinc-400 font-inter text-xs">
-              <span className="uppercase tracking-wider text-[11px]">Damage / Defect Incidents</span>
+          <div className="p-5 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 hover:border-white/20 rounded-3xl backdrop-blur-xl shadow-lg flex flex-col justify-between transition-all">
+            <div className="flex items-center justify-between text-zinc-400 font-sans text-xs">
+              <span className="uppercase tracking-wider text-[11px] font-semibold text-zinc-400">Defect Incidents</span>
               <AlertOctagon className="w-4 h-4 text-zinc-500" />
             </div>
             <div className="mt-4">
-              <div className="text-3xl font-playfair font-bold italic text-white">0</div>
-              <p className="text-xs text-zinc-400 font-inter mt-1">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-bold font-sans text-white tracking-tight">0</span>
+                <span className="text-sm font-medium font-sans text-zinc-400">Incidents</span>
+              </div>
+              <p className="text-xs text-zinc-400 font-sans mt-1">
                 Zero technician-verified equipment defects
               </p>
             </div>
           </div>
 
-          <div className="glass-neural p-5 rounded-2xl flex flex-col justify-between border border-white/10 hover:border-[#a78b71]/30 transition-neural">
-            <div className="flex items-center justify-between text-zinc-400 font-inter text-xs">
-              <span className="uppercase tracking-wider text-[11px]">Active Custody Budget</span>
-              <CheckCircle className="w-4 h-4 text-[#a78b71]" />
+          <div className="p-5 bg-gradient-to-b from-[#141417]/95 to-[#0c0c0e]/95 border border-white/10 hover:border-white/20 rounded-3xl backdrop-blur-xl shadow-lg flex flex-col justify-between transition-all">
+            <div className="flex items-center justify-between text-zinc-400 font-sans text-xs">
+              <span className="uppercase tracking-wider text-[11px] font-semibold text-zinc-400">Active Custody Budget</span>
+              <CheckCircle2 className="w-4 h-4 text-[#c9b8a0]" />
             </div>
             <div className="mt-4">
-              <div className="text-3xl font-mono font-bold text-white">2 / 5 Items</div>
-              <p className="text-xs text-zinc-400 font-inter mt-1">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-bold font-sans text-[#f5e6c8] tracking-tight">2</span>
+                <span className="text-sm font-medium font-sans text-zinc-400">of 5 Units</span>
+              </div>
+              <p className="text-xs text-zinc-400 font-sans mt-1">
                 3 available custody allocations remaining
               </p>
             </div>
@@ -222,14 +324,14 @@ export function ReliabilityReportPage() {
       </div>
 
       {/* Incident Ledger Table */}
-      <div className="space-y-3">
+      <div className="space-y-3 pt-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold tracking-tight text-white flex items-center gap-2">
-            <FileSpreadsheet className="w-4 h-4 text-[#a78b71]" />
-            Chronological Incident & Return Ledger
+          <h2 className="text-base font-semibold tracking-tight text-white flex items-center gap-2 font-sans">
+            <FileSpreadsheet className="w-4 h-4 text-[#c9b8a0]" />
+            <span>Chronological Incident & Return Ledger</span>
           </h2>
-          <span className="text-xs font-mono text-zinc-500">
-            Immutable Audit Records: {incidentLedger.length}
+          <span className="text-xs font-sans text-zinc-400">
+            Immutable Audit Records: <span className="text-white font-medium">{incidentLedger.length}</span>
           </span>
         </div>
 

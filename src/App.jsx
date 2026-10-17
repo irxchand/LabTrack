@@ -32,6 +32,7 @@ import { ApprovalsQueuePage } from './pages/operations/ApprovalsQueuePage';
 import { DispatchDeskPage } from './pages/operations/DispatchDeskPage';
 import { DefectManagementPage } from './pages/operations/DefectManagementPage';
 
+// Hero Showcase Page
 import { HeroPage } from './pages/HeroPage';
 
 export function App() {
@@ -47,8 +48,9 @@ export function App() {
               <Route path="/auth/login" element={<LoginPage />} />
               <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
-              {/* THEN: The Hero Page in which different sections are showed */}
+              {/* Luxury Gold & Neural Hero Page */}
               <Route path="/hero" element={<HeroPage />} />
+              <Route path="/showcase" element={<HeroPage />} />
               <Route path="/experience" element={<HeroPage />} />
 
               {/* Authenticated Workspace Shell */}
@@ -63,7 +65,7 @@ export function App() {
                 />
                 <Route
                   path="inventory/components"
-                  element={<InventoryListPage initialClassification="Component" />}
+                  element={<InventoryListPage initialClassification="Consumable" />}
                 />
                 <Route
                   path="inventory/consumables"
@@ -75,6 +77,7 @@ export function App() {
                 <Route path="custody">
                   <Route index element={<Navigate to="active" replace />} />
                   <Route path="active" element={<ActiveLoansPage />} />
+                  <Route path="bench" element={<ActiveLoansPage />} />
                   <Route path="requests" element={<RequisitionsPage />} />
                   <Route path="reservations" element={<ReservationsPage />} />
                 </Route>
@@ -86,7 +89,7 @@ export function App() {
                   <Route
                     path="audit-log"
                     element={
-                      <RoleGuard allowedRoles={['Lab Assistant', 'HoD / Admin']}>
+                      <RoleGuard allowedRoles={['Student', 'Faculty', 'Lab Assistant', 'HoD / Admin']}>
                         <AuditLogPage />
                       </RoleGuard>
                     }
@@ -122,7 +125,7 @@ export function App() {
                   <Route
                     path="defects"
                     element={
-                      <RoleGuard allowedRoles={['Faculty', 'Lab Assistant', 'HoD / Admin']}>
+                      <RoleGuard allowedRoles={['Student', 'Faculty', 'Lab Assistant', 'HoD / Admin']}>
                         <DefectManagementPage />
                       </RoleGuard>
                     }

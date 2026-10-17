@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { User, Lock, ArrowRight, Check, AlertCircle } from 'lucide-react';
+import { InteractiveWavesBackground } from '../../components/canvas/InteractiveWavesBackground';
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { loginWithMySQL } = useAuth();
+  const { loginWithMySQL, isAuthenticated } = useAuth();
+
+
 
   const [username, setUsername] = useState('202401048');
   const [password, setPassword] = useState('password123');
@@ -34,7 +37,7 @@ export function LoginPage() {
     try {
       const result = await loginWithMySQL(username, password, selectedRole);
       if (result.success) {
-        navigate('/hero');
+        navigate('/workspace');
       } else {
         setErrorMessage(result.error || 'Invalid credentials. Please verify your PRN and password.');
       }
@@ -53,6 +56,23 @@ export function LoginPage() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
         {/* Soft background tone */}
         <div className="absolute inset-0 bg-[#08080a]" />
+
+        {/* Interactive Waves Background */}
+        <InteractiveWavesBackground
+          lineColor="rgba(201, 184, 160, 0.22)"
+          backgroundColor="transparent"
+          waveSpeedX={0.016}
+          waveSpeedY={0.007}
+          waveAmpX={38}
+          waveAmpY={18}
+          friction={0.925}
+          tension={0.007}
+          maxCursorMove={120}
+          xGap={12}
+          yGap={34}
+          cursorDotColor="rgba(232, 213, 183, 0.85)"
+          showCursorDot={true}
+        />
 
         {/* Floating warm gold & champagne luminous orbs shining through the glass */}
         <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full bg-gradient-to-br from-[#c9b8a0]/25 via-[#a78b71]/15 to-transparent blur-[120px]" />
@@ -85,7 +105,7 @@ export function LoginPage() {
               LabTrack
             </h1>
             <div className="w-14 h-0.5 bg-gradient-to-r from-transparent via-[#c9b8a0]/70 to-transparent mx-auto mt-4 mb-3" />
-            <p className="text-xs font-mono uppercase tracking-[0.28em] text-[#c9b8a0]/80">
+            <p className="text-xs font-sans font-semibold uppercase tracking-[0.28em] text-[#c9b8a0]/80">
               Physical Computing
             </p>
           </div>
@@ -193,9 +213,18 @@ export function LoginPage() {
               <button
                 type="button"
                 onClick={() => alert('New enrollments must be provisioned by the lab administrator.')}
-                className="text-xs text-[#c9b8a0] hover:text-[#f5e6c8] font-medium transition-colors cursor-pointer block mx-auto"
+                className="text-xs text-stone-400 hover:text-stone-300 font-normal transition-colors cursor-pointer block mx-auto"
               >
                 Need an account? Contact lab administrator
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate('/hero')}
+                className="text-xs text-[#c9b8a0] hover:text-[#f5e6c8] font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 mx-auto pt-1"
+              >
+                <span>View Neural Architecture & Showcase</span>
+                <ArrowRight className="w-3 h-3" />
               </button>
             </div>
           </div>
