@@ -296,6 +296,13 @@ export function HeroPage() {
           </a>
           <button
             type="button"
+            onClick={() => navigate('/workspace/projects')}
+            className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
+          >
+            Projects
+          </button>
+          <button
+            type="button"
             onClick={() => navigate('/workspace/inventory')}
             className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
           >
@@ -303,24 +310,17 @@ export function HeroPage() {
           </button>
           <button
             type="button"
-            onClick={() => navigate('/workspace/custody/active')}
-            className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
-          >
-            Active Loans
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/workspace/custody/requisitions')}
+            onClick={() => navigate('/workspace/custody/requests')}
             className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
           >
             Requisitions
           </button>
           <button
             type="button"
-            onClick={() => navigate('/workspace/projects')}
+            onClick={() => navigate('/workspace/custody/active')}
             className="text-xs font-medium text-stone-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans"
           >
-            Projects
+            Active Loans
           </button>
         </nav>
 
