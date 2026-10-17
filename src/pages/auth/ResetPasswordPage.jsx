@@ -22,14 +22,8 @@ export function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen w-screen flex flex-col justify-center items-center bg-[#070709] p-4 sm:p-6 text-white relative overflow-hidden">
-      {/* Whole-Page Gooey Gradient Background */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <GooeyGradientBackground className="w-full h-full" />
-        <div className="absolute inset-0 bg-black/25 pointer-events-none" />
-      </div>
-
-      <div className="w-full max-w-md bg-[#111215]/90 border border-white/10 rounded-3xl p-8 shadow-2xl space-y-6 backdrop-blur-2xl relative z-10">
+    <GooeyGradientBackground className="min-h-screen w-screen flex flex-col justify-center items-center p-4 sm:p-6 text-white relative overflow-hidden font-sans">
+      <div className="w-full max-w-md bg-[#111215]/80 border border-white/15 rounded-3xl p-8 shadow-[0_30px_90px_rgba(0,0,0,0.7)] space-y-6 backdrop-blur-2xl relative z-10">
         <div className="space-y-2">
           <Link
             to="/auth/login"
@@ -88,7 +82,7 @@ export function ResetPasswordPage() {
           </form>
         )}
       </div>
-    </div>
+    </GooeyGradientBackground>
   );
 }
 

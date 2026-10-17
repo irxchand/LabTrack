@@ -19,10 +19,10 @@ export function GooeyGradientBackground({
   const interactiveRef = useRef(null);
 
   useEffect(() => {
-    let curX = 0;
-    let curY = 0;
-    let tgX = 0;
-    let tgY = 0;
+    let curX = typeof window !== 'undefined' ? window.innerWidth / 2 : 0;
+    let curY = typeof window !== 'undefined' ? window.innerHeight / 2 : 0;
+    let tgX = curX;
+    let tgY = curY;
     let animId = null;
 
     const handleMouseMove = (event) => {
@@ -57,7 +57,7 @@ export function GooeyGradientBackground({
       <div className="gradient-bg">
         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
-            <filter id="goo">
+            <filter id="goo" x="-20%" y="-20%" width="140%" height="140%">
               <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
               <feColorMatrix
                 in="blur"
@@ -78,13 +78,7 @@ export function GooeyGradientBackground({
           <div ref={interactiveRef} className="interactive"></div>
         </div>
       </div>
-
-      {/* Content Layer (e.g. Floating Glass Card) */}
-      {children && (
-        <div className="relative z-10 w-full h-full">
-          {children}
-        </div>
-      )}
+      {children}
     </div>
   );
 }

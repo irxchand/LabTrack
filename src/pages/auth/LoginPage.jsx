@@ -51,20 +51,11 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-screen overflow-hidden flex items-center justify-center p-4 sm:p-8 relative select-none font-sans bg-[#09090b]">
+    <GooeyGradientBackground className="min-h-screen w-screen overflow-hidden flex items-center justify-center p-4 sm:p-8 relative select-none font-sans">
       {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 1. GOOEY GRADIENT LIQUID BACKGROUND (Shining behind the glass)    */}
+      {/* CENTRAL FLOATING GLASS CARD WIDGET                                */}
       {/* ───────────────────────────────────────────────────────────────── */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-        <GooeyGradientBackground className="w-full h-full" />
-        {/* Subtle dark vignette overlay so the central card and text pop with ultra-high contrast */}
-        <div className="absolute inset-0 bg-black/25 pointer-events-none" />
-      </div>
-
-      {/* ───────────────────────────────────────────────────────────────── */}
-      {/* 2. CENTRAL TRANSPARENT GLASS CARD                                 */}
-      {/* ───────────────────────────────────────────────────────────────── */}
-      <div className="w-full max-w-4xl rounded-3xl shadow-[0_30px_90px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.35),inset_0_0_20px_rgba(255,255,255,0.02)] border border-white/20 backdrop-blur-2xl bg-white/[0.04] overflow-hidden grid grid-cols-1 md:grid-cols-2 relative z-10 min-h-[500px]">
+      <div className="w-full max-w-4xl rounded-3xl shadow-[0_30px_90px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.35),inset_0_0_20px_rgba(255,255,255,0.02)] border border-white/20 backdrop-blur-2xl bg-black/40 overflow-hidden grid grid-cols-1 md:grid-cols-2 relative z-10 min-h-[500px]">
         
         {/* Specular Edge Bevel (Top glass reflection) */}
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
@@ -198,7 +189,7 @@ export function LoginPage() {
           </div>
         </div>
       </div>
-    </div>
+    </GooeyGradientBackground>
   );
 }
 
