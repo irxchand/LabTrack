@@ -181,7 +181,7 @@ export function HeroPage() {
         </>
       ),
       subtext:
-        'The institutional operating system for laboratory custodians. Real-time depot stock reconciliation, 1-tap counter handover verification, 5-point return inspection with dynamic firmware sanitization, and tamper-proof chain of custody.',
+        'Real-time depot stock reconciliation, 1-tap counter handover verification, and 5-point return inspection.',
       primaryCta: {
         label: 'Launch Counter Desk',
         path: '/workspace/operations/dispatch',
@@ -214,7 +214,7 @@ export function HeroPage() {
           tag: 'STOCK RECONCILIATION',
           title: 'Depot Inventory',
           description:
-            'Audit live component availability counts, calibrate replenishment alerts, track shelf depot bins, and manage component status.',
+            'Audit live component stock counts, calibrate replenishment alerts, and manage shelf depot bins.',
           badge: 'DEPOT INVENTORY',
         },
         {
@@ -224,7 +224,7 @@ export function HeroPage() {
           tag: 'DISPATCH POOL',
           title: 'Physical Handover',
           description:
-            'Inspect pre-approved student pickup requisitions, match and allocate physical hardware asset tags, and complete instantaneous custody handover.',
+            'Inspect approved student pickup requisitions and allocate physical hardware asset tags.',
           badge: 'HANDOVER POOL',
         },
         {
@@ -234,7 +234,7 @@ export function HeroPage() {
           tag: 'FIRMWARE RESET & RESTOCK',
           title: 'Return & Reset',
           description:
-            'Perform physical pin inspections, wipe microcontrollers, verify firmware integrity, and dynamically increment inventory availability stock.',
+            'Perform pin inspections, wipe microcontrollers, and dynamically restock available inventory.',
           badge: '5-POINT TRIAGE',
         },
         {
@@ -244,7 +244,7 @@ export function HeroPage() {
           tag: 'INSTITUTIONAL LEDGER',
           title: 'Circulation Registry',
           description:
-            'Real-time campus-wide custody tracking, overdue student accountability notices, technical asset specifications, and CSV ledger reporting.',
+            'Real-time hardware custody tracking and student accountability return notifications.',
           badge: 'ACTIVE LEDGER',
         },
         {
@@ -254,7 +254,7 @@ export function HeroPage() {
           tag: 'HARDWARE TRIAGE & RMA',
           title: 'Defect Bench',
           description:
-            'Quarantine damaged hardware, diagnose electrical and mechanical faults, coordinate vendor RMA servicing, and handle zero-penalty student defect intakes.',
+            'Quarantine damaged hardware, diagnose faults, and coordinate zero-penalty student defect intakes.',
           badge: 'RMA QUARANTINE',
         },
       ],
@@ -270,7 +270,7 @@ export function HeroPage() {
         </>
       ),
       subtext:
-        'The unified operating system for academic laboratories. Real-time instrument tracking, student capstone requisitions, bench custody countdowns, and zero-trust hardware dispatch.',
+        'Real-time lab hardware search, capstone requisitions, and active bench custody tracking.',
       primaryCta: {
         label: 'Enter Student Workspace',
         path: '/workspace/inventory',
@@ -303,7 +303,7 @@ export function HeroPage() {
           tag: 'CAPSTONES & BOM',
           title: 'Projects',
           description:
-            'Form Capstone and Mini Project teams, assemble collaborative rosters, and compile required hardware Bills of Materials.',
+            'Capstone team rosters, collaborative milestones, and required hardware bills of materials.',
           badge: 'CAPSTONES & BOM',
         },
         {
@@ -313,7 +313,7 @@ export function HeroPage() {
           tag: 'LAB INVENTORY',
           title: 'Workstation',
           description:
-            'Search real-time inventory across AIML, IoT, and Embedded labs for available FPGAs, microcontrollers, sensors, and instruments.',
+            'Search real-time inventory for available FPGAs, microcontrollers, sensors, and lab instruments.',
           badge: 'LAB INVENTORY',
         },
         {
@@ -323,7 +323,7 @@ export function HeroPage() {
           tag: 'FACULTY APPROVALS',
           title: 'Requisitions',
           description:
-            'Submit component baskets for faculty guide review, track one-tap approvals, and route approved items to the dispatch desk.',
+            'Submit component baskets for faculty guide review and track dispatch staging status.',
           badge: 'FACULTY APPROVALS',
         },
         {
@@ -333,7 +333,7 @@ export function HeroPage() {
           tag: 'EQUIPMENT QUEUE',
           title: 'Waitlist',
           description:
-            'Reserve high-demand equipment, monitor live queue positioning, and automatically claim available instruments upon check-in.',
+            'Reserve high-demand equipment and monitor live queue positions for automatic checkout.',
           badge: 'EQUIPMENT QUEUE',
         },
         {
@@ -343,7 +343,7 @@ export function HeroPage() {
           tag: 'ACTIVE CUSTODY',
           title: 'My Bench',
           description:
-            'Monitor active equipment custody, observe real-time countdown return timers, and report component defects with zero penalty strikes.',
+            'Monitor active equipment loans, countdown return timers, and report zero-penalty defects.',
           badge: 'ACTIVE CUSTODY',
         },
       ],
@@ -359,7 +359,7 @@ export function HeroPage() {
         </>
       ),
       subtext:
-        'The faculty oversight control plane. One-tap student BOM endorsement, capstone milestone tracking, cross-team component allocations, and institutional defect auditing.',
+        'One-tap student BOM endorsements, capstone milestones, and direct hardware allocations.',
       primaryCta: {
         label: 'Open Approvals Queue',
         path: '/workspace/operations/approvals',
@@ -392,7 +392,7 @@ export function HeroPage() {
           tag: 'BOM ENDORSEMENT',
           title: 'Approvals Queue',
           description:
-            'Review student capstone component baskets, verify project justification, and endorse requisition batches with one tap.',
+            'Review student capstone component baskets and endorse requisition batches in one tap.',
           badge: 'ONE-TAP APPROVALS',
         },
         {
@@ -402,7 +402,7 @@ export function HeroPage() {
           tag: 'PROJECT MENTORSHIP',
           title: 'Projects Directory',
           description:
-            'Review student team rosters, track capstone project milestones, and audit hardware allocation against department limits.',
+            'Supervised student capstone cohorts, team rosters, and faculty research facilities.',
           badge: 'CAPSTONE OVERSIGHT',
         },
         {
@@ -412,7 +412,7 @@ export function HeroPage() {
           tag: 'CURRICULUM ASSETS',
           title: 'Workstation',
           description:
-            'Inspect laboratory bench readiness, browse high-value instrumentation catalogs, and track lab equipment availability.',
+            'Inspect laboratory bench readiness and browse high-value instrumentation catalogs.',
           badge: 'BENCH READY',
         },
         {
@@ -422,7 +422,7 @@ export function HeroPage() {
           tag: 'EQUIPMENT HEALTH',
           title: 'Defect Log',
           description:
-            'Monitor bench hardware fault rates, verify student damage immunity reports, and track vendor RMA replacements.',
+            'Monitor bench hardware fault rates and review zero-penalty student damage reports.',
           badge: 'FAULT MONITORING',
         },
         {
@@ -432,7 +432,7 @@ export function HeroPage() {
           tag: 'CHAIN OF CUSTODY',
           title: 'Audit Log',
           description:
-            'Review cryptographic custody records, track checkout timestamps, and maintain compliance with university asset regulations.',
+            'Cryptographic chain of custody records and university asset compliance tracking.',
           badge: 'TAMPER-PROOF AUDIT',
         },
       ],
@@ -448,7 +448,7 @@ export function HeroPage() {
         </>
       ),
       subtext:
-        'Executive oversight over all faculty research facilities, Tier 3 capital requisitions, and accreditation audit ledgers. Authorize cross-laboratory transfers and certified NBA/NAAC inventory compliance.',
+        'Department-wide project governance, Tier 3 capital approvals, and accredited audit compliance.',
       primaryCta: {
         label: 'Open Executive Workspace',
         path: '/workspace/operations/approvals',
@@ -482,7 +482,7 @@ export function HeroPage() {
           tag: 'CAPITAL SIGN-OFF',
           title: 'Executive Approvals',
           description:
-            'Review and executive-endorse high-value Tier 3 instrumentation baskets, research grant requisitions, and faculty capstone proposals.',
+            'Executive endorsement for Tier 3 instrumentation baskets and research grant allocations.',
           badge: 'EXECUTIVE SIGN-OFF',
         },
         {
@@ -492,7 +492,7 @@ export function HeroPage() {
           tag: 'FACULTY & STUDENT LABS',
           title: 'Department Projects',
           description:
-            'Institutional directory of all student capstone teams and faculty research facilities. Directly allocate capital equipment to labs.',
+            'Department directory of student capstones and research labs with direct hardware allocation.',
           badge: 'ALL-FACILITIES OVERSIGHT',
         },
         {
@@ -502,7 +502,7 @@ export function HeroPage() {
           tag: 'DEPOT & ASSET VALUATION',
           title: 'Department Depot',
           description:
-            'Audit comprehensive hardware valuation across AIML, IoT, and Embedded labs. Monitor critical replenishment reserves and depreciation.',
+            'Hardware valuation across AIML, IoT, and Embedded labs with critical replenishment tracking.',
           badge: 'DEPOT VALUATION',
         },
         {
@@ -512,7 +512,7 @@ export function HeroPage() {
           tag: 'WRITE-OFF & RMA',
           title: 'Defect Bench',
           description:
-            'Executive authorization for hardware write-offs, vendor warranty claims, and lab instrument decommissioning.',
+            'Executive authorization for instrument write-offs and laboratory equipment decommissioning.',
           badge: 'WRITE-OFF OVERSIGHT',
         },
         {
@@ -522,7 +522,7 @@ export function HeroPage() {
           tag: 'NBA / NAAC ACCREDITATION',
           title: 'Accredited Audit Ledger',
           description:
-            'Certified immutable chain of custody logs with 1-click official Excel (.xlsx) roster generation signed by Dr. K. V. Ramanathan.',
+            'Immutable chain of custody logs with 1-click official Excel (.xlsx) roster certified for accreditation.',
           badge: 'EXCEL CERTIFIED EXPORT',
         },
       ],

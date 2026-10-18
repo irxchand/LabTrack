@@ -525,16 +525,18 @@ export function ApprovalsQueuePage() {
       {/* ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
-          <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            {isHoD ? 'Departmental Executive Governance & Capital Oversight' : 'Academic Governance & BOM Oversight'}
-          </span>
-          <h1 className="text-3xl font-bold tracking-tight text-white mt-1 font-display">
-            {isHoD ? 'Department Executive Review Desk' : 'Faculty Supervisor Review Desk'}
-          </h1>
-          <p className="text-[13px] text-zinc-400 mt-1 max-w-2xl font-normal leading-relaxed">
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white font-display">
+              {isHoD ? 'Executive Approvals' : 'Approvals Desk'}
+            </h1>
+            <span className="px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[11px] text-[#c9b8a0] font-sans font-medium">
+              {pendingRequisitions.length} pending
+            </span>
+          </div>
+          <p className="text-xs text-zinc-400 mt-1 font-sans">
             {isHoD
-              ? 'Executive oversight of capstone hardware allocations, faculty endorsements across all cohorts, and Tier 3 high-capital asset authorizations.'
-              : 'Review capstone hardware proposals, inspect live bench stock, verify team reliability scores, and authorize equipment allocations.'}
+              ? 'Department-wide hardware requisitions, mentor reviews, and capital authorizations.'
+              : 'Review student capstone proposals and endorse laboratory hardware allocations.'}
           </p>
         </div>
 
@@ -733,325 +735,201 @@ export function ApprovalsQueuePage() {
               return (
                 <div
                   key={req.id}
-                  className="group relative rounded-3xl p-6 bg-gradient-to-b from-[#16171b]/90 via-[#111215]/85 to-[#0a0a0d]/95 border border-white/10 hover:border-white/20 transition-all duration-300 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-2xl flex flex-col justify-between space-y-5"
+                  className="rounded-2xl p-5 bg-[#121316]/90 border border-white/10 hover:border-white/20 transition-all duration-200 shadow-lg flex flex-col justify-between space-y-4"
                 >
-                  {/* Specular Edge Rim Reflection */}
-                  <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
-
-                  {/* Card Header Row: Metadata & Governance */}
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-white font-mono text-[11px] font-semibold tracking-wider">
-                          {req.id}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => navigate(`/workspace/projects/${req.projectId}`)}
-                          className="px-2.5 py-0.5 rounded-full bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-[#f5e6c8] text-[11px] font-semibold hover:border-[#c9b8a0] transition-colors flex items-center gap-1 cursor-pointer"
-                          title="Open Project Dossier"
-                        >
-                          <span>{req.projectId}</span>
-                          <ExternalLink className="w-3 h-3 opacity-60" />
-                        </button>
-                        <span className="text-zinc-600 text-xs">•</span>
-                        <span className="text-zinc-400 text-xs font-sans">{req.courseCode}</span>
-
-                        {/* Lifecycle Status Pill */}
-                        {isPending ? (
-                          <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[10px] font-semibold tracking-wide flex items-center gap-1">
-                            <Clock className="w-2.5 h-2.5" />
-                            <span>Pending Endorsement</span>
-                          </span>
-                        ) : isEndorsed ? (
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-[10px] font-semibold tracking-wide flex items-center gap-1">
-                            <Check className="w-2.5 h-2.5 stroke-[2.5]" />
-                            <span>{isHoD ? 'HoD Authorized' : 'Endorsed by You'}</span>
-                          </span>
-                        ) : isReady ? (
-                          <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[10px] font-semibold tracking-wide flex items-center gap-1">
-                            <MapPin className="w-2.5 h-2.5" />
-                            <span>Staged at Counter Desk</span>
-                          </span>
-                        ) : isDispatched ? (
-                          <span className="px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-300 text-[10px] font-semibold tracking-wide flex items-center gap-1">
-                            <Package className="w-2.5 h-2.5" />
-                            <span>Dispatched to Team</span>
-                          </span>
-                        ) : isRejected ? (
-                          <span className="px-2 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/25 text-rose-300 text-[10px] font-semibold tracking-wide flex items-center gap-1">
-                            <X className="w-2.5 h-2.5" />
-                            <span>Rejected</span>
-                          </span>
-                        ) : null}
-
-                        {isCapitalAsset && (
-                          <span className="px-2.5 py-0.5 rounded-full bg-[#c9b8a0]/20 border border-[#c9b8a0]/40 text-[#f5e6c8] text-[10px] font-semibold tracking-wide flex items-center gap-1 shadow-sm">
-                            <Sparkles className="w-2.5 h-2.5 text-[#c9b8a0]" />
-                            <span>Tier 3 Capital Equipment</span>
-                          </span>
-                        )}
-
-                        {isMyMentoredTeam && !isHoD && (
-                          <span className="px-2 py-0.5 rounded-full bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-[#c9b8a0] text-[10px] font-semibold tracking-wide">
-                            My Mentored Team
-                          </span>
-                        )}
-
-                        {isHoD && (
-                          <span className="px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300 text-[10px] font-medium tracking-wide">
-                            Faculty Guide: <strong className="text-white font-semibold">{req.mentorName}</strong>
-                          </span>
-                        )}
+                  {/* Row 1: Student / Project Header & Status */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white/[0.08] border border-white/10 flex items-center justify-center text-white font-semibold text-sm">
+                        {(req.studentName || 'S').charAt(0)}
                       </div>
-
-                      <div className="text-white text-base font-semibold pt-1 flex items-center gap-2">
-                        <span>{req.studentName}</span>
-                        <span className="text-zinc-500 text-xs font-normal">PRN: {req.studentPrn}</span>
-                      </div>
-                      <div className="text-[11px] text-zinc-400">
-                        Requested on {formatFriendlyDate(req.requestDate)} • Assigned Mentor: <span className="text-zinc-300 font-medium">{req.mentorName}</span>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-semibold text-white text-sm">{req.studentName}</span>
+                          <span className="text-[11px] text-zinc-400 font-mono">PRN: {req.studentPrn}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-zinc-400 mt-0.5 flex-wrap">
+                          <button
+                            type="button"
+                            onClick={() => navigate(`/workspace/projects/${req.projectId}`)}
+                            className="text-[#f5e6c8] hover:underline font-medium"
+                          >
+                            {req.projectId}
+                          </button>
+                          <span>•</span>
+                          <span>{req.courseCode}</span>
+                          {req.mentorName && (
+                            <>
+                              <span>•</span>
+                              <span>Mentor: {req.mentorName}</span>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Right Badges: Compliance & Milestone */}
-                    <div className="flex sm:flex-col items-end gap-2 flex-shrink-0">
-                      {req.isFacultyProject ||
-                      req.studentPrn?.startsWith('FAC-') ||
-                      req.studentPrn?.startsWith('HOD-') ||
-                      req.mentorId === req.studentPrn ||
-                      req.studentName?.startsWith('Dr.') ||
-                      req.studentName?.startsWith('Prof.') ||
-                      projects.find((p) => p.id === req.projectId)?.isFacultyProject ? (
-                        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-xs shadow-sm">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-                          <span className="text-[#f5e6c8] font-medium text-[11px]">Academic Exemption</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 border border-white/10 text-xs shadow-sm">
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                              isFlagged
-                                ? 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]'
-                                : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'
-                            }`}
-                          />
-                          <span className="text-white font-semibold">{req.teamReliabilityScore}/100</span>
-                          <span className="text-zinc-400 text-[11px]">Student Team</span>
-                        </div>
+                    {/* Status & Priority Badge */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {isCapitalAsset && (
+                        <span className="px-2 py-0.5 rounded-full bg-[#c9b8a0]/20 border border-[#c9b8a0]/30 text-[#f5e6c8] text-[10px] font-medium">
+                          Tier 3 Capital
+                        </span>
                       )}
-                      <span className="text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-white/[0.04] text-zinc-400 border border-white/5 font-mono">
-                        {req.isFacultyProject ||
-                        req.studentPrn?.startsWith('FAC-') ||
-                        req.studentPrn?.startsWith('HOD-') ||
-                        projects.find((p) => p.id === req.projectId)?.isFacultyProject
-                          ? 'Faculty Research'
-                          : 'Milestone 2 Sprint'}
+                      {isPending ? (
+                        <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs font-medium flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          <span>Needs Review</span>
+                        </span>
+                      ) : isEndorsed ? (
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-xs font-medium flex items-center gap-1">
+                          <Check className="w-3 h-3 stroke-[2.5]" />
+                          <span>Approved</span>
+                        </span>
+                      ) : isReady ? (
+                        <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs font-medium flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          <span>At Counter</span>
+                        </span>
+                      ) : isDispatched ? (
+                        <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-300 text-xs font-medium flex items-center gap-1">
+                          <Package className="w-3 h-3" />
+                          <span>Dispatched</span>
+                        </span>
+                      ) : (
+                        <span className="px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs font-medium">
+                          Rejected
+                        </span>
+                      )}
+                      <span className="text-[11px] text-zinc-500 font-sans">
+                        {formatFriendlyDate(req.requestDate)}
                       </span>
                     </div>
                   </div>
 
-                  {/* Component Allocation Showcase with Physical Photography */}
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-zinc-400 font-semibold font-sans">
-                      <span>Requested Hardware Components ({req.componentsRequested.length} items)</span>
-                      <span className="text-[10px] text-zinc-500 font-mono">Real-Time Bench Inventory Checked</span>
-                    </div>
+                  {/* Row 2: Requested Hardware Items */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                    {req.componentsRequested.map((comp, idx) => {
+                      const stock = getComponentStock(comp);
+                      const image = getItemImage(comp);
+                      const isShortage = stock.count < comp.quantity;
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {req.componentsRequested.map((comp, idx) => {
-                        const stock = getComponentStock(comp);
-                        const image = getItemImage(comp);
-                        const isShortage = stock.count < comp.quantity;
-
-                        return (
-                          <div
-                            key={idx}
-                            className="p-3.5 rounded-2xl bg-black/50 border border-white/10 flex items-center gap-3 hover:border-white/20 transition-all shadow-inner"
-                          >
-                            <div className="w-14 h-14 rounded-xl bg-black/70 border border-white/10 p-1.5 flex items-center justify-center flex-shrink-0 shadow-sm">
-                              <img
-                                src={image}
-                                alt={comp.nomenclature}
-                                className="max-h-full max-w-full object-contain filter drop-shadow"
-                                onError={(e) => {
-                                  e.target.src = '/images/hardware/raspberry-pi-5.jpg';
-                                }}
-                              />
+                      return (
+                        <div
+                          key={idx}
+                          className="p-2.5 rounded-xl bg-white/[0.02] border border-white/10 flex items-center gap-2.5 hover:border-white/20 transition-all"
+                        >
+                          <div className="w-10 h-10 rounded-lg bg-black/60 border border-white/10 p-1 flex items-center justify-center flex-shrink-0">
+                            <img
+                              src={image}
+                              alt={comp.nomenclature}
+                              className="max-h-full max-w-full object-contain"
+                              onError={(e) => {
+                                e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+                              }}
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs font-medium text-white truncate">
+                              {comp.nomenclature}
                             </div>
-                            <div className="min-w-0 flex-1 space-y-1">
-                              <div className="text-xs font-semibold text-white truncate leading-snug">
-                                {comp.nomenclature}
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="px-2 py-0.5 rounded-md bg-white/10 text-white font-mono text-[10px] font-bold">
-                                  {comp.quantity}x
-                                </span>
-                                <span
-                                  className={`text-[10px] font-sans ${
-                                    isShortage ? 'text-amber-400 font-medium' : 'text-zinc-400'
-                                  }`}
-                                >
-                                  {stock.count > 0 ? `${stock.count} in depot` : 'Depot exhausted'}
-                                </span>
-                              </div>
+                            <div className="flex items-center gap-2 mt-0.5 text-[11px]">
+                              <span className="font-semibold text-[#f5e6c8]">Qty {comp.quantity}</span>
+                              <span className="text-zinc-600">•</span>
+                              <span className={isShortage ? 'text-amber-400' : 'text-zinc-400'}>
+                                {stock.count > 0 ? `${stock.count} in stock` : 'Out of stock'}
+                              </span>
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
+                        </div>
+                      );
+                    })}
                   </div>
 
-                  {/* Technical Purpose & Curriculum Justification */}
-                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-1.5">
-                    <div className="text-[10px] uppercase tracking-wider text-[#c9b8a0] font-semibold flex items-center gap-1.5">
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>Technical Purpose & Curriculum Justification</span>
-                    </div>
-                    <p className="text-xs font-sans text-zinc-200 leading-relaxed italic">
-                      "{req.technicalPurpose}"
+                  {/* Row 3: Purpose (Clean 1-line or 2-line quote) */}
+                  {req.technicalPurpose && (
+                    <p className="text-xs text-zinc-300 font-sans leading-relaxed line-clamp-2 px-1">
+                      <span className="text-zinc-500 font-medium">Purpose: </span>
+                      {req.technicalPurpose.replace(/^\[Faculty Endorsement\]\s*/, '')}
                     </p>
-                  </div>
+                  )}
 
-                  {/* Supervisor Endorsement Record (for past approvals) */}
+                  {/* Row 4: Endorsement / Past Status Note */}
                   {req.supervisorNotes && (
-                    <div className="p-4 rounded-2xl bg-emerald-500/[0.03] border border-emerald-500/20 space-y-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[10px] uppercase tracking-wider text-emerald-400 font-semibold flex items-center gap-1.5">
-                          <ShieldCheck className="w-3.5 h-3.5" />
-                          <span>Your Faculty Endorsement Record</span>
-                        </span>
-                        {endorsedStep?.timestamp && (
-                          <span className="text-[10px] text-zinc-500 font-sans">
-                            {formatFriendlyDate(endorsedStep.timestamp)}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs font-sans text-zinc-200 leading-relaxed italic">
-                        "{req.supervisorNotes}"
-                      </p>
+                    <div className="text-xs text-emerald-300/90 font-sans flex items-center gap-1.5 px-1">
+                      <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                      <span className="truncate">Endorsed: "{req.supervisorNotes}"</span>
                     </div>
                   )}
 
-                  {/* Counter Staging Note if staged */}
-                  {req.counterNotes && (
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-xs text-zinc-400 flex items-center gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-                      <span>Counter Dispatch Note: <strong className="text-zinc-200">{req.counterNotes}</strong></span>
-                    </div>
-                  )}
+                  {/* Row 5: Action Command Bar */}
+                  <div className="pt-3 border-t border-white/5 flex items-center justify-between gap-3 flex-wrap">
+                    {isPending ? (
+                      <>
+                        <div className="flex items-center gap-1.5">
+                          {['Coursework Validated', 'Sprint Authorized'].map((preset) => (
+                            <button
+                              key={preset}
+                              type="button"
+                              onClick={() => handleQuickApprove(req.id, preset)}
+                              className="px-2.5 py-1 rounded-full text-[11px] font-sans text-zinc-400 hover:text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 transition-all cursor-pointer"
+                            >
+                              {preset}
+                            </button>
+                          ))}
+                        </div>
 
-                  {/* Immediate Active Custody Burden (Human Context) */}
-                  {teamLoans.length > 0 && (
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-xs text-zinc-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
-                        <span>
-                          Team currently holding <strong className="text-white">{teamLoans.length} active unit{teamLoans.length === 1 ? '' : 's'}</strong>:
-                          {' '}{teamLoans.map((l) => `${l.nomenclature} (${l.assetTag})`).join(', ')}
-                        </span>
-                      </div>
-                      <span className="text-[11px] text-zinc-500 font-sans flex-shrink-0">
-                        Earliest Due: {teamLoans[0]?.dueDate?.split(' ')[0]}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Action Command Bar for Pending vs Past Approved */}
-                  {isPending ? (
-                    <div className="pt-3 border-t border-white/10 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-                      {/* 1-Click Fast Remark Presets */}
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[10px] uppercase font-semibold text-zinc-500 tracking-wider mr-1">
-                          Fast Presets:
-                        </span>
-                        {[
-                          'Coursework Validated',
-                          'Lab 402 Bench Only',
-                          'Sprint 2 Authorized',
-                        ].map((preset) => (
+                        <div className="flex items-center gap-2">
                           <button
-                            key={preset}
-                            type="button"
-                            onClick={() => handleQuickApprove(req.id, preset)}
-                            className="px-2.5 py-1 rounded-full text-[10px] font-sans font-medium bg-white/[0.04] text-zinc-300 border border-white/10 hover:border-white/25 hover:text-white transition-all cursor-pointer"
+                            onClick={() => handleOpenEndorseWithCaveat(req)}
+                            className="px-3 py-1.5 rounded-full text-xs font-medium text-zinc-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition-colors cursor-pointer"
                           >
-                            {preset}
+                            Add Note
                           </button>
-                        ))}
-                      </div>
-
-                      {/* Action Controls */}
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleOpenModify(req)}
-                          className="p-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white border border-white/10 transition-colors cursor-pointer"
-                          title="Adjust Component Quantities"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </button>
-
-                        <button
-                          onClick={() => handleOpenEndorseWithCaveat(req)}
-                          className="px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-[#c9b8a0] hover:text-white border border-white/10 transition-colors text-xs font-medium cursor-pointer"
-                          title="Attach Custom Restrictions & Time Caps"
-                        >
-                          <span>Add Caveat</span>
-                        </button>
-
-                        <button
-                          onClick={() => handleOpenReject(req)}
-                          className="px-3 py-1.5 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/25 transition-colors text-xs font-medium cursor-pointer flex items-center gap-1"
-                        >
-                          <X className="w-3 h-3" />
-                          <span>Reject</span>
-                        </button>
-
-                        <button
-                          onClick={() => handleQuickApprove(req.id)}
-                          className="px-4 py-2 rounded-full bg-white hover:bg-neutral-200 text-black font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
-                        >
-                          <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                          <span>{isHoD ? 'Executive Endorse' : 'Endorse'}</span>
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="pt-3 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center gap-2 text-xs text-zinc-400">
-                        <div className={`w-2 h-2 rounded-full ${isRejected ? 'bg-rose-400' : isDispatched ? 'bg-blue-400' : isReady ? 'bg-amber-400' : 'bg-emerald-400'}`} />
-                        <span>
+                          <button
+                            onClick={() => handleOpenReject(req)}
+                            className="px-3 py-1.5 rounded-full text-xs font-medium text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition-colors cursor-pointer"
+                          >
+                            Reject
+                          </button>
+                          <button
+                            onClick={() => handleQuickApprove(req.id)}
+                            className="px-4 py-1.5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95"
+                          >
+                            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                            <span>{isHoD ? 'Executive Endorse' : 'Approve'}</span>
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-xs text-zinc-400">
                           {isDispatched
-                            ? 'Active in student custody • Dispatched from Counter Desk'
+                            ? 'Active in student custody'
                             : isReady
-                            ? (req.counterNotes ? `Staged at Counter: ${req.counterNotes}` : 'Staged at counter desk • Awaiting physical borrower sign-out')
+                            ? 'Ready at counter desk for pickup'
                             : isRejected
-                            ? 'Proposal rejected • Recorded in departmental audit log'
-                            : 'Faculty endorsement committed • Forwarded to counter for staging'}
+                            ? 'Requisition rejected'
+                            : 'Approved and sent to counter desk'}
                         </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 self-end sm:self-auto">
-                        <button
-                          type="button"
-                          onClick={() => setTimelineModalReq(req)}
-                          className="px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white border border-white/10 transition-colors text-xs font-medium cursor-pointer flex items-center gap-1.5"
-                        >
-                          <Clock className="w-3.5 h-3.5 text-zinc-400" />
-                          <span>Audit Trail ({req.timeline?.length || 1} steps)</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => navigate(`/workspace/projects/${req.projectId}`)}
-                          className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black font-semibold text-xs transition-all flex items-center gap-1 shadow-sm cursor-pointer"
-                        >
-                          <span>Project Dossier</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setTimelineModalReq(req)}
+                            className="px-3 py-1.5 rounded-full text-xs text-zinc-300 hover:text-white bg-white/[0.04] border border-white/10 cursor-pointer transition-colors"
+                          >
+                            Timeline
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => navigate(`/workspace/projects/${req.projectId}`)}
+                            className="px-3 py-1.5 rounded-full text-xs text-black font-semibold bg-white hover:bg-[#f5e6c8] cursor-pointer transition-colors"
+                          >
+                            View Project
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               );
             })

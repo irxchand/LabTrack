@@ -242,29 +242,26 @@ export function ProjectDirectoryPage() {
   return (
     <div className="space-y-6">
       {/* Editorial Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-            {isHoD
-              ? 'DEPARTMENT EXECUTIVE DIRECTORY • INSTITUTIONAL OVERSIGHT'
-              : isFaculty
-              ? 'FACULTY MENTOR WORKSPACE • CAPSTONE & RESEARCH SUPERVISION'
-              : 'STUDENT ACADEMIC PORTAL • COLLABORATIVE HARDWARE POOLS'}
+          <div className="flex items-center gap-2.5">
+            <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+              {isHoD
+                ? 'Department Projects'
+                : isFaculty
+                ? 'Projects & Research Labs'
+                : 'My Academic Projects'}
+            </h1>
+            <span className="px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[11px] text-[#c9b8a0] font-sans font-medium">
+              {filteredProjects.length} active
+            </span>
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1.5">
+          <p className="text-xs text-zinc-400 mt-1 font-sans">
             {isHoD
-              ? 'Department Projects & Laboratories'
+              ? 'Institutional directory of research facilities, capstone cohorts, and hardware allocations.'
               : isFaculty
-              ? 'Faculty Research & Mentored Projects'
-              : 'My Academic Projects'}
-          </h1>
-          <p className="text-sm font-sans text-zinc-400 mt-1 max-w-xl">
-            {isHoD
-              ? 'Department-wide project roster, research facilities, supervisor workloads, and hardware allocations across all student cohorts.'
-              : isFaculty
-              ? 'Active research facilities and student capstone cohorts assigned under your academic supervision wing.'
-              : 'Active capstone research teams, mentor bindings, and authorized project hardware allocations for your credentials.'}
+              ? 'Student capstone teams and laboratory research facilities under your supervision.'
+              : 'Active capstones, project team rosters, and authorized hardware allocations.'}
           </p>
         </div>
 
