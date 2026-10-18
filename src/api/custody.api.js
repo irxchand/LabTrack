@@ -84,7 +84,18 @@ export const custodyApi = {
     return apiClient.simulatedFetch('GET_REQUISITIONS', () => {
       const stored = getStored(REQ_KEY, INITIAL_REQUISITIONS);
       let modified = false;
-      const sanitized = stored.map((r) => {
+
+      // Auto-merge newly added initial requisitions into stored cache
+      const missingInitials = INITIAL_REQUISITIONS.filter(
+        (init) => !stored.some((s) => s.id === init.id)
+      );
+      let list = stored;
+      if (missingInitials.length > 0) {
+        list = [...missingInitials, ...stored];
+        modified = true;
+      }
+
+      const sanitized = list.map((r) => {
         if (r.mentorName && r.mentorName.includes('Sneha Kulkarni') && r.mentorId !== 'FAC-CCE-004') {
           modified = true;
           return { ...r, mentorId: 'FAC-CCE-004' };
