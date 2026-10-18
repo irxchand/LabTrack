@@ -77,6 +77,7 @@ for row in ws_items.iter_rows(min_row=2, values_only=True):
         "stockStatus": "Available",
         "totalStock": 0,
         "availableStock": 0,
+        "badStock": 0,
         "queueDepth": 0,
         "custodyHolder": None,
         "custodyHistory": []
@@ -89,6 +90,7 @@ for row in ws_stock.iter_rows(min_row=2, values_only=True):
     if item_id in item_meta:
         item_meta[item_id]["totalStock"] += total
         item_meta[item_id]["availableStock"] += good
+        item_meta[item_id]["badStock"] += bad
         if item_id not in item_labs:
             item_labs[item_id] = []
         item_labs[item_id].append({"lab_id": lab_id, "lab_name": lab_name, "good": good, "bad": bad})
@@ -102,7 +104,40 @@ for item_id, item in item_meta.items():
 
 inventory_list = list(item_meta.values())
 
-# 3. Parse Projects & Members
+# 3. Parse Assets (36 authoritative physical items)
+assets_list = []
+for row in ws_assets.iter_rows(min_row=2, values_only=True):
+    barcode, iid, name, lab, def_id, bill, serial, state, holder = row
+    lab_str = str(lab or "").strip()
+    if "AIML" in lab_str:
+        dept = "AIML"
+    elif "CSE" in lab_str:
+        dept = "CSE"
+    elif "RA" in lab_str or "MRL" in lab_str or "MIOT" in lab_str or "HPL" in lab_str:
+        dept = "RA"
+    else:
+        dept = "Central"
+    
+    item_info = item_meta.get(str(iid), {})
+    assets_list.append({
+        "barcode": str(barcode),
+        "assetTag": str(barcode),
+        "itemId": str(iid),
+        "nomenclature": str(name),
+        "labId": lab_str,
+        "defaultId": str(def_id or ""),
+        "billNumber": str(bill or ""),
+        "serialNumber": str(serial or ""),
+        "state": str(state or "AVAILABLE").upper(),
+        "custodyHolderPrn": str(holder) if holder else None,
+        "department": dept,
+        "costTier": item_info.get("costTier", "Tier 1 Standard"),
+        "category": item_info.get("category", "Misc"),
+        "image": item_info.get("image", "/images/hardware/raspberry-pi-5.jpg"),
+        "subSpecs": item_info.get("subSpecs", "")
+    })
+
+# 4. Parse Projects & Members
 projects = []
 members_by_proj = {}
 for row in ws_members.iter_rows(min_row=2, values_only=True):
@@ -124,19 +159,21 @@ for row in ws_projects.iter_rows(min_row=2, values_only=True):
         "teamLeaderPrn": str(lead_prn),
         "members": members_by_proj.get(proj_id, [{"prn": str(lead_prn), "name": lead_name, "role": "LEAD"}]),
         "hardwareBudgetCap": 4,
-        "currentAllocatedCount": 1 if proj_id in ["PROJ-000001", "PROJ-000002"] else 0,
+        "currentAllocatedCount": 1 if proj_id in ["PROJ-000001", "PROJ-000002", "PROJ-000005"] else 0,
         "reliabilityScore": 95.0,
         "allocatedItems": [],
         "abstract": desc
     })
 
-# 4. Generate mockData.js content
+# 5. Generate mockData.js content
 out_lines = [
     "// Master Institutional Mock Database for LabTrack (Synchronized with public/data/labtrack_master_data.xlsx)",
     "",
     f"export const INITIAL_USERS = {json.dumps(users, indent=2)};",
     "",
     f"export const INITIAL_INVENTORY = {json.dumps(inventory_list, indent=2)};",
+    "",
+    f"export const INITIAL_ASSETS = {json.dumps(assets_list, indent=2)};",
     "",
     """export const INITIAL_ACTIVE_LOANS = [
   {
@@ -193,52 +230,274 @@ out_lines = [
   {
     id: 'REQ-2026-101',
     requestNumber: 'REQ-2026-101',
-    projectId: 'PROJ-000001',
-    projectTitle: 'Autonomous Quadruped Vision Robot',
-    submittedBy: 'Ishaan Chand',
-    borrowerPrn: '25070126076',
-    role: 'Student',
-    department: 'Artificial Intelligence & Machine Learning',
-    status: 'Pending Approval',
-    stage: 'Faculty Mentor Review',
+    requestDate: '2026-10-16 11:30:00',
     submittedDate: '2026-10-16 11:30:00',
     neededUntilDate: '2026-11-01',
-    purposeDescription: 'Depth perception benchmarking in Robotics Arena',
+    projectId: 'PROJ-000001',
+    projectTitle: 'Autonomous Quadruped Vision Robot',
+    studentPrn: '25070126076',
+    borrowerPrn: '25070126076',
+    studentName: 'Ishaan Chand',
+    submittedBy: 'Ishaan Chand',
+    role: 'Student',
+    department: 'Artificial Intelligence & Machine Learning',
+    courseCode: 'AIML-CAPSTONE-2026',
+    mentorId: 'T100460',
+    mentorName: 'Dr. Manoj Patil',
+    teamReliabilityScore: 96,
+    status: 'Pending Approval',
+    stage: 'Faculty Mentor Review',
+    technicalPurpose: 'Depth perception benchmarking in Robotics Arena using stereo IR and point-cloud feature extraction.',
+    purposeDescription: 'Depth perception benchmarking in Robotics Arena using stereo IR and point-cloud feature extraction.',
     componentsRequested: [
-      { itemId: 'CAM-INT-01', nomenclature: 'Intel RealSense Depth Camera D435i', quantity: 1, classification: 'Asset' },
-      { itemId: 'SEN-IMU-01', nomenclature: 'MPU6050 6-Axis Gyro & Accelerometer Module', quantity: 2, classification: 'Consumable' }
+      { itemId: 'CAM-INT-01', nomenclature: 'Intel RealSense Depth Camera D435i', quantity: 1, classification: 'Asset', type: 'Asset' },
+      { itemId: 'SEN-IMU-01', nomenclature: 'MPU6050 6-Axis Gyro & Accelerometer Module', quantity: 2, classification: 'Consumable', type: 'Consumable' }
     ],
     timeline: [
-      { stage: 'Request Submitted', completed: true, actor: 'Ishaan Chand', timestamp: '2026-10-16 11:30' },
-      { stage: 'Central Store Validation', completed: true, actor: 'System Verification', timestamp: '2026-10-16 11:30' },
-      { stage: 'Mentor Review', completed: false, actor: 'Dr. Manoj Patil', timestamp: null },
-      { stage: 'Lab In-Charge Review', completed: false, actor: 'Dr. Meenakshi Sharma', timestamp: null },
-      { stage: 'HoD Review', completed: false, actor: 'Dr. Sumit Kumar', timestamp: null },
-    ]
+      { step: 'Request Submitted', stage: 'Request Submitted', completed: true, actor: 'Ishaan Chand (25070126076)', timestamp: '2026-10-16 11:30:00', note: 'Curriculum proposal submitted' },
+      { step: 'Central Store Validation', stage: 'Central Store Validation', completed: true, actor: 'System Verification', timestamp: '2026-10-16 11:30:00', note: 'Hardware stock verified' },
+      { step: 'Faculty Mentor Review', stage: 'Mentor Review', completed: false, actor: 'Dr. Manoj Patil (T100460)', timestamp: null },
+      { step: 'HoD Review', stage: 'HoD Review', completed: false, actor: 'Dr. Sumit Kumar (T100101)', timestamp: null }
+    ],
+    supervisorNotes: '',
+    counterNotes: ''
   },
   {
     id: 'REQ-2026-102',
     requestNumber: 'REQ-2026-102',
-    projectId: 'PROJ-000007',
-    projectTitle: 'Multi-Spectral Crop Health UAV Drone',
-    submittedBy: 'Aryan Saxena',
-    borrowerPrn: '23070126012',
-    role: 'Student',
-    department: 'Artificial Intelligence & Machine Learning',
-    status: 'Pending Approval',
-    stage: 'Faculty Mentor Review',
+    requestDate: '2026-10-17 09:15:00',
     submittedDate: '2026-10-17 09:15:00',
     neededUntilDate: '2026-11-15',
-    purposeDescription: 'Thermal analysis for precision agricultural diagnostics',
+    projectId: 'PROJ-000007',
+    projectTitle: 'Multi-Spectral Crop Health UAV Drone',
+    studentPrn: '23070126012',
+    borrowerPrn: '23070126012',
+    studentName: 'Aryan Saxena',
+    submittedBy: 'Aryan Saxena',
+    role: 'Student',
+    department: 'Artificial Intelligence & Machine Learning',
+    courseCode: 'AIML-CAPSTONE-2026',
+    mentorId: 'T100458',
+    mentorName: 'Dr. Meenakshi Sharma',
+    teamReliabilityScore: 92,
+    status: 'Pending Approval',
+    stage: 'Faculty Mentor Review',
+    technicalPurpose: 'Thermal LWIR and radiometric analysis for precision agricultural diagnostics and moisture stress indexing.',
+    purposeDescription: 'Thermal LWIR and radiometric analysis for precision agricultural diagnostics and moisture stress indexing.',
     componentsRequested: [
-      { itemId: 'CAM-FLI-01', nomenclature: 'FLIR Lepton 3.5 Radiometric LWIR Thermal Camera', quantity: 1, classification: 'Asset' }
+      { itemId: 'CAM-FLI-01', nomenclature: 'FLIR Lepton 3.5 Radiometric LWIR Thermal Camera', quantity: 1, classification: 'Asset', type: 'Asset' }
     ],
     timeline: [
-      { stage: 'Request Submitted', completed: true, actor: 'Aryan Saxena', timestamp: '2026-10-17 09:15' },
-      { stage: 'Mentor Review', completed: false, actor: 'Dr. Meenakshi Sharma', timestamp: null },
-      { stage: 'Lab In-Charge Review', completed: false, actor: 'Dr. Meenakshi Sharma', timestamp: null },
-      { stage: 'HoD Review', completed: false, actor: 'Dr. Sumit Kumar', timestamp: null },
-    ]
+      { step: 'Request Submitted', stage: 'Request Submitted', completed: true, actor: 'Aryan Saxena (23070126012)', timestamp: '2026-10-17 09:15:00', note: 'Tier 3 thermal optics request' },
+      { step: 'Central Store Validation', stage: 'Central Store Validation', completed: true, actor: 'System Verification', timestamp: '2026-10-17 09:15:00', note: 'Stock availability reserved' },
+      { step: 'Faculty Mentor Review', stage: 'Mentor Review', completed: false, actor: 'Dr. Meenakshi Sharma (T100458)', timestamp: null },
+      { step: 'HoD Review', stage: 'HoD Review', completed: false, actor: 'Dr. Sumit Kumar (T100101)', timestamp: null }
+    ],
+    supervisorNotes: '',
+    counterNotes: ''
+  },
+  {
+    id: 'REQ-2026-103',
+    requestNumber: 'REQ-2026-103',
+    requestDate: '2026-10-17 14:00:00',
+    submittedDate: '2026-10-17 14:00:00',
+    neededUntilDate: '2026-11-20',
+    projectId: 'PROJ-000002',
+    projectTitle: 'Distributed Edge AI Camera Node',
+    studentPrn: '25070122045',
+    borrowerPrn: '25070122045',
+    studentName: 'Raghavendra Joshi',
+    submittedBy: 'Raghavendra Joshi',
+    role: 'Student',
+    department: 'Computer Science & Engineering',
+    courseCode: 'CSE-CAPSTONE-2026',
+    mentorId: 'T100455',
+    mentorName: 'Dr. Anand Deshmukh',
+    teamReliabilityScore: 90,
+    status: 'Pending Approval',
+    stage: 'Faculty Mentor Review',
+    technicalPurpose: 'High-throughput edge neural training and TensorRT quantization on Dell Precision workstation bench.',
+    purposeDescription: 'High-throughput edge neural training and TensorRT quantization on Dell Precision workstation bench.',
+    componentsRequested: [
+      { itemId: 'WKS-RTX-01', nomenclature: 'Dell Precision Tower (NVIDIA RTX 4090 24GB)', quantity: 1, classification: 'Asset', type: 'Asset' },
+      { itemId: 'SBC-RPI-05', nomenclature: 'Raspberry Pi 5 Model B 8GB RAM', quantity: 1, classification: 'Asset', type: 'Asset' }
+    ],
+    timeline: [
+      { step: 'Request Submitted', stage: 'Request Submitted', completed: true, actor: 'Raghavendra Joshi (25070122045)', timestamp: '2026-10-17 14:00:00', note: 'Tier 4 compute asset sign-off required' },
+      { step: 'Faculty Mentor Review', stage: 'Mentor Review', completed: false, actor: 'Dr. Anand Deshmukh (T100455)', timestamp: null },
+      { step: 'HoD Review', stage: 'HoD Review', completed: false, actor: 'Dr. Sonali Kothari (T100102)', timestamp: null }
+    ],
+    supervisorNotes: '',
+    counterNotes: ''
+  },
+  {
+    id: 'REQ-2026-104',
+    requestNumber: 'REQ-2026-104',
+    requestDate: '2026-10-17 15:45:00',
+    submittedDate: '2026-10-17 15:45:00',
+    neededUntilDate: '2026-11-10',
+    projectId: 'PROJ-000006',
+    projectTitle: 'Smart Laboratory Access & Component Dispenser',
+    studentPrn: '24070122009',
+    borrowerPrn: '24070122009',
+    studentName: 'Siddharth Menon',
+    submittedBy: 'Siddharth Menon',
+    role: 'Student',
+    department: 'Computer Science & Engineering',
+    courseCode: 'CSE-CAPSTONE-2026',
+    mentorId: 'T100454',
+    mentorName: 'Dr. Sneha Joshi',
+    teamReliabilityScore: 88,
+    status: 'Pending Approval',
+    stage: 'Faculty Mentor Review',
+    technicalPurpose: 'Industrial automation ladder logic debugging and digital signal probing with Rigol oscilloscope.',
+    purposeDescription: 'Industrial automation ladder logic debugging and digital signal probing with Rigol oscilloscope.',
+    componentsRequested: [
+      { itemId: 'PLC-SIE-01', nomenclature: 'Siemens SIMATIC S7-1200 CPU 1214C DC/DC/DC', quantity: 1, classification: 'Asset', type: 'Asset' },
+      { itemId: 'OSC-RIG-01', nomenclature: 'Rigol DS1054Z 50MHz Digital Oscilloscope', quantity: 1, classification: 'Asset', type: 'Asset' }
+    ],
+    timeline: [
+      { step: 'Request Submitted', stage: 'Request Submitted', completed: true, actor: 'Siddharth Menon (24070122009)', timestamp: '2026-10-17 15:45:00', note: 'Mechatronics instrumentation request' },
+      { step: 'Faculty Mentor Review', stage: 'Mentor Review', completed: false, actor: 'Dr. Sneha Joshi (T100454)', timestamp: null },
+      { step: 'HoD Review', stage: 'HoD Review', completed: false, actor: 'Dr. Sonali Kothari (T100102)', timestamp: null }
+    ],
+    supervisorNotes: '',
+    counterNotes: ''
+  },
+  {
+    id: 'REQ-2026-105',
+    requestNumber: 'REQ-2026-105',
+    requestDate: '2026-10-18 09:30:00',
+    submittedDate: '2026-10-18 09:30:00',
+    neededUntilDate: '2026-11-25',
+    projectId: 'PROJ-000003',
+    projectTitle: 'Precision Sorting Robotic Arm',
+    studentPrn: '25070127003',
+    borrowerPrn: '25070127003',
+    studentName: 'Chirag Singhania',
+    submittedBy: 'Chirag Singhania',
+    role: 'Student',
+    department: 'Robotics & Automation',
+    courseCode: 'RA-CAPSTONE-2026',
+    mentorId: 'T100466',
+    mentorName: 'Dr. Vinay Tambe',
+    teamReliabilityScore: 94,
+    status: 'Pending Approval',
+    stage: 'Faculty Mentor Review',
+    technicalPurpose: 'Inverse kinematics trajectory calibration and vacuum end-effector pick-and-place experiments.',
+    purposeDescription: 'Inverse kinematics trajectory calibration and vacuum end-effector pick-and-place experiments.',
+    componentsRequested: [
+      { itemId: 'ARM-DOB-01', nomenclature: 'Dobot Magician 4-DOF Robotic Arm', quantity: 1, classification: 'Asset', type: 'Asset' },
+      { itemId: 'MOT-SER-01', nomenclature: 'TowerPro SG90 Micro Servo 9g', quantity: 2, classification: 'Consumable', type: 'Consumable' }
+    ],
+    timeline: [
+      { step: 'Request Submitted', stage: 'Request Submitted', completed: true, actor: 'Chirag Singhania (25070127003)', timestamp: '2026-10-18 09:30:00', note: 'Tier 3 robotic arm coursework' },
+      { step: 'Faculty Mentor Review', stage: 'Mentor Review', completed: false, actor: 'Dr. Vinay Tambe (T100466)', timestamp: null },
+      { step: 'HoD Review', stage: 'HoD Review', completed: false, actor: 'Dr. Arunkumar Bongale (T100103)', timestamp: null }
+    ],
+    supervisorNotes: '',
+    counterNotes: ''
+  },
+  {
+    id: 'REQ-2026-106',
+    requestNumber: 'REQ-2026-106',
+    requestDate: '2026-10-18 10:15:00',
+    submittedDate: '2026-10-18 10:15:00',
+    neededUntilDate: '2026-12-01',
+    projectId: 'PROJ-000005',
+    projectTitle: 'Autonomous Mobile Warehouse AGV',
+    studentPrn: '24070127008',
+    borrowerPrn: '24070127008',
+    studentName: 'Kunal Gokhale',
+    submittedBy: 'Kunal Gokhale',
+    role: 'Student',
+    department: 'Robotics & Automation',
+    courseCode: 'RA-CAPSTONE-2026',
+    mentorId: 'T100467',
+    mentorName: 'Dr. Chetan Jagtap',
+    teamReliabilityScore: 89,
+    status: 'Pending Approval',
+    stage: 'Faculty Mentor Review',
+    technicalPurpose: '3D point cloud SLAM and autonomous navigation mapping using high-resolution Ouster LiDAR on TurtleBot 4.',
+    purposeDescription: '3D point cloud SLAM and autonomous navigation mapping using high-resolution Ouster LiDAR on TurtleBot 4.',
+    componentsRequested: [
+      { itemId: 'ROB-TB4-01', nomenclature: 'TurtleBot 4 Standard Mobile Robot', quantity: 1, classification: 'Asset', type: 'Asset' },
+      { itemId: 'LID-OUS-01', nomenclature: 'Ouster OS1-32 Gen 2 LiDAR Sensor', quantity: 1, classification: 'Asset', type: 'Asset' }
+    ],
+    timeline: [
+      { step: 'Request Submitted', stage: 'Request Submitted', completed: true, actor: 'Kunal Gokhale (24070127008)', timestamp: '2026-10-18 10:15:00', note: 'Tier 4 capital asset mobile robotics suite' },
+      { step: 'Faculty Mentor Review', stage: 'Mentor Review', completed: false, actor: 'Dr. Chetan Jagtap (T100467)', timestamp: null },
+      { step: 'HoD Review', stage: 'HoD Review', completed: false, actor: 'Dr. Arunkumar Bongale (T100103)', timestamp: null }
+    ],
+    supervisorNotes: '',
+    counterNotes: ''
+  },
+  {
+    id: 'REQ-2026-107',
+    requestNumber: 'REQ-2026-107',
+    requestDate: '2026-10-18 11:00:00',
+    submittedDate: '2026-10-18 11:00:00',
+    neededUntilDate: '2026-12-05',
+    projectId: 'PROJ-000008',
+    projectTitle: 'High-Speed Industrial Quality Inspection Cell',
+    studentPrn: '23070127014',
+    borrowerPrn: '23070127014',
+    studentName: 'Deepak Solanki',
+    submittedBy: 'Deepak Solanki',
+    role: 'Student',
+    department: 'Robotics & Automation',
+    courseCode: 'RA-CAPSTONE-2026',
+    mentorId: 'T100466',
+    mentorName: 'Dr. Vinay Tambe',
+    teamReliabilityScore: 91,
+    status: 'Pending Approval',
+    stage: 'Faculty Mentor Review',
+    technicalPurpose: 'Multi-axis visual flaw detection and robotic part manipulation on industrial Kinova manipulator.',
+    purposeDescription: 'Multi-axis visual flaw detection and robotic part manipulation on industrial Kinova manipulator.',
+    componentsRequested: [
+      { itemId: 'ARM-KIN-01', nomenclature: 'Kinova Gen3 Lite Robotic Arm', quantity: 1, classification: 'Asset', type: 'Asset' }
+    ],
+    timeline: [
+      { step: 'Request Submitted', stage: 'Request Submitted', completed: true, actor: 'Deepak Solanki (23070127014)', timestamp: '2026-10-18 11:00:00', note: 'Tier 4 high value manipulator' },
+      { step: 'Faculty Mentor Review', stage: 'Mentor Review', completed: false, actor: 'Dr. Vinay Tambe (T100466)', timestamp: null },
+      { step: 'HoD Review', stage: 'HoD Review', completed: false, actor: 'Dr. Arunkumar Bongale (T100103)', timestamp: null }
+    ],
+    supervisorNotes: '',
+    counterNotes: ''
+  },
+  {
+    id: 'REQ-2026-108',
+    requestNumber: 'REQ-2026-108',
+    requestDate: '2026-10-18 11:45:00',
+    submittedDate: '2026-10-18 11:45:00',
+    neededUntilDate: '2026-11-28',
+    projectId: 'PROJ-000004',
+    projectTitle: 'Campus IoT Environmental Telemetry Grid',
+    studentPrn: '24070126005',
+    borrowerPrn: '24070126005',
+    studentName: 'Rohan Joshi',
+    submittedBy: 'Rohan Joshi',
+    role: 'Student',
+    department: 'Artificial Intelligence & Machine Learning',
+    courseCode: 'AIML-CAPSTONE-2026',
+    mentorId: 'T100461',
+    mentorName: 'Dr. Sandeep Shinde',
+    teamReliabilityScore: 93,
+    status: 'Pending Approval',
+    stage: 'Faculty Mentor Review',
+    technicalPurpose: 'Edge compute acceleration on NVIDIA Jetson Orin Nano for distributed particulate air quality predictive inference.',
+    purposeDescription: 'Edge compute acceleration on NVIDIA Jetson Orin Nano for distributed particulate air quality predictive inference.',
+    componentsRequested: [
+      { itemId: 'DEV-JET-02', nomenclature: 'NVIDIA Jetson Orin Nano Developer Kit (8GB)', quantity: 1, classification: 'Asset', type: 'Asset' },
+      { itemId: 'SEN-BMP-01', nomenclature: 'BMP280 Barometric Pressure & Altitude Sensor', quantity: 2, classification: 'Consumable', type: 'Consumable' }
+    ],
+    timeline: [
+      { step: 'Request Submitted', stage: 'Request Submitted', completed: true, actor: 'Rohan Joshi (24070126005)', timestamp: '2026-10-18 11:45:00', note: 'Tier 3 edge compute node' },
+      { step: 'Faculty Mentor Review', stage: 'Mentor Review', completed: false, actor: 'Dr. Sandeep Shinde (T100461)', timestamp: null },
+      { step: 'HoD Review', stage: 'HoD Review', completed: false, actor: 'Dr. Sumit Kumar (T100101)', timestamp: null }
+    ],
+    supervisorNotes: '',
+    counterNotes: ''
   }
 ];""",
     "",

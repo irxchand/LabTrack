@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { INITIAL_INVENTORY } from '../data/mockData';
+import { INITIAL_INVENTORY, INITIAL_ASSETS } from '../data/mockData';
 
 const STORAGE_KEY = 'labtrack_inventory_v5';
 
@@ -48,7 +48,14 @@ export const inventoryApi = {
   getById: async (itemId) => {
     return apiClient.simulatedFetch('GET_ITEM_DOSSIER', () => {
       const items = getStoredInventory();
-      return items.find((i) => i.id === itemId || i.assetTag === itemId) || null;
+      let match = items.find((i) => i.id === itemId || i.assetTag === itemId);
+      if (!match && INITIAL_ASSETS) {
+        const assetMatch = INITIAL_ASSETS.find((a) => a.barcode === itemId || a.assetTag === itemId);
+        if (assetMatch) {
+          match = items.find((i) => i.id === assetMatch.itemId);
+        }
+      }
+      return match || null;
     });
   },
 
@@ -64,19 +71,51 @@ export const inventoryApi = {
   updateStockStatus: async (itemId, status, custodyHolder = null) => {
     return apiClient.simulatedFetch('UPDATE_STOCK_STATUS', () => {
       const items = getStoredInventory();
-      const idx = items.findIndex((i) => i.id === itemId || i.assetTag === itemId);
+      let idx = items.findIndex((i) => i.id === itemId || i.assetTag === itemId);
+      if (idx === -1 && INITIAL_ASSETS) {
+        const assetMatch = INITIAL_ASSETS.find((a) => a.barcode === itemId || a.assetTag === itemId);
+        if (assetMatch) {
+          idx = items.findIndex((i) => i.id === assetMatch.itemId);
+        }
+      }
+
       if (idx !== -1) {
-        items[idx].stockStatus = status;
+        const item = items[idx];
+        item.stockStatus = status;
         if (custodyHolder !== undefined) {
-          items[idx].custodyHolder = custodyHolder;
+          item.custodyHolder = custodyHolder;
         }
-        if (status === 'Available') {
-          items[idx].availableStock = Math.max(1, items[idx].availableStock);
+
+        if (status === 'Maintenance') {
+          // Decrement good available count, increment bad count, preserving total = good + bad
+          item.availableStock = Math.max(0, (item.availableStock ?? 1) - 1);
+          item.badStock = (item.badStock ?? 0) + 1;
+          item.totalStock = (item.availableStock + item.badStock);
+
+          if (item.labBreakdown && item.labBreakdown.length > 0) {
+            const primary = item.labBreakdown[0];
+            primary.good = Math.max(0, (primary.good ?? 1) - 1);
+            primary.bad = (primary.bad ?? 0) + 1;
+            primary.total = primary.good + primary.bad;
+          }
+        } else if (status === 'Available') {
+          item.availableStock = (item.availableStock ?? 0) + 1;
+          if (item.badStock && item.badStock > 0) {
+            item.badStock = Math.max(0, item.badStock - 1);
+          }
+          item.totalStock = Math.max(item.totalStock ?? 1, item.availableStock + (item.badStock ?? 0));
+
+          if (item.labBreakdown && item.labBreakdown.length > 0) {
+            const primary = item.labBreakdown[0];
+            primary.good = (primary.good ?? 0) + 1;
+            primary.total = primary.good + (primary.bad ?? 0);
+          }
         } else if (status === 'Allocated') {
-          items[idx].availableStock = Math.max(0, items[idx].availableStock - 1);
+          item.availableStock = Math.max(0, (item.availableStock ?? 1) - 1);
         }
+
         saveStoredInventory(items);
-        return items[idx];
+        return item;
       }
       return null;
     });

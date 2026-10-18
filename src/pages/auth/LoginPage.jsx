@@ -20,7 +20,7 @@ export function LoginPage() {
   const personas = [
     { role: 'Student', idTag: '25070126076', name: 'Ishaan Chand' },
     { role: 'Faculty', idTag: 'T100458', name: 'Dr. Meenakshi Sharma' },
-    { role: 'Lab Assistant', idTag: 'N10022', name: 'Ramesh Patil' },
+    { role: 'Lab Assistant', idTag: 'N10001', name: 'Ramesh Patil' },
     { role: 'HoD / Admin', idTag: 'T100101', name: 'Dr. Sumit Kumar' },
   ];
 

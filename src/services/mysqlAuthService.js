@@ -104,6 +104,61 @@ export const MYSQL_SEED_ACCOUNTS = [
     email: 'ganesh.jadhav@sitpune.edu.in',
     cohort: 'Dispatch Counter Staff',
   },
+  {
+    id: 10,
+    prn_id: 'N10001',
+    full_name: 'Ramesh Patil',
+    role: 'Lab Assistant',
+    department: '4th Floor Computer Labs (CSE)',
+    password_hash: 'LabTrackDemo2026!',
+    status: 'Active',
+    email: 'ramesh.patil.staff@sitpune.edu.in',
+    cohort: 'Senior Technical Staff',
+  },
+  {
+    id: 11,
+    prn_id: 'N10022',
+    full_name: 'Ramesh Patil',
+    role: 'Lab Assistant',
+    department: '4th Floor Computer Labs (CSE)',
+    password_hash: 'LabTrackDemo2026!',
+    status: 'Active',
+    email: 'ramesh.patil@sitpune.edu.in',
+    cohort: 'Lab Technician (Floor 4)',
+  },
+  {
+    id: 12,
+    prn_id: 'T100201',
+    full_name: 'Dr. Sonali Kothari',
+    role: 'HoD / Admin',
+    department: 'Dept. of Computer Science & Engineering',
+    password_hash: 'LabTrackDemo2026!',
+    status: 'Active',
+    email: 'hod.cse@sitpune.edu.in',
+    cohort: 'Head of Department (CSE)',
+  },
+  {
+    id: 13,
+    prn_id: 'T100301',
+    full_name: 'Dr. Arunkumar Bongale',
+    role: 'HoD / Admin',
+    department: 'Dept. of Robotics & Automation',
+    password_hash: 'LabTrackDemo2026!',
+    status: 'Active',
+    email: 'hod.ra@sitpune.edu.in',
+    cohort: 'Head of Department (RA)',
+  },
+  {
+    id: 14,
+    prn_id: 'T100460',
+    full_name: 'Dr. Manoj Patil',
+    role: 'Faculty',
+    department: 'Dept. of AIML & Computing',
+    password_hash: 'LabTrackDemo2026!',
+    status: 'Active',
+    email: 'manoj.patil@sitpune.edu.in',
+    cohort: 'Professor & DL/NLP Lab In-Charge',
+  },
 ];
 
 class MySQLAuthService {
@@ -166,8 +221,14 @@ class MySQLAuthService {
       };
     }
 
-    // Password validation
-    if (matched.password_hash !== cleanPassword && cleanPassword !== '••••••••••••') {
+    // Password validation - accepts seeded password_hash, default password123, master LabTrackDemo2026!, or masked bullets
+    const isPasswordValid =
+      matched.password_hash === cleanPassword ||
+      cleanPassword === '••••••••••••' ||
+      cleanPassword === 'password123' ||
+      cleanPassword === 'LabTrackDemo2026!';
+
+    if (!isPasswordValid) {
       this.recordAudit(cleanPrn, requestedRole, 'FAILED', 'Password hash mismatch');
       return {
         success: false,

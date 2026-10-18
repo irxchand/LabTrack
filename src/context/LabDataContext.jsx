@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { inventoryApi } from '../api/inventory.api';
 import { custodyApi } from '../api/custody.api';
 import { accountabilityApi } from '../api/accountability.api';
+import { INITIAL_ASSETS } from '../data/mockData';
 import { useNotification } from './NotificationContext';
 import { useAuth } from './AuthContext';
 
@@ -182,6 +183,72 @@ export function LabDataProvider({ children }) {
   const [reliabilityData, setReliabilityData] = useState(null);
   const [incidentLedger, setIncidentLedger] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Authoritative Physical Asset Registry (36 SIT Barcodes)
+  const [assets, setAssets] = useState(() => {
+    try {
+      const saved = localStorage.getItem('labtrack_assets_v5');
+      return saved ? JSON.parse(saved) : INITIAL_ASSETS;
+    } catch {
+      return INITIAL_ASSETS;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('labtrack_assets_v5', JSON.stringify(assets));
+    } catch (e) {
+      console.error('Failed to persist assets to localStorage:', e);
+    }
+  }, [assets]);
+
+  // Barcode resolution helper: maps 36 physical SIT barcodes, default IDs, serial numbers to items & loans
+  const resolveBarcode = useCallback((barcodeOrQuery) => {
+    if (!barcodeOrQuery) return null;
+    const q = String(barcodeOrQuery).trim().toLowerCase();
+
+    // 1. Physical assets match (SIT-AIML-5CL07-0043, JN-043, NV-JN-88303, etc.)
+    const matchedAsset = assets.find((a) =>
+      a.barcode?.toLowerCase() === q ||
+      a.assetTag?.toLowerCase() === q ||
+      a.defaultId?.toLowerCase() === q ||
+      a.serialNumber?.toLowerCase() === q
+    );
+
+    if (matchedAsset) {
+      const parentItem = inventory.find((i) => i.id === matchedAsset.itemId) || {};
+      const activeLoan = activeLoans.find((l) => l.assetTag === matchedAsset.barcode);
+      return {
+        ...matchedAsset,
+        parentItem,
+        activeLoan: activeLoan || null,
+        isHoused: true,
+      };
+    }
+
+    // 2. Fallback catalog item match
+    const matchedItem = inventory.find((i) =>
+      i.id?.toLowerCase() === q ||
+      i.assetTag?.toLowerCase() === q ||
+      i.sku?.toLowerCase() === q
+    );
+    if (matchedItem) {
+      return {
+        barcode: matchedItem.assetTag || matchedItem.id,
+        assetTag: matchedItem.assetTag || matchedItem.id,
+        itemId: matchedItem.id,
+        nomenclature: matchedItem.nomenclature,
+        parentItem: matchedItem,
+        state: matchedItem.availableStock > 0 ? 'AVAILABLE' : 'OUT_OF_STOCK',
+        department: getDeptFromLabId(matchedItem.primaryLabId || matchedItem.labRoom),
+        costTier: matchedItem.costTier,
+        category: matchedItem.category,
+        image: matchedItem.image,
+      };
+    }
+
+    return null;
+  }, [assets, inventory, activeLoans]);
 
   // Requisition basket state for batch project requests (persisted in localStorage)
   const [basket, setBasket] = useState(() => {
@@ -414,6 +481,16 @@ export function LabDataProvider({ children }) {
   const executeDispatch = async (payload) => {
     const res = await custodyApi.executeDispatch(payload);
     if (res.ok) {
+      const dispatchedTag = payload.assetTag;
+      // Mark physical asset as IN_USE
+      setAssets((prev) =>
+        prev.map((a) =>
+          a.barcode === dispatchedTag || a.assetTag === dispatchedTag
+            ? { ...a, state: 'IN_USE', custodyHolderPrn: payload.studentPrn }
+            : a
+        )
+      );
+
       // update item status in inventory
       await inventoryApi.updateStockStatus(payload.assetTag, 'Allocated', {
         prn: payload.studentPrn,
@@ -435,22 +512,43 @@ export function LabDataProvider({ children }) {
   const executeReturn = async (loanId, conditionChecklist, returnType, defectDetails) => {
     const res = await custodyApi.executeCheckinReturn(loanId, conditionChecklist, returnType, defectDetails);
     if (res.ok) {
-      if (returnType === 'defect' && res.data.loan) {
+      const loan = res.data?.loan;
+      const returnedAssetTag = loan?.assetTag;
+
+      if (returnType === 'defect' && loan) {
         // Log defect
         await accountabilityApi.logDefect({
-          assetTag: res.data.loan.assetTag,
-          nomenclature: res.data.loan.nomenclature,
-          studentPrn: res.data.loan.borrowerPrn,
-          projectId: res.data.loan.projectId,
+          assetTag: loan.assetTag,
+          nomenclature: loan.nomenclature,
+          studentPrn: loan.borrowerPrn,
+          projectId: loan.projectId,
           severity: defectDetails?.severity || 'Moderate',
           defectCategory: defectDetails?.defectCategory || 'Check-in Inspection Failure',
-          conditionSummary: defectDetails?.conditionSummary || 'Hardware failed counter physical test',
-          actionPlan: 'Routed to triage bench for diagnostic inspection',
+          conditionSummary: defectDetails?.conditionSummary || defectDetails?.description || 'Hardware failed counter physical test',
+          actionPlan: 'Routed to triage bench for diagnostic inspection and repair',
         });
-        await inventoryApi.updateStockStatus(res.data.loan.assetTag, 'Maintenance', null);
-      } else if (res.data.loan) {
+
+        // Mark physical asset state as DEFECTIVE
+        setAssets((prev) =>
+          prev.map((a) =>
+            a.barcode === returnedAssetTag || a.assetTag === returnedAssetTag
+              ? { ...a, state: 'DEFECTIVE', custodyHolderPrn: null }
+              : a
+          )
+        );
+
+        // Update inventory: good decrements, bad increments, preserving total = good + bad
+        await inventoryApi.updateStockStatus(loan.assetTag, 'Maintenance', null);
+      } else if (loan) {
         // Clean return restock
-        await inventoryApi.updateStockStatus(res.data.loan.assetTag, 'Available', null);
+        setAssets((prev) =>
+          prev.map((a) =>
+            a.barcode === returnedAssetTag || a.assetTag === returnedAssetTag
+              ? { ...a, state: 'AVAILABLE', custodyHolderPrn: null }
+              : a
+          )
+        );
+        await inventoryApi.updateStockStatus(loan.assetTag, 'Available', null);
       }
 
       await loadData();
@@ -458,7 +556,7 @@ export function LabDataProvider({ children }) {
         title: returnType === 'clean' ? 'Clean Return Accepted' : 'Defect Logged on Return',
         message: returnType === 'clean'
           ? 'Hardware restocked to inventory pool. FIFO waitlist queue updated.'
-          : 'Asset routed to maintenance bench and defect recorded against student project.',
+          : 'Asset marked defective: Good stock decremented, Defective stock incremented (Total preserved).',
         type: returnType === 'clean' ? 'success' : 'warning',
       });
       return true;
@@ -495,6 +593,19 @@ export function LabDataProvider({ children }) {
   const updateDefectStatus = async (defectId, status, actionPlan) => {
     const res = await accountabilityApi.updateRepairStatus(defectId, status, actionPlan);
     if (res.ok) {
+      if (status === 'Repaired') {
+        const defect = defects.find((d) => d.id === defectId);
+        if (defect) {
+          setAssets((prev) =>
+            prev.map((a) =>
+              a.barcode === defect.assetTag || a.assetTag === defect.assetTag
+                ? { ...a, state: 'AVAILABLE' }
+                : a
+            )
+          );
+          await inventoryApi.updateStockStatus(defect.assetTag, 'Available', null);
+        }
+      }
       await loadData();
       addToast({
         title: 'Defect Status Updated',
@@ -507,10 +618,20 @@ export function LabDataProvider({ children }) {
   const retireAsset = async (defectId) => {
     const res = await accountabilityApi.retireAsset(defectId);
     if (res.ok) {
+      const defect = defects.find((d) => d.id === defectId);
+      if (defect) {
+        setAssets((prev) =>
+          prev.map((a) =>
+            a.barcode === defect.assetTag || a.assetTag === defect.assetTag
+              ? { ...a, state: 'DECOMMISSIONED' }
+              : a
+          )
+        );
+      }
       await loadData();
       addToast({
         title: 'Asset Permanently Retired',
-        message: `Hardware decommissioned from active institutional registry.`,
+        message: `Hardware decommissioned from active institutional registry and written off stock.`,
         type: 'warning',
       });
     }
@@ -584,6 +705,10 @@ export function LabDataProvider({ children }) {
         incidentLedger,
         isLoading,
         refreshData: loadData,
+        // Physical Assets & Barcode Resolution
+        assets,
+        setAssets,
+        resolveBarcode,
         // Basket
         basket,
         isBasketOpen,
