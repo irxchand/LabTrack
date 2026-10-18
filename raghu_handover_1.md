@@ -32,7 +32,8 @@ A comprehensive three-way diff and merge-tree analysis was performed across the 
 > **Commit Policy:** As instructed by the project lead, our local changes will **not** be committed or merged until this handover document is reviewed and approved. Once approved, the commit hash will be pinned in Section 1.2 below.
 
 ### 1.2 Authoritative Commit Reference
-- **Pending Commit Hash:** `[PENDING USER APPROVAL]`
+- **Authoritative Commit Hash:** `10229c1` (on branch `main`)
+- **Status:** SEALED & PUSHED
 - **Merge Target:** Clean rebase or merge of `origin/version-2.3` into `main`.
 
 ---
