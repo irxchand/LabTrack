@@ -383,138 +383,143 @@ export function ActiveLoansPage() {
       <div
         key={loan.id}
         onClick={() => setInspectedLoan(loan)}
-        className="rounded-2xl p-5 bg-[#121316]/90 border border-white/10 hover:border-white/20 transition-all duration-200 shadow-lg flex flex-col justify-between space-y-4 cursor-pointer"
+        className="group relative rounded-3xl border border-white/10 hover:border-[#c9b8a0]/50 transition-all duration-500 hover:shadow-[0_24px_60px_rgba(0,0,0,0.95)] flex flex-col justify-between cursor-pointer overflow-hidden min-h-[480px]"
       >
-        {/* Row 1: Category Tag & Status Pill */}
-        <div className="flex items-center justify-between gap-3 pb-3 border-b border-white/5">
-          <div className="flex items-center gap-2">
-            <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${style.badgeBg}`}>
+        {/* Full Image Box Background - Picture fills 100% of the box edge-to-edge */}
+        <img
+          src={invItem?.image || '/images/hardware/raspberry-pi-5.jpg'}
+          alt={loan.nomenclature}
+          className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out z-0"
+          onError={(e) => {
+            e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+          }}
+        />
+
+        {/* Ambient Gradient Scrim for crisp text contrast over picture */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/35 to-black/95 pointer-events-none z-10" />
+
+        {/* Specular hairline top rim */}
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none rounded-t-3xl z-20" />
+
+        {/* Details Layered Directly On Top of the Picture */}
+        <div className="relative z-20 p-6 flex flex-col justify-between h-full min-h-[480px]">
+          {/* Top Bar: Category & Tag Header */}
+          <div className="flex items-center justify-between text-xs">
+            <span className={`px-3 py-1 rounded-full text-[11px] font-semibold border ${style.badgeBg} backdrop-blur-md shadow-lg tracking-wide`}>
               {style.tag}
             </span>
-            <span className="text-zinc-600">•</span>
-            <span className="text-xs text-zinc-400 font-mono">
-              {loan.assetTag}
-            </span>
-          </div>
-
-          <span
-            className={`px-2.5 py-0.5 rounded-full text-xs font-medium flex items-center gap-1.5 border ${
-              isOverdue
-                ? 'bg-rose-500/10 text-rose-300 border-rose-500/25'
-                : isDueSoon
-                ? 'bg-amber-500/10 text-amber-300 border-amber-500/25'
-                : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25'
-            }`}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                isOverdue
-                  ? 'bg-rose-400 animate-pulse'
-                  : isDueSoon
-                  ? 'bg-amber-400'
-                  : 'bg-emerald-400'
-              }`}
-            />
-            <span>
-              {isOverdue
-                ? `${Math.abs(loan.daysRemaining)}d Overdue`
-                : `${loan.daysRemaining}d Left`}
-            </span>
-          </span>
-        </div>
-
-        {/* Row 2: Hardware Image Thumbnail & Details */}
-        <div className="flex items-start gap-3.5">
-          <div className="w-14 h-14 rounded-xl bg-black/60 border border-white/10 p-1.5 flex items-center justify-center flex-shrink-0">
-            <img
-              src={invItem?.image || '/images/hardware/raspberry-pi-5.jpg'}
-              alt={loan.nomenclature}
-              className="max-h-full max-w-full object-contain"
-              onError={(e) => {
-                e.target.src = '/images/hardware/raspberry-pi-5.jpg';
-              }}
-            />
-          </div>
-          <div className="min-w-0 flex-1 space-y-1">
-            <h3 className="font-semibold text-white text-sm truncate">
-              {loan.nomenclature}
-            </h3>
-            <p className="text-xs text-zinc-400 line-clamp-1 font-sans">
-              {invItem?.subSpecs || 'Certified institutional hardware module.'}
-            </p>
-            <div className="flex items-center gap-2 text-[11px] text-zinc-500 pt-0.5">
-              <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
-              <span className="truncate">{loan.locationCoordinates}</span>
-              {role !== 'Student' && (
-                <>
-                  <span>•</span>
-                  <span className="truncate">{loan.borrowerName?.split(' ')[0]} ({loan.borrowerPrn})</span>
-                </>
-              )}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-sans font-medium text-zinc-300 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 shadow-lg">
+                {loan.assetTag}
+              </span>
+              <span className="text-[10px] font-sans text-zinc-400 bg-black/40 px-2 py-0.5 rounded-full border border-white/10">
+                {loan.id}
+              </span>
             </div>
           </div>
-        </div>
 
-        {/* Row 3: Spec Chips */}
-        <div className="flex flex-wrap gap-1.5">
-          {specChips.slice(0, 3).map((chip, idx) => (
-            <span
-              key={idx}
-              className="px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/10 text-[10px] text-zinc-300 font-sans"
-            >
-              {chip}
-            </span>
-          ))}
-        </div>
+          {/* Bottom Area: Hardware Details Overlaid on Picture */}
+          <div className="space-y-3.5 pt-20">
+            <div className="space-y-1">
+              <h3 className="font-display text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors drop-shadow-md">
+                {loan.nomenclature}
+              </h3>
+              <p className="text-xs text-zinc-300 font-sans font-normal line-clamp-1 leading-relaxed drop-shadow-sm">
+                {invItem?.subSpecs || 'Institutional lab hardware unit issued for project development.'}
+              </p>
+            </div>
 
-        {/* Row 4: Due Date and Actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs font-sans">
-          <div className="text-[11px] text-zinc-400">
-            Due {formatFriendlyDate(loan.dueDate)}
-          </div>
+            {/* Spec Chips */}
+            <div className="flex flex-wrap gap-1.5">
+              {specChips.slice(0, 3).map((chip, idx) => (
+                <span
+                  key={idx}
+                  className="px-2.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-[11px] text-zinc-200 font-sans font-medium shadow-sm"
+                >
+                  {chip}
+                </span>
+              ))}
+            </div>
 
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setDefectLoan(loan);
-              }}
-              className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/[0.04] hover:bg-rose-500/15 text-zinc-400 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-            >
-              <Wrench className="w-3 h-3" />
-              <span>{role === 'Student' ? 'Report Fault' : 'Flag Defect'}</span>
-            </button>
+            {/* Origin Depot & Custody Strip */}
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-zinc-200 font-sans font-medium text-[11px]">
+                <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
+                <span>{loan.locationCoordinates}</span>
+              </div>
+              <span className="text-zinc-400 text-xs font-sans drop-shadow-sm">
+                Held by {loan.borrowerName?.split(' ')[0]} ({loan.borrowerPrn})
+              </span>
+            </div>
 
-            {role === 'Student' ? (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleOpenExtension(loan);
-                }}
-                disabled={isExtensionDisabled}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all shadow-sm active:scale-95 cursor-pointer ${
-                  isExtensionDisabled
-                    ? 'bg-white/[0.04] text-zinc-600 border border-white/5 cursor-not-allowed'
-                    : 'bg-white hover:bg-zinc-200 text-black'
-                }`}
-              >
-                Extend
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setReturnIntakeLoan(loan);
-                }}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-black transition-all shadow-sm active:scale-95 cursor-pointer flex items-center gap-1.5"
-              >
-                <RotateCcw className="w-3 h-3" />
-                <span>Intake Return</span>
-              </button>
-            )}
+            {/* Card Footer: Deadline Status & Actions */}
+            <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                      isOverdue
+                        ? 'bg-rose-400 animate-pulse'
+                        : isDueSoon
+                        ? 'bg-amber-400'
+                        : 'bg-emerald-400'
+                    }`}
+                  />
+                  <span className="text-xs font-semibold text-white truncate">
+                    {isOverdue
+                      ? `${Math.abs(loan.daysRemaining)}d overdue`
+                      : `${loan.daysRemaining}d remaining`}
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-400 mt-0.5 font-normal">
+                  Due {formatFriendlyDate(loan.dueDate)}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDefectLoan(loan);
+                  }}
+                  className="px-3 py-2 rounded-full text-xs font-medium bg-black/60 backdrop-blur-md hover:bg-rose-500/20 text-zinc-300 hover:text-rose-300 border border-white/15 hover:border-rose-500/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
+                >
+                  <Wrench className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>{role === 'Student' ? 'Report Fault' : 'Flag Defect'}</span>
+                </button>
+
+                {role === 'Student' ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenExtension(loan);
+                    }}
+                    disabled={isExtensionDisabled}
+                    className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all shadow-lg active:scale-95 flex-shrink-0 cursor-pointer ${
+                      isExtensionDisabled
+                        ? 'bg-white/[0.06] text-zinc-500 border border-white/10 cursor-not-allowed'
+                        : 'bg-white hover:bg-zinc-200 text-black'
+                    }`}
+                  >
+                    Extend
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setReturnIntakeLoan(loan);
+                    }}
+                    className="px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-black tracking-tight transition-all shadow-lg active:scale-95 flex-shrink-0 cursor-pointer flex items-center gap-1.5"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Intake Return</span>
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
