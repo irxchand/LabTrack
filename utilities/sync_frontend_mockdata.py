@@ -316,10 +316,10 @@ out_lines = [
     teamReliabilityScore: 90,
     status: 'Pending Approval',
     stage: 'Faculty Mentor Review',
-    technicalPurpose: 'High-throughput edge neural training and TensorRT quantization on Dell Precision workstation bench.',
-    purposeDescription: 'High-throughput edge neural training and TensorRT quantization on Dell Precision workstation bench.',
+    technicalPurpose: 'High-throughput edge neural training and TensorRT quantization on Jetson Orin Nano bench.',
+    purposeDescription: 'High-throughput edge neural training and TensorRT quantization on Jetson Orin Nano bench.',
     componentsRequested: [
-      { itemId: 'WKS-RTX-01', nomenclature: 'Dell Precision Tower (NVIDIA RTX 4090 24GB)', quantity: 1, classification: 'Asset', type: 'Asset' },
+      { itemId: 'DEV-JET-02', nomenclature: 'NVIDIA Jetson Orin Nano Developer Kit (8GB)', quantity: 1, classification: 'Asset', type: 'Asset' },
       { itemId: 'SBC-RPI-05', nomenclature: 'Raspberry Pi 5 Model B 8GB RAM', quantity: 1, classification: 'Asset', type: 'Asset' }
     ],
     timeline: [

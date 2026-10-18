@@ -127,15 +127,33 @@ export function ApprovalsQueuePage() {
     if (match?.image) return match.image;
 
     const nom = (item.nomenclature || item.name || '').toLowerCase();
+    if (nom.includes('dht11') || nom.includes('dht')) return '/images/hardware/dht11-sensor.jpg';
+    if (nom.includes('ultrasonic') || nom.includes('hcsr04') || nom.includes('sonar')) return '/images/hardware/hcsr04-ultrasonic.jpg';
+    if (nom.includes('pir') || nom.includes('motion')) return '/images/hardware/pir-motion-sensor.jpg';
+    if (nom.includes('ir ') || nom.includes('infrared') || nom.includes('obstacle') || nom.includes('tcrt')) return '/images/hardware/ir-sensor-module.jpg';
+    if (nom.includes('piezo')) return '/images/hardware/piezo-sensor.jpg';
+    if (nom.includes('bmp280') || nom.includes('pressure') || nom.includes('barometric')) return '/images/hardware/bmp280-sensor.jpg';
+    if (nom.includes('multimeter')) return '/images/hardware/digital-multimeter.jpg';
+    if (nom.includes('servo') || nom.includes('sg90') || nom.includes('mg996')) return '/images/hardware/sg90-servo.jpg';
+    if (nom.includes('stepper') || nom.includes('nema')) return '/images/hardware/nema17-stepper.jpg';
+    if (nom.includes('l298n') || nom.includes('motor driver')) return '/images/hardware/l298n-motor-driver.jpg';
+    if (nom.includes('relay')) return '/images/hardware/relay-module.jpg';
+    if (nom.includes('lcd') || nom.includes('1602') || nom.includes('16x2')) return '/images/hardware/lcd-1602.jpg';
+    if (nom.includes('oled')) return '/images/hardware/oled-display.jpg';
+    if (nom.includes('9v')) return '/images/hardware/9v-battery.jpg';
+    if (nom.includes('18650')) return '/images/hardware/18650-battery.jpg';
     if (nom.includes('orin') || nom.includes('jetson')) return '/images/hardware/jetson-nano.jpg';
     if (nom.includes('realsense') || nom.includes('camera') || nom.includes('depth')) return '/images/hardware/realsense-camera.jpg';
-    if (nom.includes('flir') || nom.includes('thermal') || nom.includes('lepton')) return '/images/hardware/bmp280-sensor.jpg';
+    if (nom.includes('flir') || nom.includes('thermal') || nom.includes('lepton')) return '/images/hardware/realsense-camera.jpg';
     if (nom.includes('turtlebot') || nom.includes('robot')) return '/images/hardware/turtlebot-robot.jpg';
     if (nom.includes('arm') || nom.includes('dobot') || nom.includes('kinova')) return '/images/hardware/robotic-arm.jpg';
-    if (nom.includes('raspberry')) return '/images/hardware/raspberry-pi-5.jpg';
+    if (nom.includes('raspberry') || nom.includes('pico') || nom.includes('pi')) return '/images/hardware/raspberry-pi-5.jpg';
     if (nom.includes('oscilloscope') || nom.includes('rigol')) return '/images/hardware/oscilloscope.jpg';
     if (nom.includes('arduino') || nom.includes('uno')) return '/images/hardware/arduino-uno-r3.jpg';
     if (nom.includes('esp32')) return '/images/hardware/esp32-wroom.jpg';
+    if (nom.includes('breadboard')) return '/images/hardware/breadboard-830.jpg';
+    if (nom.includes('jumper') || nom.includes('wire')) return '/images/hardware/jumper-wires.jpg';
+    if (nom.includes('resistor')) return '/images/hardware/resistors-pack.jpg';
     return '/images/hardware/raspberry-pi-5.jpg';
   };
 

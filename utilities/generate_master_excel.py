@@ -182,37 +182,42 @@ ITEMS_DATA = [
     ["SBC-RPI-05", "Raspberry Pi 5 Model B 8GB RAM", "ASSET", "Microprocessors", "Raspberry Pi Foundation", "Broadcom BCM2712 Quad-core ARM Cortex-A76 @ 2.4GHz, PCIe 2.0", "Flagship single board computer with active cooler", "Tier 2 Intermediate", "/images/hardware/raspberry-pi-5.jpg"],
     ["SBC-RPI-04", "Raspberry Pi 4 Model B 4GB RAM", "ASSET", "Microprocessors", "Raspberry Pi Foundation", "Broadcom BCM2711 Quad-core Cortex-A72 @ 1.5GHz, Dual 4K HDMI", "Robust embedded Linux target for IoT gateways", "Tier 1 Standard", "/images/hardware/raspberry-pi-5.jpg"],
     ["CAM-INT-01", "Intel RealSense Depth Camera D435i", "ASSET", "Sensors", "Intel Corporation", "Stereo RGB-D depth sensor, integrated Bosch BMI055 6-DOF IMU", "3D spatial mapping and SLAM vision unit", "Tier 3 Advanced", "/images/hardware/realsense-camera.jpg"],
-    ["LID-OUS-01", "Ouster OS1-32 Gen 2 LiDAR Sensor", "ASSET", "Sensors", "Ouster Inc.", "32 channels, 120m range, 360-deg horizontal FOV, IP68 rated", "High precision 3D point cloud scanner", "Tier 4 High Value", "/images/hardware/oscilloscope.jpg"],
+    ["LID-OUS-01", "Ouster OS1-32 Gen 2 LiDAR Sensor", "ASSET", "Sensors", "Ouster Inc.", "32 channels, 120m range, 360-deg horizontal FOV, IP68 rated", "High precision 3D point cloud scanner", "Tier 4 High Value", "/images/hardware/turtlebot-robot.jpg"],
     ["ROB-TB3-01", "TurtleBot 3 Burger Mobile Robot", "ASSET", "Motors", "ROBOTIS & Open Robotics", "Raspberry Pi 4, OpenCR 1.0, 360 LDS-02 LiDAR, DYNAMIXEL XL430", "ROS 2 educational mobile ground vehicle", "Tier 3 Advanced", "/images/hardware/turtlebot-robot.jpg"],
     ["ROB-TB4-01", "TurtleBot 4 Standard Mobile Robot", "ASSET", "Motors", "Clearpath Robotics", "iRobot Create 3 base, Raspberry Pi 4 4GB, OAK-D-PRO Camera, RPLIDAR A1", "Modern ROS 2 mobile research platform", "Tier 4 High Value", "/images/hardware/turtlebot-robot.jpg"],
     ["ARM-DOB-01", "Dobot Magician 4-DOF Robotic Arm", "ASSET", "Motors", "Shenzhen Yuejiang Tech", "0.2mm repeatability, 500g payload, pneumatic gripper & 3D writing", "Desktop robotic educational arm", "Tier 3 Advanced", "/images/hardware/robotic-arm.jpg"],
     ["ARM-KIN-01", "Kinova Gen3 Lite Robotic Arm", "ASSET", "Motors", "Kinova Inc.", "6-DOF ultra-lightweight manipulator, integrated high-res vision, 1kg payload", "Advanced research industrial manipulator", "Tier 4 High Value", "/images/hardware/robotic-arm.jpg"],
-    ["PLC-SIE-01", "Siemens SIMATIC S7-1200 CPU 1214C DC/DC/DC", "ASSET", "Microcontrollers", "Siemens AG", "14 DI / 10 DQ, 2 AI, PROFINET interface, integrated PID controller", "Industrial programmable automation trainer", "Tier 3 Advanced", "/images/hardware/oscilloscope.jpg"],
+    ["PLC-SIE-01", "Siemens SIMATIC S7-1200 CPU 1214C DC/DC/DC", "ASSET", "Microcontrollers", "Siemens AG", "14 DI / 10 DQ, 2 AI, PROFINET interface, integrated PID controller", "Industrial programmable automation trainer", "Tier 3 Advanced", "/images/hardware/relay-module.jpg"],
     ["OSC-RIG-01", "Rigol DS1054Z 50MHz Digital Oscilloscope", "ASSET", "Misc", "Rigol Technologies", "4 analog channels, 1 GSa/s real-time sample rate, 24 Mpts memory", "Precision bench signal analysis oscilloscope", "Tier 2 Intermediate", "/images/hardware/oscilloscope.jpg"],
-    ["WKS-MAC-01", "Apple iMac 24\" M3 Workstation (16GB / 512GB)", "ASSET", "Microprocessors", "Apple Inc.", "Apple M3 8-core CPU / 10-core GPU, 16GB Unified RAM, 4.5K Retina", "High-throughput computer vision workstation", "Tier 4 High Value", "/images/hardware/oscilloscope.jpg"],
-    ["WKS-RTX-01", "Dell Precision Tower (NVIDIA RTX 4090 24GB)", "ASSET", "Microprocessors", "Dell Technologies", "Intel Core i9-14900K, 64GB DDR5, NVIDIA RTX 4090 24GB GDDR6X", "Deep learning training workstation", "Tier 4 High Value", "/images/hardware/oscilloscope.jpg"],
+    ["MET-DIG-01", "Digital Multimeter MAS830L with Test Leads", "ASSET", "Misc", "Mastech", "DC/AC voltage, DC current, resistance, diode test & continuity buzzer", "Handheld digital circuit measurement instrument", "Tier 1 Standard", "/images/hardware/digital-multimeter.jpg"],
     ["CAM-FLI-01", "FLIR Lepton 3.5 Radiometric LWIR Thermal Camera", "ASSET", "Sensors", "Teledyne FLIR", "160x120 thermal resolution, calibrated radiometric temperature output", "Infrared thermal imaging analysis module", "Tier 3 Advanced", "/images/hardware/realsense-camera.jpg"],
+    ["DIS-OLD-01", "0.96\" I2C OLED Display Module (128x64)", "ASSET", "Misc", "Solomon Systech", "128x64 pixels, monochrome blue, SSD1306 driver, I2C interface", "High contrast graphical status readout display", "Tier 1 Standard", "/images/hardware/oled-display.jpg"],
 
-    # ── 19 Quantity-Tracked Consumables ───────────────────────────────────────
-    ["SEN-UST-01", "Ultrasonic Distance Sensor HC-SR04", "CONSUMABLE", "Sensors", "ElecFreaks", "2cm to 400cm range, 5V DC, 15-deg measuring angle", "Standard sonar distance ranging sensor", "Tier 1 Standard", "/images/hardware/bmp280-sensor.jpg"],
-    ["SEN-DHT-01", "DHT22 Digital Temperature & Humidity Sensor", "CONSUMABLE", "Sensors", "Aosong Electronics", "-40 to 80 deg C (+/-0.5C), 0-100% RH (+/-2% RH), single bus", "Precision ambient environmental sensor", "Tier 1 Standard", "/images/hardware/bmp280-sensor.jpg"],
-    ["SEN-IMU-01", "MPU6050 6-Axis Gyro & Accelerometer Module", "CONSUMABLE", "Sensors", "TDK InvenSense", "3-axis gyro (+/-2000 dps), 3-axis accel (+/-16g), I2C interface", "Motion tracking inertial measurement unit", "Tier 1 Standard", "/images/hardware/bmp280-sensor.jpg"],
+    # ── 24 Quantity-Tracked Consumables ───────────────────────────────────────
+    ["SEN-DHT-01", "DHT11 Digital Temperature & Humidity Sensor", "CONSUMABLE", "Sensors", "Aosong Electronics", "0 to 50 deg C (+/-2C), 20-90% RH (+/-5% RH), single-wire digital", "Cost-effective ambient temperature and humidity sensor", "Tier 1 Standard", "/images/hardware/dht11-sensor.jpg"],
+    ["SEN-UST-01", "Ultrasonic Distance Sensor HC-SR04", "CONSUMABLE", "Sensors", "ElecFreaks", "2cm to 400cm range, 5V DC, 15-deg measuring angle", "Standard sonar distance ranging sensor", "Tier 1 Standard", "/images/hardware/hcsr04-ultrasonic.jpg"],
+    ["SEN-PIR-01", "PIR Motion Sensor Module HC-SR501", "CONSUMABLE", "Sensors", "ElecFreaks", "3m to 7m range, 100-deg cone, 5V-20V DC, adjustable trigger", "Passive infrared motion detection module", "Tier 1 Standard", "/images/hardware/pir-motion-sensor.jpg"],
+    ["SEN-IRS-01", "Infrared Obstacle Avoidance Sensor Module", "CONSUMABLE", "Sensors", "Waveshare", "2cm to 30cm detection range, 35-deg angle, LM393 comparator", "Active infrared proximity and obstacle detector", "Tier 1 Standard", "/images/hardware/ir-sensor-module.jpg"],
+    ["SEN-PZO-01", "Piezoelectric Vibration & Knock Sensor", "CONSUMABLE", "Sensors", "Generic", "Ceramic piezo disc 27mm, analog voltage output proportional to impact", "Vibration, knock, and shock detection disc", "Tier 1 Standard", "/images/hardware/piezo-sensor.jpg"],
     ["SEN-BMP-01", "BMP280 Barometric Pressure Sensor", "CONSUMABLE", "Sensors", "Bosch Sensortec", "300 to 1100 hPa (+/-1 hPa), I2C/SPI interface, 3.3V", "Altimeter and atmospheric pressure module", "Tier 1 Standard", "/images/hardware/bmp280-sensor.jpg"],
-    ["SEN-LIN-01", "TCRT5000 5-Channel Infrared Line Tracking Array", "CONSUMABLE", "Sensors", "Waveshare", "5-channel reflective optical sensor, digital output, adjustable sensitivity", "Robotics line-following tracker board", "Tier 1 Standard", "/images/hardware/bmp280-sensor.jpg"],
+    ["SEN-IMU-01", "MPU6050 6-Axis Gyro & Accelerometer Module", "CONSUMABLE", "Sensors", "TDK InvenSense", "3-axis gyro (+/-2000 dps), 3-axis accel (+/-16g), I2C interface", "Motion tracking inertial measurement unit", "Tier 1 Standard", "/images/hardware/bmp280-sensor.jpg"],
+    ["SEN-LIN-01", "TCRT5000 5-Channel Infrared Line Tracking Array", "CONSUMABLE", "Sensors", "Waveshare", "5-channel reflective optical sensor, digital output, adjustable sensitivity", "Robotics line-following tracker board", "Tier 1 Standard", "/images/hardware/ir-sensor-module.jpg"],
     ["MCU-UNO-01", "Arduino Uno Rev3 DIP Microcontroller", "CONSUMABLE", "Microcontrollers", "Arduino LLC", "ATmega328P 16MHz, 32KB Flash, 14 Digital IO, 6 PWM, 6 ADC", "Standard prototyping microcontroller platform", "Tier 1 Standard", "/images/hardware/arduino-uno-r3.jpg"],
     ["MCU-ESP-01", "ESP32-WROOM-32 Wi-Fi + BLE Development Board", "CONSUMABLE", "Microcontrollers", "Espressif Systems", "Dual-core Xtensa 32-bit LX6 @ 240MHz, 802.11 b/g/n, Bluetooth v4.2 BR/EDR & BLE", "High-performance IoT controller", "Tier 1 Standard", "/images/hardware/esp32-wroom.jpg"],
     ["MCU-RP2-01", "Raspberry Pi Pico W", "CONSUMABLE", "Microcontrollers", "Raspberry Pi Foundation", "RP2040 Dual-core ARM Cortex-M0+ @ 133MHz, Infineon CYW43439 Wi-Fi 4", "Low cost wireless micro-controller", "Tier 1 Standard", "/images/hardware/arduino-uno-r3.jpg"],
     ["COM-GPS-01", "U-Blox Neo-6M GPS Module with Active Antenna", "CONSUMABLE", "Communication Modules", "u-blox", "50-channel GPS engine, UART TTL output, EEPROM backup, PPS indicator", "Satellite navigation and positioning module", "Tier 1 Standard", "/images/hardware/esp32-wroom.jpg"],
     ["COM-NRF-01", "nRF24L01+ 2.4GHz Wireless RF Transceiver", "CONSUMABLE", "Communication Modules", "Nordic Semiconductor", "2.4GHz ISM band, 250kbps to 2Mbps, SPI interface, ultra low power", "Wireless point-to-point data telemetry link", "Tier 1 Standard", "/images/hardware/esp32-wroom.jpg"],
-    ["MOT-SRV-01", "TowerPro SG90 9g Micro Servo Motor", "CONSUMABLE", "Motors", "TowerPro", "180-degree rotation, 1.8 kg-cm torque @ 4.8V, nylon gears", "Lightweight robotic steering & pan-tilt servo", "Tier 1 Standard", "/images/hardware/breadboard-830.jpg"],
-    ["MOT-SRV-02", "MG996R High Torque Metal Gear Servo Motor", "CONSUMABLE", "Motors", "TowerPro", "180-degree rotation, 11 kg-cm torque @ 6V, all metal gear train", "Heavy duty robotic joint actuator", "Tier 1 Standard", "/images/hardware/breadboard-830.jpg"],
-    ["MOT-STP-01", "NEMA 17 Bipolar Stepper Motor (1.5A 42mm)", "CONSUMABLE", "Motors", "StepperOnline", "1.8 deg step angle (200 steps/rev), 45 Ncm holding torque, 4-wire lead", "Precision CNC and 3D printing drive motor", "Tier 1 Standard", "/images/hardware/breadboard-830.jpg"],
-    ["DRV-MOT-01", "L298N Dual H-Bridge Motor Driver Module", "CONSUMABLE", "Motors", "STMicroelectronics", "Dual 2A H-bridge driver, 5V to 35V drive voltage, opto-isolated", "Dual DC motor and stepper motor driver", "Tier 1 Standard", "/images/hardware/breadboard-830.jpg"],
-    ["PWR-LIP-01", "11.1V 3S LiPo Battery Pack 2200mAh 30C", "CONSUMABLE", "Batteries", "Orange Power", "3S1P 11.1V, 2200mAh capacity, 30C discharge, XT60 connector", "High discharge battery pack for mobile robots", "Tier 1 Standard", "/images/hardware/breadboard-830.jpg"],
-    ["PWR-ION-01", "Samsung 18650 Li-ion Cell 3.7V 2600mAh", "CONSUMABLE", "Batteries", "Samsung SDI", "3.7V nominal, 2600mAh capacity, rechargeable flat-top cylindrical cell", "Standard rechargeable power cell for field nodes", "Tier 1 Standard", "/images/hardware/breadboard-830.jpg"],
+    ["MOT-SRV-01", "TowerPro SG90 9g Micro Servo Motor", "CONSUMABLE", "Motors", "TowerPro", "180-degree rotation, 1.8 kg-cm torque @ 4.8V, nylon gears", "Lightweight robotic steering & pan-tilt servo", "Tier 1 Standard", "/images/hardware/sg90-servo.jpg"],
+    ["MOT-SRV-02", "MG996R High Torque Metal Gear Servo Motor", "CONSUMABLE", "Motors", "TowerPro", "180-degree rotation, 11 kg-cm torque @ 6V, all metal gear train", "Heavy duty robotic joint actuator", "Tier 1 Standard", "/images/hardware/sg90-servo.jpg"],
+    ["MOT-STP-01", "NEMA 17 Bipolar Stepper Motor (1.5A 42mm)", "CONSUMABLE", "Motors", "StepperOnline", "1.8 deg step angle (200 steps/rev), 45 Ncm holding torque, 4-wire lead", "Precision CNC and 3D printing drive motor", "Tier 1 Standard", "/images/hardware/nema17-stepper.jpg"],
+    ["DRV-MOT-01", "L298N Dual H-Bridge Motor Driver Module", "CONSUMABLE", "Motors", "STMicroelectronics", "Dual 2A H-bridge driver, 5V to 35V drive voltage, opto-isolated", "Dual DC motor and stepper motor driver", "Tier 1 Standard", "/images/hardware/l298n-motor-driver.jpg"],
+    ["PWR-9VB-01", "9V Heavy Duty Alkaline Battery", "CONSUMABLE", "Batteries", "Hi-Watt / Duracell", "Standard 9V 6F22 primary power cell with snap terminals", "Portable DC power for microcontrollers and sensors", "Tier 1 Standard", "/images/hardware/9v-battery.jpg"],
+    ["PWR-ION-01", "Samsung 18650 Li-ion Cell 3.7V 2600mAh", "CONSUMABLE", "Batteries", "Samsung SDI", "3.7V nominal, 2600mAh capacity, rechargeable flat-top cylindrical cell", "Standard rechargeable power cell for field nodes", "Tier 1 Standard", "/images/hardware/18650-battery.jpg"],
+    ["PWR-LIP-01", "11.1V 3S LiPo Battery Pack 2200mAh 30C", "CONSUMABLE", "Batteries", "Orange Power", "3S1P 11.1V, 2200mAh capacity, 30C discharge, XT60 connector", "High discharge battery pack for mobile robots", "Tier 1 Standard", "/images/hardware/18650-battery.jpg"],
     ["PRT-BRD-01", "830-Tie Point Solderless Breadboard", "CONSUMABLE", "Misc", "Generic High Quality", "830 tie points (630 IC points + 200 power bus rails), standard 2.54mm pitch", "Solderless electronic circuit prototype board", "Tier 1 Standard", "/images/hardware/breadboard-830.jpg"],
     ["PRT-JMP-01", "40-Pin Multi-Color Jumper Wires (M-to-F 20cm)", "CONSUMABLE", "Misc", "Generic", "40-conductor ribbon cable, Male-to-Female 2.54mm pitch, 20cm length", "Essential lab circuit prototyping patch wires", "Tier 1 Standard", "/images/hardware/jumper-wires.jpg"],
-    ["RLY-MOD-01", "4-Channel 5V Relay Module with Optocoupler", "CONSUMABLE", "Misc", "Songle", "4x SPDT 10A 250VAC / 30VDC relays, active low trigger, status LEDs", "High-voltage AC/DC circuit switching board", "Tier 1 Standard", "/images/hardware/breadboard-830.jpg"]
+    ["RLY-MOD-01", "4-Channel 5V Relay Module with Optocoupler", "CONSUMABLE", "Misc", "Songle", "4x SPDT 10A 250VAC / 30VDC relays, active low trigger, status LEDs", "High-voltage AC/DC circuit switching board", "Tier 1 Standard", "/images/hardware/relay-module.jpg"],
+    ["DIS-LCD-01", "16x2 Character LCD Display Module", "CONSUMABLE", "Misc", "Hitachi / Generic", "16 characters x 2 lines, blue backlight, 5V HD44780 controller", "Alphanumeric character readout display", "Tier 1 Standard", "/images/hardware/lcd-1602.jpg"]
 ]
 
 ws_items = wb.create_sheet(title="Items")
@@ -226,15 +231,18 @@ STOCK_DATA = [
     ["PPSL-CSE", "Programming and Problem Solving Lab", "MCU-UNO-01", "Arduino Uno Rev3 DIP Microcontroller", 25, 2, 27],
     ["PPSL-CSE", "Programming and Problem Solving Lab", "PRT-BRD-01", "830-Tie Point Solderless Breadboard", 30, 3, 33],
     ["PPSL-CSE", "Programming and Problem Solving Lab", "PRT-JMP-01", "40-Pin Multi-Color Jumper Wires (M-to-F 20cm)", 50, 4, 54],
+    ["PPSL-CSE", "Programming and Problem Solving Lab", "PWR-9VB-01", "9V Heavy Duty Alkaline Battery", 30, 0, 30],
 
     # OSTL-CSE (4th Floor)
     ["OSTL-CSE", "Open Source Tools Lab", "SBC-RPI-04", "Raspberry Pi 4 Model B 4GB RAM", 8, 1, 9],
     ["OSTL-CSE", "Open Source Tools Lab", "MCU-ESP-01", "ESP32-WROOM-32 Wi-Fi + BLE Development Board", 20, 2, 22],
     ["OSTL-CSE", "Open Source Tools Lab", "SEN-UST-01", "Ultrasonic Distance Sensor HC-SR04", 15, 1, 16],
+    ["OSTL-CSE", "Open Source Tools Lab", "SEN-IRS-01", "Infrared Obstacle Avoidance Sensor Module", 20, 1, 21],
 
     # DSL-CSE (4th Floor)
     ["DSL-CSE", "Data Structure Lab (CL-06)", "MCU-RP2-01", "Raspberry Pi Pico W", 30, 2, 32],
     ["DSL-CSE", "Data Structure Lab (CL-06)", "PRT-BRD-01", "830-Tie Point Solderless Breadboard", 35, 1, 36],
+    ["DSL-CSE", "Data Structure Lab (CL-06)", "DIS-LCD-01", "16x2 Character LCD Display Module", 20, 1, 21],
 
     # PL-CSE (4th Floor)
     ["PL-CSE", "Project Lab (CL-7)", "SBC-RPI-05", "Raspberry Pi 5 Model B 8GB RAM", 10, 0, 10],
@@ -242,24 +250,26 @@ STOCK_DATA = [
     ["PL-CSE", "Project Lab (CL-7)", "OSC-RIG-01", "Rigol DS1054Z 50MHz Digital Oscilloscope", 3, 0, 3],
     ["PL-CSE", "Project Lab (CL-7)", "COM-GPS-01", "U-Blox Neo-6M GPS Module with Active Antenna", 12, 0, 12],
     ["PL-CSE", "Project Lab (CL-7)", "RLY-MOD-01", "4-Channel 5V Relay Module with Optocoupler", 18, 1, 19],
+    ["PL-CSE", "Project Lab (CL-7)", "SEN-PIR-01", "PIR Motion Sensor Module HC-SR501", 15, 1, 16],
+    ["PL-CSE", "Project Lab (CL-7)", "DIS-OLD-01", "0.96\" I2C OLED Display Module (128x64)", 15, 1, 16],
 
     # DMAL-CSE (4th Floor)
     ["DMAL-CSE", "Database Management and Analytics Lab (CL-9)", "SBC-RPI-05", "Raspberry Pi 5 Model B 8GB RAM", 8, 0, 8],
-    ["DMAL-CSE", "Database Management and Analytics Lab (CL-9)", "SEN-DHT-01", "DHT22 Digital Temperature & Humidity Sensor", 20, 2, 22],
+    ["DMAL-CSE", "Database Management and Analytics Lab (CL-9)", "SEN-DHT-01", "DHT11 Digital Temperature & Humidity Sensor", 20, 2, 22],
 
     # MTECH-CSE (5th Floor)
-    ["MTECH-CSE", "M.Tech Research Lab", "WKS-RTX-01", "Dell Precision Tower (NVIDIA RTX 4090 24GB)", 4, 0, 4],
     ["MTECH-CSE", "M.Tech Research Lab", "DEV-JET-02", "NVIDIA Jetson Orin Nano Developer Kit (8GB)", 5, 0, 5],
     ["MTECH-CSE", "M.Tech Research Lab", "CAM-INT-01", "Intel RealSense Depth Camera D435i", 3, 0, 3],
+    ["MTECH-CSE", "M.Tech Research Lab", "MET-DIG-01", "Digital Multimeter MAS830L with Test Leads", 4, 0, 4],
 
     # DV-AIML (5th Floor)
-    ["DV-AIML", "Data Visualization Lab (Workstation)", "WKS-RTX-01", "Dell Precision Tower (NVIDIA RTX 4090 24GB)", 6, 0, 6],
     ["DV-AIML", "Data Visualization Lab (Workstation)", "DEV-JET-01", "NVIDIA Jetson Nano 4GB B01 Developer Kit", 8, 1, 9],
+    ["DV-AIML", "Data Visualization Lab (Workstation)", "MET-DIG-01", "Digital Multimeter MAS830L with Test Leads", 6, 0, 6],
 
     # CV-AIML (5th Floor)
-    ["CV-AIML", "Computer Vision Lab (iMac Lab)", "WKS-MAC-01", "Apple iMac 24\" M3 Workstation (16GB / 512GB)", 12, 0, 12],
     ["CV-AIML", "Computer Vision Lab (iMac Lab)", "CAM-INT-01", "Intel RealSense Depth Camera D435i", 6, 0, 6],
     ["CV-AIML", "Computer Vision Lab (iMac Lab)", "CAM-FLI-01", "FLIR Lepton 3.5 Radiometric LWIR Thermal Camera", 4, 0, 4],
+    ["CV-AIML", "Computer Vision Lab (iMac Lab)", "MET-DIG-01", "Digital Multimeter MAS830L with Test Leads", 12, 0, 12],
 
     # MDL-AIML (5th Floor)
     ["MDL-AIML", "Machine and Deep Learning Lab", "DEV-JET-02", "NVIDIA Jetson Orin Nano Developer Kit (8GB)", 10, 0, 10],
@@ -275,13 +285,18 @@ STOCK_DATA = [
     ["CCL-AIML", "Cloud Computing Lab", "SBC-RPI-04", "Raspberry Pi 4 Model B 4GB RAM", 15, 2, 17],
     ["CCL-AIML", "Cloud Computing Lab", "MCU-ESP-01", "ESP32-WROOM-32 Wi-Fi + BLE Development Board", 35, 3, 38],
     ["CCL-AIML", "Cloud Computing Lab", "SEN-BMP-01", "BMP280 Barometric Pressure Sensor", 20, 1, 21],
+    ["CCL-AIML", "Cloud Computing Lab", "DIS-OLD-01", "0.96\" I2C OLED Display Module (128x64)", 15, 1, 16],
 
     # MSA-AIML (5th Floor)
     ["MSA-AIML", "Multimodal Sensor Analytics Lab", "SEN-UST-01", "Ultrasonic Distance Sensor HC-SR04", 40, 4, 44],
-    ["MSA-AIML", "Multimodal Sensor Analytics Lab", "SEN-DHT-01", "DHT22 Digital Temperature & Humidity Sensor", 35, 2, 37],
+    ["MSA-AIML", "Multimodal Sensor Analytics Lab", "SEN-DHT-01", "DHT11 Digital Temperature & Humidity Sensor", 35, 2, 37],
     ["MSA-AIML", "Multimodal Sensor Analytics Lab", "SEN-IMU-01", "MPU6050 6-Axis Gyro & Accelerometer Module", 30, 2, 32],
     ["MSA-AIML", "Multimodal Sensor Analytics Lab", "SEN-BMP-01", "BMP280 Barometric Pressure Sensor", 25, 1, 26],
     ["MSA-AIML", "Multimodal Sensor Analytics Lab", "COM-GPS-01", "U-Blox Neo-6M GPS Module with Active Antenna", 15, 1, 16],
+    ["MSA-AIML", "Multimodal Sensor Analytics Lab", "SEN-PIR-01", "PIR Motion Sensor Module HC-SR501", 20, 1, 21],
+    ["MSA-AIML", "Multimodal Sensor Analytics Lab", "SEN-IRS-01", "Infrared Obstacle Avoidance Sensor Module", 25, 2, 27],
+    ["MSA-AIML", "Multimodal Sensor Analytics Lab", "SEN-PZO-01", "Piezoelectric Vibration & Knock Sensor", 15, 1, 16],
+    ["MSA-AIML", "Multimodal Sensor Analytics Lab", "DIS-LCD-01", "16x2 Character LCD Display Module", 20, 1, 21],
 
     # AI-AIML (5th Floor)
     ["AI-AIML", "AI Project Lab", "DEV-JET-02", "NVIDIA Jetson Orin Nano Developer Kit (8GB)", 8, 0, 8],
@@ -298,6 +313,8 @@ STOCK_DATA = [
     ["MIOT-RA", "Mechatronics and IoT Lab", "DRV-MOT-01", "L298N Dual H-Bridge Motor Driver Module", 40, 3, 43],
     ["MIOT-RA", "Mechatronics and IoT Lab", "PWR-LIP-01", "11.1V 3S LiPo Battery Pack 2200mAh 30C", 20, 2, 22],
     ["MIOT-RA", "Mechatronics and IoT Lab", "PWR-ION-01", "Samsung 18650 Li-ion Cell 3.7V 2600mAh", 50, 4, 54],
+    ["MIOT-RA", "Mechatronics and IoT Lab", "PWR-9VB-01", "9V Heavy Duty Alkaline Battery", 30, 0, 30],
+    ["MIOT-RA", "Mechatronics and IoT Lab", "SEN-PZO-01", "Piezoelectric Vibration & Knock Sensor", 20, 2, 22],
 
     # MRL-RA (6th Floor)
     ["MRL-RA", "Mobile Robotics Lab", "ROB-TB3-01", "TurtleBot 3 Burger Mobile Robot", 6, 0, 6],
@@ -312,7 +329,7 @@ ws_stock = wb.create_sheet(title="Stock")
 style_sheet(ws_stock, ["Lab ID", "Lab Name", "Item ID", "Item Name", "Good Quantity", "Bad Quantity", "Total Physical Quantity"], STOCK_DATA)
 
 # ==============================================================================
-# 5. ASSETS (45+ Individually Serialized Physical Units)
+# 5. ASSETS (36 Individually Serialized Physical Units)
 # ==============================================================================
 ASSETS_DATA = [
     # Jetson Nanos (CCL-AIML & PL-CSE)
@@ -368,13 +385,11 @@ ASSETS_DATA = [
     ["SIT-CSE-4CL07-0241", "OSC-RIG-01", "Rigol DS1054Z 50MHz Digital Oscilloscope", "PL-CSE", "OSC-241", "CPR/2022/1501", "RIG-DS-99104", "AVAILABLE", None],
     ["SIT-AIML-5CL11-0242", "OSC-RIG-01", "Rigol DS1054Z 50MHz Digital Oscilloscope", "AI-AIML", "OSC-242", "CPR/2022/1502", "RIG-DS-99105", "AVAILABLE", None],
 
-    # Apple iMac Workstations (CV-AIML)
-    ["SIT-AIML-5CL03-0261", "WKS-MAC-01", "Apple iMac 24\" M3 Workstation (16GB / 512GB)", "CV-AIML", "MAC-261", "CPR/2024/0115", "APL-M3-771101", "AVAILABLE", None],
-    ["SIT-AIML-5CL03-0262", "WKS-MAC-01", "Apple iMac 24\" M3 Workstation (16GB / 512GB)", "CV-AIML", "MAC-262", "CPR/2024/0115", "APL-M3-771102", "AVAILABLE", None],
-
-    # Dell Precision RTX 4090 Workstations (DV-AIML & MTECH-CSE)
-    ["SIT-AIML-5CL02-0281", "WKS-RTX-01", "Dell Precision Tower (NVIDIA RTX 4090 24GB)", "DV-AIML", "WKS-281", "CPR/2024/0220", "DEL-4090-55101", "AVAILABLE", None],
-    ["SIT-CSE-5CL01-0282", "WKS-RTX-01", "Dell Precision Tower (NVIDIA RTX 4090 24GB)", "MTECH-CSE", "WKS-282", "CPR/2024/0220", "DEL-4090-55102", "AVAILABLE", None],
+    # Digital Multimeters (CV-AIML, DV-AIML & MTECH-CSE)
+    ["SIT-AIML-5CL03-0261", "MET-DIG-01", "Digital Multimeter MAS830L with Test Leads", "CV-AIML", "DMM-261", "CPR/2024/0115", "MAS-830-771101", "AVAILABLE", None],
+    ["SIT-AIML-5CL03-0262", "MET-DIG-01", "Digital Multimeter MAS830L with Test Leads", "CV-AIML", "DMM-262", "CPR/2024/0115", "MAS-830-771102", "AVAILABLE", None],
+    ["SIT-AIML-5CL02-0281", "MET-DIG-01", "Digital Multimeter MAS830L with Test Leads", "DV-AIML", "DMM-281", "CPR/2024/0220", "MAS-830-55101", "AVAILABLE", None],
+    ["SIT-CSE-5CL01-0282", "MET-DIG-01", "Digital Multimeter MAS830L with Test Leads", "MTECH-CSE", "DMM-282", "CPR/2024/0220", "MAS-830-55102", "AVAILABLE", None],
 
     # FLIR Thermal Camera (CV-AIML)
     ["SIT-AIML-5CL03-0301", "CAM-FLI-01", "FLIR Lepton 3.5 Radiometric LWIR Thermal Camera", "CV-AIML", "FLI-301", "CPR/2023/1188", "FLI-LEP-22019", "AVAILABLE", None]
