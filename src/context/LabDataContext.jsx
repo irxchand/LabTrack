@@ -397,7 +397,12 @@ export function LabDataProvider({ children }) {
 
   // Approval methods
   const approveRequisition = async (reqId, notes) => {
-    const res = await custodyApi.approveRequisition(reqId, notes);
+    const res = await custodyApi.approveRequisition(
+      reqId,
+      notes,
+      currentUser?.name || 'Dr. Anjali Dalvi',
+      currentUser?.prn || 'FAC-AI-019'
+    );
     if (res.ok) {
       await loadData();
       addToast({
@@ -409,7 +414,12 @@ export function LabDataProvider({ children }) {
   };
 
   const rejectRequisition = async (reqId, reason) => {
-    const res = await custodyApi.rejectRequisition(reqId, reason);
+    const res = await custodyApi.rejectRequisition(
+      reqId,
+      reason,
+      currentUser?.name || 'Dr. Anjali Dalvi',
+      currentUser?.prn || 'FAC-AI-019'
+    );
     if (res.ok) {
       await loadData();
       addToast({

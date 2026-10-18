@@ -136,42 +136,48 @@ export const custodyApi = {
     });
   },
 
-  approveRequisition: async (reqId, supervisorNotes = 'Approved for laboratory coursework.') => {
+  approveRequisition: async (reqId, supervisorNotes = 'Approved for laboratory coursework.', actorName = 'Dr. Anjali Dalvi', actorPrn = 'FAC-AI-019') => {
     return apiClient.simulatedFetch('APPROVE_REQUISITION', () => {
       const requisitions = getStored(REQ_KEY, INITIAL_REQUISITIONS);
       const idx = requisitions.findIndex((r) => r.id === reqId);
       if (idx !== -1) {
+        const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
         requisitions[idx].status = 'Faculty Endorsed';
         requisitions[idx].supervisorNotes = supervisorNotes;
+        requisitions[idx].approvedBy = actorName;
+        requisitions[idx].approvedAt = now;
         requisitions[idx].timeline.push({
           step: 'Faculty Endorsed',
-          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-          actor: 'Prof. Sneha Kulkarni (FAC-AI-019)',
+          timestamp: now,
+          actor: `${actorName} (${actorPrn})`,
           note: supervisorNotes,
         });
         saveStored(REQ_KEY, requisitions);
-        appendAudit('REQUISITION_APPROVED', reqId, `Faculty endorsement: ${supervisorNotes}`, 'Faculty', 'FAC-AI-019');
+        appendAudit('REQUISITION_APPROVED', reqId, `Faculty endorsement: ${supervisorNotes}`, 'Faculty', actorPrn);
         return requisitions[idx];
       }
       return null;
     });
   },
 
-  rejectRequisition: async (reqId, reason) => {
+  rejectRequisition: async (reqId, reason, actorName = 'Dr. Anjali Dalvi', actorPrn = 'FAC-AI-019') => {
     return apiClient.simulatedFetch('REJECT_REQUISITION', () => {
       const requisitions = getStored(REQ_KEY, INITIAL_REQUISITIONS);
       const idx = requisitions.findIndex((r) => r.id === reqId);
       if (idx !== -1) {
+        const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
         requisitions[idx].status = 'Rejected';
         requisitions[idx].supervisorNotes = reason;
+        requisitions[idx].rejectedBy = actorName;
+        requisitions[idx].rejectedAt = now;
         requisitions[idx].timeline.push({
           step: 'Rejected',
-          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-          actor: 'Prof. Sneha Kulkarni (FAC-AI-019)',
+          timestamp: now,
+          actor: `${actorName} (${actorPrn})`,
           note: `Rejected with reason: ${reason}`,
         });
         saveStored(REQ_KEY, requisitions);
-        appendAudit('REQUISITION_REJECTED', reqId, `Rejected request: ${reason}`, 'Faculty', 'FAC-AI-019');
+        appendAudit('REQUISITION_REJECTED', reqId, `Rejected request: ${reason}`, 'Faculty', actorPrn);
         return requisitions[idx];
       }
       return null;

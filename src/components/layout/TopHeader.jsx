@@ -17,6 +17,7 @@ import {
   ChevronDown,
   Check,
 } from 'lucide-react';
+import { isRequisitionMentoredByUser } from '../../utils/facultyAuth';
 
 export function TopHeader() {
   const navigate = useNavigate();
@@ -89,7 +90,9 @@ export function TopHeader() {
             label: 'Approvals',
             to: '/workspace/operations/approvals',
             icon: CheckSquare,
-            count: requisitions.filter((r) => r.status === 'Pending' || r.status === 'Submitted').length,
+            count: requisitions.filter(
+              (r) => (r.status === 'Pending' || r.status === 'Submitted') && isRequisitionMentoredByUser(r, currentUser)
+            ).length,
             isActive: (pathname) => pathname.includes('/operations/approvals'),
           },
           {
