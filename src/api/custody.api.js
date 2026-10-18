@@ -6,18 +6,24 @@ import {
   INITIAL_AUDIT_LOGS
 } from '../data/mockData';
 
-const LOANS_KEY = 'labtrack_loans_v5';
-const REQ_KEY = 'labtrack_requisitions_v5';
-const RES_KEY = 'labtrack_reservations_v5';
-const AUDIT_KEY = 'labtrack_audit_v5';
+const CURRENT_SCHEMA_VERSION = 'v8_canonical_components_2026';
+const LOANS_KEY = 'labtrack_loans_v8';
+const REQ_KEY = 'labtrack_requisitions_v8';
+const RES_KEY = 'labtrack_reservations_v8';
+const AUDIT_KEY = 'labtrack_audit_v8';
 
 function getStored(key, initial) {
-  const data = localStorage.getItem(key);
-  if (!data) {
-    localStorage.setItem(key, JSON.stringify(initial));
-    return initial;
-  }
   try {
+    const version = localStorage.getItem('labtrack_schema_version');
+    if (version !== CURRENT_SCHEMA_VERSION) {
+      localStorage.setItem(key, JSON.stringify(initial));
+      return initial;
+    }
+    const data = localStorage.getItem(key);
+    if (!data) {
+      localStorage.setItem(key, JSON.stringify(initial));
+      return initial;
+    }
     return JSON.parse(data);
   } catch (e) {
     return initial;

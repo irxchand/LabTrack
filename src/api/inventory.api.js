@@ -1,15 +1,23 @@
 import { apiClient } from './client';
 import { INITIAL_INVENTORY, INITIAL_ASSETS } from '../data/mockData';
 
-const STORAGE_KEY = 'labtrack_inventory_v5';
+const CURRENT_SCHEMA_VERSION = 'v8_canonical_components_2026';
+const STORAGE_KEY = 'labtrack_inventory_v8';
 
 function getStoredInventory() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (!data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_INVENTORY));
-    return INITIAL_INVENTORY;
-  }
   try {
+    const version = localStorage.getItem('labtrack_schema_version');
+    if (version !== CURRENT_SCHEMA_VERSION) {
+      localStorage.setItem('labtrack_schema_version', CURRENT_SCHEMA_VERSION);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_INVENTORY));
+      return INITIAL_INVENTORY;
+    }
+
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (!data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_INVENTORY));
+      return INITIAL_INVENTORY;
+    }
     return JSON.parse(data);
   } catch (e) {
     return INITIAL_INVENTORY;
@@ -17,7 +25,11 @@ function getStoredInventory() {
 }
 
 function saveStoredInventory(items) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  } catch (e) {
+    console.error('Failed to save inventory to storage:', e);
+  }
 }
 
 export const inventoryApi = {
@@ -122,7 +134,12 @@ export const inventoryApi = {
   },
 
   resetDefault: () => {
-    localStorage.removeItem(STORAGE_KEY);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_INVENTORY));
+    } catch (e) {
+      console.error(e);
+    }
     return INITIAL_INVENTORY;
   }
 };

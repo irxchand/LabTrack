@@ -1929,7 +1929,7 @@ export const INITIAL_INVENTORY = [
     "assetTag": "CAM-FLI-01",
     "sku": "SKU-CAM-FLI-01",
     "nomenclature": "FLIR Lepton 3.5 Radiometric LWIR Thermal Camera",
-    "image": "/images/hardware/realsense-camera.jpg",
+    "image": "/images/hardware/thermal-camera.jpg",
     "subSpecs": "160x120 thermal resolution, calibrated radiometric temperature output",
     "manufacturer": "Teledyne FLIR",
     "classification": "Asset",
@@ -3478,7 +3478,7 @@ export const INITIAL_ASSETS = [
     "department": "AIML",
     "costTier": "Tier 3 Advanced",
     "category": "Sensors",
-    "image": "/images/hardware/realsense-camera.jpg",
+    "image": "/images/hardware/thermal-camera.jpg",
     "subSpecs": "160x120 thermal resolution, calibrated radiometric temperature output"
   }
 ];

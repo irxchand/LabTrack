@@ -184,10 +184,18 @@ export function LabDataProvider({ children }) {
   const [incidentLedger, setIncidentLedger] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const CURRENT_SCHEMA_VERSION = 'v8_canonical_components_2026';
+
   // Authoritative Physical Asset Registry (36 SIT Barcodes)
   const [assets, setAssets] = useState(() => {
     try {
-      const saved = localStorage.getItem('labtrack_assets_v5');
+      const version = localStorage.getItem('labtrack_schema_version');
+      if (version !== CURRENT_SCHEMA_VERSION) {
+        localStorage.setItem('labtrack_schema_version', CURRENT_SCHEMA_VERSION);
+        localStorage.setItem('labtrack_assets_v8', JSON.stringify(INITIAL_ASSETS));
+        return INITIAL_ASSETS;
+      }
+      const saved = localStorage.getItem('labtrack_assets_v8');
       return saved ? JSON.parse(saved) : INITIAL_ASSETS;
     } catch {
       return INITIAL_ASSETS;
@@ -196,7 +204,7 @@ export function LabDataProvider({ children }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem('labtrack_assets_v5', JSON.stringify(assets));
+      localStorage.setItem('labtrack_assets_v8', JSON.stringify(assets));
     } catch (e) {
       console.error('Failed to persist assets to localStorage:', e);
     }
@@ -302,6 +310,19 @@ export function LabDataProvider({ children }) {
   }, [currentUser?.prn]);
 
   useEffect(() => {
+    try {
+      const v = localStorage.getItem('labtrack_schema_version');
+      if (v !== CURRENT_SCHEMA_VERSION) {
+        localStorage.setItem('labtrack_schema_version', CURRENT_SCHEMA_VERSION);
+        localStorage.removeItem('labtrack_inventory_v5');
+        localStorage.removeItem('labtrack_assets_v5');
+        localStorage.removeItem('labtrack_inventory_v6');
+        localStorage.removeItem('labtrack_assets_v6');
+        inventoryApi.resetDefault();
+      }
+    } catch (e) {
+      console.error('Storage sync error:', e);
+    }
     loadData();
   }, [loadData]);
 
