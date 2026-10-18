@@ -6,11 +6,11 @@ import {
   INITIAL_AUDIT_LOGS
 } from '../data/mockData';
 
-const CURRENT_SCHEMA_VERSION = 'v8_canonical_components_2026';
-const LOANS_KEY = 'labtrack_loans_v8';
-const REQ_KEY = 'labtrack_requisitions_v8';
-const RES_KEY = 'labtrack_reservations_v8';
-const AUDIT_KEY = 'labtrack_audit_v8';
+const CURRENT_SCHEMA_VERSION = 'v9_canonical_components_2026';
+const LOANS_KEY = 'labtrack_loans_v9';
+const REQ_KEY = 'labtrack_requisitions_v9';
+const RES_KEY = 'labtrack_reservations_v9';
+const AUDIT_KEY = 'labtrack_audit_v9';
 
 function getStored(key, initial) {
   try {

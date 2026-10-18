@@ -1,8 +1,8 @@
 import { apiClient } from './client';
 import { INITIAL_INVENTORY, INITIAL_ASSETS } from '../data/mockData';
 
-const CURRENT_SCHEMA_VERSION = 'v8_canonical_components_2026';
-const STORAGE_KEY = 'labtrack_inventory_v8';
+const CURRENT_SCHEMA_VERSION = 'v9_canonical_components_2026';
+const STORAGE_KEY = 'labtrack_inventory_v9';
 
 function getStoredInventory() {
   try {

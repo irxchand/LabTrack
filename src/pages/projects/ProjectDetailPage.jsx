@@ -58,7 +58,8 @@ export function ProjectDetailPage() {
     if (nom.includes('oscilloscope') || nom.includes('rigol')) return '/images/hardware/oscilloscope.jpg';
     if (nom.includes('jumper') || nom.includes('wire') || nom.includes('ribbon')) return '/images/hardware/jumper-wires.jpg';
     if (nom.includes('breadboard')) return '/images/hardware/breadboard-830.jpg';
-    if (nom.includes('sensor') || nom.includes('imu') || nom.includes('mpu') || nom.includes('bmp')) return '/images/hardware/bmp280-sensor.jpg';
+    if (nom.includes('mpu') || nom.includes('imu') || nom.includes('gyro') || nom.includes('accelerometer')) return '/images/hardware/mpu6050-sensor.jpg';
+    if (nom.includes('sensor') || nom.includes('bmp')) return '/images/hardware/bmp280-sensor.jpg';
     if (nom.includes('resistor')) return '/images/hardware/resistors-pack.jpg';
     return '/images/hardware/raspberry-pi-5.jpg';
   };

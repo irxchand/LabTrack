@@ -2235,7 +2235,7 @@ export const INITIAL_INVENTORY = [
     "assetTag": "SEN-IMU-01",
     "sku": "SKU-SEN-IMU-01",
     "nomenclature": "MPU6050 6-Axis Gyro & Accelerometer Module",
-    "image": "/images/hardware/bmp280-sensor.jpg",
+    "image": "/images/hardware/mpu6050-sensor.jpg",
     "subSpecs": "3-axis gyro (+/-2000 dps), 3-axis accel (+/-16g), I2C interface",
     "manufacturer": "TDK InvenSense",
     "classification": "Consumable",

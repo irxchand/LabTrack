@@ -423,7 +423,7 @@ export function InventoryListPage({ initialClassification = null }) {
     if (nom.includes('oscilloscope')) return ['50MHz Bandwidth', '4 Channels', '1GSa/s'];
     if (nom.includes('oled')) return ['0.96" Monochrome', '128x64 Pixels', 'I2C Interface'];
     if (nom.includes('bmp280')) return ['Barometric & Temp', 'I2C / SPI Bus', 'High Accuracy'];
-    if (nom.includes('mpu-6050')) return ['6-Axis Gyro & Accel', 'Digital Motion', 'I2C Fast'];
+    if (nom.includes('mpu') || nom.includes('imu')) return ['6-Axis Gyro & Accel', 'Digital Motion', 'I2C Fast'];
     if (nom.includes('jumper')) return ['120-Pin Ribbon', 'Male-to-Female', '20cm Length'];
     if (nom.includes('breadboard')) return ['830 Tie-Points', 'Dual Power Rails', 'Nickel Plated'];
     if (nom.includes('resistor')) return ['600pcs Assorted', '1/4W Metal Film', '1% Precision'];

@@ -132,6 +132,7 @@ export function ApprovalsQueuePage() {
     if (nom.includes('pir') || nom.includes('motion')) return '/images/hardware/pir-motion-sensor.jpg';
     if (nom.includes('ir ') || nom.includes('infrared') || nom.includes('obstacle') || nom.includes('tcrt')) return '/images/hardware/ir-sensor-module.jpg';
     if (nom.includes('piezo')) return '/images/hardware/piezo-sensor.jpg';
+    if (nom.includes('mpu') || nom.includes('imu') || nom.includes('gyro') || nom.includes('accelerometer')) return '/images/hardware/mpu6050-sensor.jpg';
     if (nom.includes('bmp280') || nom.includes('pressure') || nom.includes('barometric')) return '/images/hardware/bmp280-sensor.jpg';
     if (nom.includes('multimeter')) return '/images/hardware/digital-multimeter.jpg';
     if (nom.includes('servo') || nom.includes('sg90') || nom.includes('mg996')) return '/images/hardware/sg90-servo.jpg';
@@ -144,7 +145,7 @@ export function ApprovalsQueuePage() {
     if (nom.includes('18650')) return '/images/hardware/18650-battery.jpg';
     if (nom.includes('orin') || nom.includes('jetson')) return '/images/hardware/jetson-nano.jpg';
     if (nom.includes('realsense') || nom.includes('camera') || nom.includes('depth')) return '/images/hardware/realsense-camera.jpg';
-    if (nom.includes('flir') || nom.includes('thermal') || nom.includes('lepton')) return '/images/hardware/realsense-camera.jpg';
+    if (nom.includes('flir') || nom.includes('thermal') || nom.includes('lepton')) return '/images/hardware/thermal-camera.jpg';
     if (nom.includes('turtlebot') || nom.includes('robot')) return '/images/hardware/turtlebot-robot.jpg';
     if (nom.includes('arm') || nom.includes('dobot') || nom.includes('kinova')) return '/images/hardware/robotic-arm.jpg';
     if (nom.includes('raspberry') || nom.includes('pico') || nom.includes('pi')) return '/images/hardware/raspberry-pi-5.jpg';
