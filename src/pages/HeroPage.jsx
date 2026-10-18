@@ -632,7 +632,7 @@ export function HeroPage() {
       {/* ─────────────────────────────────────────────────────────────────────────
           FIXED TOP NAVBAR (Matching LabTrack Brand Typography & Dynamic Role)
       ───────────────────────────────────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-[10px] bg-[#0a0a0a]/80 border-b border-white/10 px-6 sm:px-12 h-16 flex items-center justify-between transition-all duration-300">
+      <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-[10px] bg-[#0a0a0a]/80 border-b border-white/10 px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between transition-all duration-300 gap-3">
         {/* Left: Brand Monogram in Clash Display with Champagne Gold Gradient */}
         <div
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -641,7 +641,7 @@ export function HeroPage() {
           <span className="font-display font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5e6c8] to-[#c9b8a0] leading-none">
             LabTrack
           </span>
-          <span className="text-[10px] uppercase tracking-[0.16em] text-[#c9b8a0] bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/10 font-sans hidden xl:inline-block whitespace-nowrap">
+          <span className="text-[10px] uppercase tracking-[0.16em] text-[#c9b8a0] bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/10 font-sans hidden 2xl:inline-block whitespace-nowrap">
             {currentConfig.roleBadge}
           </span>
         </div>
@@ -653,7 +653,7 @@ export function HeroPage() {
               <a
                 key={idx}
                 href={item.href}
-                className="text-xs font-medium text-stone-300 hover:text-white px-3 py-1.5 rounded-full hover:bg-white/[0.06] transition-all font-sans whitespace-nowrap leading-none select-none"
+                className="text-xs font-medium text-stone-300 hover:text-white px-2.5 sm:px-3 py-1.5 rounded-full hover:bg-white/[0.06] transition-all font-sans whitespace-nowrap leading-none select-none"
               >
                 {item.label}
               </a>
@@ -662,7 +662,7 @@ export function HeroPage() {
                 key={idx}
                 type="button"
                 onClick={() => navigate(item.path)}
-                className="text-xs font-medium text-stone-300 hover:text-white px-3 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans whitespace-nowrap leading-none select-none"
+                className="text-xs font-medium text-stone-300 hover:text-white px-2.5 sm:px-3 py-1.5 rounded-full hover:bg-white/[0.06] transition-all cursor-pointer font-sans whitespace-nowrap leading-none select-none"
               >
                 {item.label}
               </button>
@@ -671,17 +671,17 @@ export function HeroPage() {
         </nav>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           {isAuthenticated && currentUser ? (
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="hidden md:flex items-center gap-2.5 pl-1.5 pr-2.5 py-1 rounded-full bg-white/[0.03] border border-white/10 hover:border-[#a78b71]/40 transition-all backdrop-blur-md shadow-sm">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#a78b71]/35 to-[#e8d5b7]/20 border border-[#c9b8a0]/30 flex items-center justify-center text-[10px] font-semibold text-[#f5e6c8] tracking-tight select-none">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <div className="hidden md:flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full bg-white/[0.03] border border-white/10 hover:border-[#a78b71]/40 transition-all backdrop-blur-md shadow-sm flex-shrink-0">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#a78b71]/35 to-[#e8d5b7]/20 border border-[#c9b8a0]/30 flex items-center justify-center text-[10px] font-semibold text-[#f5e6c8] tracking-tight select-none flex-shrink-0">
                   {getUserInitials(currentUser.name || currentUser.prn)}
                 </div>
-                <span className="font-medium text-white/90 text-xs tracking-tight">
+                <span className="font-medium text-white/90 text-xs tracking-tight whitespace-nowrap max-w-[130px] truncate">
                   {currentUser.name || currentUser.prn}
                 </span>
-                <span className="text-[10px] font-medium text-[#c9b8a0] bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/10">
+                <span className="text-[10px] font-medium text-[#c9b8a0] bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/10 whitespace-nowrap flex-shrink-0">
                   {currentUser.role}
                 </span>
               </div>
@@ -690,7 +690,7 @@ export function HeroPage() {
                   logout();
                   navigate('/login');
                 }}
-                className="text-[11px] font-medium uppercase tracking-[0.2em] text-[#c9b8a0] hover:text-rose-400 transition-colors px-2.5 py-1.5 cursor-pointer"
+                className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#c9b8a0] hover:text-rose-400 transition-colors px-2 py-1.5 cursor-pointer whitespace-nowrap flex-shrink-0"
               >
                 Sign Out
               </button>
@@ -698,7 +698,7 @@ export function HeroPage() {
           ) : (
             <button
               onClick={() => navigate('/login')}
-              className="text-[11px] font-medium uppercase tracking-[0.25em] text-[#c9b8a0] hover:text-white transition-colors px-3 py-1.5 hidden sm:inline-block cursor-pointer"
+              className="text-[11px] font-medium uppercase tracking-[0.2em] text-[#c9b8a0] hover:text-white transition-colors px-3 py-1.5 hidden sm:inline-block cursor-pointer whitespace-nowrap flex-shrink-0"
             >
               Sign In
             </button>
@@ -716,7 +716,7 @@ export function HeroPage() {
                 navigate('/workspace');
               }
             }}
-            className="bg-white text-black font-semibold text-xs tracking-wider uppercase px-5 py-2.5 rounded-full hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.18)] hover:shadow-[0_0_30px_rgba(232,213,183,0.4)] cursor-pointer"
+            className="bg-white text-black font-semibold text-xs tracking-wider uppercase px-4 py-2 sm:px-5 sm:py-2.5 rounded-full hover:bg-[#e8d5b7] transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.18)] hover:shadow-[0_0_30px_rgba(232,213,183,0.4)] cursor-pointer whitespace-nowrap flex-shrink-0"
           >
             {activePersona === 'assistant' || currentUser?.role === 'Lab Assistant'
               ? 'Launch Desk'

@@ -386,14 +386,14 @@ export function TopHeader() {
           <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
 
           {/* Current User Identity (Apple-Style Monogram Pill) */}
-          <div className="hidden lg:flex items-center gap-2.5 pl-1.5 pr-2.5 py-1 rounded-full bg-white/[0.03] border border-white/10 hover:border-[#a78b71]/40 transition-all backdrop-blur-md shadow-sm">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#a78b71]/35 to-[#e8d5b7]/20 border border-[#c9b8a0]/30 flex items-center justify-center text-[10px] font-semibold text-[#f5e6c8] tracking-tight select-none">
+          <div className="hidden lg:flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full bg-white/[0.03] border border-white/10 hover:border-[#a78b71]/40 transition-all backdrop-blur-md shadow-sm flex-shrink-0">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#a78b71]/35 to-[#e8d5b7]/20 border border-[#c9b8a0]/30 flex items-center justify-center text-[10px] font-semibold text-[#f5e6c8] tracking-tight select-none flex-shrink-0">
               {getUserInitials(currentUser?.name || role)}
             </div>
-            <span className="font-medium text-white/90 text-xs tracking-tight">
+            <span className="font-medium text-white/90 text-xs tracking-tight whitespace-nowrap max-w-[130px] truncate">
               {currentUser?.name || role}
             </span>
-            <span className="text-[10px] font-medium text-[#c9b8a0] bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/10">
+            <span className="text-[10px] font-medium text-[#c9b8a0] bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/10 whitespace-nowrap flex-shrink-0">
               {role}
             </span>
           </div>
@@ -405,11 +405,11 @@ export function TopHeader() {
               logout();
               navigate('/login');
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 text-xs font-sans text-zinc-300 hover:text-rose-300 transition-all cursor-pointer shadow-sm group"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 text-xs font-sans text-zinc-300 hover:text-rose-300 transition-all cursor-pointer shadow-sm group whitespace-nowrap flex-shrink-0"
             title="Log out of LabTrack"
           >
-            <LogOut className="w-3.5 h-3.5 text-zinc-400 group-hover:text-rose-400 transition-colors" />
-            <span className="font-medium text-xs">Log out</span>
+            <LogOut className="w-3.5 h-3.5 text-zinc-400 group-hover:text-rose-400 transition-colors flex-shrink-0" />
+            <span className="font-medium text-xs whitespace-nowrap">Log out</span>
           </button>
         </div>
       </header>
