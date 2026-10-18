@@ -4,6 +4,39 @@ This file is a high-density, chronological record of decisions, file reorganizat
 
 ---
 
+## 2026-10-18 — Department Registry & Student Departmental Issue Governance
+
+**Summary**
+Replaced the individual 20-lab facility dropdown in the top navigation header with an institutional Department Registry (`ALL DEPTS`, `AIML DEPT`, `CSE DEPT`, `RA DEPT`). Enforced institutional governance rule: **Students are strictly restricted to issuing/requisitioning hardware housed in their own department's labs**.
+
+**Decisions & Governance**
+- **Top Header**: Removed the cluttered 20-lab facility selector dropdown. Replaced with Department Registry selector displaying department codes, floor levels, and a distinctive `Your Dept` indicator for enrolled students.
+- **Stock Resolution**: Defined `getItemDeptStock(item, deptCode)` in `LabDataContext.jsx`. Computes available and physical stock strictly for labs belonging to the specified department (`AIML` = 5th floor labs, `CSE` = 4th & 5th floor labs, `RA` = 6th floor labs).
+- **Student Requisition Lockout**:
+  - In `InventoryListPage.jsx`: If a student user views hardware items outside their department (e.g. RA-exclusive TurtleBot 4 or Kinova Arm for an AIML student), the card's `Requisition` button is disabled, showing `[RA Dept Only]` with a lock icon.
+  - In Quick Specs Modal: Shows explicit notice `Restricted: Not housed in AIML labs` and disables requisition action with `Cross-Dept Prohibited`.
+  - In `addToBasket`: Blocks addition of cross-department hardware with an institutional warning toast.
+  - In `RequisitionDrawer.jsx`: Highlights any cross-department items with an alert banner and blocks requisition submission until only same-department items remain.
+- **Backend Enforceability**: In `service.py`, `plan()` now accepts `branch`. In `submit_request()`, if the user has a `STUDENT` role and an assigned branch (`AIML`, `CSE`, or `RA`), fulfilment planning is scoped to that branch. Infeasible cross-department requests are rejected with status 403 (`CROSS_DEPT_PROHIBITED`).
+- **Test Coverage**: Added `test_student_departmental_restriction_blocks_cross_dept_issue` in `tests/test_workflows.py`. All 47 pytest test cases pass 100%. Frontend build passes in <1s.
+
+---
+
+## 2026-10-18 — Incident PENAL-2026-10-18-001: Frontend Localhost Disconnect & Remediation
+
+**Summary**
+Recorded formal penalty entry in `PENAL_LOG.md` following user discovery that `http://localhost:5173` displayed stale client-side mock data (`Dr. Anjali Dalvi`, `Dr. K. V. Ramanathan`, 3 generic labs, only 5 items) despite backend database migration and Excel generation. The root cause was isolated to frontend client-cache decoupling (`localStorage.getItem('labtrack_inventory_v4')` and `mockData.js`) and lack of a reverse proxy in `vite.config.js`.
+
+**Penalized Actions & Remediation**
+- Added `PENAL_LOG.md` documenting Strike 1 and imposing mandatory UI inspection gates.
+- Synchronized `src/data/mockData.js` with the full 64-user roster, 20 real SIT labs, 34 hardware items, 36 assets, and 8 projects from `labtrack_master_data.xlsx`.
+- Updated `LoginPage.jsx` persona buttons with active personnel (Dr. Sumit Kumar, Dr. Meenakshi Sharma, Ramesh Patil, Rahul Sharma).
+- Configured `/api` reverse proxy in `vite.config.js` targeting `http://localhost:8000`.
+- Bumped storage version to `labtrack_inventory_v5` to bust stale browser caches.
+- Purged all legacy persona references across `ProjectDirectoryPage.jsx`, `ApprovalsQueuePage.jsx`, `accountability.api.js`, and `custody.api.js`.
+
+---
+
 ## 2026-10-17 — Phase 02: Catalogue, Inventory Model & Project Governance Sealed
 
 **Summary**

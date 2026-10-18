@@ -6,10 +6,10 @@ import {
   INITIAL_AUDIT_LOGS
 } from '../data/mockData';
 
-const LOANS_KEY = 'labtrack_loans_db';
-const REQ_KEY = 'labtrack_requisitions_db';
-const RES_KEY = 'labtrack_reservations_db';
-const AUDIT_KEY = 'labtrack_audit_db';
+const LOANS_KEY = 'labtrack_loans_v5';
+const REQ_KEY = 'labtrack_requisitions_v5';
+const RES_KEY = 'labtrack_reservations_v5';
+const AUDIT_KEY = 'labtrack_audit_v5';
 
 function getStored(key, initial) {
   const data = localStorage.getItem(key);
@@ -35,7 +35,7 @@ function appendAudit(action, targetId, details, actorRole = 'Student', actorPrn 
     timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
     actorPrn,
     actorRole,
-    actorName: actorRole === 'Student' ? 'Aryan Sharma' : actorRole === 'Faculty' ? 'Prof. Sneha Kulkarni' : actorRole === 'Lab Assistant' ? 'Ramesh Patil' : 'Dr. K. V. Ramanathan',
+    actorName: actorRole === 'Student' ? 'Rahul Sharma' : actorRole === 'Faculty' ? 'Dr. Meenakshi Sharma' : actorRole === 'Lab Assistant' ? 'Ramesh Patil' : 'Dr. Sumit Kumar',
     action,
     targetId,
     details,

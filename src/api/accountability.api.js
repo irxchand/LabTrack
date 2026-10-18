@@ -6,10 +6,10 @@ import {
   INITIAL_PROJECTS
 } from '../data/mockData';
 
-const DEFECTS_KEY = 'labtrack_defects_db';
-const AUDIT_KEY = 'labtrack_audit_db';
-const INCIDENTS_KEY = 'labtrack_incidents_db';
-const PROJECTS_KEY = 'labtrack_projects_db';
+const DEFECTS_KEY = 'labtrack_defects_v5';
+const AUDIT_KEY = 'labtrack_audit_v5';
+const INCIDENTS_KEY = 'labtrack_incidents_v5';
+const PROJECTS_KEY = 'labtrack_projects_v5';
 
 function getStored(key, initial) {
   const data = localStorage.getItem(key);
@@ -35,7 +35,7 @@ function appendAudit(action, targetId, details, actorRole = 'Staff', actorPrn = 
     timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
     actorPrn,
     actorRole,
-    actorName: actorRole === 'Student' ? 'Aryan Sharma' : actorRole === 'Faculty' ? 'Prof. Sneha Kulkarni' : actorRole === 'Lab Assistant' ? 'Ramesh Patil' : 'Dr. K. V. Ramanathan',
+    actorName: actorRole === 'Student' ? 'Rahul Sharma' : actorRole === 'Faculty' ? 'Dr. Meenakshi Sharma' : actorRole === 'Lab Assistant' ? 'Ramesh Patil' : 'Dr. Sumit Kumar',
     action,
     targetId,
     details,
@@ -175,8 +175,8 @@ export const accountabilityApi = {
         courseCode: projectData.courseCode || 'DCDS-SY-AIML',
         academicTerm: projectData.academicTerm || 'Autumn 2026 (Semester III)',
         department: projectData.department || 'Artificial Intelligence & Machine Learning',
-        mentorId: projectData.mentorId || 'FAC-AI-019',
-        mentorName: projectData.mentorName || 'Dr. Anjali Dalvi',
+        mentorId: projectData.mentorId || 'T100458',
+        mentorName: projectData.mentorName || 'Dr. Meenakshi Sharma',
         teamLeaderPrn: projectData.teamLeaderPrn || '202401048',
         members: projectData.members || [],
         hardwareBudgetCap: projectData.hardwareBudgetCap || 3,

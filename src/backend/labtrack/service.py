@@ -1,7 +1,7 @@
 """Domain operations: no network calls inside inventory transactions."""
 from datetime import timedelta, timezone
 from itertools import combinations
-from sqlalchemy import select, func
+from sqlalchemy import select, func, or_
 from .models import *
 from .config import settings
 
@@ -110,7 +110,15 @@ def catalogue(session, category=None, q=None):
     result = []
     query = select(Item).order_by(Item.name)
     if category and category.strip():
-        query = query.where(func.lower(Item.category) == category.strip().lower())
+        cat = category.strip().lower()
+        stem = cat[:-1] if cat.endswith("s") else cat
+        query = query.where(
+            or_(
+                func.lower(Item.category) == cat,
+                func.lower(Item.category) == stem,
+                func.lower(Item.category) == (stem + "s"),
+            )
+        )
     for item in session.scalars(query):
         if q and q.strip():
             term = q.strip().lower()
@@ -124,12 +132,24 @@ def catalogue(session, category=None, q=None):
             if item.kind == "CONSUMABLE":
                 stock = session.scalar(select(Stock).where(Stock.item_id == item.id, Stock.lab_id == lab.id))
                 if stock:
-                    labs.append({"lab_id": lab.id, "lab_name": lab.name, "good": stock.good, "bad": stock.bad, "total": stock.good+stock.bad})
+                    labs.append({"lab_id": lab.id, "lab_name": lab.name, "branch": getattr(lab, "branch", None), "good": stock.good, "bad": stock.bad, "total": stock.good+stock.bad})
             else:
                 assets = list(session.scalars(select(Asset).where(Asset.item_id == item.id, Asset.lab_id == lab.id).order_by(Asset.barcode)))
                 if assets:
-                    labs.append({"lab_id": lab.id, "lab_name": lab.name, "good": sum(a.state == "AVAILABLE" for a in assets), "bad": sum(a.state in ["DEFECTIVE", "UNDER_REPAIR"] for a in assets), "total": len(assets), "assets": [{"barcode": a.barcode, "state": a.state, "default_id": a.default_id, "bill_number": a.bill_number} for a in assets]})
-        result.append({"id": item.id, "name": item.name, "kind": item.kind, "category": item.category, "description": item.description, "brand": item.brand, "specs": item.specs, "labs": labs, "available": sum(l["good"] for l in labs)})
+                    labs.append({"lab_id": lab.id, "lab_name": lab.name, "branch": getattr(lab, "branch", None), "good": sum(a.state == "AVAILABLE" for a in assets), "bad": sum(a.state in ["DEFECTIVE", "UNDER_REPAIR"] for a in assets), "total": len(assets), "assets": [{"barcode": a.barcode, "state": a.state, "default_id": a.default_id, "bill_number": a.bill_number} for a in assets]})
+        result.append({
+            "id": item.id,
+            "name": item.name,
+            "kind": item.kind,
+            "category": item.category,
+            "description": item.description,
+            "brand": item.brand,
+            "specs": item.specs,
+            "labs": labs,
+            "available": sum(l["good"] for l in labs),
+            "image_url": getattr(item, "image_url", None),
+            "cost_tier": getattr(item, "cost_tier", None),
+        })
     return result
 
 
@@ -164,11 +184,16 @@ def get_project(session, user, project_id):
     }
 
 
-def plan(session, input_lines):
+def plan(session, input_lines, branch=None):
     needs = {x.item_id: x.quantity for x in input_lines}
     require(len(needs) == len(input_lines), "Combine duplicate item quantities", "INVALID_QUANTITY", 422)
     data = {x["id"]: x for x in catalogue(session)}
     require(set(needs) <= set(data), "Unknown catalogue item", "NOT_FOUND", 404)
+    if branch:
+        for item_id, item_info in data.items():
+            branch_labs = [l for l in item_info["labs"] if l.get("branch") == branch]
+            item_info["labs"] = branch_labs
+            item_info["available"] = sum(l["good"] for l in branch_labs)
     shortages = [{"item_id": i, "requested": n, "available": data[i]["available"]} for i, n in needs.items() if n > data[i]["available"]]
     if shortages:
         return {"feasible": False, "shortages": shortages, "labs": [], "allocations": []}
@@ -208,7 +233,12 @@ def create_project(session, user, body):
 
 def submit_request(session, user, body):
     p = lead_project(session, user, body.project_id)
-    result = plan(session, body.lines)
+    user_branch = getattr(user, "branch", None)
+    is_student = "STUDENT" in user.roles
+    enforce_branch = user_branch if (is_student and user_branch in ["AIML", "CSE", "RA"]) else None
+    result = plan(session, body.lines, branch=enforce_branch)
+    if not result["feasible"] and enforce_branch:
+        require(False, f"Cross-Department Issue Prohibited: Enrolled {user_branch} students can only requisition hardware from {user_branch} department labs.", "CROSS_DEPT_PROHIBITED", 403)
     require(result["feasible"], "Requested stock is unavailable; choose a reservation or revise quantities", "INSUFFICIENT_STOCK")
     items = [get(session, Item, line.item_id) for line in body.lines]
     kinds = {i.kind for i in items}

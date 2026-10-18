@@ -26,7 +26,7 @@ export function ApprovalsQueuePage() {
   const pendingRequisitions = requisitions.filter((r) => r.status === 'Pending Approval');
 
   const handleApprove = (id) => {
-    approveRequisition(id, currentUser?.name || 'Dr. Anjali Dalvi');
+    approveRequisition(id, currentUser?.name || 'Dr. Meenakshi Sharma');
   };
 
   const handleOpenReject = (req) => {
@@ -37,7 +37,7 @@ export function ApprovalsQueuePage() {
   const handleConfirmReject = (e) => {
     e.preventDefault();
     if (!rejectModalReq) return;
-    rejectRequisition(rejectModalReq.id, rejectReason, currentUser?.name || 'Dr. Anjali Dalvi');
+    rejectRequisition(rejectModalReq.id, rejectReason, currentUser?.name || 'Dr. Meenakshi Sharma');
     setRejectModalReq(null);
   };
 
@@ -59,7 +59,7 @@ export function ApprovalsQueuePage() {
     }));
     approveRequisition(
       modifyModalReq.id,
-      currentUser?.name || 'Dr. Anjali Dalvi',
+      currentUser?.name || 'Dr. Meenakshi Sharma',
       updatedComponents
     );
     setModifyModalReq(null);

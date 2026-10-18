@@ -26,8 +26,11 @@ export function RequisitionDrawer() {
     submitBasketRequisition,
     projects,
     activeLoans,
+    userDepartment,
+    getItemDeptStock,
   } = useLabData();
   const { currentUser } = useAuth();
+  const isStudent = currentUser?.role === 'Student';
 
   const userProjects = useMemo(() => {
     if (!projects || projects.length === 0) return [];
@@ -57,6 +60,16 @@ export function RequisitionDrawer() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [copiedId, setCopiedId] = useState(null);
+
+  const crossDeptItems = useMemo(() => {
+    if (!isStudent) return [];
+    return basket.filter((item) => {
+      const stock = getItemDeptStock(item, userDepartment);
+      return stock.available <= 0;
+    });
+  }, [basket, isStudent, userDepartment, getItemDeptStock]);
+
+  const hasCrossDeptItems = crossDeptItems.length > 0;
 
   if (!isBasketOpen) return null;
 
@@ -146,12 +159,30 @@ export function RequisitionDrawer() {
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-zinc-500 text-[11px]">Reliability</span>
+              <span className="text-zinc-500 text-[11px]">Enrolled Dept:</span>
+              <span className="font-semibold text-emerald-400">
+                {userDepartment}
+              </span>
+              <span className="text-zinc-600">•</span>
+              <span className="text-zinc-500 text-[11px]">Score</span>
               <span className="font-semibold text-[#f5e6c8]">
                 {currentUser?.reliabilityScore || 94}%
               </span>
             </div>
           </div>
+
+          {/* Cross-Department Policy Alert Banner */}
+          {hasCrossDeptItems && (
+            <div className="mx-6 mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-400" />
+              <div>
+                <span className="font-semibold block">Cross-Department Issue Prohibited</span>
+                <span className="text-zinc-300 text-[11px] leading-relaxed">
+                  SIT policy strictly restricts student issues to their own department ({userDepartment}). Basket contains hardware housed in other departments ({crossDeptItems.map((i) => i.nomenclature).join(', ')}). Please remove them to submit.
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* ───────────────────────────────────────────────────────── */}
           {/* 4. Staged Items List                                      */}
@@ -218,6 +249,27 @@ export function RequisitionDrawer() {
                       <span className="text-zinc-600">•</span>
                       <span className="truncate">{item.labRoom}</span>
                     </div>
+
+                    {isStudent && (
+                      <div className="mt-1.5">
+                        {(() => {
+                          const stock = getItemDeptStock(item, userDepartment);
+                          if (stock.available <= 0) {
+                            return (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">
+                                <AlertCircle className="w-2.5 h-2.5" />
+                                <span>{stock.depts.length > 0 ? `${stock.depts.join('/')} Dept Only` : `Not in ${userDepartment}`}</span>
+                              </span>
+                            );
+                          }
+                          return (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium">
+                              <span>✓ In {userDepartment} Labs ({stock.available} avail)</span>
+                            </span>
+                          );
+                        })()}
+                      </div>
+                    )}
                   </div>
 
                   {/* Quantity Stepper & Remove Action */}
@@ -369,12 +421,20 @@ export function RequisitionDrawer() {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="flex-1 py-2.5 px-5 rounded-full text-black font-semibold text-xs tracking-wide bg-white hover:bg-[#f5e6c8] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 active:scale-[0.99]"
+                  disabled={isSubmitting || hasCrossDeptItems}
+                  className={`flex-1 py-2.5 px-5 rounded-full font-semibold text-xs tracking-wide transition-all flex items-center justify-center gap-2 shadow-sm ${
+                    hasCrossDeptItems
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 cursor-not-allowed opacity-80'
+                      : 'bg-white hover:bg-[#f5e6c8] text-black cursor-pointer active:scale-[0.99] disabled:opacity-50'
+                  }`}
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>
-                    {isSubmitting ? 'Submitting...' : 'Submit for Faculty Approval'}
+                    {isSubmitting
+                      ? 'Submitting...'
+                      : hasCrossDeptItems
+                      ? 'Blocked: Cross-Department Hardware'
+                      : 'Submit for Faculty Approval'}
                   </span>
                 </button>
               </div>

@@ -23,6 +23,13 @@ class User(Base):
     roles: Mapped[list] = mapped_column(JSON)
     lab_ids: Mapped[list] = mapped_column(JSON, default=list)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
+    department: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    designation: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    batch: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    year_of_study: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    branch: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    roll_number: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    phone: Mapped[str | None] = mapped_column(String(30), nullable=True)
 
 
 class AuthSession(Base):
@@ -37,6 +44,11 @@ class Lab(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120))
     incharge_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    lab_code: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    floor: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    wing: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    location_desc: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    branch: Mapped[str | None] = mapped_column(String(20), nullable=True)
 
 
 class Item(Base):
@@ -49,6 +61,8 @@ class Item(Base):
     brand: Mapped[str] = mapped_column(String(100), default="")
     specs: Mapped[dict] = mapped_column(JSON, default=dict)
     alternative_ids: Mapped[list] = mapped_column(JSON, default=list)
+    image_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    cost_tier: Mapped[str | None] = mapped_column(String(50), nullable=True)
     __table_args__ = (CheckConstraint("kind IN ('ASSET','CONSUMABLE')", name="ck_item_kind"),)
 
 

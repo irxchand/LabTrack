@@ -281,3 +281,38 @@ def test_wrong_barcode_leaves_request_and_stock_unchanged(client, headers):
     with db.Session() as s:
         assert s.get(Request,rid).state=='APPROVED'
         assert all(a.state=='AVAILABLE' for a in s.scalars(select(Asset)))
+
+
+def test_student_departmental_restriction_blocks_cross_dept_issue(client, headers):
+    from labtrack.models import Lab
+    # Assign branch 'AIML' to student, lab 1 to 'AIML', and lab 2 to 'RA'
+    with db.Session() as s:
+        student = s.get(User, 1)
+        student.branch = "AIML"
+        lab1 = s.get(Lab, 1)
+        lab1.branch = "AIML"
+        lab2 = s.get(Lab, 2)
+        lab2.branch = "RA"
+        s.commit()
+
+    p = project(client, headers)
+    # Item 2 is only stocked in lab 2 (RA lab in fixtures/demo.json: lab_id 2 has good=4, lab 1 has 0)
+    # AIML student attempting to requisition item 2 from RA lab must be blocked with 403
+    r = post(client, '/requests', headers['student'], {
+        'project_id': p,
+        'duration_hours': 168,
+        'purpose': 'BORROW',
+        'lines': [{'item_id': 2, 'quantity': 1}]
+    })
+    assert r.status_code == 403, r.text
+    assert "CROSS_DEPT_PROHIBITED" in r.text or "Cross-Department" in r.text
+
+    # Requisitioning item 1 (stocked in lab 1 AIML with good=8) must succeed
+    r2 = post(client, '/requests', headers['student'], {
+        'project_id': p,
+        'duration_hours': 168,
+        'purpose': 'BORROW',
+        'lines': [{'item_id': 1, 'quantity': 1}]
+    })
+    assert r2.status_code == 200, r2.text
+

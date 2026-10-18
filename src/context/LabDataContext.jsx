@@ -5,36 +5,133 @@ import { accountabilityApi } from '../api/accountability.api';
 import { useNotification } from './NotificationContext';
 import { useAuth } from './AuthContext';
 
-export const LAB_FACILITIES = [
-  {
-    id: 'AIML',
-    name: 'AIML LAB',
-    room: 'Lab 1 - AI',
-    subTitle: 'Room 402 • Dept. of AI & Data Science',
-    type: 'Core AI & Vision Systems',
-  },
-  {
-    id: 'IOT',
-    name: 'IOT LAB',
-    room: 'Lab 2 - IoT',
-    subTitle: 'Room 305 • Connected Sensors & Edge MCU',
-    type: 'IoT & Telemetry Depot',
-  },
-  {
-    id: 'EMBEDDED',
-    name: 'EMBEDDED LAB',
-    room: 'Lab 3 - Embedded',
-    subTitle: 'Room 214 • Robotics & Microcontrollers',
-    type: 'Robotics & Control Racks',
-  },
+export const DEPARTMENTS = [
   {
     id: 'ALL',
-    name: 'ALL LABS',
-    room: 'All Labs',
-    subTitle: 'Central Hardware Depot • Integrated Overview',
-    type: 'Unified Registry',
+    code: 'ALL',
+    name: 'ALL DEPARTMENTS',
+    shortName: 'ALL DEPTS',
+    subTitle: 'Central Hardware Depot • Cross-Department Overview',
+    floor: '4th, 5th & 6th Floors',
+    description: 'Central Hardware Depot • Integrated Overview across all SIT engineering labs',
+  },
+  {
+    id: 'AIML',
+    code: 'AIML',
+    name: 'AIML DEPT',
+    shortName: 'AIML DEPT',
+    subTitle: 'Dept. of AI & Machine Learning',
+    floor: '5th Floor Labs',
+    description: 'Fifth Floor • Computer Vision, Deep Learning, Cloud & AI Capstone Labs',
+  },
+  {
+    id: 'CSE',
+    code: 'CSE',
+    name: 'CSE DEPT',
+    shortName: 'CSE DEPT',
+    subTitle: 'Dept. of Computer Science & Eng.',
+    floor: '4th & 5th Floor Labs',
+    description: 'Fourth & Fifth Floor • Programming, Open Source, Data Structures & High Performance Labs',
+  },
+  {
+    id: 'RA',
+    code: 'RA',
+    name: 'RA DEPT',
+    shortName: 'RA DEPT',
+    subTitle: 'Dept. of Robotics & Automation',
+    floor: '6th Floor Labs',
+    description: 'Sixth Floor • Mobile Robotics, Mechatronics, Actuators & LiDAR Labs',
   },
 ];
+
+// Backward compatibility alias
+export const LAB_FACILITIES = DEPARTMENTS;
+
+export const getDeptFromLabId = (labId) => {
+  if (!labId) return 'ALL';
+  const upper = String(labId).toUpperCase();
+  if (upper.endsWith('AIML') || upper.includes('AIML')) return 'AIML';
+  if (upper.endsWith('CSE') || upper.includes('CSE')) return 'CSE';
+  if (upper.endsWith('RA') || upper.includes('RA')) return 'RA';
+  return 'ALL';
+};
+
+export const getUserDepartment = (user) => {
+  if (!user) return 'AIML';
+  if (user.branch) {
+    const b = user.branch.toUpperCase();
+    if (b.includes('AIML') || b === 'AI' || b === 'AIDS') return 'AIML';
+    if (b.includes('CSE') || b === 'CS') return 'CSE';
+    if (b.includes('RA') || b.includes('ROBOT')) return 'RA';
+  }
+  if (user.department) {
+    const d = user.department.toUpperCase();
+    if (d.includes('AIML') || d.includes('AI &') || d.includes('MACHINE LEARNING')) return 'AIML';
+    if (d.includes('CSE') || d.includes('COMPUTER SCIENCE')) return 'CSE';
+    if (d.includes('RA') || d.includes('ROBOTICS') || d.includes('AUTOMATION')) return 'RA';
+  }
+  if (user.prn) {
+    const prn = String(user.prn);
+    if (prn.length >= 8) {
+      const code = prn.substring(6, 8);
+      if (code === '26') return 'AIML';
+      if (code === '22') return 'CSE';
+      if (code === '27') return 'RA';
+    }
+  }
+  return 'AIML';
+};
+
+export const getItemDeptStock = (item, deptCode) => {
+  if (!item) return { available: 0, total: 0, depts: [] };
+  const breakdown = item.labBreakdown || item.labs || [];
+
+  const itemDepts = new Set();
+  if (breakdown.length > 0) {
+    breakdown.forEach((b) => {
+      const dept = b.branch || getDeptFromLabId(b.lab_id);
+      if (dept && dept !== 'ALL') itemDepts.add(dept);
+    });
+  } else {
+    const primaryDept = getDeptFromLabId(item.primaryLabId || item.labRoom);
+    if (primaryDept && primaryDept !== 'ALL') itemDepts.add(primaryDept);
+  }
+  const deptsList = Array.from(itemDepts);
+
+  if (!deptCode || deptCode === 'ALL') {
+    return {
+      available: item.availableStock ?? item.available ?? 0,
+      total: item.totalStock ?? item.total ?? 0,
+      depts: deptsList,
+      isHousedInDept: true,
+    };
+  }
+
+  if (breakdown.length > 0) {
+    const deptLabs = breakdown.filter((b) => {
+      const dept = b.branch || getDeptFromLabId(b.lab_id);
+      return dept === deptCode;
+    });
+    const available = deptLabs.reduce((sum, b) => sum + (b.good ?? 0), 0);
+    const total = deptLabs.reduce((sum, b) => sum + ((b.good ?? 0) + (b.bad ?? 0) || b.total || 0), 0);
+    return {
+      available,
+      total,
+      depts: deptsList,
+      isHousedInDept: deptLabs.length > 0 && available > 0,
+      labsCount: deptLabs.length,
+    };
+  }
+
+  const primaryDept = getDeptFromLabId(item.primaryLabId || item.labRoom);
+  const match = primaryDept === deptCode;
+  return {
+    available: match ? (item.availableStock ?? 0) : 0,
+    total: match ? (item.totalStock ?? 0) : 0,
+    depts: match ? [deptCode] : deptsList,
+    isHousedInDept: match && (item.availableStock ?? 0) > 0,
+  };
+};
 
 const LabDataContext = createContext(null);
 
@@ -42,20 +139,36 @@ export function LabDataProvider({ children }) {
   const { addToast } = useNotification();
   const { currentUser } = useAuth();
 
-  const [selectedFacility, setSelectedFacility] = useState(() => {
+  const userDepartment = getUserDepartment(currentUser);
+  const isStudent = currentUser?.role === 'Student';
+
+  const [selectedDepartment, setSelectedDepartment] = useState(() => {
     try {
-      return localStorage.getItem('labtrack_active_facility') || 'AIML LAB';
+      return localStorage.getItem('labtrack_active_dept') || (isStudent ? userDepartment : 'ALL');
     } catch {
-      return 'AIML LAB';
+      return isStudent ? userDepartment : 'ALL';
     }
   });
 
-  const changeFacility = (facility) => {
-    setSelectedFacility(facility);
+  // Automatically keep student view focused on their home department
+  useEffect(() => {
+    if (isStudent && userDepartment) {
+      setSelectedDepartment(userDepartment);
+      try {
+        localStorage.setItem('labtrack_active_dept', userDepartment);
+      } catch (e) {
+        console.error('Failed to save selected dept:', e);
+      }
+    }
+  }, [currentUser?.prn, isStudent, userDepartment]);
+
+  const changeDepartment = (deptCode) => {
+    setSelectedDepartment(deptCode);
     try {
-      localStorage.setItem('labtrack_active_facility', facility);
+      localStorage.setItem('labtrack_active_dept', deptCode);
+      localStorage.setItem('labtrack_active_facility', deptCode === 'ALL' ? 'ALL DEPTS' : `${deptCode} DEPT`);
     } catch (e) {
-      console.error('Failed to save selected facility:', e);
+      console.error('Failed to save selected dept:', e);
     }
   };
 
@@ -125,8 +238,20 @@ export function LabDataProvider({ children }) {
     loadData();
   }, [loadData]);
 
-  // Basket methods
+  // Basket methods with Departmental Issue Governance
   const addToBasket = (item, quantity = 1) => {
+    if (isStudent) {
+      const stockInfo = getItemDeptStock(item, userDepartment);
+      if (stockInfo.available <= 0) {
+        addToast({
+          title: 'Cross-Department Issue Prohibited',
+          message: `${item.nomenclature} is not housed in ${userDepartment} department labs. SIT policy strictly restricts student requisitions to their enrolled department labs.`,
+          type: 'warning',
+        });
+        return false;
+      }
+    }
+
     setBasket((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
@@ -139,9 +264,10 @@ export function LabDataProvider({ children }) {
     setIsBasketOpen(true);
     addToast({
       title: 'Item Added to Requisition Basket',
-      message: `${item.nomenclature} staged in basket.`,
+      message: `${item.nomenclature} staged in basket (${userDepartment} Dept).`,
       type: 'info',
     });
+    return true;
   };
 
   const removeFromBasket = (itemId) => {
@@ -165,6 +291,23 @@ export function LabDataProvider({ children }) {
   // Submit batch requisition
   const submitBasketRequisition = async (technicalPurpose, targetProjectId) => {
     if (basket.length === 0) return false;
+
+    // Strict client-side departmental validation before submission
+    if (isStudent) {
+      const crossDeptItems = basket.filter((item) => {
+        const stockInfo = getItemDeptStock(item, userDepartment);
+        return stockInfo.available <= 0;
+      });
+      if (crossDeptItems.length > 0) {
+        addToast({
+          title: 'Policy Restriction: Cross-Department Hardware',
+          message: `Cannot submit requisition: Contains items (${crossDeptItems.map((i) => i.nomenclature).join(', ')}) outside ${userDepartment} labs.`,
+          type: 'warning',
+        });
+        return false;
+      }
+    }
+
     const componentsRequested = basket.map((item) => ({
       itemId: item.id,
       nomenclature: item.nomenclature,
@@ -181,10 +324,10 @@ export function LabDataProvider({ children }) {
     const res = await custodyApi.submitRequisition({
       studentPrn: currentUser?.prn || '202401048',
       studentName: currentUser?.name || 'Rahul Sharma',
-      projectId: selectedProject?.id || currentUser?.projectId || 'PRJ-AIML-08',
-      courseCode: selectedProject?.courseCode || currentUser?.courseCode || 'DCDS-SY-AIML',
-      mentorId: selectedProject?.mentorId || currentUser?.mentorId || 'FAC-AI-019',
-      mentorName: selectedProject?.mentorName || currentUser?.mentorName || 'Dr. Anjali Dalvi',
+      projectId: selectedProject?.id || currentUser?.projectId || 'PROJ-000001',
+      courseCode: selectedProject?.courseCode || currentUser?.courseCode || 'AIML-CAPSTONE-2026',
+      mentorId: selectedProject?.mentorId || currentUser?.mentorId || 'T100458',
+      mentorName: selectedProject?.mentorName || currentUser?.mentorName || 'Dr. Meenakshi Sharma',
       technicalPurpose,
       componentsRequested,
     });
@@ -466,9 +609,19 @@ export function LabDataProvider({ children }) {
         addNewInventoryItem,
         createProject,
         // Facility State
-        selectedFacility,
-        setSelectedFacility: changeFacility,
-        facilities: LAB_FACILITIES,
+        // Department Registry & Scoping
+        departments: DEPARTMENTS,
+        selectedDepartment,
+        setSelectedDepartment: changeDepartment,
+        userDepartment,
+        getItemDeptStock,
+        // Backward compatibility
+        selectedFacility: selectedDepartment === 'ALL' ? 'ALL DEPTS' : `${selectedDepartment} DEPT`,
+        setSelectedFacility: (fac) => {
+          const raw = String(fac).replace(' DEPT', '').replace(' LAB', '').replace('S', '').trim();
+          changeDepartment(raw === 'ALL' ? 'ALL' : raw);
+        },
+        facilities: DEPARTMENTS,
       }}
     >
       {children}

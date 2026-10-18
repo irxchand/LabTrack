@@ -31,7 +31,7 @@ export function ProjectDirectoryPage() {
   // Group creation form state
   const [title, setTitle] = useState('');
   const [courseCode, setCourseCode] = useState('DCDS-SY-AIML');
-  const [mentorName, setMentorName] = useState('Dr. Anjali Dalvi');
+  const [mentorName, setMentorName] = useState('Dr. Meenakshi Sharma');
   const [abstract, setAbstract] = useState('');
   const [friends, setFriends] = useState([]);
   const [friendName, setFriendName] = useState('');
@@ -173,7 +173,7 @@ export function ProjectDirectoryPage() {
       title: title.trim(),
       courseCode,
       mentorName,
-      mentorId: mentorName.includes('Anjali') ? 'FAC-AI-019' : 'FAC-AI-022',
+      mentorId: mentorName.includes('Meenakshi') ? 'T100458' : mentorName.includes('Manoj') ? 'T100460' : mentorName.includes('Sumit') ? 'T100101' : 'T100455',
       teamLeaderPrn: currentUser?.prn || '202401048',
       members: [leaderMember, ...friends],
       abstract: abstract.trim() || 'Collegiate project hardware development and bench evaluation.',
@@ -561,10 +561,10 @@ export function ProjectDirectoryPage() {
                 onChange={(e) => setMentorName(e.target.value)}
                 className="w-full px-3.5 py-2.5 bg-[#121316] border border-white/10 rounded-2xl text-white text-xs focus:outline-none focus:border-[#c9b8a0]"
               >
-                <option value="Dr. Anjali Dalvi">Dr. Anjali Dalvi (FAC-AI-019)</option>
-                <option value="Dr. Sumanto Dutta">Dr. Sumanto Dutta (FAC-AI-022)</option>
-                <option value="Dr. Wasim Khan">Dr. Wasim Khan (FAC-AI-031)</option>
-                <option value="Dr. K. V. Ramanathan">Dr. K. V. Ramanathan (HOD-AIML-001)</option>
+                <option value="Dr. Meenakshi Sharma">Dr. Meenakshi Sharma (T100458 - Lab In-Charge)</option>
+                <option value="Dr. Manoj Patil">Dr. Manoj Patil (T100460 - Lab In-Charge)</option>
+                <option value="Dr. Sandeep Shinde">Dr. Sandeep Shinde (T100461 - Lab In-Charge)</option>
+                <option value="Dr. Sumit Kumar">Dr. Sumit Kumar (T100101 - HoD AIML)</option>
               </select>
             </div>
           </div>

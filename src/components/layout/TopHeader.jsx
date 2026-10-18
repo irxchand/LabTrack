@@ -32,6 +32,10 @@ export function TopHeader() {
     defects,
     reservations,
     auditLogs,
+    selectedDepartment,
+    setSelectedDepartment,
+    departments,
+    userDepartment,
     selectedFacility,
     setSelectedFacility,
     facilities,
@@ -254,19 +258,22 @@ export function TopHeader() {
 
           <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
 
-          {/* Laboratory Facility Selector Dropdown */}
+          {/* Institutional Department Selector Dropdown */}
           <div className="relative hidden sm:block" ref={labDropdownRef}>
             <button
               type="button"
               onClick={() => setIsLabDropdownOpen((prev) => !prev)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 transition-all cursor-pointer group shadow-sm select-none"
-              title="Switch Laboratory Facility"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#c9b8a0]/40 transition-all cursor-pointer group shadow-sm select-none"
+              title="Select Engineering Department"
               aria-expanded={isLabDropdownOpen}
               aria-haspopup="true"
             >
               <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-zinc-300 group-hover:text-white transition-colors">
-                {selectedFacility || 'AIML LAB'}
+                {selectedDepartment === 'ALL' ? 'ALL DEPTS' : `${selectedDepartment} DEPT`}
               </span>
+              {role === 'Student' && selectedDepartment === userDepartment && (
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" title="Your Enrolled Department" />
+              )}
               <ChevronDown
                 className={`w-3 h-3 text-zinc-400 group-hover:text-zinc-200 transition-transform duration-200 ${
                   isLabDropdownOpen ? 'rotate-180' : ''
@@ -277,29 +284,30 @@ export function TopHeader() {
             {/* Dropdown Menu */}
             {isLabDropdownOpen && (
               <div
-                className="absolute left-0 top-full mt-2 w-72 rounded-2xl bg-[#0c0d12]/95 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150"
+                className="absolute left-0 top-full mt-2 w-80 rounded-2xl bg-[#0c0d12]/95 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150"
                 role="menu"
               >
                 <div className="px-3 py-2 border-b border-white/5 flex items-center justify-between">
                   <span className="text-[9px] font-sans font-semibold uppercase tracking-[0.15em] text-zinc-400">
-                    FACILITY REGISTRY
+                    DEPARTMENT REGISTRY
                   </span>
                   <span className="text-[9px] font-sans text-zinc-400">
-                    Dept. of AI & DS
+                    SIT Pune • 2026
                   </span>
                 </div>
                 <div className="p-1 space-y-1">
-                  {(facilities || []).map((facility) => {
-                    const isSelected = (selectedFacility || 'AIML LAB') === facility.name;
+                  {(departments || []).map((dept) => {
+                    const isSelected = selectedDepartment === dept.code;
+                    const isUserDept = role === 'Student' && userDepartment === dept.code;
                     return (
                       <button
-                        key={facility.id}
+                        key={dept.id}
                         type="button"
                         onClick={() => {
-                          setSelectedFacility(facility.name);
+                          setSelectedDepartment(dept.code);
                           setIsLabDropdownOpen(false);
                         }}
-                        className={`w-full text-left px-2.5 py-2 rounded-xl text-xs font-sans transition-all flex items-start justify-between group cursor-pointer ${
+                        className={`w-full text-left px-3 py-2 rounded-xl text-xs font-sans transition-all flex items-start justify-between group cursor-pointer ${
                           isSelected
                             ? 'bg-white/[0.08] text-white border border-white/10 shadow-sm'
                             : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
@@ -313,14 +321,19 @@ export function TopHeader() {
                                 isSelected ? 'text-[#f5e6c8]' : 'text-zinc-200 group-hover:text-white'
                               }`}
                             >
-                              {facility.name}
+                              {dept.name}
                             </span>
                             <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400 border border-white/5">
-                              {facility.room}
+                              {dept.floor}
                             </span>
+                            {isUserDept && (
+                              <span className="text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+                                Your Dept
+                              </span>
+                            )}
                           </div>
                           <span className="text-[10px] text-zinc-400 font-normal mt-0.5 leading-snug">
-                            {facility.subTitle}
+                            {dept.subTitle}
                           </span>
                         </div>
                         {isSelected && (

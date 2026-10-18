@@ -27,7 +27,21 @@ def serialize_time(value):
 
 
 def user_view(u):
-    return {"id": u.id, "name": u.name, "identifier": u.identifier, "roles": u.roles, "lab_ids": u.lab_ids}
+    return {
+        "id": u.id,
+        "name": u.name,
+        "identifier": u.identifier,
+        "email": u.email,
+        "roles": u.roles,
+        "lab_ids": u.lab_ids,
+        "department": getattr(u, "department", None),
+        "designation": getattr(u, "designation", None),
+        "batch": getattr(u, "batch", None),
+        "year_of_study": getattr(u, "year_of_study", None),
+        "branch": getattr(u, "branch", None),
+        "roll_number": getattr(u, "roll_number", None),
+        "phone": getattr(u, "phone", None),
+    }
 
 
 def request_view(session, r):

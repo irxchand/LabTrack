@@ -28,13 +28,27 @@ import {
   Layers,
   CheckCircle2,
   SlidersHorizontal,
+  Lock,
+  Building2,
 } from 'lucide-react';
 
 export function InventoryListPage({ initialClassification = null }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { inventory, addToBasket, joinWaitlist, addNewInventoryItem, setIsBasketOpen, selectedFacility } = useLabData();
+  const {
+    inventory,
+    addToBasket,
+    joinWaitlist,
+    addNewInventoryItem,
+    setIsBasketOpen,
+    selectedDepartment,
+    setSelectedDepartment,
+    departments,
+    userDepartment,
+    getItemDeptStock,
+  } = useLabData();
   const { role, permissions } = useAuth();
+  const isStudent = role === 'Student';
 
   // Determine initial category from props or route
   const routeClassification = useMemo(() => {
@@ -48,22 +62,8 @@ export function InventoryListPage({ initialClassification = null }) {
 
   const [selectedCategory, setSelectedCategory] = useState(routeClassification || 'all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLab, setSelectedLab] = useState('All Labs');
   const [inStockOnly, setInStockOnly] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // Default to Cupertino Component Widgets Grid
-
-  // Synchronize with global facility dropdown selector in TopHeader
-  useEffect(() => {
-    if (selectedFacility === 'AIML LAB') {
-      setSelectedLab('Lab 1 - AI');
-    } else if (selectedFacility === 'IOT LAB') {
-      setSelectedLab('Lab 2 - IoT');
-    } else if (selectedFacility === 'EMBEDDED LAB') {
-      setSelectedLab('Lab 3 - Embedded');
-    } else if (selectedFacility === 'ALL LABS') {
-      setSelectedLab('All Labs');
-    }
-  }, [selectedFacility]);
 
   // Keep state in sync if URL route changes directly
   useEffect(() => {
@@ -84,6 +84,7 @@ export function InventoryListPage({ initialClassification = null }) {
   // Slide-over preview inspector
   const [inspectedItem, setInspectedItem] = useState(null);
   const [copiedTag, setCopiedTag] = useState(null);
+  const [selectedClass, setSelectedClass] = useState('ALL');
 
   // Modal for adding new inventory item
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -93,7 +94,7 @@ export function InventoryListPage({ initialClassification = null }) {
     subSpecs: '',
     manufacturer: '',
     classification: 'Asset',
-    category: 'Microcontrollers & SBCs',
+    category: 'Microcontrollers',
     labRoom: 'Lab 2 - IoT',
     coordinates: 'L2-CB1-R1',
     totalStock: 1,
@@ -109,17 +110,38 @@ export function InventoryListPage({ initialClassification = null }) {
     setTimeout(() => setCopiedTag(null), 1500);
   };
 
-  // Filtered items (all 10 hardware items)
+  // Filtered items (respecting active department, category & component class)
   const filteredItems = useMemo(() => {
     return inventory.filter((item) => {
       if (selectedCategory && selectedCategory !== 'all' && item.classification !== selectedCategory) {
         return false;
       }
-      if (selectedLab !== 'All Labs' && item.labRoom !== selectedLab) {
-        return false;
+      if (selectedDepartment !== 'ALL') {
+        const deptStock = getItemDeptStock(item, selectedDepartment);
+        if (deptStock.total <= 0) {
+          return false;
+        }
       }
-      if (inStockOnly && item.stockStatus !== 'Available') {
-        return false;
+      if (selectedClass && selectedClass !== 'ALL') {
+        const itemCat = (item.category || '').toLowerCase();
+        const targetClass = selectedClass.toLowerCase();
+        const match =
+          itemCat === targetClass ||
+          itemCat.startsWith(targetClass) ||
+          targetClass.startsWith(itemCat) ||
+          (targetClass.includes('microcontroller') && (itemCat.includes('microcontroller') || itemCat === 'mc')) ||
+          (targetClass.includes('microprocessor') && (itemCat.includes('microprocessor') || itemCat.includes('compute')));
+        if (!match) {
+          return false;
+        }
+      }
+      if (inStockOnly) {
+        const checkStock = isStudent
+          ? getItemDeptStock(item, userDepartment)
+          : (selectedDepartment === 'ALL' ? { available: item.availableStock } : getItemDeptStock(item, selectedDepartment));
+        if (checkStock.available <= 0) {
+          return false;
+        }
       }
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -134,7 +156,7 @@ export function InventoryListPage({ initialClassification = null }) {
       }
       return true;
     });
-  }, [inventory, selectedCategory, selectedLab, inStockOnly, searchQuery]);
+  }, [inventory, selectedCategory, selectedDepartment, selectedClass, inStockOnly, searchQuery, isStudent, userDepartment]);
 
   const assetItems = useMemo(
     () => filteredItems.filter((i) => i.classification === 'Asset'),
@@ -248,39 +270,66 @@ export function InventoryListPage({ initialClassification = null }) {
     {
       header: 'Available',
       accessor: 'availableStock',
-      width: '100px',
+      width: '120px',
       align: 'center',
-      render: (row) => (
-        <span className="font-sans text-xs text-white font-semibold">
-          {row.availableStock} {row.classification === 'Consumable' ? 'Units' : 'Unit'}
-        </span>
-      ),
+      render: (row) => {
+        const stock = isStudent
+          ? getItemDeptStock(row, userDepartment)
+          : (selectedDepartment === 'ALL' ? { available: row.availableStock } : getItemDeptStock(row, selectedDepartment));
+        return (
+          <div className="flex flex-col items-center">
+            <span className={`font-sans text-xs font-semibold ${stock.available > 0 ? 'text-white' : 'text-zinc-500'}`}>
+              {stock.available} {row.classification === 'Consumable' ? 'Units' : 'Unit'}
+            </span>
+            {isStudent && (
+              <span className="text-[10px] text-zinc-400">
+                in {userDepartment} Labs
+              </span>
+            )}
+          </div>
+        );
+      },
     },
     {
       header: 'Action',
-      width: '140px',
+      width: '160px',
       align: 'right',
-      render: (row) => (
-        <div
-          className="flex items-center justify-end gap-1.5"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            onClick={() => setInspectedItem(row)}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
-            title="Inspect Component"
+      render: (row) => {
+        const studentStock = getItemDeptStock(row, userDepartment);
+        const canIssue = !isStudent || studentStock.available > 0;
+        return (
+          <div
+            className="flex items-center justify-end gap-1.5"
+            onClick={(e) => e.stopPropagation()}
           >
-            <Eye className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => addToBasket(row, 1)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-inter text-[11px] font-bold transition-all shadow-sm cursor-pointer"
-          >
-            <ShoppingBag className="w-3 h-3" />
-            <span>Requisition</span>
-          </button>
-        </div>
-      ),
+            <button
+              onClick={() => setInspectedItem(row)}
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+              title="Inspect Component"
+            >
+              <Eye className="w-3.5 h-3.5" />
+            </button>
+            {canIssue ? (
+              <button
+                onClick={() => addToBasket(row, 1)}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white hover:bg-[#e8d5b7] text-black font-inter text-[11px] font-bold transition-all shadow-sm cursor-pointer"
+              >
+                <ShoppingBag className="w-3 h-3" />
+                <span>Requisition</span>
+              </button>
+            ) : (
+              <button
+                disabled
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-white/[0.05] border border-white/10 text-zinc-500 font-inter text-[10px] font-semibold cursor-not-allowed"
+                title={`Restricted: Only available in ${studentStock.depts.join(', ') || 'other'} Dept labs`}
+              >
+                <Lock className="w-3 h-3 text-amber-400/80" />
+                <span>{studentStock.depts.length > 0 ? `${studentStock.depts.join('/')} Only` : 'Out of Stock'}</span>
+              </button>
+            )}
+          </div>
+        );
+      },
     },
   ];
 
@@ -288,19 +337,19 @@ export function InventoryListPage({ initialClassification = null }) {
     const cat = (item.category || item.classification || '').toLowerCase();
     const nom = (item.nomenclature || '').toLowerCase();
 
-    // 1. SBC & AI Edge: Deep Indigo / Electric Sapphire
-    if (cat.includes('ai edge') || cat.includes('sbc') || nom.includes('jetson') || nom.includes('raspberry')) {
+    // 1. Microprocessors: Deep Indigo / Sapphire
+    if (cat.includes('microprocessor') || cat.includes('ai edge') || cat.includes('sbc') || nom.includes('jetson') || nom.includes('raspberry') || nom.includes('imac') || nom.includes('rtx')) {
       return {
         badgeBg: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
         pedestalGlow: 'bg-indigo-500/25',
         borderHover: 'hover:border-indigo-500/40',
         cardBg: 'from-[#121422]/90 via-[#0e0f18]/85 to-[#08090f]/95',
-        tag: 'AI Compute & Edge',
+        tag: 'Microprocessor',
       };
     }
 
     // 2. Microcontrollers: Electric Sky / Cyan
-    if (cat.includes('microcontroller') || nom.includes('arduino') || nom.includes('esp32')) {
+    if (cat.includes('microcontroller') || cat === 'mc' || nom.includes('arduino') || nom.includes('esp32') || nom.includes('pico') || nom.includes('plc')) {
       return {
         badgeBg: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
         pedestalGlow: 'bg-sky-500/25',
@@ -310,35 +359,57 @@ export function InventoryListPage({ initialClassification = null }) {
       };
     }
 
-    // 3. Sensors & Modules: Warm Amber / Sunset Bronze
-    if (cat.includes('sensor') || nom.includes('sensor') || nom.includes('imu') || nom.includes('oled') || nom.includes('bmp')) {
+    // 3. Sensors: Warm Amber / Sunset Bronze
+    if (cat.includes('sensor') || nom.includes('camera') || nom.includes('lidar') || nom.includes('imu') || nom.includes('bmp') || nom.includes('dht')) {
       return {
         badgeBg: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
         pedestalGlow: 'bg-amber-500/25',
         borderHover: 'hover:border-amber-500/40',
         cardBg: 'from-[#1a160e]/90 via-[#14100a]/85 to-[#08090f]/95',
-        tag: 'Sensor & Module',
+        tag: 'Sensor',
       };
     }
 
-    // 4. Test Equipment / Oscilloscope: Radiant Purple / Violet
-    if (cat.includes('instrument') || nom.includes('oscilloscope') || nom.includes('analyzer')) {
+    // 4. Motors & Actuators: Radiant Violet / Magenta
+    if (cat.includes('motor') || nom.includes('robot') || nom.includes('arm') || nom.includes('turtlebot') || nom.includes('servo') || nom.includes('stepper') || nom.includes('driver')) {
       return {
-        badgeBg: 'bg-purple-500/15 text-purple-300 border-purple-500/30',
-        pedestalGlow: 'bg-purple-500/25',
-        borderHover: 'hover:border-purple-500/40',
+        badgeBg: 'bg-violet-500/15 text-violet-300 border-violet-500/30',
+        pedestalGlow: 'bg-violet-500/25',
+        borderHover: 'hover:border-violet-500/40',
         cardBg: 'from-[#191022]/90 via-[#130b1c]/85 to-[#08090f]/95',
-        tag: 'Test Instrument',
+        tag: 'Motor & Actuator',
       };
     }
 
-    // 5. Consumables / Prototyping: Mint Emerald
+    // 5. Communication Modules: Radiant Teal / Cyan
+    if (cat.includes('communication') || nom.includes('gps') || nom.includes('nrf') || nom.includes('transceiver')) {
+      return {
+        badgeBg: 'bg-teal-500/15 text-teal-300 border-teal-500/30',
+        pedestalGlow: 'bg-teal-500/25',
+        borderHover: 'hover:border-teal-500/40',
+        cardBg: 'from-[#0e1a19]/90 via-[#0a1413]/85 to-[#08090f]/95',
+        tag: 'Communication Module',
+      };
+    }
+
+    // 6. Batteries: Crimson / Rose Amber
+    if (cat.includes('batter') || nom.includes('lipo') || nom.includes('18650') || nom.includes('cell')) {
+      return {
+        badgeBg: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
+        pedestalGlow: 'bg-rose-500/25',
+        borderHover: 'hover:border-rose-500/40',
+        cardBg: 'from-[#1f0e12]/90 via-[#170a0d]/85 to-[#08090f]/95',
+        tag: 'Battery',
+      };
+    }
+
+    // 7. Misc & Instrumentation: Mint Emerald
     return {
       badgeBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
       pedestalGlow: 'bg-emerald-500/25',
       borderHover: 'hover:border-emerald-500/40',
       cardBg: 'from-[#0e1a16]/90 via-[#0a1411]/85 to-[#08090f]/95',
-      tag: item.category || 'Consumable & Dev',
+      tag: item.category || 'Misc',
     };
   };
 
@@ -384,7 +455,7 @@ export function InventoryListPage({ initialClassification = null }) {
         />
 
         {/* Ambient Gradient Scrim for crisp text contrast over picture */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/30 to-black/95 pointer-events-none z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/30 pointer-events-none z-10" />
 
         {/* Specular hairline top rim */}
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none rounded-t-3xl z-20" />
@@ -402,10 +473,10 @@ export function InventoryListPage({ initialClassification = null }) {
           </div>
 
           {/* Bottom Area: Hardware Details Overlaid on Picture */}
-          <div className="space-y-3.5 pt-20">
+          <div className="space-y-3 mt-auto pt-6">
             {/* Product Title & Subtitle */}
             <div className="space-y-1">
-              <h3 className="font-display text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors drop-shadow-md">
+              <h3 className="font-display text-base sm:text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors drop-shadow-md">
                 {item.nomenclature}
               </h3>
               <p className="text-xs text-zinc-300 font-sans font-normal line-clamp-2 leading-relaxed drop-shadow-sm">
@@ -434,30 +505,69 @@ export function InventoryListPage({ initialClassification = null }) {
               <span className="text-zinc-400 text-xs font-sans drop-shadow-sm">{item.labRoom}</span>
             </div>
 
-            {/* Card Footer Actions */}
+            {/* Card Footer Actions with Departmental Governance */}
             <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
-                <span className="text-xs text-white font-semibold">
-                  In Stock
-                </span>
-                <span className="text-zinc-500">•</span>
-                <span className="text-[11px] text-zinc-300">
-                  {item.availableStock} of {item.totalStock} available
-                </span>
-              </div>
+              {(() => {
+                const studentStock = getItemDeptStock(item, userDepartment);
+                const viewStock = getItemDeptStock(item, selectedDepartment);
+                const canIssue = !isStudent || studentStock.available > 0;
 
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  addToBasket(item, 1);
-                }}
-                className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-tight transition-all shadow-lg active:scale-95 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Requisition</span>
-              </button>
+                return (
+                  <>
+                    <div className="flex flex-col text-xs">
+                      {isStudent ? (
+                        <>
+                          <div className="flex items-center gap-1.5">
+                            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${studentStock.available > 0 ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                            <span className="text-xs text-white font-semibold">
+                              {studentStock.available > 0 ? `${studentStock.available} Available` : 'Unavailable in Dept'}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-zinc-400">
+                            in {userDepartment} Labs {studentStock.available <= 0 && studentStock.depts.length > 0 ? `(${studentStock.depts.join(', ')})` : ''}
+                          </span>
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${viewStock.available > 0 ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                          <span className="text-xs text-white font-semibold">
+                            {viewStock.available > 0 ? 'In Stock' : 'Out of Stock'}
+                          </span>
+                          <span className="text-zinc-500">•</span>
+                          <span className="text-[11px] text-zinc-300">
+                            {viewStock.available} of {viewStock.total} available
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {canIssue ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToBasket(item, 1);
+                        }}
+                        className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-tight transition-all shadow-lg active:scale-95 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Requisition</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        onClick={(e) => e.stopPropagation()}
+                        className="px-3.5 py-2 rounded-full bg-white/[0.06] border border-white/10 text-zinc-400 font-medium text-[11px] tracking-tight flex items-center gap-1.5 cursor-not-allowed opacity-80 flex-shrink-0"
+                        title={`Restricted: Students are enrolled in ${userDepartment} and can only requisition hardware from ${userDepartment} labs. This item is housed in ${studentStock.depts.join(', ')}.`}
+                      >
+                        <Lock className="w-3 h-3 text-amber-400/80" />
+                        <span>{studentStock.depts.length > 0 ? `${studentStock.depts.join('/')} Dept Only` : `${userDepartment} Unavailable`}</span>
+                      </button>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           </div>
         </div>
@@ -472,14 +582,23 @@ export function InventoryListPage({ initialClassification = null }) {
       {/* ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
-          <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            AIML Hardware Depot
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
+              {selectedDepartment === 'ALL' ? 'Central Hardware Depot' : `${selectedDepartment} Department Depot`}
+            </span>
+            {isStudent && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-medium">
+                Enrolled: {userDepartment} Dept
+              </span>
+            )}
+          </div>
           <h1 className="text-3xl font-bold tracking-[-0.025em] text-white mt-1 font-display">
             Hardware Workstation
           </h1>
           <p className="text-[13px] text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">
-            Browse laboratory computing modules, developer boards, and prototyping stock. Stage components directly into your requisition kit.
+            {isStudent
+              ? `Browse hardware inventory. Note: SIT policy strictly restricts student issues exclusively to ${userDepartment} department labs.`
+              : 'Browse laboratory computing modules, developer boards, and prototyping stock across all academic departments.'}
           </p>
         </div>
 
@@ -551,14 +670,19 @@ export function InventoryListPage({ initialClassification = null }) {
           </div>
 
           <select
-            value={selectedLab}
-            onChange={(e) => setSelectedLab(e.target.value)}
-            className="bg-white/[0.04] border border-white/10 rounded-full px-3.5 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-[#c9b8a0] transition-all cursor-pointer"
+            value={selectedClass}
+            onChange={(e) => setSelectedClass(e.target.value)}
+            className="bg-white/[0.04] border border-white/10 rounded-full px-3.5 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-[#c9b8a0] transition-all cursor-pointer font-sans"
+            aria-label="Filter by Component Class"
           >
-            <option value="All Labs" className="bg-[#0a0a0a]">All Labs</option>
-            <option value="Lab 1 - AI" className="bg-[#0a0a0a]">Lab 1 - AI</option>
-            <option value="Lab 2 - IoT" className="bg-[#0a0a0a]">Lab 2 - IoT</option>
-            <option value="Lab 3 - Embedded" className="bg-[#0a0a0a]">Lab 3 - Embedded</option>
+            <option value="ALL" className="bg-[#0a0a0a]">All Classes</option>
+            <option value="Sensors" className="bg-[#0a0a0a]">Sensors</option>
+            <option value="Microcontrollers" className="bg-[#0a0a0a]">Microcontrollers (MC)</option>
+            <option value="Microprocessors" className="bg-[#0a0a0a]">Microprocessors</option>
+            <option value="Motors" className="bg-[#0a0a0a]">Motors</option>
+            <option value="Communication Modules" className="bg-[#0a0a0a]">Communication Modules</option>
+            <option value="Batteries" className="bg-[#0a0a0a]">Batteries</option>
+            <option value="Misc" className="bg-[#0a0a0a]">Misc</option>
           </select>
 
           {/* View Switcher */}
@@ -660,25 +784,58 @@ export function InventoryListPage({ initialClassification = null }) {
             </div>
 
             {/* Modal Actions */}
-            <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setInspectedItem(null)}
-                className="px-4 py-2.5 rounded-full border border-white/10 text-xs font-medium text-zinc-400 hover:text-white transition-colors cursor-pointer"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  addToBasket(inspectedItem, 1);
-                  setInspectedItem(null);
-                }}
-                className="py-2.5 px-5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs tracking-wide transition-all shadow-sm flex items-center gap-2 cursor-pointer active:scale-[0.99]"
-              >
-                <ShoppingBag className="w-3.5 h-3.5" />
-                <span>Add to Requisition Kit</span>
-              </button>
+            <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
+              <div className="text-xs text-zinc-400">
+                {isStudent && (
+                  (() => {
+                    const studentStock = getItemDeptStock(inspectedItem, userDepartment);
+                    if (studentStock.available <= 0) {
+                      return (
+                        <span className="text-amber-400 flex items-center gap-1 font-medium">
+                          <Lock className="w-3.5 h-3.5" />
+                          <span>Restricted: Not housed in {userDepartment} labs</span>
+                        </span>
+                      );
+                    }
+                    return (
+                      <span className="text-emerald-400 font-medium">
+                        ✓ {studentStock.available} available in {userDepartment} labs
+                      </span>
+                    );
+                  })()
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setInspectedItem(null)}
+                  className="px-4 py-2 rounded-full border border-white/10 text-xs font-medium text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  Close
+                </button>
+                {(!isStudent || getItemDeptStock(inspectedItem, userDepartment).available > 0) ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      addToBasket(inspectedItem, 1);
+                      setInspectedItem(null);
+                    }}
+                    className="py-2.5 px-5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs tracking-wide transition-all shadow-sm flex items-center gap-2 cursor-pointer active:scale-[0.99]"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5" />
+                    <span>Add to Requisition Kit</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="py-2 px-4 rounded-full bg-white/[0.06] border border-white/10 text-zinc-500 font-semibold text-xs flex items-center gap-2 cursor-not-allowed opacity-75"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Cross-Dept Prohibited</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </Modal>

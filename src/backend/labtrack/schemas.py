@@ -106,8 +106,16 @@ class UserView(BaseModel):
     id: int
     name: str
     identifier: str
+    email: str | None = None
     roles: list[str]
     lab_ids: list[int]
+    department: str | None = None
+    designation: str | None = None
+    batch: int | None = None
+    year_of_study: int | None = None
+    branch: str | None = None
+    roll_number: str | None = None
+    phone: str | None = None
 
 
 class LoginView(BaseModel):
@@ -138,6 +146,7 @@ class LabStockView(BaseModel):
     good: int
     bad: int
     total: int
+    branch: str | None = None
     assets: list[AssetView] = Field(default_factory=list)
 
 
@@ -151,6 +160,8 @@ class ItemView(BaseModel):
     specs: dict
     labs: list[LabStockView]
     available: int
+    image_url: str | None = None
+    cost_tier: str | None = None
 
 
 class LineView(BaseModel):
