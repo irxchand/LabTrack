@@ -53,6 +53,7 @@ export function ApprovalsQueuePage() {
   const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'table'
   const [activeTab, setActiveTab] = useState('pending'); // 'pending' | 'approved' | 'all'
   const [selectedFacultyFilter, setSelectedFacultyFilter] = useState('ALL');
+  const [capitalFilter, setCapitalFilter] = useState('ALL'); // 'ALL' | 'TIER3'
   const [timelineModalReq, setTimelineModalReq] = useState(null);
 
   // Friendly date helper (e.g. Oct 15)
@@ -178,11 +179,20 @@ export function ApprovalsQueuePage() {
     return mentoredRequisitions;
   }, [activeTab, pendingRequisitions, pastApprovedRequisitions, mentoredRequisitions]);
 
-  // Apply real-time search query
+  // Tier 3 capital assets requiring HoD counter-signature count
+  const tier3Count = useMemo(() => {
+    return activeRequisitionPool.filter((r) => isHighCapitalReq(r)).length;
+  }, [activeRequisitionPool]);
+
+  // Apply real-time search query and capital filter
   const filteredRequisitions = useMemo(() => {
-    if (!searchQuery.trim()) return activeRequisitionPool;
+    let pool = activeRequisitionPool;
+    if (capitalFilter === 'TIER3') {
+      pool = pool.filter((r) => isHighCapitalReq(r));
+    }
+    if (!searchQuery.trim()) return pool;
     const q = searchQuery.toLowerCase();
-    return activeRequisitionPool.filter(
+    return pool.filter(
       (r) =>
         r.studentName?.toLowerCase().includes(q) ||
         r.studentPrn?.toLowerCase().includes(q) ||
@@ -192,7 +202,7 @@ export function ApprovalsQueuePage() {
         r.supervisorNotes?.toLowerCase().includes(q) ||
         r.componentsRequested?.some((c) => c.nomenclature?.toLowerCase().includes(q))
     );
-  }, [activeRequisitionPool, searchQuery]);
+  }, [activeRequisitionPool, capitalFilter, searchQuery]);
 
   // Live component bench stock resolution
   const getComponentStock = (comp) => {
@@ -670,9 +680,31 @@ export function ApprovalsQueuePage() {
           )}
         </div>
 
-        {/* HoD Department-Wide Faculty Wing Filter */}
+        {/* HoD Department-Wide Faculty Wing & Tier-3 Capital Filter */}
         {isHoD && (
           <div className="flex items-center gap-1.5 flex-wrap pt-1">
+            {/* HoD Tier-3 Capital Sign-Off Toggle */}
+            <button
+              type="button"
+              onClick={() => setCapitalFilter(capitalFilter === 'TIER3' ? 'ALL' : 'TIER3')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm ${
+                capitalFilter === 'TIER3'
+                  ? 'bg-gradient-to-r from-[#f5e6c8] via-[#e8d5b7] to-[#c9b8a0] text-black font-bold shadow-md'
+                  : 'bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 hover:border-[#c9b8a0]/60'
+              }`}
+              title="Filter high-value capital assets requiring executive authorization"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Tier 3 Capital Sign-Offs</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                capitalFilter === 'TIER3' ? 'bg-black/20 text-black' : 'bg-[#c9b8a0]/30 text-[#f5e6c8]'
+              }`}>
+                {tier3Count}
+              </span>
+            </button>
+
+            <div className="h-4 w-px bg-white/10 mx-1 hidden sm:block" />
+
             <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 mr-1 flex items-center gap-1">
               <Layers className="w-3 h-3 text-[#c9b8a0]" />
               <span>Faculty Wing:</span>
@@ -682,7 +714,7 @@ export function ApprovalsQueuePage() {
               onClick={() => setSelectedFacultyFilter('ALL')}
               className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
                 selectedFacultyFilter === 'ALL'
-                  ? 'bg-[#c9b8a0]/25 text-[#f5e6c8] border border-[#c9b8a0]/50 font-semibold shadow-sm'
+                  ? 'bg-white text-black font-semibold shadow-sm'
                   : 'bg-white/[0.04] text-zinc-400 border border-white/10 hover:text-white'
               }`}
             >
@@ -697,7 +729,7 @@ export function ApprovalsQueuePage() {
                   onClick={() => setSelectedFacultyFilter(mentor)}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
                     selectedFacultyFilter === mentor
-                      ? 'bg-[#c9b8a0]/25 text-[#f5e6c8] border border-[#c9b8a0]/50 font-semibold shadow-sm'
+                      ? 'bg-white text-black font-semibold shadow-sm'
                       : 'bg-white/[0.04] text-zinc-400 border border-white/10 hover:text-white'
                   }`}
                 >

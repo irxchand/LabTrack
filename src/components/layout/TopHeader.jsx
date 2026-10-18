@@ -146,24 +146,18 @@ export function TopHeader() {
       case 'HoD / Admin':
         return [
           {
-            label: 'Workstation',
-            to: '/workspace/inventory',
-            icon: Cpu,
-            count: inventory.length,
-            isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
-          },
-          {
-            label: 'Approvals',
+            label: 'Executive Approvals',
             to: '/workspace/operations/approvals',
             icon: CheckSquare,
             count: requisitions.filter((r) => r.status === 'Pending' || r.status === 'Submitted').length,
             isActive: (pathname) => pathname.includes('/operations/approvals'),
           },
           {
-            label: 'Counter Desk',
-            to: '/workspace/operations/dispatch',
-            icon: Terminal,
-            isActive: (pathname) => pathname.includes('/operations/dispatch'),
+            label: 'Department Depot',
+            to: '/workspace/inventory',
+            icon: Cpu,
+            count: inventory.length,
+            isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
           },
           {
             label: 'Projects',
@@ -173,14 +167,14 @@ export function TopHeader() {
             isActive: (pathname) => pathname.includes('/projects'),
           },
           {
-            label: 'Defect Bench',
+            label: 'Write-Off Bench',
             to: '/workspace/operations/defects',
             icon: Wrench,
             count: defects.length,
             isActive: (pathname) => pathname.includes('/operations/defects'),
           },
           {
-            label: 'Audit Log',
+            label: 'Accreditation Audit',
             to: '/workspace/accountability/audit-log',
             icon: FileText,
             count: auditLogs.length,

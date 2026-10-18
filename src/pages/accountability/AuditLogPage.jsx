@@ -232,14 +232,19 @@ export function AuditLogPage() {
       {/* ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
-          <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            Activity & Compliance
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
+              Accreditation & Compliance
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 text-[10px] font-semibold">
+              NBA / NAAC Ready
+            </span>
+          </div>
           <h1 className="text-3xl font-bold tracking-tight text-white mt-1 font-display">
-            Audit Ledger
+            Institutional Audit Ledger
           </h1>
           <p className="text-[13px] text-zinc-400 mt-1 font-normal">
-            Immutable record of checkouts, returns, defect triage, and endorsements.
+            Tamper-proof cryptographic custody records certified under Dr. K. V. Ramanathan (HoD).
           </p>
         </div>
 
@@ -247,17 +252,17 @@ export function AuditLogPage() {
           {/* Export Institutional Excel Roster */}
           <button
             onClick={handleExportExcel}
-            className="px-4 py-1.5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md cursor-pointer active:scale-95"
-            title="Download formatted multi-sheet Excel accreditation ledger"
+            className="px-4 py-1.5 rounded-full bg-gradient-to-r from-white via-zinc-100 to-[#f5e6c8] hover:to-[#e8d5b7] text-black font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md cursor-pointer active:scale-95 whitespace-nowrap"
+            title="Download multi-sheet Excel dossier for NBA / NAAC Stock Verification"
           >
             <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>Export Excel (.xlsx)</span>
+            <span>Export NBA / NAAC Ledger (.xlsx)</span>
           </button>
 
           {/* Export CSV Button */}
           <button
             onClick={handleExportCSV}
-            className="px-4 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white border border-white/10 font-medium text-xs transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white border border-white/10 font-medium text-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
           >
             <Download className="w-3.5 h-3.5" />
             <span>CSV</span>

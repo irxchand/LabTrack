@@ -237,14 +237,19 @@ export function DefectManagementPage() {
       {/* ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
-          <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            Maintenance & Repairs
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
+              Triage & Decommissioning
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 text-[10px] font-semibold">
+              RMA & Scrap Authority
+            </span>
+          </div>
           <h1 className="text-3xl font-bold tracking-tight text-white mt-1 font-display">
-            Defect Bench
+            Write-Off & Defect Bench
           </h1>
           <p className="text-[13px] text-zinc-400 mt-1 font-normal">
-            Hardware triage, technician rework status, and restock tracking.
+            Technician diagnostic triage, RMA returns, and executive scrap write-off authorization.
           </p>
         </div>
 
