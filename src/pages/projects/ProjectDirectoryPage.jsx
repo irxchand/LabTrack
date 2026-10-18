@@ -79,6 +79,7 @@ export function ProjectDirectoryPage() {
   };
 
   const isFaculty = role === 'Faculty';
+  const isHoD = role === 'HoD / Admin';
 
   const isMentorOf = (project) => {
     if (!isFaculty) return false;
@@ -91,6 +92,7 @@ export function ProjectDirectoryPage() {
   };
 
   const isUserProject = (project) => {
+    if (isHoD) return true;
     const isMentor = isMentorOf(project);
     return (
       isMentor ||
@@ -124,12 +126,19 @@ export function ProjectDirectoryPage() {
         mentored: projects.filter(isMentorOf).length,
       };
     }
+    if (isHoD) {
+      return {
+        all: projects.length,
+        studentCapstones: projects.filter((p) => !p.isFacultyProject).length,
+        facultyLabs: projects.filter((p) => p.isFacultyProject).length,
+      };
+    }
     return {
       all: projects.length,
       myTeam: projects.filter(isUserProject).length,
       aiml: projects.filter((p) => p.department?.includes('AIML') || p.courseCode?.includes('AIML')).length,
     };
-  }, [visibleProjectsPool, projects, isStudent, isFaculty, userPrn, currentUser]);
+  }, [visibleProjectsPool, projects, isStudent, isFaculty, isHoD, userPrn, currentUser]);
 
   const filteredProjects = useMemo(() => {
     if (isStudent) {
@@ -150,6 +159,15 @@ export function ProjectDirectoryPage() {
       }
       return projects;
     }
+    if (isHoD) {
+      if (activeFilter === 'studentCapstones') {
+        return projects.filter((p) => !p.isFacultyProject);
+      }
+      if (activeFilter === 'facultyLabs') {
+        return projects.filter((p) => p.isFacultyProject);
+      }
+      return projects;
+    }
     if (activeFilter === 'myTeam') {
       return projects.filter(isUserProject);
     }
@@ -157,7 +175,7 @@ export function ProjectDirectoryPage() {
       return projects.filter((p) => p.department?.includes('AIML') || p.courseCode?.includes('AIML'));
     }
     return projects;
-  }, [visibleProjectsPool, projects, activeFilter, isStudent, isFaculty, userPrn, currentUser]);
+  }, [visibleProjectsPool, projects, activeFilter, isStudent, isFaculty, isHoD, userPrn, currentUser]);
 
   const handleAddFriend = (e) => {
     e.preventDefault();
@@ -228,13 +246,25 @@ export function ProjectDirectoryPage() {
         <div>
           <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-            STUDENT ACADEMIC PORTAL • COLLABORATIVE HARDWARE POOLS
+            {isHoD
+              ? 'DEPARTMENT EXECUTIVE DIRECTORY • INSTITUTIONAL OVERSIGHT'
+              : isFaculty
+              ? 'FACULTY MENTOR WORKSPACE • CAPSTONE & RESEARCH SUPERVISION'
+              : 'STUDENT ACADEMIC PORTAL • COLLABORATIVE HARDWARE POOLS'}
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-white mt-1.5">
-            My Academic Projects
+            {isHoD
+              ? 'Department Projects & Laboratories'
+              : isFaculty
+              ? 'Faculty Research & Mentored Projects'
+              : 'My Academic Projects'}
           </h1>
           <p className="text-sm font-sans text-zinc-400 mt-1 max-w-xl">
-            Active capstone research teams, mentor bindings, and authorized project hardware allocations for your credentials.
+            {isHoD
+              ? 'Department-wide project roster, research facilities, supervisor workloads, and hardware allocations across all student cohorts.'
+              : isFaculty
+              ? 'Active research facilities and student capstone cohorts assigned under your academic supervision wing.'
+              : 'Active capstone research teams, mentor bindings, and authorized project hardware allocations for your credentials.'}
           </p>
         </div>
 
@@ -343,6 +373,53 @@ export function ProjectDirectoryPage() {
               <span>Teams Under My Wing</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'mentored' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
                 {counts.mentored}
+              </span>
+            </button>
+          </>
+        ) : isHoD ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setActiveFilter('all')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeFilter === 'all'
+                  ? 'bg-white text-black font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>All Department Projects</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'all' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+                {counts.all}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFilter('studentCapstones')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeFilter === 'studentCapstones'
+                  ? 'bg-white text-black font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>Student Capstones</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'studentCapstones' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+                {counts.studentCapstones}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFilter('facultyLabs')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeFilter === 'facultyLabs'
+                  ? 'bg-white text-black font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>Faculty Research Facilities</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-sans font-medium ${activeFilter === 'facultyLabs' ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-zinc-300'}`}>
+                {counts.facultyLabs}
               </span>
             </button>
           </>

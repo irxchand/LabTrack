@@ -28,6 +28,7 @@ export function ProjectDetailPage() {
   const { currentUser, role } = useAuth();
   const isStudent = !role || role === 'Student';
   const isFaculty = role === 'Faculty';
+  const isHoD = role === 'HoD / Admin';
   const userPrn = currentUser?.prn || '202401048';
 
   const [isAllocModalOpen, setIsAllocModalOpen] = useState(false);
@@ -255,9 +256,31 @@ export function ProjectDetailPage() {
             )}
           </div>
 
-          {/* Header Action Badges & Faculty CTAs */}
+          {/* Header Action Badges & Faculty/HoD CTAs */}
           <div className="flex items-center gap-2.5 flex-wrap">
-            {isFaculty ? (
+            {isHoD ? (
+              <>
+                <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1.5 shadow-sm">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#f5e6c8]" />
+                  <span>Executive Oversight • Head of Department</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const firstAvailable = inventory.find((i) => i.availableStock > 0) || inventory[0];
+                    setSelectedAssetId(firstAvailable?.id || '');
+                    setAllocQty(1);
+                    setAllocNotes('Executive direct allocation authorized by Department Head Dr. K. V. Ramanathan');
+                    setAllocError('');
+                    setIsAllocModalOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-[0_2px_12px_rgba(255,255,255,0.25)] cursor-pointer active:scale-95"
+                >
+                  <Plus className="w-4 h-4 text-black" />
+                  <span>Executive Allocate Hardware</span>
+                </button>
+              </>
+            ) : isFaculty ? (
               isFacultyLead ? (
                 <>
                   <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20 flex items-center gap-1.5 shadow-sm">

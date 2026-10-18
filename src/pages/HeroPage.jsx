@@ -437,19 +437,112 @@ export function HeroPage() {
         },
       ],
     },
+    hod: {
+      roleBadge: 'DEPARTMENT EXECUTIVE & AUDIT',
+      headline: (
+        <>
+          Department Capital Allocation &{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
+            Institutional Compliance
+          </span>
+        </>
+      ),
+      subtext:
+        'Executive oversight over all faculty research facilities, Tier 3 capital requisitions, and accreditation audit ledgers. Authorize cross-laboratory transfers and certified NBA/NAAC inventory compliance.',
+      primaryCta: {
+        label: 'Open Executive Workspace',
+        path: '/workspace/operations/approvals',
+        icon: CheckSquare,
+      },
+      secondaryCta: {
+        label: 'Browse Executive Systems',
+        href: '#capabilities',
+      },
+      navItems: [
+        { label: 'Capabilities', href: '#capabilities' },
+        { label: 'Workstation', path: '/workspace/inventory' },
+        { label: 'Approvals', path: '/workspace/operations/approvals' },
+        { label: 'Projects', path: '/workspace/projects/overview' },
+        { label: 'Defect Bench', path: '/workspace/operations/defects' },
+        { label: 'Audit Log', path: '/workspace/accountability/audit-log' },
+      ],
+      capabilitiesTitle: (
+        <>
+          From Tier 3 Capital Authorizations{' '}
+          <span className="block mt-1.5 text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">
+            to Certified Institutional Audits
+          </span>
+        </>
+      ),
+      cards: [
+        {
+          id: 'approvals',
+          path: '/workspace/operations/approvals',
+          icon: CheckSquare,
+          tag: 'CAPITAL SIGN-OFF',
+          title: 'Executive Approvals',
+          description:
+            'Review and executive-endorse high-value Tier 3 instrumentation baskets, research grant requisitions, and faculty capstone proposals.',
+          badge: 'EXECUTIVE SIGN-OFF',
+        },
+        {
+          id: 'projects',
+          path: '/workspace/projects/overview',
+          icon: FolderGit2,
+          tag: 'FACULTY & STUDENT LABS',
+          title: 'Department Projects',
+          description:
+            'Institutional directory of all student capstone teams and faculty research facilities. Directly allocate capital equipment to labs.',
+          badge: 'ALL-FACILITIES OVERSIGHT',
+        },
+        {
+          id: 'inventory',
+          path: '/workspace/inventory',
+          icon: Cpu,
+          tag: 'DEPOT & ASSET VALUATION',
+          title: 'Department Depot',
+          description:
+            'Audit comprehensive hardware valuation across AIML, IoT, and Embedded labs. Monitor critical replenishment reserves and depreciation.',
+          badge: 'DEPOT VALUATION',
+        },
+        {
+          id: 'defects',
+          path: '/workspace/operations/defects',
+          icon: Wrench,
+          tag: 'WRITE-OFF & RMA',
+          title: 'Defect Bench',
+          description:
+            'Executive authorization for hardware write-offs, vendor warranty claims, and lab instrument decommissioning.',
+          badge: 'WRITE-OFF OVERSIGHT',
+        },
+        {
+          id: 'audit',
+          path: '/workspace/accountability/audit-log',
+          icon: Shield,
+          tag: 'NBA / NAAC ACCREDITATION',
+          title: 'Accredited Audit Ledger',
+          description:
+            'Certified immutable chain of custody logs with 1-click official Excel (.xlsx) roster generation signed by Dr. K. V. Ramanathan.',
+          badge: 'EXCEL CERTIFIED EXPORT',
+        },
+      ],
+    },
   };
 
   // Active persona state defaults to current user's role
   const [activePersona, setActivePersona] = useState(() => {
     if (currentUser?.role === 'Lab Assistant') return 'assistant';
-    if (currentUser?.role === 'Faculty' || currentUser?.role === 'HoD / Admin') return 'faculty';
+    if (currentUser?.role === 'HoD / Admin') return 'hod';
+    if (currentUser?.role === 'Faculty') return 'faculty';
     return 'student';
   });
 
   useEffect(() => {
     if (currentUser?.role === 'Lab Assistant') {
       setActivePersona('assistant');
-    } else if (currentUser?.role === 'Faculty' || currentUser?.role === 'HoD / Admin') {
+    } else if (currentUser?.role === 'HoD / Admin') {
+      setActivePersona('hod');
+    } else if (currentUser?.role === 'Faculty') {
       setActivePersona('faculty');
     } else {
       setActivePersona('student');
@@ -615,6 +708,8 @@ export function HeroPage() {
             onClick={() => {
               if (currentUser?.role === 'Lab Assistant' || activePersona === 'assistant') {
                 navigate('/workspace/operations/dispatch');
+              } else if (currentUser?.role === 'HoD / Admin' || activePersona === 'hod') {
+                navigate('/workspace/operations/approvals');
               } else if (currentUser?.role === 'Faculty' || activePersona === 'faculty') {
                 navigate('/workspace/operations/approvals');
               } else {
@@ -625,6 +720,8 @@ export function HeroPage() {
           >
             {activePersona === 'assistant' || currentUser?.role === 'Lab Assistant'
               ? 'Launch Desk'
+              : activePersona === 'hod' || currentUser?.role === 'HoD / Admin'
+              ? 'Executive Hub'
               : 'Enter Workspace'}
           </button>
         </div>

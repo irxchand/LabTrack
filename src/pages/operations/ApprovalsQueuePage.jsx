@@ -32,7 +32,8 @@ export function ApprovalsQueuePage() {
   const navigate = useNavigate();
   const { requisitions, inventory, activeLoans, approveRequisition, rejectRequisition } = useLabData();
   const { currentUser } = useAuth();
-  const facultyName = currentUser?.name || 'Dr. Anjali Dalvi';
+  const isHoD = currentUser?.role === 'HoD / Admin';
+  const facultyName = currentUser?.name || (isHoD ? 'Dr. K. V. Ramanathan' : 'Dr. Anjali Dalvi');
 
   // Modal states
   const [rejectModalReq, setRejectModalReq] = useState(null);
@@ -51,6 +52,7 @@ export function ApprovalsQueuePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'table'
   const [activeTab, setActiveTab] = useState('pending'); // 'pending' | 'approved' | 'all'
+  const [selectedFacultyFilter, setSelectedFacultyFilter] = useState('ALL');
   const [timelineModalReq, setTimelineModalReq] = useState(null);
 
   // Friendly date helper (e.g. Oct 15)
@@ -104,26 +106,68 @@ export function ApprovalsQueuePage() {
     return isRequisitionMentoredByUser(req, currentUser);
   };
 
-  // Scoped strictly to student teams under this faculty member's wing
-  const mentoredRequisitions = useMemo(() => {
-    return requisitions.filter(isMentorMatch);
-  }, [requisitions, currentUser]);
+  // Unique faculty guides present in active requisitions
+  const facultyMentors = useMemo(() => {
+    const list = [];
+    requisitions.forEach((r) => {
+      if (r.mentorName && !list.includes(r.mentorName)) {
+        list.push(r.mentorName);
+      }
+    });
+    return list;
+  }, [requisitions]);
 
-  // Requisitions awaiting faculty action
+  // Check if a requisition includes Tier 3 high-value / restricted capital assets
+  const isHighCapitalReq = (req) => {
+    return req.componentsRequested?.some((comp) => {
+      const match = inventory.find(
+        (i) =>
+          i.id === comp.itemId ||
+          i.assetTag === comp.itemId ||
+          (i.nomenclature && comp.nomenclature && i.nomenclature.toLowerCase().includes(comp.nomenclature.toLowerCase()))
+      );
+      if (match?.costTier?.includes('Tier 3') || match?.costTier?.includes('High-Value')) return true;
+      const nom = (comp.nomenclature || '').toLowerCase();
+      return (
+        nom.includes('oscilloscope') ||
+        nom.includes('rigol') ||
+        nom.includes('jetson') ||
+        nom.includes('orin') ||
+        nom.includes('analyzer')
+      );
+    });
+  };
+
+  // Scoped strictly to student teams under this faculty member's wing (Faculty)
+  // Or Department-Wide across all faculty guides (HoD / Admin)
+  const mentoredRequisitions = useMemo(() => {
+    if (isHoD) {
+      if (selectedFacultyFilter === 'ALL') return requisitions;
+      return requisitions.filter((r) => r.mentorName === selectedFacultyFilter);
+    }
+    return requisitions.filter(isMentorMatch);
+  }, [requisitions, isHoD, selectedFacultyFilter, isMentorMatch]);
+
+  // Requisitions awaiting faculty/HoD action
   const pendingRequisitions = useMemo(() => {
     return mentoredRequisitions.filter(
       (r) => r.status === 'Submitted' || r.status === 'Pending Approval'
     );
   }, [mentoredRequisitions]);
 
-  // Past approvals that this faculty member approved / endorsed
+  // Past approvals that were approved / endorsed
   const pastApprovedRequisitions = useMemo(() => {
     return mentoredRequisitions.filter(
       (r) =>
         r.status === 'Faculty Endorsed' ||
         r.status === 'Ready for Counter Pickup' ||
         r.status === 'Dispatched' ||
-        r.timeline?.some((t) => t.step === 'Faculty Endorsed') ||
+        r.timeline?.some(
+          (t) =>
+            t.step === 'Faculty Endorsed' ||
+            t.step?.includes('Endorsed') ||
+            t.step?.includes('Authorized')
+        ) ||
         Boolean(r.approvedBy)
     );
   }, [mentoredRequisitions]);
@@ -446,7 +490,7 @@ export function ApprovalsQueuePage() {
               className="px-3.5 py-1.5 rounded-full bg-white hover:bg-neutral-200 text-black font-semibold text-[11px] transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
             >
               <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span>Endorse</span>
+              <span>{isHoD ? 'Executive Endorse' : 'Endorse'}</span>
             </button>
           </div>
         );
@@ -462,13 +506,15 @@ export function ApprovalsQueuePage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
           <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            Academic Governance & BOM Oversight
+            {isHoD ? 'Departmental Executive Governance & Capital Oversight' : 'Academic Governance & BOM Oversight'}
           </span>
           <h1 className="text-3xl font-bold tracking-tight text-white mt-1 font-display">
-            Faculty Supervisor Review Desk
+            {isHoD ? 'Department Executive Review Desk' : 'Faculty Supervisor Review Desk'}
           </h1>
           <p className="text-[13px] text-zinc-400 mt-1 max-w-2xl font-normal leading-relaxed">
-            Review capstone hardware proposals, inspect live bench stock, verify team reliability scores, and authorize equipment allocations.
+            {isHoD
+              ? 'Executive oversight of capstone hardware allocations, faculty endorsements across all cohorts, and Tier 3 high-capital asset authorizations.'
+              : 'Review capstone hardware proposals, inspect live bench stock, verify team reliability scores, and authorize equipment allocations.'}
           </p>
         </div>
 
@@ -560,43 +606,83 @@ export function ApprovalsQueuePage() {
       {/* ───────────────────────────────────────────────────────────── */}
       {/* 2. INSTANT SEARCH BAR & FAST-PASS BAR                         */}
       {/* ───────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        {/* Real-time Search Input */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-3 w-4 h-4 text-zinc-500" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by student name, PRN, project group, or component..."
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.03] border border-white/10 rounded-full font-sans text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/30 transition-all"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-2.5 text-zinc-500 hover:text-white text-xs"
-            >
-              Clear
-            </button>
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          {/* Real-time Search Input */}
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3.5 top-3 w-4 h-4 text-zinc-500" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by student name, PRN, project group, or component..."
+              className="w-full pl-10 pr-4 py-2 bg-white/[0.03] border border-white/10 rounded-full font-sans text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/30 transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-2.5 text-zinc-500 hover:text-white text-xs"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          {/* Fast-Pass Quick Batch Endorsement Button */}
+          {activeTab === 'pending' && filteredRequisitions.length > 1 && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleBatchEndorseCompliant}
+                disabled={isBatchApproving}
+                className="px-4 py-2 rounded-full bg-white hover:bg-neutral-200 text-black font-semibold text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>
+                  {isBatchApproving
+                    ? 'Endorsing...'
+                    : `Fast-Endorse Compliant (${filteredRequisitions.filter((r) => (r.teamReliabilityScore || 90) >= 75).length})`}
+                </span>
+              </button>
+            </div>
           )}
         </div>
 
-        {/* Fast-Pass Quick Batch Endorsement Button */}
-        {activeTab === 'pending' && filteredRequisitions.length > 1 && (
-          <div className="flex items-center gap-2">
+        {/* HoD Department-Wide Faculty Wing Filter */}
+        {isHoD && (
+          <div className="flex items-center gap-1.5 flex-wrap pt-1">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 mr-1 flex items-center gap-1">
+              <Layers className="w-3 h-3 text-[#c9b8a0]" />
+              <span>Faculty Wing:</span>
+            </span>
             <button
               type="button"
-              onClick={handleBatchEndorseCompliant}
-              disabled={isBatchApproving}
-              className="px-4 py-2 rounded-full bg-white hover:bg-neutral-200 text-black font-semibold text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              onClick={() => setSelectedFacultyFilter('ALL')}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                selectedFacultyFilter === 'ALL'
+                  ? 'bg-[#c9b8a0]/25 text-[#f5e6c8] border border-[#c9b8a0]/50 font-semibold shadow-sm'
+                  : 'bg-white/[0.04] text-zinc-400 border border-white/10 hover:text-white'
+              }`}
             >
-              <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span>
-                {isBatchApproving
-                  ? 'Endorsing...'
-                  : `Fast-Endorse Compliant (${filteredRequisitions.filter((r) => (r.teamReliabilityScore || 90) >= 75).length})`}
-              </span>
+              All Faculty Wings ({requisitions.length})
             </button>
+            {facultyMentors.map((mentor) => {
+              const count = requisitions.filter((r) => r.mentorName === mentor).length;
+              return (
+                <button
+                  key={mentor}
+                  type="button"
+                  onClick={() => setSelectedFacultyFilter(mentor)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                    selectedFacultyFilter === mentor
+                      ? 'bg-[#c9b8a0]/25 text-[#f5e6c8] border border-[#c9b8a0]/50 font-semibold shadow-sm'
+                      : 'bg-white/[0.04] text-zinc-400 border border-white/10 hover:text-white'
+                  }`}
+                >
+                  {mentor} ({count})
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
@@ -616,7 +702,13 @@ export function ApprovalsQueuePage() {
               const isDispatched = req.status === 'Dispatched';
               const isRejected = req.status === 'Rejected';
               const isFlagged = (req.teamReliabilityScore ?? 90) < 75;
-              const endorsedStep = req.timeline?.find((t) => t.step === 'Faculty Endorsed');
+              const isCapitalAsset = isHighCapitalReq(req);
+              const endorsedStep = req.timeline?.find(
+                (t) =>
+                  t.step === 'Faculty Endorsed' ||
+                  t.step?.includes('Endorsed') ||
+                  t.step?.includes('Authorized')
+              );
 
               return (
                 <div
@@ -654,7 +746,7 @@ export function ApprovalsQueuePage() {
                         ) : isEndorsed ? (
                           <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-[10px] font-semibold tracking-wide flex items-center gap-1">
                             <Check className="w-2.5 h-2.5 stroke-[2.5]" />
-                            <span>Endorsed by You</span>
+                            <span>{isHoD ? 'HoD Authorized' : 'Endorsed by You'}</span>
                           </span>
                         ) : isReady ? (
                           <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[10px] font-semibold tracking-wide flex items-center gap-1">
@@ -673,9 +765,22 @@ export function ApprovalsQueuePage() {
                           </span>
                         ) : null}
 
-                        {isMyMentoredTeam && (
+                        {isCapitalAsset && (
+                          <span className="px-2.5 py-0.5 rounded-full bg-[#c9b8a0]/20 border border-[#c9b8a0]/40 text-[#f5e6c8] text-[10px] font-semibold tracking-wide flex items-center gap-1 shadow-sm">
+                            <Sparkles className="w-2.5 h-2.5 text-[#c9b8a0]" />
+                            <span>Tier 3 Capital Equipment</span>
+                          </span>
+                        )}
+
+                        {isMyMentoredTeam && !isHoD && (
                           <span className="px-2 py-0.5 rounded-full bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-[#c9b8a0] text-[10px] font-semibold tracking-wide">
                             My Mentored Team
+                          </span>
+                        )}
+
+                        {isHoD && (
+                          <span className="px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300 text-[10px] font-medium tracking-wide">
+                            Faculty Guide: <strong className="text-white font-semibold">{req.mentorName}</strong>
                           </span>
                         )}
                       </div>
@@ -869,7 +974,7 @@ export function ApprovalsQueuePage() {
                           className="px-4 py-2 rounded-full bg-white hover:bg-neutral-200 text-black font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
                         >
                           <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                          <span>Endorse</span>
+                          <span>{isHoD ? 'Executive Endorse' : 'Endorse'}</span>
                         </button>
                       </div>
                     </div>

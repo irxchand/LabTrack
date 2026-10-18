@@ -84,7 +84,7 @@ export function NavigationRail() {
           requiredRoles: ['Student'],
         },
         {
-          label: 'Audit Trail',
+          label: role === 'HoD / Admin' ? 'Accreditation Audit' : 'Audit Trail',
           to: '/workspace/accountability/audit-log',
           icon: FileText,
           requiredRoles: ['Lab Assistant', 'HoD / Admin'],
@@ -95,7 +95,7 @@ export function NavigationRail() {
       title: 'ACADEMICS',
       items: [
         {
-          label: 'Project Profiles',
+          label: role === 'HoD / Admin' ? 'Department Projects' : 'Project Profiles',
           to: '/workspace/projects/overview',
           icon: FolderGit2,
         },
@@ -105,7 +105,7 @@ export function NavigationRail() {
       title: 'OPERATIONS',
       items: [
         {
-          label: 'Faculty Approvals',
+          label: role === 'HoD / Admin' ? 'Executive Approvals' : 'Faculty Approvals',
           to: '/workspace/operations/approvals',
           icon: CheckSquare,
           requiredRoles: ['Faculty', 'HoD / Admin'],

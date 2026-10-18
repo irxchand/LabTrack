@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
+import * as XLSX from 'xlsx';
 import { useLabData } from '../../context/LabDataContext';
 import { DataTable } from '../../components/common/DataTable';
 import { SearchInput } from '../../components/common/SearchInput';
-import { Download, Copy, Check } from 'lucide-react';
+import { Download, Copy, Check, FileSpreadsheet } from 'lucide-react';
 
 export function AuditLogPage() {
   const { auditLogs } = useLabData();
@@ -48,6 +49,48 @@ export function AuditLogPage() {
       return true;
     });
   }, [auditLogs, filterAction, searchQuery]);
+
+  // Export Institutional Excel Roster (.xlsx)
+  const handleExportExcel = () => {
+    if (!filteredLogs.length) return;
+
+    // Sheet 1: Audit Events
+    const ledgerData = filteredLogs.map((log) => ({
+      'Event ID': log.id,
+      'Timestamp': log.timestamp,
+      'Actor Name': log.actorName,
+      'Actor PRN': log.actorPrn,
+      'Role': log.actorRole,
+      'Action Code': log.action,
+      'Target Asset / Entity': log.targetId,
+      'Event Details': log.details,
+      'SHA-256 Checksum': log.checksum,
+    }));
+
+    // Sheet 2: Department Summary
+    const summaryData = [
+      { Metric: 'Total Department Audit Events', Value: stats.total },
+      { Metric: 'Counter Dispatches Executed', Value: stats.dispatches },
+      { Metric: 'Hardware Restocks & Returns', Value: stats.returns },
+      { Metric: 'Defect Incident Reports', Value: stats.defects },
+      { Metric: 'Faculty & HoD Approvals', Value: stats.approvals },
+      { Metric: 'Capital Decommission Write-Offs', Value: stats.retirements },
+      { Metric: 'Report Generated At', Value: new Date().toISOString().replace('T', ' ').substring(0, 19) },
+      { Metric: 'Certifying Authority', Value: 'Dr. K. V. Ramanathan (Head of Department)' },
+    ];
+
+    const wb = XLSX.utils.book_new();
+    const wsLedger = XLSX.utils.json_to_sheet(ledgerData);
+    const wsSummary = XLSX.utils.json_to_sheet(summaryData);
+
+    XLSX.utils.book_append_sheet(wb, wsLedger, 'Audit Ledger');
+    XLSX.utils.book_append_sheet(wb, wsSummary, 'Department Summary');
+
+    XLSX.writeFile(
+      wb,
+      `AIML-Department-Hardware-Audit-Ledger-${new Date().toISOString().slice(0, 10)}.xlsx`
+    );
+  };
 
   // Export Audit Ledger to CSV
   const handleExportCSV = () => {
@@ -200,14 +243,24 @@ export function AuditLogPage() {
           </p>
         </div>
 
-        <div>
+        <div className="flex items-center gap-2">
+          {/* Export Institutional Excel Roster */}
+          <button
+            onClick={handleExportExcel}
+            className="px-4 py-1.5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md cursor-pointer active:scale-95"
+            title="Download formatted multi-sheet Excel accreditation ledger"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Export Excel (.xlsx)</span>
+          </button>
+
           {/* Export CSV Button */}
           <button
             onClick={handleExportCSV}
-            className="px-4 py-1.5 rounded-full bg-white hover:bg-neutral-200 text-black font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
+            className="px-4 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white border border-white/10 font-medium text-xs transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Export CSV</span>
+            <span>CSV</span>
           </button>
         </div>
       </div>
