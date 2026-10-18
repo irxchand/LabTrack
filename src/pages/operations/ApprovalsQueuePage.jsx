@@ -615,6 +615,8 @@ export function ApprovalsQueuePage() {
               const isReady = req.status === 'Ready for Counter Pickup';
               const isDispatched = req.status === 'Dispatched';
               const isRejected = req.status === 'Rejected';
+              const isFlagged = (req.teamReliabilityScore ?? 90) < 75;
+              const endorsedStep = req.timeline?.find((t) => t.step === 'Faculty Endorsed');
 
               return (
                 <div
@@ -776,9 +778,9 @@ export function ApprovalsQueuePage() {
                           <ShieldCheck className="w-3.5 h-3.5" />
                           <span>Your Faculty Endorsement Record</span>
                         </span>
-                        {req.timeline?.find((t) => t.step === 'Faculty Endorsed')?.timestamp && (
+                        {endorsedStep?.timestamp && (
                           <span className="text-[10px] text-zinc-500 font-sans">
-                            {formatFriendlyDate(req.timeline.find((t) => t.step === 'Faculty Endorsed').timestamp)}
+                            {formatFriendlyDate(endorsedStep.timestamp)}
                           </span>
                         )}
                       </div>

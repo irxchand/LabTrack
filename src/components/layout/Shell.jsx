@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { TopHeader } from './TopHeader';
 import { RequisitionDrawer } from '../specialized/RequisitionDrawer';
 import { InteractiveWavesBackground } from '../canvas/InteractiveWavesBackground';
+import { ErrorBoundary } from '../common/ErrorBoundary';
 
 export function Shell() {
   const { isAuthenticated } = useAuth();
@@ -66,7 +67,9 @@ export function Shell() {
       {/* Primary Content View Surface - Full Width Apple Luxury */}
       <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 z-10 relative">
         <div className="max-w-7xl mx-auto w-full">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </div>
       </main>
 
