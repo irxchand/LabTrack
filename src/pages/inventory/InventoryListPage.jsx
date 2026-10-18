@@ -393,125 +393,131 @@ export function InventoryListPage({ initialClassification = null }) {
   const renderHardwareWidget = (item) => {
     const style = getCategoryStyle(item);
     const specChips = getSpecChips(item);
+    const isOutOfStock = item.availableStock === 0;
 
     return (
       <div
         key={item.id}
         onClick={() => setInspectedItem(item)}
-        className="group relative rounded-3xl border border-white/10 hover:border-[#c9b8a0]/50 transition-all duration-500 hover:shadow-[0_24px_60px_rgba(0,0,0,0.95)] flex flex-col justify-between cursor-pointer overflow-hidden min-h-[500px]"
+        className="rounded-2xl p-5 bg-[#121316]/90 border border-white/10 hover:border-white/20 transition-all duration-200 shadow-lg flex flex-col justify-between space-y-4 cursor-pointer"
       >
-        {/* Full Image Box Background - Picture fills 100% of the box edge-to-edge */}
-        <img
-          src={item.image || '/images/hardware/raspberry-pi-5.jpg'}
-          alt={item.nomenclature}
-          className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out z-0"
-          onError={(e) => {
-            e.target.src = '/images/hardware/raspberry-pi-5.jpg';
-          }}
-        />
-
-        {/* Ambient Gradient Scrim for crisp text contrast over picture */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/30 to-black/95 pointer-events-none z-10" />
-
-        {/* Specular hairline top rim */}
-        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none rounded-t-3xl z-20" />
-
-        {/* Details Layered Directly On Top of the Picture */}
-        <div className="relative z-20 p-6 flex flex-col justify-between h-full min-h-[500px]">
-          {/* Top Bar: Category & Tag Header */}
-          <div className="flex items-center justify-between text-xs">
-            <span className={`px-3 py-1 rounded-full text-[11px] font-semibold border ${style.badgeBg} backdrop-blur-md shadow-lg tracking-wide`}>
+        {/* Row 1: Category Tag & Asset Tag / Status */}
+        <div className="flex items-center justify-between gap-3 pb-3 border-b border-white/5">
+          <div className="flex items-center gap-2">
+            <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${style.badgeBg}`}>
               {style.tag}
             </span>
-            <span className="text-[11px] font-sans font-medium text-zinc-300 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 shadow-lg">
+            <span className="text-zinc-600">•</span>
+            <span className="text-xs text-zinc-400 font-mono">
               {item.assetTag}
             </span>
           </div>
 
-          {/* Bottom Area: Hardware Details Overlaid on Picture */}
-          <div className="space-y-3.5 pt-20">
-            {/* Product Title & Subtitle */}
-            <div className="space-y-1">
-              <h3 className="font-display text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#f5e6c8] transition-colors drop-shadow-md">
-                {item.nomenclature}
-              </h3>
-              <p className="text-xs text-zinc-300 font-sans font-normal line-clamp-2 leading-relaxed drop-shadow-sm">
-                {item.subSpecs}
-              </p>
-            </div>
+          <span
+            className={`px-2.5 py-0.5 rounded-full text-xs font-medium flex items-center gap-1.5 border ${
+              item.stockStatus === 'Maintenance'
+                ? 'bg-rose-500/10 text-rose-300 border-rose-500/25'
+                : isOutOfStock
+                ? 'bg-amber-500/10 text-amber-300 border-amber-500/25'
+                : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25'
+            }`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                item.stockStatus === 'Maintenance'
+                  ? 'bg-rose-400'
+                  : isOutOfStock
+                  ? 'bg-amber-400'
+                  : 'bg-emerald-400'
+              }`}
+            />
+            <span>
+              {item.stockStatus === 'Maintenance'
+                ? 'Maintenance'
+                : isOutOfStock
+                ? 'Allocated'
+                : 'In Stock'}
+            </span>
+          </span>
+        </div>
 
-            {/* Technical Spec Chips */}
-            <div className="flex flex-wrap gap-1.5">
-              {specChips.map((chip, idx) => (
-                <span
-                  key={idx}
-                  className="px-2.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-[11px] text-zinc-200 font-sans font-medium shadow-sm"
-                >
-                  {chip}
-                </span>
-              ))}
+        {/* Row 2: Hardware Image Thumbnail & Details */}
+        <div className="flex items-start gap-3.5">
+          <div className="w-14 h-14 rounded-xl bg-black/60 border border-white/10 p-1.5 flex items-center justify-center flex-shrink-0">
+            <img
+              src={item.image || '/images/hardware/raspberry-pi-5.jpg'}
+              alt={item.nomenclature}
+              className="max-h-full max-w-full object-contain"
+              onError={(e) => {
+                e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+              }}
+            />
+          </div>
+          <div className="min-w-0 flex-1 space-y-1">
+            <h3 className="font-semibold text-white text-sm truncate">
+              {item.nomenclature}
+            </h3>
+            <p className="text-xs text-zinc-400 line-clamp-1 font-sans">
+              {item.subSpecs}
+            </p>
+            <div className="flex items-center gap-2 text-[11px] text-zinc-500 pt-0.5">
+              <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
+              <span className="truncate">{item.coordinates}</span>
+              <span>•</span>
+              <span className="truncate">{item.labRoom}</span>
             </div>
+          </div>
+        </div>
 
-            {/* Location & Depot Strip */}
-            <div className="flex items-center gap-2 text-xs">
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-zinc-200 font-sans font-medium text-[11px]">
-                <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
-                <span>{item.coordinates}</span>
-              </div>
-              <span className="text-zinc-400 text-xs font-sans drop-shadow-sm">{item.labRoom}</span>
-            </div>
+        {/* Row 3: Spec Chips */}
+        <div className="flex flex-wrap gap-1.5">
+          {specChips.slice(0, 3).map((chip, idx) => (
+            <span
+              key={idx}
+              className="px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/10 text-[10px] text-zinc-300 font-sans"
+            >
+              {chip}
+            </span>
+          ))}
+        </div>
 
-            {/* Card Footer Actions */}
-            <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span
-                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                    item.stockStatus === 'Maintenance'
-                      ? 'bg-rose-400'
-                      : item.availableStock === 0
-                      ? 'bg-amber-400'
-                      : 'bg-emerald-400'
-                  }`}
-                />
-                <span className="text-xs text-white font-semibold">
-                  {item.stockStatus === 'Maintenance'
-                    ? 'Maintenance'
-                    : item.availableStock === 0
-                    ? 'Allocated'
-                    : 'In Stock'}
-                </span>
-                <span className="text-zinc-500">•</span>
-                <span className="text-[11px] text-zinc-300">
-                  {item.availableStock} of {item.totalStock} available
-                </span>
-              </div>
+        {/* Row 4: Available Count & Actions */}
+        <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs font-sans">
+          <div className="text-[11px] text-zinc-400">
+            <span className="font-semibold text-white">{item.availableStock}</span> of {item.totalStock} available
+          </div>
 
-              {role === 'Student' || role === 'Faculty' ? (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    addToBasket(item, 1);
-                  }}
-                  className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-tight transition-all shadow-lg active:scale-95 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>{role === 'Faculty' ? 'Allocate' : 'Requisition'}</span>
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setInspectedItem(item);
-                  }}
-                  className="px-3.5 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/15 text-white border border-white/10 font-medium text-xs tracking-tight transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
-                >
-                  <Eye className="w-3.5 h-3.5 text-zinc-300" />
-                  <span>Inspect</span>
-                </button>
-              )}
-            </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {role === 'Student' || role === 'Faculty' ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addToBasket(item, 1);
+                }}
+                disabled={isOutOfStock}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all shadow-sm active:scale-95 flex items-center gap-1.5 cursor-pointer ${
+                  isOutOfStock
+                    ? 'bg-white/[0.04] text-zinc-500 border border-white/5 cursor-not-allowed'
+                    : 'bg-white hover:bg-zinc-200 text-black'
+                }`}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>{role === 'Faculty' ? 'Allocate' : 'Requisition'}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setInspectedItem(item);
+                }}
+                className="px-3.5 py-1.5 rounded-full bg-white/[0.08] hover:bg-white text-zinc-300 hover:text-black border border-white/10 font-semibold text-xs transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>Inspect</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -526,15 +532,13 @@ export function InventoryListPage({ initialClassification = null }) {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
           <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            AIML Hardware Depot
+            Lab Hardware Catalog
           </span>
           <h1 className="text-3xl font-bold tracking-[-0.025em] text-white mt-1 font-display">
-            Hardware Workstation
+            Inventory
           </h1>
-          <p className="text-[13px] text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">
-            {role === 'Student'
-              ? 'Browse laboratory computing modules, developer boards, and prototyping stock. Stage components directly into your requisition kit.'
-              : 'Browse laboratory computing modules, developer boards, and prototyping stock. Inspect hardware specifications and storage coordinates.'}
+          <p className="text-[13px] text-zinc-400 mt-1 font-normal">
+            Certified microcontrollers, edge accelerators, and sensors for academic project development.
           </p>
         </div>
 

@@ -90,27 +90,19 @@ export function ReservationsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
         <div>
           <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            Circulation FIFO Queue
+            Queue & Reservations
           </span>
           <h1 className="text-3xl font-bold tracking-[-0.025em] text-white mt-1 font-display">
             Waitlist
           </h1>
-          <p className="text-[13px] text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">
-            Automated queue sequencing and live reservation tracking for allocated collegiate equipment.
+          <p className="text-[13px] text-zinc-400 mt-1 font-normal">
+            Hardware reserved for upcoming project sprints. Allocated automatically on return.
           </p>
         </div>
 
         <div className="text-xs font-sans text-zinc-300 px-3.5 py-1.5 bg-white/[0.03] border border-white/10 rounded-full shadow-sm">
-          Total Backlog Entries: <span className="text-[#f5e6c8] font-bold">{displayedReservations.length}</span>
+          In Queue: <span className="text-[#f5e6c8] font-bold">{displayedReservations.length}</span>
         </div>
-      </div>
-
-      {/* Info Banner */}
-      <div className="p-4 bg-white/[0.02] border border-white/10 rounded-2xl text-xs font-sans text-zinc-300 flex items-center gap-3 backdrop-blur-xl">
-        <Users className="w-4 h-4 text-[#c9b8a0] flex-shrink-0" />
-        <span className="leading-relaxed">
-          When active borrowers check in their equipment at the assistant counter, the system automatically advances the FIFO reservation queue and dispatches an allocation notification to the next team in line.
-        </span>
       </div>
 
       {/* Table */}

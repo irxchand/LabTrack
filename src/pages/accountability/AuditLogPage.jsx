@@ -233,13 +233,13 @@ export function AuditLogPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
           <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            Immutable Custody Ledger
+            Activity & Compliance
           </span>
           <h1 className="text-3xl font-bold tracking-tight text-white mt-1 font-display">
-            Institutional Audit Log
+            Audit Ledger
           </h1>
-          <p className="text-[13px] text-zinc-400 mt-1 max-w-xl font-normal leading-relaxed">
-            Cryptographically sealed timeline of all hardware checkouts, multi-point return inspections, approvals, and triage events.
+          <p className="text-[13px] text-zinc-400 mt-1 font-normal">
+            Immutable record of checkouts, returns, defect triage, and endorsements.
           </p>
         </div>
 

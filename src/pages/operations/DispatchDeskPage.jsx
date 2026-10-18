@@ -563,30 +563,30 @@ export function DispatchDeskPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
           <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
-            Operational Counter Terminal • Desk LA-04
+            Assistant Station • Counter 2
           </span>
           <h1 className="text-3xl font-bold tracking-tight text-white mt-1 font-display">
-            Counter & Circulation Desk
+            Dispatch & Returns
           </h1>
-          <p className="text-[13px] text-zinc-400 mt-1 max-w-xl font-normal leading-relaxed">
-            Hardware checkout of pre-approved orders, 5-point return inspection & sanitization, and live institutional circulation registry.
+          <p className="text-[13px] text-zinc-400 mt-1 font-normal">
+            Order handovers, 5-point return triage, and live circulation.
           </p>
         </div>
 
-        {/* 3-Mode Switcher: Apple Segmented Pill */}
+        {/* 3-Mode Switcher: Segmented Control */}
         <div className="inline-flex p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl overflow-x-auto no-scrollbar">
           <button
             onClick={() => setTerminalMode('dispatch')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               terminalMode === 'dispatch'
                 ? 'bg-white text-black shadow-md'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
             <Send className="w-3.5 h-3.5" />
-            <span>Mode 1: Physical Handover</span>
+            <span>Handover</span>
             {readyRequisitions.length > 0 && (
-              <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                 terminalMode === 'dispatch' ? 'bg-black/10 text-black' : 'bg-white/10 text-white'
               }`}>
                 {readyRequisitions.length}
@@ -595,15 +595,15 @@ export function DispatchDeskPage() {
           </button>
           <button
             onClick={() => setTerminalMode('checkin')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               terminalMode === 'checkin'
                 ? 'bg-white text-black shadow-md'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Mode 2: Return & Reset</span>
-            <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+            <span>Return Intake</span>
+            <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
               terminalMode === 'checkin' ? 'bg-black/10 text-black' : 'bg-white/10 text-white'
             }`}>
               {activeLoans.length}
@@ -611,15 +611,15 @@ export function DispatchDeskPage() {
           </button>
           <button
             onClick={() => setTerminalMode('circulation')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               terminalMode === 'circulation'
                 ? 'bg-white text-black shadow-md'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
-            <span>Mode 3: Circulation Registry</span>
-            <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+            <span>Circulation</span>
+            <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
               terminalMode === 'circulation' ? 'bg-black/10 text-black' : 'bg-white/10 text-white'
             }`}>
               {activeLoans.length}

@@ -228,16 +228,15 @@ export function ReliabilityReportPage() {
       {/* Editorial Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2 mb-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-            COLLEGIATE ACCOUNTABILITY • REPUTATION SCORE
+          <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2 mb-1">
+            Student Standing
           </div>
           <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <ShieldCheck className="w-7 h-7 text-[#c9b8a0]" />
-            Reputation & Reliability Score
+            <ShieldCheck className="w-6 h-6 text-[#c9b8a0]" />
+            Reliability Score
           </h1>
-          <p className="text-sm font-sans text-zinc-400 mt-1 max-w-2xl leading-relaxed">
-            Algorithmic compliance scoring tracking hardware return punctuality, condition integrity, and borrowing priority tiers.
+          <p className="text-[13px] text-zinc-400 mt-1 font-normal">
+            Borrowing standing based on return punctuality and hardware care.
           </p>
         </div>
 
