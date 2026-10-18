@@ -30,7 +30,7 @@ import { isRequisitionMentoredByUser } from '../../utils/facultyAuth';
 
 export function ApprovalsQueuePage() {
   const navigate = useNavigate();
-  const { requisitions, inventory, activeLoans, approveRequisition, rejectRequisition } = useLabData();
+  const { requisitions, inventory, activeLoans, projects, approveRequisition, rejectRequisition } = useLabData();
   const { currentUser } = useAuth();
   const isHoD = currentUser?.role === 'HoD / Admin';
   const facultyName = currentUser?.name || (isHoD ? 'Dr. K. V. Ramanathan' : 'Dr. Anjali Dalvi');
