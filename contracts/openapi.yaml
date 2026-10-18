@@ -32,7 +32,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '422':
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -79,7 +79,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '422':
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -130,7 +130,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -179,7 +179,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -231,7 +231,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -243,6 +243,22 @@ paths:
       summary: Catalogue
       operationId: catalogue_api_catalogue_get
       parameters:
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+      - name: q
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Q
       - name: authorization
         in: header
         required: false
@@ -283,7 +299,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/catalogue/assets/{barcode}:
+    get:
+      summary: Asset Lookup
+      operationId: asset_lookup_api_catalogue_assets__barcode__get
+      parameters:
+      - name: barcode
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Barcode
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -337,7 +407,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -389,7 +459,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -449,7 +519,62 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Service Unavailable
+  /api/projects/{identifier}:
+    get:
+      summary: Project Detail
+      operationId: project_detail_api_projects__identifier__get
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectView'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -510,7 +635,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -561,7 +686,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -616,7 +741,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -683,7 +808,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -744,7 +869,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -811,7 +936,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -872,7 +997,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -939,7 +1064,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1000,7 +1125,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1067,7 +1192,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1134,7 +1259,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1186,7 +1311,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1246,7 +1371,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1307,7 +1432,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1361,7 +1486,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1421,7 +1546,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1475,7 +1600,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1527,7 +1652,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1588,7 +1713,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1646,7 +1771,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1707,7 +1832,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1755,7 +1880,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1803,7 +1928,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1851,7 +1976,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -1899,7 +2024,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-          description: Unprocessable Entity
+          description: Unprocessable Content
         '503':
           content:
             application/json:
@@ -2075,6 +2200,16 @@ components:
         available:
           type: integer
           title: Available
+        image_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Url
+        cost_tier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cost Tier
       type: object
       required:
       - id
@@ -2104,6 +2239,11 @@ components:
         total:
           type: integer
           title: Total
+        branch:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Branch
         assets:
           items:
             $ref: '#/components/schemas/AssetView'
@@ -2631,6 +2771,11 @@ components:
         identifier:
           type: string
           title: Identifier
+        email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Email
         roles:
           items:
             type: string
@@ -2641,6 +2786,41 @@ components:
             type: integer
           type: array
           title: Lab Ids
+        department:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Department
+        designation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Designation
+        batch:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Batch
+        year_of_study:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year Of Study
+        branch:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Branch
+        roll_number:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Roll Number
+        phone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phone
       type: object
       required:
       - id

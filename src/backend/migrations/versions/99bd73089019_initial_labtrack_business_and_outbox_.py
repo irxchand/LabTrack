@@ -34,6 +34,8 @@ def upgrade():
     sa.Column('brand', sa.String(length=100), nullable=False),
     sa.Column('specs', sa.JSON(), nullable=False),
     sa.Column('alternative_ids', sa.JSON(), nullable=False),
+    sa.Column('image_url', sa.String(length=255), nullable=True),
+    sa.Column('cost_tier', sa.String(length=50), nullable=True),
     sa.CheckConstraint("kind IN ('ASSET','CONSUMABLE')", name='ck_item_kind'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -63,6 +65,13 @@ def upgrade():
     sa.Column('roles', sa.JSON(), nullable=False),
     sa.Column('lab_ids', sa.JSON(), nullable=False),
     sa.Column('active', sa.Boolean(), nullable=False),
+    sa.Column('department', sa.String(length=50), nullable=True),
+    sa.Column('designation', sa.String(length=100), nullable=True),
+    sa.Column('batch', sa.Integer(), nullable=True),
+    sa.Column('year_of_study', sa.Integer(), nullable=True),
+    sa.Column('branch', sa.String(length=20), nullable=True),
+    sa.Column('roll_number', sa.String(length=20), nullable=True),
+    sa.Column('phone', sa.String(length=30), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('identifier')
@@ -78,6 +87,11 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=120), nullable=False),
     sa.Column('incharge_id', sa.Integer(), nullable=False),
+    sa.Column('lab_code', sa.String(length=30), nullable=True),
+    sa.Column('floor', sa.Integer(), nullable=True),
+    sa.Column('wing', sa.String(length=20), nullable=True),
+    sa.Column('location_desc', sa.String(length=200), nullable=True),
+    sa.Column('branch', sa.String(length=20), nullable=True),
     sa.ForeignKeyConstraint(['incharge_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
