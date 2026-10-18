@@ -26,8 +26,8 @@ export function ReliabilityReportPage() {
   const [flaggedThreshold, setFlaggedThreshold] = useState(75);
   const [isEditingThresholds, setIsEditingThresholds] = useState(false);
 
-  // Faculty exemption guard: Faculty have no demerit score
-  if (currentUser?.role === 'Faculty') {
+  // Faculty and HoD exemption guard: Mentors & Administrators have no demerit score
+  if (currentUser?.role === 'Faculty' || currentUser?.role === 'HoD / Admin') {
     return (
       <div className="max-w-4xl mx-auto py-12 px-4 space-y-8 font-sans">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#141417]/95 via-[#0e0e11]/95 to-[#08080a]/95 border border-white/10 p-8 sm:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.8)] backdrop-blur-2xl">

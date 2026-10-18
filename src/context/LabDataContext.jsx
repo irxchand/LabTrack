@@ -204,6 +204,7 @@ export function LabDataProvider({ children }) {
       courseCode: selectedProject?.courseCode || currentUser?.courseCode || 'DCDS-SY-AIML',
       mentorId: selectedProject?.mentorId || currentUser?.mentorId || 'FAC-AI-019',
       mentorName: selectedProject?.mentorName || currentUser?.name || 'Dr. Anjali Dalvi',
+      isFacultyProject: Boolean(selectedProject?.isFacultyProject || isFaculty),
       technicalPurpose: isFaculty ? `[Faculty Endorsement] ${technicalPurpose}` : technicalPurpose,
       componentsRequested,
     });

@@ -352,8 +352,28 @@ export function ApprovalsQueuePage() {
     {
       header: 'Compliance Health',
       accessor: 'teamReliabilityScore',
-      width: '130px',
+      width: '140px',
       render: (row) => {
+        const isFacultyRow =
+          row.isFacultyProject ||
+          row.studentPrn?.startsWith('FAC-') ||
+          row.studentPrn?.startsWith('HOD-') ||
+          row.mentorId === row.studentPrn ||
+          row.studentName?.startsWith('Dr.') ||
+          row.studentName?.startsWith('Prof.') ||
+          projects.find((p) => p.id === row.projectId)?.isFacultyProject;
+
+        if (isFacultyRow) {
+          return (
+            <div className="font-sans text-xs space-y-0.5">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.06] text-[#f5e6c8] border border-white/10 inline-block">
+                Academic Exemption
+              </span>
+              <div className="text-[10px] text-zinc-500">Faculty Research Lab</div>
+            </div>
+          );
+        }
+
         const isFlagged = row.teamReliabilityScore < 75;
         return (
           <div className="font-sans text-xs space-y-1">
@@ -796,19 +816,37 @@ export function ApprovalsQueuePage() {
 
                     {/* Right Badges: Compliance & Milestone */}
                     <div className="flex sm:flex-col items-end gap-2 flex-shrink-0">
-                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 border border-white/10 text-xs shadow-sm">
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                            isFlagged
-                              ? 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]'
-                              : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'
-                          }`}
-                        />
-                        <span className="text-white font-semibold">{req.teamReliabilityScore}/100</span>
-                        <span className="text-zinc-400 text-[11px]">Integrity</span>
-                      </div>
+                      {req.isFacultyProject ||
+                      req.studentPrn?.startsWith('FAC-') ||
+                      req.studentPrn?.startsWith('HOD-') ||
+                      req.mentorId === req.studentPrn ||
+                      req.studentName?.startsWith('Dr.') ||
+                      req.studentName?.startsWith('Prof.') ||
+                      projects.find((p) => p.id === req.projectId)?.isFacultyProject ? (
+                        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-xs shadow-sm">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
+                          <span className="text-[#f5e6c8] font-medium text-[11px]">Academic Exemption</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 border border-white/10 text-xs shadow-sm">
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                              isFlagged
+                                ? 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]'
+                                : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'
+                            }`}
+                          />
+                          <span className="text-white font-semibold">{req.teamReliabilityScore}/100</span>
+                          <span className="text-zinc-400 text-[11px]">Student Team</span>
+                        </div>
+                      )}
                       <span className="text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-white/[0.04] text-zinc-400 border border-white/5 font-mono">
-                        Milestone 2 Sprint
+                        {req.isFacultyProject ||
+                        req.studentPrn?.startsWith('FAC-') ||
+                        req.studentPrn?.startsWith('HOD-') ||
+                        projects.find((p) => p.id === req.projectId)?.isFacultyProject
+                          ? 'Faculty Research'
+                          : 'Milestone 2 Sprint'}
                       </span>
                     </div>
                   </div>

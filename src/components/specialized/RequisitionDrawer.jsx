@@ -30,8 +30,10 @@ export function RequisitionDrawer() {
   } = useLabData();
   const { currentUser, role } = useAuth();
   const isFaculty = role === 'Faculty';
+  const isHoD = role === 'HoD / Admin';
+  const isFacultyOrHoD = isFaculty || isHoD;
 
-  if (role !== 'Student' && role !== 'Faculty') {
+  if (role !== 'Student' && role !== 'Faculty' && role !== 'HoD / Admin') {
     return null;
   }
 
@@ -171,11 +173,11 @@ export function RequisitionDrawer() {
               </span>
             </div>
 
-            {isFaculty ? (
+            {isFacultyOrHoD ? (
               <div className="flex items-center gap-2">
                 <span className="text-zinc-500 text-[11px]">Standing</span>
                 <span className="font-medium text-white text-[11px] px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/10">
-                  Faculty Mentor
+                  {isHoD ? 'Department Head' : 'Faculty Mentor'}
                 </span>
               </div>
             ) : (

@@ -114,7 +114,18 @@ export const custodyApi = {
         courseCode: requisitionData.courseCode || 'DCDS-SY-AIML',
         mentorId: requisitionData.mentorId || 'FAC-AI-019',
         mentorName: requisitionData.mentorName || 'Dr. Anjali Dalvi',
-        teamReliabilityScore: 94,
+        teamReliabilityScore:
+          requisitionData.studentPrn?.startsWith('FAC-') ||
+          requisitionData.studentPrn?.startsWith('HOD-') ||
+          requisitionData.isFacultyProject
+            ? null
+            : 94,
+        isFacultyProject:
+          Boolean(
+            requisitionData.studentPrn?.startsWith('FAC-') ||
+            requisitionData.studentPrn?.startsWith('HOD-') ||
+            requisitionData.isFacultyProject
+          ),
         technicalPurpose: requisitionData.technicalPurpose,
         componentsRequested: requisitionData.componentsRequested,
         status: 'Submitted',
