@@ -342,3 +342,23 @@ Under explicit user instruction ("fix the documentation folder structure, it is 
 
 **Next Context**
 Documentation structure is clean, categorized, and fully referenced. Ready to proceed with Phase 02 or any subsequent engineering task.
+
+## 2026-10-19 — CCE Vite presentation with live demonstration
+
+Created presentations/cce-v3 as a separate Vite presentation under explicit user direction. User confirmed 12–15 minutes total. Includes 15 main slides and three appendix slides, five-minute live demo handoff, presenter/source notes, navigation, overview, fullscreen, timer and configurable HTTP(S) demo links. Covers the official 5/5/5/10/5 CCE rubric and verified primary research references. Preserves earlier decks and existing application changes. Distinguishes root mock workflows, authoritative backend, dated test evidence and future cloud deployment. No backend or email actions were executed for presentation validation.
+
+Validation: production build passed; all 18 slides rendered and visually inspected in contact sheet; controls, demo popup/return, notes, timer and mobile overflow checks passed. Corrected appendix table spacing and rechecked. Evidence in .artifacts/cce-v3/validation.json and slide screenshots. Local presentation server: 127.0.0.1:5174. Run instructions and rehearsal boundaries in presentations/cce-v3/README.md.
+
+## 2026-10-19 — CCE deck aligned with website styling and rubric
+
+User requested actual website styling and rubric alignment. Inspected running login page and website source tokens. Added isolated website-theme.css using charcoal, champagne gold, glass surfaces, rounded controls and gradient wordmark. Bundled Clash Display and Inter fonts locally. Strengthened literature contribution, observable demo checkpoints and exact rubric-to-slide mapping; added presentations/cce-v3/RUBRIC_CHECK.md. Preserved 18 slides and 12–15 minute plan. All 18 slides visually inspected; no footer overflow or browser errors, fonts loaded, navigation/notes checked. Production build passes after correcting text encoding during editing. No application business code modified.
+
+## 2026-10-19 — Code and runtime review
+
+Reviewed current working tree without fixing application code. Report: docs/execution/CODE_REVIEW_2026-10-19.md (11 actionable findings). Confirmed website/presentation/API running; active SQL is SQLite; remote Mongo ping succeeds and existing notification/delivery projections exist. SMTP configured but no email sent during review. Root authentication/workflows remain browser simulations. Reproduced masked-password acceptance, repeated approval stuck at Faculty Endorsed, and double stock decrement on defective return in an isolated browser profile. Found unauthenticated mail endpoints, SMTP outbox durability gap, misleading email success, discarded duration/quantity inputs, auto-approved UI extensions and simulated audit/reliability displays.
+
+Fresh backend suite: 61 passed, 2 opt-in service tests skipped, 0 failures in 397.77s; JUnit .artifacts/review-tests.xml. Both frontend builds pass; root bundle size warning remains. No production-readiness claim. Report separates implemented code, live observations and unverified integrations.
+
+2026-10-19 — Rebuilt presentations/cce-v3 around verified implementation evidence: 13 main slides plus two appendices, with an honest UI/backend boundary, server-backed live demo, fresh test results, integration priorities, rubric map and website-matched styling. Production build passed.
+
+2026-10-19 — Added an authoritative literature review for SMTP/outbox registry, FastAPI, FIFO reservations, cloud VMs/managed databases, Docker, and Phase 1 security with SHA-256. Added two research slides and presentations/cce-v3/LITERATURE.md; Vite production build passed.
