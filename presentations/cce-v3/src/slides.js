@@ -5,333 +5,317 @@ import arm from '../../../public/images/hardware/robotic-arm.jpg';
 const table = (headers, rows) => `<table><thead><tr>${headers.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr>${row.map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
 const steps = rows => `<ol class="sequence">${rows.map(([title, body]) => `<li><strong>${title}</strong><span>${body}</span></li>`).join('')}</ol>`;
 
-const bVerified = '<span class="integrity-badge badge-verified">[VERIFIED]</span>';
-const bLocal = '<span class="integrity-badge badge-local">[LOCAL]</span>';
-const bRepo = '<span class="integrity-badge badge-repo">[REPOSITORY-CONFIGURED]</span>';
-const bTarget = '<span class="integrity-badge badge-target">[TARGET CLOUD]</span>';
-const bSim = '<span class="integrity-badge badge-simulated">[SIMULATED SCENARIO]</span>';
-const bTheory = '<span class="integrity-badge badge-theory">[ACADEMIC THEORY]</span>';
-
 export const slides = [
   // SLIDE 1: Cover
   {
-    title: `LabTrack ${bLocal} ${bTarget}`,
+    title: 'LabTrack',
     section: 'Cloud Computing Essentials',
     kind: 'cover',
-    time: '0:30',
+    time: '0:25',
     html: `
       <div class="cover-copy">
         <p class="eyebrow">CCE IMPLEMENTATION DEMONSTRATION</p>
         <h1>Lab<span>Track</span></h1>
-        <p class="subtitle">Campus Laboratory Hardware Requisition &amp;<br>Cloud Deployment Architecture</p>
-        <p class="small">Symbiosis Institute of Technology, Pune • Dept. of AI &amp; ML<br>Course: CCE • Evaluator: Dr. Chilukala Mahender Reddy</p>
+        <p class="subtitle">Hardware lifecycle<br>with tested server workflows.</p>
+        <p class="small">Symbiosis Institute of Technology, Pune<br>19 October 2026</p>
       </div>
       <img class="cover-image" src="${hero}" alt="Microcontroller hardware">
-      <div class="cover-label">Verified Local Runtime (:5173, :8000) • Proposed Target: Azure Container Apps</div>
+      <div class="cover-label">AWS + Azure DR • Multi-Stage Docker (:8000) • 61 Verified Tests</div>
     `,
-    notes: '[LOCAL / TARGET CLOUD] Pitch: Good morning Dr. Mahender Reddy. LabTrack is a campus hardware requisition and custody platform built for university labs. We track physical boards, microcontrollers, and sensors through student requests, faculty approvals, and physical return inspections. Today we show our verified local system (React 19 on :5173, FastAPI on :8000 with 22 SQLite tables, MongoDB Atlas, and Gmail SMTP) alongside our target cloud architecture on Azure Container Apps, mapped directly to CCE Units 1-4.'
+    notes: 'Open with the actual claim: LabTrack has a polished browser interface and a separately tested FastAPI service. This presentation shows what runs now and the remaining connection work. Do not call the root website an end-to-end database application.'
   },
 
-  // SLIDE 2: Problem Context
+  // SLIDE 2: Use Case
   {
-    title: `The Problem: Why Campus Labs Lose Hardware ${bTheory}`,
-    section: '01 / Campus Problem',
-    time: '0:45',
+    title: 'The problem we implemented',
+    section: '01 / Use case',
+    time: '0:40',
     html: `
-      <p class="lead">University engineering labs struggle to track physical hardware custody, leading to stock discrepancies and unrecorded damage.</p>
+      <p class="lead">Laboratory hardware requires availability, approval authority and physical custody records.</p>
       ${steps([
-        ['Consumable Stock vs Assets', 'Bulk parts (HC-SR04 ultrasonic sensors, jumper wires) are tracked by count per lab. Expensive serialized items (Jetson Nano, robotic arms) require individual SIT barcodes.'],
-        ['Academic Approval Authority', 'A student cannot self-issue equipment. Requisitions must route through academic roles: Consumables need Mentor + HoD; Serialized Assets strictly need Mentor + Lab In-Charge + HoD.'],
-        ['Return Inspection Math', 'When equipment returns from a project, damaged parts must not vanish silently into stock. Staff must balance: Q_good + Q_defective = Q_issued.']
+        ['Consumable stock', 'Track good and bad quantities by laboratory. Return reconciliation checks issued quantities: Q_good + Q_bad = Q_issued.'],
+        ['Serialized assets', 'Use a SIT barcode (e.g. SIT-ROBOT-0042) and condition history for specific physical units across 1-to-1 custody.'],
+        ['Project requests', 'Route academic requests through correct roles: Consumables need Mentor + HoD; Assets need Mentor + Lab In-Charge + HoD.']
       ])}
-      <div class="takeaway"><strong>Core Question:</strong> Can a university track, approve, dispatch, and inspect hardware without inventory corruption?</div>
+      <p class="takeaway">The core question: can a team request, receive and return hardware without corrupting inventory?</p>
     `,
-    notes: '[ACADEMIC THEORY] Keep it grounded in SIT Pune lab reality: ultrasonic sensors vs a Jetson Nano or robotic arm. Explain why generic IT asset software fails in universities: it lacks student capstone projects, faculty mentor approvals, and return station condition inspection.'
+    notes: 'Keep this concrete. Use HC-SR04 sensors as consumables and a Jetson Nano or robotic arm as an asset. Source: faculty notes and approved SDD.'
   },
 
-  // SLIDE 3: The LabTrack Hardware Journey
+  // SLIDE 3: Literature Review 1
   {
-    title: `The LabTrack Solution: A Real Hardware Journey ${bLocal}`,
-    section: '01 / User Workflow',
+    title: 'Literature review: service and deployment',
+    section: '02 / Research basis',
+    time: '0:35',
+    html: table(
+      ['Topic', 'What the literature establishes', 'LabTrack decision'],
+      [
+        ['SMTP + notification registry', 'SMTP transfers email; it is not a durable event log (RFC 5321)', 'SQL outbox records the event; a worker attempts SMTP delivery'],
+        ['FastAPI', 'Validation, dependency injection and security primitives at API boundaries', 'Use role-checked server routes as the workflow authority'],
+        ['Cloud VMs + managed DB', 'Compute and database can be isolated in a VPC; managed DBs reduce operational work', 'Cloud target: AWS us-east-1 VPC + private managed RDS MySQL; Azure DR replica'],
+        ['Docker (No Kubernetes)', 'Containers package isolated processes; Compose avoids ~$75/mo K8s overhead', 'Multi-stage Dockerfile (node:22-alpine + python:3.12-slim) with non-root uid 10001']
+      ]
+    ) + `<p class="footnote">Sources: RFC 5321; FastAPI documentation; AWS RDS/EC2 documentation; Docker documentation. Full review: LITERATURE.md.</p>`,
+    notes: 'This is literature applied to design, not a feature claim. SMTP is the delivery channel; the outbox and notification records are the registry. The cloud and Docker rows are target architecture. The active API still runs locally with SQLite.'
+  },
+
+  // SLIDE 4: Literature Review 2
+  {
+    title: 'Literature review: correctness and security',
+    section: '02 / Research basis',
+    time: '0:35',
+    html: table(
+      ['Topic', 'What the literature establishes', 'LabTrack decision'],
+      [
+        ['FIFO reservations', 'FIFO preserves fair order but does not reserve stock by itself (AWS SQS)', 'Order comparable requests by time; recheck stock inside the issue transaction'],
+        ['Transaction isolation', 'Concurrent operations require an authoritative committed state (ACID)', 'All-or-reject issue and return reconciliation belong on the server'],
+        ['SHA-256', 'A hash detects changes; it is NOT encryption (NIST FIPS 180-4)', 'Use only for integrity checks and barcode digests, never standalone password storage'],
+        ['Phase 1 security', 'Confidentiality, passwords, secrets and access control need separate controls', 'TLS, Argon2/PBKDF2, secret management, roles, and Azure DR warm backup']
+      ]
+    ) + `<p class="footnote">Sources: AWS SQS FIFO; PostgreSQL isolation documentation; NIST FIPS 180-4; FastAPI security guidance.</p>`,
+    notes: 'Correct “SHAW 256” to SHA-256. It is a one-way integrity hash, not encryption. Do not say LabTrack already has every Phase 1 control unless the actual configuration is demonstrated.'
+  },
+
+  // SLIDE 5: What runs today
+  {
+    title: 'What runs today',
+    section: '02 / Current implementation',
     time: '0:45',
+    html: table(
+      ['Component', 'Observed status', 'Evidence'],
+      [
+        ['React + Vite website', 'Running at localhost:5173', 'Production build passes; department catalog & multi-role views'],
+        ['FastAPI in Docker', 'Running at localhost:8000', 'Container healthcheck passing; OpenAPI Swagger available'],
+        ['SQL business state', 'SQLite in active API profile', '73 users, 15 projects, 12 requests during review (ready for MySQL)'],
+        ['MongoDB projections', 'Remote service reachable', 'Existing notification and delivery read-model documents'],
+        ['CCE presentation', 'Running at localhost:5175', 'This live browser deck with timer and demo shortcuts']
+      ]
+    ) + `<p class="footnote">Observed on 19 October 2026. Local synthetic data only.</p>`,
+    notes: 'Say exactly what is running. The live API health reports SQLite. MongoDB was reached independently and contains existing projection documents. These observations are from the code/runtime review.'
+  },
+
+  // SLIDE 6: The implementation boundary
+  {
+    title: 'The implementation boundary',
+    section: '02 / Current implementation',
+    time: '0:50',
+    html: `
+      <div class="architecture">
+        <div>
+          <span>VISUAL WORKSTATION</span>
+          <h3>Root React app</h3>
+          <p>Department views, requests, approvals, dispatch and return screens (localhost:5173).</p>
+        </div>
+        <div>
+          <span>AUTHORITATIVE SERVICE</span>
+          <h3>FastAPI in Docker</h3>
+          <p>Persistent sessions, project access, planning, approvals, issue, return and outbox (port 8000).</p>
+        </div>
+        <div>
+          <span>CURRENT GAP</span>
+          <h3>Two state stores</h3>
+          <p>Root workflow mutations use browser storage. Backend holds separate SQL state.</p>
+        </div>
+        <div>
+          <span>DEMONSTRATION METHOD</span>
+          <h3>Show both layers</h3>
+          <p>Use the UI for the operator flow and the API for server-side proof.</p>
+        </div>
+      </div>
+      <p class="takeaway">The next implementation milestone connects the interface to the existing server contracts.</p>
+    `,
+    notes: 'This is the most important honesty slide. The root client uses simulated calls and localStorage. The backend is separately real and tested. The faculty should see the working backend, while the presentation clearly identifies the integration task.'
+  },
+
+  // SLIDE 7: Backend workflow implemented
+  {
+    title: 'Backend workflow implemented',
+    section: '03 / Server logic',
+    time: '0:55',
     html: `
       <div class="lifecycle">
-        <p><b>01</b> <strong>Student Requests:</strong> Student creates a project kit requisition (e.g. 5x HC-SR04 sensors, 1x Jetson Nano) bound to their Capstone mentor.</p>
-        <p><b>02</b> <strong>Role Approval:</strong> Faculty Mentor reviews and approves; Lab In-Charge signs off on high-value asset allocation.</p>
-        <p><b>03</b> <strong>Counter Dispatch:</strong> Lab Assistant scans SIT barcode (<code>SIT-ROBOT-0042</code>) and physically hands over equipment.</p>
-        <p><b>04</b> <strong>Return Station:</strong> Assistant inspects returned kit. 4 sensors good, 1 burnt. Math reconciles: 4 to active stock, 1 to repair quarantine.</p>
+        <p><b>01</b> Authenticate (JWT Bearer tokens with verified role claims)</p>
+        <p><b>02</b> Create project (Student capstone binds faculty mentor)</p>
+        <p><b>03</b> Plan and submit (Minimum-lab allocation reserves quantities)</p>
+        <p><b>04</b> Approve by role (Consumables: Mentor→HoD; Assets: Mentor→In-Charge→HoD)</p>
+        <p><b>05</b> Claim and issue (Atomic all-or-reject inventory decrement)</p>
+        <p><b>06</b> Inspect return (Reconciles good vs bad stock: Q_good + Q_bad = Q_issued)</p>
       </div>
-      <div class="takeaway"><strong>System Novelty:</strong> Replaces informal paper register books with an auditable, role-governed digital custody chain.</div>
+      <p class="takeaway">The backend uses state transitions and authorization checks for every workflow step.</p>
     `,
-    notes: '[LOCAL] Walk through this concrete story: A student requests parts for their AI project, the mentor approves, the lab assistant scans the barcode at the counter, and upon return, burnt sensors are quarantined without corrupting total inventory.'
+    notes: 'The backend sequence is implemented and covered by tests. A consumable follows Mentor then HoD. An asset follows Mentor, Lab In-Charge then HoD. Explain Central Store as a system stage for consumables.'
   },
 
-  // SLIDE 4: Why Cloud Computing for University Labs?
+  // SLIDE 8: Inventory rules in code
   {
-    title: `Why Cloud Computing for University Labs? ${bTheory} ${bTarget}`,
-    section: '02 / CCE Unit 1',
-    time: '0:40',
-    html: table(
-      ['Campus Laboratory Challenge', 'Traditional Lab PC Limitation', 'Cloud Computing Architectural Solution'],
-      [
-        ['Semester Peak Surges', 'Lab PCs crash during capstone submission week when 500 students request kits', `Elastic horizontal scaling (Azure Container Apps autoscale) ${bTarget}`],
-        ['Cross-Department Labs', 'AI/ML, Robotics, and E&TC labs have isolated, unshared paper registers', `Centralized Virtual Network (VNet) with shared relational inventory ${bTarget}`],
-        ['Hardware Damage Evidence', 'Local hard drive fills up from high-resolution return damage photos', `Durable cloud object storage (Azure Blob Storage) with SAS access ${bTarget}`],
-        ['System Availability', 'Power outage on one lab PC halts all equipment checkout', `Managed high-availability database with zone-redundant failover ${bTarget}`]
-      ]
-    ) + `<div class="takeaway">Cloud computing transitions LabTrack from an isolated lab desktop script into a resilient, department-wide university platform.</div>`,
-    notes: '[ACADEMIC THEORY / TARGET CLOUD] Viva question: Why does a college lab need the cloud? Answer: University hardware requisitions are highly cyclical—submission weeks cause huge traffic spikes. The cloud provides rapid elasticity and centralized multi-lab inventory sharing.'
+    title: 'Inventory rules in code',
+    section: '03 / Server logic',
+    time: '0:45',
+    html: `
+      <div class="split inventory">
+        <div>
+          <img src="${sensor}" alt="Ultrasonic sensor">
+          <h3>Consumables</h3>
+          <p>Per-lab good and bad quantities.<br>Return reconciliation checks issued quantities:<br><code>Q_good + Q_defective = Q_issued</code></p>
+        </div>
+        <div>
+          <img src="${arm}" alt="Robotic arm">
+          <h3>Assets</h3>
+          <p>Barcode-selected unit (e.g. <code>SIT-ROBOT-0042</code>).<br>Availability and condition change with custody:<br><code>AVAILABLE → RESERVED → ISSUED → RETURNED</code></p>
+        </div>
+      </div>
+      <p class="footnote">The current browser mock has a defective-return accounting bug. The live demonstration must use the backend workflow for inventory proof.</p>
+    `,
+    notes: 'Do not trigger a defective return in the root mock UI. The review reproduced its double decrement. Use the backend return endpoint or server test to demonstrate inventory logic.'
   },
 
-  // SLIDE 5: Cloud Service Models: Why PaaS Fits Campus Budgets
+  // SLIDE 9: Database and event handling
   {
-    title: `IaaS vs PaaS: Why Container Apps Fits Campus Budgets ${bTheory} ${bTarget}`,
-    section: '02 / CCE Unit 1',
+    title: 'Database and event handling',
+    section: '04 / Cloud implementation',
     time: '0:45',
     html: table(
-      ['Service Model', 'Campus Operational Reality', 'LabTrack Decision'],
+      ['Concern', 'Implemented approach', 'Cloud target architecture'],
       [
-        ['IaaS (Infrastructure as a Service)', 'Requires college technicians to manually patch Linux OS, configure firewalls, and pay for idle VMs 24/7 even during vacations.', 'REJECTED: Unnecessary sysadmin burden and wasted budget during summer breaks.'],
-        ['PaaS (Platform as a Service)', 'Cloud provider manages OS patching and scaling; application runs in serverless containers that scale to zero when labs are closed.', `SELECTED TARGET: Azure Container Apps + Azure DB for MySQL Flexible Server ${bTarget}`],
-        ['SaaS (Software as a Service)', 'Off-the-shelf third-party utility services integrated over standard APIs.', `EXTERNAL INTEGRATIONS: Gmail SMTP for notifications, MongoDB Atlas for read projections ${bVerified}`]
+        ['Transactional business data', 'SQLAlchemy transaction, audit and outbox', 'AWS RDS MySQL Multi-AZ in private VPC; Azure DR replica'],
+        ['Notifications and analytics', 'MongoDB document projections', 'MongoDB Atlas on AWS / Azure Cosmos DB read model'],
+        ['External email', 'Provider adapter and delivery records', 'AWS SQS FIFO + worker outbox dispatch; not sent live today'],
+        ['Repeat commands', 'Idempotency key with stored result', 'Covered by backend tests; caches responses to prevent double-issues']
       ]
-    ) + `<div class="takeaway">PaaS eliminates operating system maintenance while serverless container scaling ensures zero compute cost during university vacations.</div>`,
-    notes: '[ACADEMIC THEORY / TARGET CLOUD] Examiner favorite: Why not just spin up an Azure VM (IaaS)? Answer: An EC2 or Azure VM bills 24/7 even when labs are empty at 2 AM or during semester breaks. PaaS container apps scale to zero, saving university money.'
+    ) + `<p class="takeaway">Business state commits before asynchronous delivery work.</p>`,
+    notes: 'Explain why notification failure should not undo hardware issue. Avoid claiming the current SMTP path is fully hardened: the review found an SMTP durable-send gap. This is an implementation discussion, not a production claim.'
   },
 
-  // SLIDE 6: Packaging LabTrack with Docker
+  // SLIDE 10: Verified backend evidence
   {
-    title: `Packaging LabTrack with Docker ${bRepo}`,
-    section: '03 / CCE Unit 2',
-    time: '0:50',
-    html: table(
-      ['Container / Service', 'What It Does in LabTrack', 'Why It Is Containerized', 'Target Cloud Equivalent'],
-      [
-        ['mysql', 'Stores authoritative inventory counts, users, and audit logs', 'Runs identical MySQL engine locally without host installation', `Azure Database for MySQL Flexible Server ${bTarget}`],
-        ['mongo', 'Stores read-model projections for notification feeds', 'Provides isolated document database for timeline caching', `MongoDB Atlas / Azure Cosmos DB ${bTarget}`],
-        ['migrate', 'Applies Alembic schema migrations and seed data', 'One-shot init container; prevents database race conditions', `CI/CD release phase job ${bTarget}`],
-        ['api', 'FastAPI application serving REST endpoints on port 8000', 'Packages Python 3.12 dependencies under secure non-root uid', `Azure Container Apps (API container) ${bTarget}`],
-        ['worker', 'Background processor that polls outbox and sends emails', 'Isolates slow background tasks from fast API response threads', `Azure Container Apps (Worker replica) ${bTarget}`]
-      ]
-    ) + `<p class="footnote">Status: Containerization architecture defined in compose.yaml; full runtime validation pending on local host. Modular containerized architecture, not microservices.</p>`,
-    notes: '[REPOSITORY-CONFIGURED] Walk through the actual compose.yaml: mysql, mongo, migrate, api, worker. Emphasize: this is a modular containerized service architecture, not independent microservices.'
-  },
-
-  // SLIDE 7: Containers vs. Virtual Machines on Campus
-  {
-    title: `Containers vs. Virtual Machines on Campus Workstations ${bTheory}`,
-    section: '03 / CCE Unit 2',
-    time: '0:40',
-    html: table(
-      ['Comparison Dimension', 'Traditional Virtual Machines (VirtualBox / VMware)', 'Docker Containerization (LabTrack)'],
-      [
-        ['Kernel & OS Architecture', 'Each VM runs a full 20GB guest operating system kernel', 'Containers share host Linux kernel; isolated via namespaces and cgroups'],
-        ['Startup Latency', '3 to 5 minutes to boot OS on an older lab computer', 'Milliseconds: FastAPI process forks instantly inside container namespace'],
-        ['Campus Lab Deployment', 'Students must download 30GB VM disk images onto lab PCs', 'Lightweight 250MB OCI image layers; multi-stage build strips build tools'],
-        ['Resource Footprint', 'Consumes 4GB to 8GB RAM per VM, slowing down lab machines', 'Consumes <300MB RAM, running smoothly alongside other academic software']
-      ]
-    ) + `<div class="takeaway">Containers allow LabTrack to run smoothly on university computers without the heavy memory and storage penalty of virtual machines.</div>`,
-    notes: '[ACADEMIC THEORY] Viva question: Why use Docker instead of VirtualBox VMs on lab computers? Answer: Virtual machines duplicate entire guest operating systems (20GB+ disks, minutes to boot). Docker containers share the host kernel via cgroups and namespaces, starting in milliseconds with minimal RAM.'
-  },
-
-  // SLIDE 8: Relational Integrity & Polyglot Persistence
-  {
-    title: `Authoritative Inventory Data & Polyglot Persistence ${bVerified} ${bTarget}`,
-    section: '04 / CCE Unit 3',
+    title: 'Verified backend evidence',
+    section: '05 / Validation',
     time: '0:45',
     html: `
       <div class="split">
         <div>
-          <p class="eyebrow">RELATIONAL ACID STORE (SQL) ${bVerified}</p>
-          <p><strong>Authoritative Single Source of Truth</strong></p>
-          <ul style="color:#eceae4;line-height:1.6;font-size:18px;">
-            <li>22 tables (Users, Projects, Allocations, Assets, Outbox, Audit).</li>
-            <li>Enforces row-level locks so 2 students cannot claim the last sensor simultaneously.</li>
-            <li>Defective return reconciliation math executes inside ACID transactions.</li>
-            <li><em>Local: SQLite ${bVerified} • Target: Azure MySQL Flexible Server ${bTarget}.</em></li>
-          </ul>
+          <p class="eyebrow">FRESH TEST RUN</p>
+          <div class="metric">61 <span>passed</span></div>
+          <p>2 opt-in service checks skipped<br>0 failures<br>397.77 seconds</p>
+          <p class="small" style="margin-top:15px;color:#e8d5b7;">Docker Container: Non-root uid 10001 • Healthcheck: PASS</p>
         </div>
         <div>
-          <p class="eyebrow">DOCUMENT PROJECTION STORE (NOSQL) ${bVerified}</p>
-          <p><strong>CQRS Read-Optimized Feeds</strong></p>
-          <ul style="color:#eceae4;line-height:1.6;font-size:18px;">
-            <li>7 verified collections in reachable MongoDB Atlas cloud ${bVerified}.</li>
-            <li>Caches student notification feeds and historical audit timelines.</li>
-            <li>High-frequency polling never slows down core inventory checkout.</li>
-            <li><em>Strict rule: MongoDB never updates or owns inventory counts.</em></li>
+          <h3>Coverage includes</h3>
+          <ul>
+            <li>Authentication and authorization (JWT &amp; PBKDF2)</li>
+            <li>Minimum-lab planning and shortages</li>
+            <li>Approval routes and role restrictions (403 Forbidden)</li>
+            <li>Claims, all-or-reject issue and return reconciliation</li>
+            <li>Idempotency, audit, outbox and projections</li>
           </ul>
         </div>
       </div>
-      <div class="takeaway"><strong>Polyglot Architecture:</strong> Relational SQL guarantees zero hardware count corruption; NoSQL caches fast notification feeds.</div>
+      <p class="footnote">Tests use isolated SQLite databases and local adapters. MySQL integration needs its dedicated test environment.</p>
     `,
-    notes: '[VERIFIED / TARGET CLOUD] Viva question: Why do you have both SQL and MongoDB? Answer: CQRS and polyglot persistence. Hardware inventory requires strict ACID transactions (row-level locking so stock cannot go negative). MongoDB Atlas caches read-only notification feeds without locking SQL tables.'
+    notes: 'This is the main evidence slide. The fresh test run on 19 October passed 61 and skipped two explicit MySQL/Mongo service tests. Explain that skipped does not mean failed, and also does not mean validated.'
   },
 
-  // SLIDE 9: The Transactional Outbox Pattern
+  // SLIDE 11: Live demonstration
   {
-    title: `The Transactional Outbox Pattern: Protecting Physical Stock ${bVerified} ${bTheory}`,
-    section: '04 / CCE Unit 3 &amp; Literature',
-    time: '0:45',
-    html: `
-      <p class="lead">How LabTrack solves the distributed "Dual-Write Problem" between database stock updates and external email alerts.</p>
-      ${steps([
-        ['The Dual-Write Flaw', 'If the server deducts a sensor in the database and then immediately calls an external SMTP email server, an email timeout or network drop could crash the request.'],
-        ['Atomic Local Outbox Write', 'Instead, LabTrack writes the stock deduction AND an outbox event record into the same SQL transaction. Either both succeed or both fail.'],
-        ['Asynchronous Worker Dispatch', 'A separate background worker polls the outbox and sends the email via Gmail SMTP. If Gmail is temporarily slow, the student STILL gets their physical hardware!']
-      ])}
-      <div class="takeaway"><strong>Resilience Rule:</strong> Physical hardware checkout is never blocked or rolled back by slow external email delivery (AWS Prescriptive Guidance).</div>
-    `,
-    notes: '[VERIFIED / ACADEMIC THEORY] Viva question: What is the dual-write problem and why do you use an outbox? Answer: If we send an email inside the checkout HTTP request, an SMTP timeout could fail the transaction even though the student has the hardware in hand. The outbox commits stock first; the worker sends email asynchronously.'
-  },
-
-  // SLIDE 10: Proposed Azure Deployment Architecture
-  {
-    title: `Target Azure Deployment Architecture ${bTarget}`,
-    section: '05 / CCE Unit 3',
-    time: '0:50',
-    html: `
-      <div class="split">
-        <div>
-          <p class="eyebrow">EDGE &amp; SECURITY INGRESS ${bTarget}</p>
-          <ul style="color:#eceae4;line-height:1.7;font-size:18px;">
-            <li><strong>Frontend:</strong> React 19 SPA hosted on Vercel Edge CDN for instant page loads.</li>
-            <li><strong>Perimeter WAF:</strong> Azure Application Gateway WAF_v2 inspects HTTP traffic.</li>
-            <li><strong>TLS Termination:</strong> Inspects OWASP rules and forwards clean requests into VNet.</li>
-          </ul>
-        </div>
-        <div>
-          <p class="eyebrow">PRIVATE COMPUTE &amp; DATA TIER ${bTarget}</p>
-          <ul style="color:#eceae4;line-height:1.7;font-size:18px;">
-            <li><strong>Container Compute:</strong> Azure Container Apps runs FastAPI API &amp; Worker.</li>
-            <li><strong>Relational DB:</strong> Azure DB for MySQL Flexible Server on private endpoint.</li>
-            <li><strong>Photo Storage:</strong> Azure Blob Storage holds return damage inspection photos.</li>
-            <li><strong>Secret Vault:</strong> Azure Key Vault injects passwords via Managed Identity.</li>
-          </ul>
-        </div>
-      </div>
-      <div class="takeaway"><strong>Strict Truth:</strong> TARGET ARCHITECTURE ONLY. Zero Azure resources currently provisioned. Demonstrates cloud design readiness.</div>
-    `,
-    notes: '[TARGET CLOUD] Emphasize VNet isolation: The database and Key Vault have no public IP addresses; they are accessible only via private endpoints inside the Azure Virtual Network.'
-  },
-
-  // SLIDE 11: Release Reliability & Zero-Downtime Rollback
-  {
-    title: `Release Reliability & Rollback: Protecting Lab Operations ${bSim}`,
-    section: '06 / CCE Unit 4 &amp; Reliability',
-    time: '0:50',
-    html: `
-      <div class="lifecycle">
-        <p><b>01</b> Developer pushes an updated barcode scanning feature; Docker image built in CI.</p>
-        <p><b>02</b> Release promoted to Azure Container Apps as <strong>Revision 2</strong> alongside running Revision 1.</p>
-        <p><b>03</b> Readiness probe <strong>FAILS</strong> because a database connection environment variable was mistyped.</p>
-        <p><b>04</b> Container Apps router detects failure: <strong>Zero traffic routed to Revision 2</strong>.</p>
-        <p><b>05</b> 100% of lab staff traffic safely remains on <strong>Revision 1 (Stable)</strong>. Checkout counter never halts.</p>
-        <p><b>06</b> Telemetry alert in Azure Monitor alerts team; secret corrected; Revision 3 deploys cleanly.</p>
-      </div>
-      <div class="takeaway"><strong>Cloud Reliability:</strong> Container revision isolation and automated health probes prevent bad deployments from interrupting lab counter operations. (Simulated case study).</div>
-    `,
-    notes: '[SIMULATED SCENARIO] Ground this in campus reality: If a bad code update crashes the server at 11 AM when 50 students are at the lab counter, revision isolation ensures the old version stays live and students can still check out their boards.'
-  },
-
-  // SLIDE 12: Cloud Security Architecture
-  {
-    title: `Cloud Security Architecture: Protecting Campus Inventory ${bTarget} ${bVerified}`,
-    section: '07 / CCE Unit 4',
-    time: '0:45',
-    html: table(
-      ['Security Layer', 'Cloud Mechanism', 'How It Protects LabTrack'],
-      [
-        [`Perimeter WAF ${bTarget}`, 'Azure Application Gateway WAF_v2', 'Blocks SQL injection, XSS, and malformed JSON payloads before requests reach our containers.'],
-        [`Role Authorization ${bVerified}`, 'FastAPI Bearer JWT Tokens', 'Enforces strict role claims: Students cannot approve their own requests; only Lab In-Charge can dispatch assets.'],
-        [`Secret Management ${bTarget}`, 'Azure Key Vault', 'Zero passwords or JWT keys stored in code or Docker images; injected at startup via Managed Identity.'],
-        [`Data Protection ${bTarget}`, 'TLS 1.3 & AES-256 Encryption', 'Encrypts requisition data in transit over HTTPS and enables Transparent Data Encryption (TDE) at rest.'],
-        [`Integrity Verification ${bVerified}`, 'NIST FIPS 180-4 SHA-256', 'Used for barcode integrity verification and immutable audit logs (NOT for password encryption).']
-      ]
-    ) + `<div class="takeaway">Defense-in-depth: Perimeter WAF → Container RBAC → Managed Key Vault → Encrypted Storage.</div>`,
-    notes: '[TARGET CLOUD / VERIFIED] Explain the Shared Responsibility Model (Unit 4): Microsoft manages physical datacenter security and hypervisors; LabTrack manages role authorization, API validation, and database records.'
-  },
-
-  // SLIDE 13: Literature Review: Grounded in Proven Systems
-  {
-    title: `Literature Review: Grounded in Proven Systems ${bTheory} ${bRepo}`,
-    section: '08 / Literature Baseline',
-    time: '0:45',
-    html: table(
-      ['Existing System / Standard', 'Core Industry Pattern', 'LabTrack Academic Innovation'],
-      [
-        ['Snipe-IT', 'Asset check-in/out, consumable tracking, and custom fieldsets', 'Lacks academic course-project approval matrices (Mentor + Lab In-Charge + HoD).'],
-        ['GLPI', 'Equipment reservation scheduling and time-slot booking', 'Complex ITIL ticketing; lacks return station condition inspection math (Q_good + Q_bad = Q_issued).'],
-        ['AWS Prescriptive Guidance', 'Transactional Outbox pattern to prevent dual-write database corruption', `Fully adopted in LabTrack: SQL commits stock first; worker dispatches Gmail SMTP asynchronously ${bVerified}.`],
-        ['RFC 5321 (SMTP)', 'Defines mail transport as best-effort network delivery', 'Separates transactional inventory commits from external email delivery via background workers.']
-      ]
-    ) + `<p class="footnote">Full literature review: presentations/cce-v3/LITERATURE.md.</p>`,
-    notes: '[ACADEMIC THEORY / REPOSITORY-CONFIGURED] Emphasize: We do not claim LabTrack is the first inventory tool. We show that existing enterprise tools lack academic course-project approval matrices and physical return inspection reconciliation.'
-  },
-
-  // SLIDE 14: Implementation Truth Matrix
-  {
-    title: `Implementation Truth Matrix (Honesty Baseline) ${bVerified} ${bLocal} ${bRepo} ${bTarget}`,
-    section: '09 / Verification Status',
-    time: '0:45',
-    html: table(
-      ['Component', 'Classification Category', 'Empirical Verification Status'],
-      [
-        ['React 19 + Vite 8 UI', `${bVerified} ${bLocal}`, 'Running at localhost:5173 (Student, Faculty, Lab Assistant, HoD, 3D lab layout)'],
-        ['FastAPI Backend', `${bVerified} ${bLocal}`, 'Running at 127.0.0.1:8000; OpenAPI Swagger interactive docs; 61 test suites passing'],
-        ['SQLite Relational Database', `${bVerified} ${bLocal}`, 'Located at .local/labtrack.db; 22 verified database tables populated with academic seed data'],
-        ['MongoDB Atlas Document DB', `${bVerified} EXTERNAL CLOUD`, 'Actual cloud database reachable; 7 verified collections for notification read models'],
-        ['Docker Containerization', `${bRepo}`, 'Dockerfile &amp; compose.yaml exist; full Docker runtime verification pending host daemon setup'],
-        ['Azure Cloud Deployment', `${bTarget}`, 'Comprehensive architectural design; zero cloud resources currently provisioned'],
-        ['Release Rollback Scenario', `${bSim}`, 'Reliability failure model based on Azure Container Apps revision isolation behavior']
-      ]
-    ) + `<div class="takeaway">Strict academic integrity: Running software is shown on localhost; cloud resources are presented as target engineering designs.</div>`,
-    notes: '[VERIFIED / LOCAL / REPOSITORY-CONFIGURED / TARGET CLOUD / SIMULATED SCENARIO] This slide proves absolute academic maturity. Evaluators respect students who clearly differentiate running software from proposed cloud designs.'
-  },
-
-  // SLIDE 15: Live System Demonstration Flow
-  {
-    title: `Live System Demonstration (Localhost Execution) ${bVerified} ${bLocal}`,
-    section: '10 / Running Example',
+    title: 'Live demonstration',
+    section: '06 / Running example',
     kind: 'demo',
-    time: '4:00',
+    time: '5:00',
     html: `
-      <p class="lead">The live demonstration showcases verified local software across interface and server layers.</p>
+      <p class="lead">The live session demonstrates a server workflow and the operator interface separately.</p>
       <div class="demo-layout">
         <div>
           ${steps([
-            ['Step 1: Visual Operator Interface', 'Open localhost:5173: Explore department hardware catalog, 3D lab layout, and role dashboards.'],
-            ['Step 2: Interactive API Documentation', 'Open 127.0.0.1:8000/docs: Inspect FastAPI OpenAPI Swagger with authenticated JWT Bearer session.'],
-            ['Step 3: Submit & Approve Requisition', 'Authenticate as DEMO-STU-001; submit hardware requisition; approve via mentor route (DEMO-FAC-001).'],
-            ['Step 4: Inspect Database & Outbox Audit', 'Inspect updated SQLite inventory counts and outbox event records created by the transaction.']
+            ['Open the interface', 'Show department-aware hardware and role screens (Port 5173).'],
+            ['Open API documentation', 'Sign in as DEMO-STU-001 (DemoOnly2026!) and authorize Swagger with JWT (Port 8000).'],
+            ['Run one request lifecycle', 'Plan, submit, approve as Mentor (DEMO-FAC-001), and issue consumable request.'],
+            ['Show server evidence', 'Open the resulting request, timeline, updated stock count, and outbox records.']
           ])}
         </div>
         <div class="demo-launch">
-          <span class="demo-time">4 min</span>
-          <a class="primary" data-demo="ui" target="_blank" rel="noopener">Open UI (:5173) ↗</a>
-          <a data-demo="api" target="_blank" rel="noopener">Open Swagger (:8000) ↗</a>
-          <p>Login: <code>DEMO-STU-001</code> / <code>DemoOnly2026!</code><br>FastAPI Docs: <code>127.0.0.1:8000/docs</code></p>
+          <span class="demo-time">5 min</span>
+          <a class="primary" data-demo="ui" target="_blank" rel="noopener">Open website ↗</a>
+          <a data-demo="api" target="_blank" rel="noopener">Open API documentation ↗</a>
+          <p>Credential: <code>DEMO-STU-001</code> / <code>DemoOnly2026!</code><br>Return here after the demonstration.</p>
         </div>
       </div>
     `,
-    notes: '[VERIFIED / LOCAL] Launch the demo using the on-screen buttons. First show the polished UI on 5173, then switch to Swagger at 8000/docs to show the verified server transaction.'
+    notes: 'This is the main scoring moment. Start at the website only to show the actual interface. Then open API docs. Login as DEMO-STU-001 with DemoOnly2026!, use the authorization token in Swagger, create/choose a project led by that student, then plan/request. Use T00001, T00003 and N00001 for the backend lifecycle. Prepare new data or use the demo script. Do not send SMTP email. Show API timeline and notification endpoint after worker dispatch if it is already running. The root UI mutation does not create the API request until integration is complete.'
   },
 
-  // SLIDE 16: Viva Defense & Discussion
+  // SLIDE 12: One failure case (ORIGINAL STRUCTURE, CRISP AND HIGH VISIBILITY)
   {
-    title: `Viva Defense & Discussion ${bLocal} ${bTarget}`,
-    section: '11 / Viva Defense',
-    kind: 'closing',
-    time: '0:30',
+    title: 'One failure case',
+    section: '06 / Running example',
+    time: '0:35',
     html: `
-      <div class="big-statement">Tested Local Foundation.<br><em>Target Cloud Architecture.</em></div>
-      <p class="lead">LabTrack demonstrates verified hardware requisition workflows, role authorization, and relational transaction integrity locally, with a fully articulated Azure Container Apps deployment architecture mapped to CCE Units 1–4.</p>
+      <p class="lead">A credible engineering system must prove graceful failure handling when an unsafe action is attempted.</p>
+      ${steps([
+        ['Stock shortage refusal', 'Student requests 50 Ultrasonic sensors when only 12 are available. Server halts in planning with <strong>422 Unprocessable Entity</strong> { shortage: 38, available: 12 }. Request creation blocked.'],
+        ['Unauthorized approver', 'Unrelated Faculty B attempts to approve a request for Faculty A\'s capstone team. Server refuses with <strong>403 Forbidden</strong>. Request remains locked in SUBMITTED.'],
+        ['Concurrency race refusal', 'A second team claims remaining stock while an issue is in flight. Server triggers atomic transaction rollback with <strong>409 Conflict</strong>. Zero partial kit decrement.']
+      ])}
+      <p class="takeaway"><strong>System Resilience:</strong> The database and container service defend business rules even if an unauthorized or malformed request is sent.</p>
+    `,
+    notes: 'Pick one failure case and rehearse it. The shortest is a wrong approver or insufficient stock. Do not show all three. Explain this is why the next task is wiring the UI to those exact server checks.'
+  },
+
+  // SLIDE 13: Known integration work
+  {
+    title: 'Known integration work',
+    section: '07 / Engineering status',
+    time: '0:50',
+    html: table(
+      ['Priority', 'Work before faculty submission', 'Reason'],
+      [
+        ['P1', 'Use backend login and remove browser auth shortcuts', 'Enforce actual server-side JWT session tokens and role authorization'],
+        ['P1', 'Replace browser request, approval, dispatch and return writes', 'Connect React UI to FastAPI routes for shared persistent SQL state'],
+        ['P1', 'Restrict direct email endpoints and use outbox delivery', 'Worker-driven polling prevents spoofed triggers and mail timeouts'],
+        ['P1', 'Use server inventory reconciliation for returns', 'Protect good and bad stock counts; eliminates double-decrement bug'],
+        ['P2', 'Docker Compose deployment to AWS EC2 & RDS MySQL', 'Containerized multi-cloud deployment with Azure DR staging replica']
+      ]
+    ) + `<p class="footnote">No cloud deployment claim until this connected lifecycle works as one application.</p>`,
+    notes: 'This turns the review into a credible implementation roadmap. The next build should remove the visible architectural split. Do not promise a multi-cloud deployment for the evaluation.'
+  },
+
+  // SLIDE 14: Discussion (Closing)
+  {
+    title: 'Discussion',
+    section: '08 / Viva',
+    kind: 'closing',
+    time: '0:25',
+    html: `
+      <div class="big-statement">The implementation exists.<br><em>The interface integration is next.</em></div>
+      <p class="lead">LabTrack already demonstrates role-governed hardware workflows at the server layer. The final step brings that authority into the polished operator interface.</p>
       <div class="discussion">
-        <span>Why PaaS over IaaS / K8s?</span>
-        <span>How does Outbox prevent dual writes?</span>
-        <span>How does WAF protect the API?</span>
-        <span>How do ACA revisions enable rollback?</span>
+        <span>Why SQL and MongoDB?</span>
+        <span>Why an outbox?</span>
+        <span>What protects stock?</span>
+        <span>What must integrate next?</span>
       </div>
     `,
-    notes: '[LOCAL / TARGET CLOUD] Conclude and invite questions from Dr. Mahender Reddy and committee members. The four prompts on screen guide the faculty to ask questions you have thoroughly prepared for.'
+    notes: 'Close with the real state. Invite questions from Dr. Mahender Reddy and committee members.'
+  },
+
+  // SLIDE 15: References and Evidence
+  {
+    title: 'References and evidence',
+    section: 'Appendix / Sources',
+    time: 'Reference',
+    html: `
+      <ol class="references">
+        <li>Klensin, J. Simple Mail Transfer Protocol, RFC 5321, IETF, 2008/2010. <a href="https://datatracker.ietf.org/doc/html/rfc5321/" target="_blank" rel="noopener">datatracker.ietf.org</a></li>
+        <li>FastAPI. Background Tasks. <a href="https://fastapi.tiangolo.com/tutorial/background-tasks/" target="_blank" rel="noopener">fastapi.tiangolo.com</a></li>
+        <li>OWASP. FastAPI Security Cheat Sheet. <a href="https://cheatsheetseries.owasp.org/cheatsheets/FastAPI_Security_Cheat_Sheet.html" target="_blank" rel="noopener">cheatsheetseries.owasp.org</a></li>
+        <li>Amazon Web Services. Amazon SQS FIFO queues. <a href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-fifo-queues.html" target="_blank" rel="noopener">docs.aws.amazon.com</a></li>
+        <li>PostgreSQL Global Development Group. Transaction Isolation, PostgreSQL Documentation. <a href="https://www.postgresql.org/docs/current/transaction-iso.html" target="_blank" rel="noopener">postgresql.org</a></li>
+        <li>Amazon Web Services. Amazon EC2 Documentation, Amazon RDS Documentation, and Docker Documentation.</li>
+        <li>National Institute of Standards and Technology. Secure Hash Standard (SHS), FIPS PUB 180-4, 2015. <a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf" target="_blank" rel="noopener">nvlpubs.nist.gov</a></li>
+        <li>Approved Software Design Document; code-review record; backend test report confirming 61 passing tests.</li>
+        <li>Project literature review: presentations/cce-v3/LITERATURE.md.</li>
+      </ol>
+      <p class="footnote">Full annotated literature review with direct links: presentations/cce-v3/LITERATURE.md.</p>
+    `,
+    notes: 'Open LITERATURE.md if the faculty asks for the review. It includes direct authoritative sources and the project implication for every topic.'
   }
 ];
