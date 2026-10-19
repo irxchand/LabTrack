@@ -1,0 +1,524 @@
+/* ==========================================================================
+   LabTrack DCDS Presentation — Canva Template Exact Replication
+   Template: "White, Blue and Grey Modern Startup Pitch Deck"
+   Canvas: 1600x900 Widescreen, scaled dynamically to viewport & print
+   ========================================================================== */
+
+:root {
+  /* Canva Exact Palette */
+  --canva-bg: #edf2f7;
+  --canva-light-container: #eef3f8;
+  --canva-white: #ffffff;
+  --canva-blue-soft: #b8cfe0;
+  --canva-blue-card: #cbdceb;
+  --canva-border-dark: #2c3036;
+  --canva-border-subtle: rgba(44, 48, 54, 0.2);
+
+  --canva-dark-bg: #2b2f36;
+  --canva-dark-card: #393d45;
+  --canva-dark-card-inner: #31353d;
+  --canva-dark-border: rgba(255, 255, 255, 0.22);
+  --canva-dark-divider: rgba(255, 255, 255, 0.15);
+
+  --text-dark: #2c3036;
+  --text-muted: #5a6472;
+  --text-white: #ffffff;
+  --text-white-muted: #cbd5e1;
+
+  --accent-blue: #2563eb;
+  --accent-emerald: #059669;
+  --accent-amber: #d97706;
+  --accent-rose: #dc2626;
+
+  /* Canva Large Organic Curves */
+  --radius-xl: 40px;
+  --radius-lg: 32px;
+  --radius-md: 22px;
+  --radius-sm: 12px;
+  --radius-pill: 999px;
+
+  /* Typography: Swiss Neo-Grotesque (Inter Black / Bold), NOT quirky tech mono */
+  --display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--canva-bg);
+  color: var(--text-dark);
+  font-family: var(--body);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Stage & Scaling */
+#stage {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+}
+
+#deck {
+  position: relative;
+  width: 1600px;
+  height: 900px;
+  background: var(--canva-bg);
+  transform-origin: center center;
+  overflow: hidden;
+  box-shadow: 0 25px 60px -15px rgba(20, 25, 35, 0.3);
+}
+
+/* Base Slide Canvas (Canva soft white-blue mesh) */
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 44px 76px 36px 76px;
+  display: flex;
+  flex-direction: column;
+  background: #edf2f7;
+  background-image: 
+    radial-gradient(circle at 0% 0%, #ffffff 0%, transparent 45%),
+    radial-gradient(circle at 100% 0%, #d8e5f2 0%, transparent 45%),
+    radial-gradient(circle at 100% 100%, #b8cfe0 0%, transparent 50%),
+    radial-gradient(circle at 0% 100%, #e2ebf3 0%, transparent 45%);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(15px);
+  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0.3s;
+}
+
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
+}
+
+.slide.prev {
+  transform: translateX(-15px);
+}
+
+/* Dark Slide Canvas (Canva Slides 3, 4, 8, 11, 12) */
+.slide.dark-slide {
+  background: var(--canva-dark-bg) !important;
+  color: var(--text-white) !important;
+}
+
+.slide.dark-slide .canva-topbar {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.slide.dark-slide .topbar-logo {
+  color: #ffffff;
+}
+
+.slide.dark-slide .topbar-tag {
+  color: var(--text-white-muted);
+}
+
+.slide.dark-slide .canva-heading {
+  color: #ffffff !important;
+}
+
+.slide.dark-slide .canva-subtitle {
+  color: var(--text-white-muted) !important;
+}
+
+.slide.dark-slide .canva-footer {
+  border-top-color: rgba(255, 255, 255, 0.15);
+  color: #94a3b8;
+}
+
+.slide.dark-slide .canva-footer .footer-right {
+  color: #ffffff;
+}
+
+/* Canva Top Header Bar across top of slide */
+.canva-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  margin-bottom: 24px;
+  border-bottom: 1.5px solid var(--canva-border-subtle);
+}
+
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+  color: var(--text-dark);
+}
+
+.topbar-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.topbar-tag {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* Typography */
+.canva-heading {
+  font-family: var(--display);
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.canva-subtitle {
+  font-size: 17px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  font-weight: 400;
+  max-width: 1200px;
+}
+
+/* Slide Body */
+.slide-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Footer Bar */
+.canva-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1.5px solid var(--canva-border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.footer-left { display: flex; align-items: center; gap: 14px; }
+.footer-right { font-weight: 700; color: var(--text-dark); font-family: var(--mono); }
+
+/* ==========================================================================
+   Canva Layout Archetypes
+   ========================================================================== */
+
+/* 1. Large Rounded Outer Box (The Signature Canva Container) */
+.canva-big-box {
+  background: var(--canva-light-container);
+  border: 2px solid var(--canva-border-dark);
+  border-radius: var(--radius-xl);
+  padding: 36px 42px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.canva-big-box-dark {
+  background: var(--canva-dark-card);
+  border: 1.5px solid var(--canva-dark-border);
+  border-radius: var(--radius-xl);
+  padding: 36px 42px;
+  color: #ffffff;
+}
+
+/* 2. Split Layout (Left: Big Stacked Hero Title, Right: Big Box) */
+.canva-split {
+  display: grid;
+  grid-template-columns: 36% 64%;
+  gap: 40px;
+  flex: 1;
+  align-items: stretch;
+}
+
+.split-hero-title {
+  font-family: var(--display);
+  font-size: 72px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+  color: var(--text-dark);
+}
+
+.split-hero-desc {
+  font-size: 16px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-top: 20px;
+  max-width: 420px;
+}
+
+/* 3. Canva Pill Badges & Bullet Tags */
+.canva-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid var(--canva-border-dark);
+  border-radius: var(--radius-pill);
+  padding: 6px 18px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 13.5px;
+  background: #ffffff;
+  color: var(--text-dark);
+}
+
+.canva-bullet-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.canva-bullet-tag::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.canva-num-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--canva-border-dark);
+  border-radius: var(--radius-pill);
+  padding: 5px 16px;
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 800;
+  background: #ffffff;
+  color: var(--text-dark);
+}
+
+/* 4. Canva Pill-Rounded 4-Card Grid (Slide 6 style) */
+.canva-pill-card {
+  background: var(--canva-blue-card);
+  border: 1.5px solid var(--canva-border-dark);
+  border-radius: var(--radius-lg);
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+}
+
+.canva-pill-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.canva-pill-card h3 {
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-dark);
+}
+
+.canva-pill-card p {
+  font-size: 14px;
+  color: var(--text-dark);
+  line-height: 1.5;
+}
+
+/* 5. Clean Code Container */
+.canva-code {
+  background: #242830;
+  color: #f1f5f9;
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  overflow-x: auto;
+}
+
+.canva-code .kw { color: #60a5fa; font-weight: 700; }
+.canva-code .fn { color: #f472b6; }
+.canva-code .str { color: #34d399; }
+.canva-code .cm { color: #94a3b8; font-style: italic; }
+.canva-code .num { color: #fbbf24; }
+
+/* 6. Clean Canva Table */
+.canva-clean-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1.5px solid var(--canva-border-dark);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.canva-clean-table th {
+  background: #2c3036;
+  color: #ffffff;
+  font-family: var(--display);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: left;
+  padding: 12px 18px;
+  border-bottom: 1.5px solid var(--canva-border-dark);
+}
+
+.canva-clean-table td {
+  padding: 11px 18px;
+  font-size: 13.5px;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--canva-border-subtle);
+  line-height: 1.45;
+}
+
+.canva-clean-table tr:last-child td {
+  border-bottom: none;
+}
+
+.canva-clean-table tr:nth-child(even) td {
+  background: #f8fafc;
+}
+
+/* Navigation Controls & Overview */
+#controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border: 1.5px solid var(--canva-border-dark);
+  border-radius: 999px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+}
+
+.ctrl {
+  background: transparent;
+  border: none;
+  color: var(--text-dark);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ctrl:hover:not(:disabled) { background: #e2e8f0; }
+.ctrl:disabled { opacity: 0.35; cursor: not-allowed; }
+.ctrl svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+
+#counter {
+  font-family: var(--display);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-dark);
+  min-width: 65px;
+  text-align: center;
+}
+
+.ctrl-sep { width: 1.5px; height: 16px; background: var(--canva-border-dark); }
+
+#progress { position: fixed; top: 0; left: 0; right: 0; height: 4px; background: transparent; z-index: 100; }
+#progress-bar { height: 100%; width: 0%; background: var(--canva-border-dark); transition: width 0.25s ease; }
+
+/* Overview Panel */
+#overview {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 33, 40, 0.88);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  padding: 50px 70px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#overview[hidden] { display: none; }
+#overview header { display: flex; justify-content: space-between; align-items: center; color: #ffffff; margin-bottom: 24px; font-family: var(--display); }
+
+#overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+
+.ov-item {
+  background: #ffffff;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 16px 18px;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.ov-item:hover { transform: translateY(-2px); border-color: var(--canva-border-dark); }
+.ov-item.current { border-color: var(--canva-border-dark); box-shadow: 0 0 0 3px var(--canva-blue-soft); }
+.ov-item small { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--accent-blue); display: block; margin-bottom: 4px; }
+.ov-item span { font-size: 14px; font-weight: 700; color: var(--text-dark); line-height: 1.35; font-family: var(--display); }
+
+/* ---------- Print & PDF Export Rules ---------- */
+@media print {
+  @page {
+    size: 16in 9in;
+    margin: 0;
+  }
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  #stage {
+    position: static !important;
+    display: block !important;
+    transform: none !important;
+  }
+  #deck {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .slide {
+    position: relative !important;
+    inset: auto !important;
+    width: 16in !important;
+    height: 9in !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    box-sizing: border-box !important;
+    padding: 44px 76px 36px 76px !important;
+  }
+  #controls, #progress, #overview { display: none !important; }
+}
