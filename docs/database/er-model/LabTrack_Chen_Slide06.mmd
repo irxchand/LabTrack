@@ -1,0 +1,163 @@
+flowchart TB
+    %% ====================================================================
+    %% LABTRACK: ADVANCED CHEN ER MODEL (SLIDE 06 PRESENTATION DELIVERABLE)
+    %% TerraER Theme: Teal Borders, White Canvas, Navy Typography, Pale Blue-Grey Entities
+    %% ====================================================================
+
+    %% Class Definitions
+    classDef entity fill:#F3F7FA,stroke:#0D9488,stroke-width:2px,color:#16283F,font-weight:bold;
+    classDef associative fill:#F3F7FA,stroke:#0D9488,stroke-width:3px,color:#16283F,font-weight:bold;
+    classDef rel fill:#E8F6F4,stroke:#0D9488,stroke-width:2px,color:#0F766E,font-weight:bold;
+    classDef attr fill:#FFFFFF,stroke:#64748B,stroke-width:1.5px,color:#16283F;
+    classDef attrPK fill:#FFFFFF,stroke:#0D9488,stroke-width:2px,color:#0F766E,font-weight:bold;
+    classDef attrAK fill:#FFFFFF,stroke:#0D9488,stroke-width:1.5px,stroke-dasharray: 3 3,color:#0F766E;
+    classDef attrDerived fill:#FFFFFF,stroke:#0D9488,stroke-width:1.5px,stroke-dasharray: 4 4,color:#16283F;
+    classDef attrMulti fill:#FFFFFF,stroke:#0D9488,stroke-width:2.5px,color:#16283F;
+
+    %% --------------------------------------------------------------------
+    %% ENTITIES
+    %% --------------------------------------------------------------------
+    U["USERS"]:::entity
+    P["PROJECTS"]:::entity
+    R["REQUESTS"]:::entity
+    I["ITEMS"]:::entity
+    L["LABS"]:::entity
+    A["ASSETS"]:::entity
+    RES["RESERVATIONS"]:::entity
+    INSP["INSPECTIONS"]:::entity
+    MEM[["MEMBERS<br/><i>&laquo;associative&raquo;</i>"]]:::associative
+
+    %% --------------------------------------------------------------------
+    %% ATTRIBUTES
+    %% --------------------------------------------------------------------
+    %% USERS Attributes
+    u_pk(["<u>id</u>"]):::attrPK
+    u_ak1(["identifier (AK)"]):::attrAK
+    u_ak2(["email (AK)"]):::attrAK
+    u_name(["name"]):::attr
+    u_roles(["roles"]):::attrMulti
+    U --- u_pk & u_ak1 & u_ak2 & u_name & u_roles
+
+    %% PROJECTS Attributes
+    p_pk(["<u>id</u>"]):::attrPK
+    p_name(["name"]):::attr
+    p_created(["created_at"]):::attr
+    P --- p_pk & p_name & p_created
+
+    %% MEMBERS Attributes (Associative Bridge)
+    m_p(["<u>project_id</u>"]):::attrPK
+    m_u(["<u>user_id</u>"]):::attrPK
+    MEM --- m_p & m_u
+
+    %% REQUESTS Attributes
+    r_pk(["<u>id</u>"]):::attrPK
+    r_state(["state"]):::attr
+    r_purpose(["purpose"]):::attr
+    r_due(["due_at (opt)"]):::attr
+    r_dur(["duration_hrs"]):::attr
+    R --- r_pk & r_state & r_purpose & r_due & r_dur
+
+    %% INSPECTIONS Attributes
+    insp_pk(["<u>id</u>"]):::attrPK
+    insp_rem(["remarks"]):::attr
+    insp_det(["details"]):::attr
+    insp_act(["actor_id"]):::attr
+    INSP --- insp_pk & insp_rem & insp_det & insp_act
+
+    %% RESERVATIONS Attributes
+    res_pk(["<u>id</u>"]):::attrPK
+    res_qty(["quantity"]):::attr
+    res_st(["state"]):::attr
+    RES --- res_pk & res_qty & res_st
+
+    %% ITEMS Attributes
+    i_pk(["<u>id</u>"]):::attrPK
+    i_name(["name"]):::attr
+    i_kind(["kind"]):::attr
+    i_alt(["alternative_ids"]):::attrMulti
+    i_avail(["available_units"]):::attrDerived
+    I --- i_pk & i_name & i_kind & i_alt & i_avail
+
+    %% LABS Attributes (with Composite Location)
+    l_pk(["<u>id</u>"]):::attrPK
+    l_code(["lab_code (opt)"]):::attr
+    l_loc(["location"]):::attr
+    l_fl(["floor"]):::attr
+    l_wg(["wing"]):::attr
+    l_br(["branch"]):::attr
+    l_desc(["location_desc"]):::attr
+    L --- l_pk & l_code & l_loc
+    l_loc --- l_fl & l_wg & l_br & l_desc
+
+    %% ASSETS Attributes
+    a_pk(["<u>id</u>"]):::attrPK
+    a_bc(["barcode (AK)"]):::attrAK
+    a_st(["state"]):::attr
+    a_bill(["bill_number"]):::attr
+    A --- a_pk & a_bc & a_st & a_bill
+
+    %% --------------------------------------------------------------------
+    %% RELATIONSHIPS (Diamonds) & ATTRIBUTES
+    %% --------------------------------------------------------------------
+    rel_leads{"LEADS"}:::rel
+    rel_mentors{"MENTORS"}:::rel
+    rel_submits{"SUBMITS"}:::rel
+    rel_governs{"GOVERNS"}:::rel
+    rel_creates{"CREATES"}:::rel
+    rel_targets{"TARGETS"}:::rel
+    rel_inspects{"INSPECTS"}:::rel
+    rel_stocked{"STOCKED_AT"}:::rel
+    rel_inst{"INSTANCE"}:::rel
+    rel_houses{"HOUSES"}:::rel
+    rel_lines{"REQ_LINES<br/>(Ternary)"}:::rel
+
+    %% Relationship Attributes
+    stk_good(["good"]):::attr
+    stk_bad(["bad"]):::attr
+    rel_stocked --- stk_good & stk_bad
+
+    line_qty(["quantity"]):::attr
+    rel_lines --- line_qty
+
+    %% --------------------------------------------------------------------
+    %% STRUCTURAL CONSTRAINTS & CONNECTIONS
+    %% Double line (===) denotes Total/Mandatory Participation
+    %% Single line (---) denotes Partial Participation
+    %% --------------------------------------------------------------------
+    U ---|1| rel_leads
+    rel_leads ===|N (Total)| P
+
+    U ---|1| rel_mentors
+    rel_mentors ===|N (Total)| P
+
+    U ---|(1,N)| MEM
+    MEM ---|(1,N)| P
+
+    U ---|1| rel_governs
+    rel_governs ===|N (Total)| L
+
+    P ---|1| rel_submits
+    rel_submits ===|N (Total)| R
+
+    P ---|1| rel_creates
+    rel_creates ===|N (Total)| RES
+
+    RES ===|N (Total)| rel_targets
+    rel_targets ---|1| I
+
+    R ---|(0,1)| rel_inspects
+    rel_inspects ===|(1,1) Total| INSP
+
+    I ---|1| rel_inst
+    rel_inst ===|N (Total)| A
+
+    L ---|1| rel_houses
+    rel_houses ===|N (Total)| A
+
+    L ---|M| rel_stocked
+    rel_stocked ---|N| I
+
+    R ===|M (Total)| rel_lines
+    rel_lines ---|N| I
+    rel_lines ---|P| L
+

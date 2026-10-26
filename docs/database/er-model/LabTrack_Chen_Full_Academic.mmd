@@ -1,0 +1,234 @@
+flowchart TB
+    %% ====================================================================
+    %% LABTRACK: COMPLETE ACADEMIC CHEN ER MODEL (FULL 20 TABLES)
+    %% TerraER Theme: Teal Borders (#0D9488), Navy Typography (#16283F)
+    %% Authoritative Relational Model for Aiven MySQL 8.4 & Polyglot Boundary
+    %% ====================================================================
+
+    %% Class Definitions
+    classDef entity fill:#F3F7FA,stroke:#0D9488,stroke-width:2px,color:#16283F,font-weight:bold;
+    classDef associative fill:#F3F7FA,stroke:#0D9488,stroke-width:3px,color:#16283F,font-weight:bold;
+    classDef rel fill:#E8F6F4,stroke:#0D9488,stroke-width:2px,color:#0F766E,font-weight:bold;
+    classDef attr fill:#FFFFFF,stroke:#64748B,stroke-width:1.5px,color:#16283F;
+    classDef attrPK fill:#FFFFFF,stroke:#0D9488,stroke-width:2px,color:#0F766E,font-weight:bold;
+    classDef attrAK fill:#FFFFFF,stroke:#0D9488,stroke-width:1.5px,stroke-dasharray: 3 3,color:#0F766E;
+    classDef attrDerived fill:#FFFFFF,stroke:#0D9488,stroke-width:1.5px,stroke-dasharray: 4 4,color:#16283F;
+    classDef attrMulti fill:#FFFFFF,stroke:#0D9488,stroke-width:2.5px,color:#16283F;
+    classDef isaBox fill:#FFFBEB,stroke:#D97706,stroke-width:1.5px,color:#92400E,font-weight:bold;
+    classDef isaTri fill:#FEF3C7,stroke:#D97706,stroke-width:1.5px,color:#92400E,font-weight:bold;
+
+    %% --------------------------------------------------------------------
+    %% ENTITIES
+    %% --------------------------------------------------------------------
+    U["USERS"]:::entity
+    AUTH["AUTH_SESSIONS"]:::entity
+    P["PROJECTS"]:::entity
+    MEM[["MEMBERS<br/><i>&laquo;associative&raquo;</i>"]]:::associative
+    R["REQUESTS"]:::entity
+    EXT["EXTENSIONS"]:::entity
+    INSP["INSPECTIONS"]:::entity
+    INC["INCIDENTS"]:::entity
+    EVID["EVIDENCE"]:::entity
+    RES["RESERVATIONS"]:::entity
+    I["ITEMS"]:::entity
+    L["LABS"]:::entity
+    A["ASSETS"]:::entity
+    AUD["AUDIT"]:::entity
+    OUT["OUTBOX"]:::entity
+    IDEMP["IDEMPOTENCY"]:::entity
+    LDOC["LOCAL_DOCS"]:::entity
+    DELIV["DELIVERIES"]:::entity
+
+    %% --------------------------------------------------------------------
+    %% ATTRIBUTES (Sample Representative Attributes)
+    %% --------------------------------------------------------------------
+    u_pk(["<u>id</u>"]):::attrPK
+    u_ak1(["identifier (AK)"]):::attrAK
+    u_ak2(["email (AK)"]):::attrAK
+    u_roles(["roles"]):::attrMulti
+    U --- u_pk & u_ak1 & u_ak2 & u_roles
+
+    auth_pk(["<u>token_hash</u>"]):::attrPK
+    auth_exp(["expires_at"]):::attr
+    AUTH --- auth_pk & auth_exp
+
+    p_pk(["<u>id</u>"]):::attrPK
+    p_name(["name"]):::attr
+    p_ca(["created_at"]):::attr
+    P --- p_pk & p_name & p_ca
+
+    m_p(["<u>project_id</u>"]):::attrPK
+    m_u(["<u>user_id</u>"]):::attrPK
+    MEM --- m_p & m_u
+
+    r_pk(["<u>id</u>"]):::attrPK
+    r_state(["state"]):::attr
+    r_purpose(["purpose"]):::attr
+    r_due(["due_at (opt)"]):::attr
+    r_dur(["duration_hrs"]):::attr
+    R --- r_pk & r_state & r_purpose & r_due & r_dur
+
+    ext_pk(["<u>id</u>"]):::attrPK
+    ext_due(["new_due_at"]):::attr
+    ext_rsn(["reason"]):::attr
+    EXT --- ext_pk & ext_due & ext_rsn
+
+    insp_pk(["<u>id</u>"]):::attrPK
+    insp_rem(["remarks"]):::attr
+    insp_det(["details"]):::attr
+    insp_act(["actor_id"]):::attr
+    INSP --- insp_pk & insp_rem & insp_det & insp_act
+
+    inc_pk(["<u>id</u>"]):::attrPK
+    inc_attr(["attribution"]):::attr
+    INC --- inc_pk & inc_attr
+
+    ev_pk(["<u>id (SHA)</u>"]):::attrPK
+    ev_key(["storage_key"]):::attr
+    EVID --- ev_pk & ev_key
+
+    res_pk(["<u>id</u>"]):::attrPK
+    res_qty(["quantity"]):::attr
+    RES --- res_pk & res_qty
+
+    i_pk(["<u>id</u>"]):::attrPK
+    i_name(["name"]):::attr
+    i_kind(["kind"]):::attr
+    i_alt(["alternative_ids"]):::attrMulti
+    i_avail(["available_units"]):::attrDerived
+    I --- i_pk & i_name & i_kind & i_alt & i_avail
+
+    l_pk(["<u>id</u>"]):::attrPK
+    l_code(["lab_code (opt)"]):::attr
+    l_loc(["location"]):::attr
+    L --- l_pk & l_code & l_loc
+
+    a_pk(["<u>id</u>"]):::attrPK
+    a_bc(["barcode (AK)"]):::attrAK
+    a_st(["state"]):::attr
+    a_bill(["bill_number"]):::attr
+    A --- a_pk & a_bc & a_st & a_bill
+
+    aud_pk(["<u>id</u>"]):::attrPK
+    aud_act(["action"]):::attr
+    aud_prev(["prev_state"]):::attr
+    AUD --- aud_pk & aud_act & aud_prev
+
+    out_pk(["<u>event_key (AK)</u>"]):::attrPK
+    out_payload(["payload"]):::attr
+    OUT --- out_pk & out_payload
+
+    idemp_pk(["<u>key</u>"]):::attrPK
+    idemp_st(["status"]):::attr
+    IDEMP --- idemp_pk & idemp_st
+
+    ldoc_pk(["<u>doc_id</u>"]):::attrPK
+    LDOC --- ldoc_pk
+
+    del_pk(["<u>tracking_no</u>"]):::attrPK
+    DELIV --- del_pk
+
+    %% --------------------------------------------------------------------
+    %% RELATIONSHIPS (Diamonds) & ATTRIBUTES
+    %% --------------------------------------------------------------------
+    rel_auth{"AUTHENTICATES"}:::rel
+    rel_leads{"LEADS"}:::rel
+    rel_mentors{"MENTORS"}:::rel
+    rel_governs{"GOVERNS"}:::rel
+    rel_submits{"SUBMITS"}:::rel
+    rel_creates{"CREATES"}:::rel
+    rel_targets{"TARGETS"}:::rel
+    rel_extends{"EXTENDS"}:::rel
+    rel_inspects{"INSPECTS"}:::rel
+    rel_fail{"LOGS_FAIL"}:::rel
+    rel_attaches{"ATTACHES"}:::rel
+    rel_stocked{"STOCKED_AT"}:::rel
+    rel_inst{"INSTANCE"}:::rel
+    rel_houses{"HOUSES"}:::rel
+    rel_lines{"REQ_LINES<br/>(Ternary)"}:::rel
+    rel_logs{"LOGS"}:::rel
+
+    %% Relationship Attributes
+    stk_good(["good"]):::attr
+    stk_bad(["bad"]):::attr
+    rel_stocked --- stk_good & stk_bad
+
+    line_qty(["quantity"]):::attr
+    rel_lines --- line_qty
+
+    %% --------------------------------------------------------------------
+    %% CONNECTIONS & CARDINALITIES
+    %% --------------------------------------------------------------------
+    U ---|1| rel_auth
+    rel_auth ===|N (Total)| AUTH
+
+    U ---|1| rel_leads
+    rel_leads ===|N (Total)| P
+
+    U ---|1| rel_mentors
+    rel_mentors ===|N (Total)| P
+
+    U ---|(1,N)| MEM
+    MEM ---|(1,N)| P
+
+    U ---|1| rel_governs
+    rel_governs ===|N (Total)| L
+
+    P ---|1| rel_submits
+    rel_submits ===|N (Total)| R
+
+    P ---|1| rel_creates
+    rel_creates ===|N (Total)| RES
+
+    RES ===|N (Total)| rel_targets
+    rel_targets ---|1| I
+
+    R ---|1| rel_extends
+    rel_extends ===|N (Total)| EXT
+
+    R ---|(0,1)| rel_inspects
+    rel_inspects ===|(1,1) Total| INSP
+
+    R ---|1| rel_fail
+    rel_fail ===|N (Total)| INC
+
+    INC ---|1| rel_attaches
+    rel_attaches ===|N (Total)| EVID
+
+    I ---|1| rel_inst
+    rel_inst ===|N (Total)| A
+
+    L ---|1| rel_houses
+    rel_houses ===|N (Total)| A
+
+    L ---|M| rel_stocked
+    rel_stocked ---|N| I
+
+    R ===|M (Total)| rel_lines
+    rel_lines ---|N| I
+    rel_lines ---|P| L
+
+    R ---|1| rel_logs
+    rel_logs ===|N (Total)| AUD
+
+    %% Outbox Async Hook (No Foreign Key - Worker Queue Pattern)
+    R -.->|Async Event| OUT
+
+    %% Auxiliary Infrastructure Entities
+    R -.->|Guarded by| IDEMP
+    R -.->|Projections sync to| LDOC
+    R -.->|Dispatched via| DELIV
+
+    %% --------------------------------------------------------------------
+    %% CONCEPTUAL ISA SPECIALIZATION (ITEMS)
+    %% --------------------------------------------------------------------
+    subgraph ISA_BOX ["Conceptual ISA Hierarchy (Single-Table Inheritance)"]
+        direction TB
+        SUPER_I["ITEMS (Superclass)"]:::entity
+        TRI_ISA{"ISA<br/>(Disjoint)"}:::isaTri
+        SUB_ASSET["ASSET_ITEM<br/><i>(Serialized)</i>"]:::isaBox
+        SUB_CONS["CONSUMABLE<br/><i>(Bulk)</i>"]:::isaBox
+        SUPER_I --- TRI_ISA
+        TRI_ISA --- SUB_ASSET & SUB_CONS
+    end
+
