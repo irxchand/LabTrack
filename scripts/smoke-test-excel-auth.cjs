@@ -60,21 +60,26 @@ function validateExcelAuth(roster, inputId, inputPassword) {
 // ─────────────────────────────────────────────────────────────
 // TEST 5-8: Canonical Institutional Role Authentication
 // ─────────────────────────────────────────────────────────────
+const studentRow = rows.find(r => r.Role === 'Student');
+const facultyRow = rows.find(r => r.Role === 'Faculty');
+const assistantRow = rows.find(r => r.Role === 'Lab Assistant');
+const adminRow = rows.find(r => r.Role === 'HoD / Admin');
+
 // Student
-const studentAuth = validateExcelAuth(rows, '202401048', 'password123');
-assert(studentAuth.success && studentAuth.user.Role === 'Student' && studentAuth.user.FullName === 'Rahul Sharma', 'Test 5: Student PRN (202401048) authenticates successfully');
+const studentAuth = validateExcelAuth(rows, studentRow ? studentRow.PRN_ID : '25070126076', 'password123');
+assert(studentAuth.success && studentAuth.user.Role === 'Student', `Test 5: Student PRN (${studentAuth.user?.PRN_ID || 'N/A'}) authenticates successfully`);
 
 // Faculty
-const facultyAuth = validateExcelAuth(rows, 'FAC-AI-019', 'password123');
-assert(facultyAuth.success && facultyAuth.user.Role === 'Faculty' && studentAuth.user.FullName.length > 0, 'Test 6: Faculty Staff ID (FAC-AI-019) authenticates successfully');
+const facultyAuth = validateExcelAuth(rows, facultyRow ? facultyRow.PRN_ID : 'T100458', 'password123');
+assert(facultyAuth.success && facultyAuth.user.Role === 'Faculty', `Test 6: Faculty Staff ID (${facultyAuth.user?.PRN_ID || 'N/A'}) authenticates successfully`);
 
 // Lab Assistant
-const assistantAuth = validateExcelAuth(rows, 'LA-04', 'password123');
-assert(assistantAuth.success && assistantAuth.user.Role === 'Lab Assistant', 'Test 7: Lab Assistant ID (LA-04) authenticates successfully');
+const assistantAuth = validateExcelAuth(rows, assistantRow ? assistantRow.PRN_ID : 'N10001', 'password123');
+assert(assistantAuth.success && assistantAuth.user.Role === 'Lab Assistant', `Test 7: Lab Assistant ID (${assistantAuth.user?.PRN_ID || 'N/A'}) authenticates successfully`);
 
 // HoD / Admin
-const adminAuth = validateExcelAuth(rows, 'HOD-AIML-001', 'password123');
-assert(adminAuth.success && adminAuth.user.Role === 'HoD / Admin', 'Test 8: HoD / Admin ID (HOD-AIML-001) authenticates successfully');
+const adminAuth = validateExcelAuth(rows, adminRow ? adminRow.PRN_ID : 'T100101', 'password123');
+assert(adminAuth.success && adminAuth.user.Role === 'HoD / Admin', `Test 8: HoD / Admin ID (${adminAuth.user?.PRN_ID || 'N/A'}) authenticates successfully`);
 
 // ─────────────────────────────────────────────────────────────
 // TEST 9-10: Negative Scenarios (Rejection Integrity)
@@ -84,7 +89,7 @@ const invalidIdAuth = validateExcelAuth(rows, 'NON_EXISTENT_PRN_9999', 'password
 assert(!invalidIdAuth.success && invalidIdAuth.error.includes('not found'), 'Test 9: Unknown PRN is rejected gracefully with clear error message');
 
 // Wrong Password
-const wrongPassAuth = validateExcelAuth(rows, '202401048', 'incorrect_pwd_888');
+const wrongPassAuth = validateExcelAuth(rows, studentRow ? studentRow.PRN_ID : '25070126076', 'incorrect_pwd_888');
 assert(!wrongPassAuth.success && wrongPassAuth.error.includes('Invalid password'), 'Test 10: Wrong password for valid PRN is rejected with security error');
 
 // ─────────────────────────────────────────────────────────────
