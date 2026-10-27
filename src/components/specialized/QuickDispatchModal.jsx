@@ -71,8 +71,8 @@ export function QuickDispatchModal({ isOpen, onClose }) {
 
         {/* Feedback Alert */}
         {successMsg && (
-          <div className="p-3 mb-4 rounded bg-emerald-950/30 border border-emerald-500/40 text-xs text-emerald-400 flex items-center space-x-2">
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <div className="p-3 mb-4 rounded bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-xs text-[#f5e6c8] flex items-center space-x-2">
+            <CheckCircle2 className="w-4 h-4 text-[#c9b8a0] shrink-0" />
             <span>{successMsg}</span>
           </div>
         )}

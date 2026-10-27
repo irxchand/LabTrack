@@ -89,10 +89,10 @@ export function Oscilloscope({ position = [3.6, 0.95, -0.8], rotation = [0, -0.4
     ctx.lineTo(256, 360);
     ctx.stroke();
 
-    // Channel 1 Waveform (Glowing Neon Green High-Speed Sine Wave with harmonics)
-    ctx.shadowColor = '#10b981';
+    // Channel 1 Waveform (Glowing Champagne Gold High-Speed Sine Wave with harmonics)
+    ctx.shadowColor = '#c9b8a0';
     ctx.shadowBlur = 8;
-    ctx.strokeStyle = '#34d399';
+    ctx.strokeStyle = '#f5e6c8';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
 
@@ -104,10 +104,10 @@ export function Oscilloscope({ position = [3.6, 0.95, -0.8], rotation = [0, -0.4
     }
     ctx.stroke();
 
-    // Channel 2 Waveform (Digital Clock Pulse Train - Cyan)
-    ctx.shadowColor = '#06b6d4';
+    // Channel 2 Waveform (Digital Clock Pulse Train - White)
+    ctx.shadowColor = '#ffffff';
     ctx.shadowBlur = 6;
-    ctx.strokeStyle = '#22d3ee';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
     ctx.lineWidth = 2;
     ctx.beginPath();
 
@@ -124,10 +124,10 @@ export function Oscilloscope({ position = [3.6, 0.95, -0.8], rotation = [0, -0.4
     ctx.shadowBlur = 0;
 
     // Technical Oscilloscope HUD overlay text
-    ctx.fillStyle = '#10b981';
+    ctx.fillStyle = '#c9b8a0';
     ctx.font = 'bold 13px monospace';
     ctx.fillText('CH1: 500mV/div  10.0ns/div', 36, 18);
-    ctx.fillStyle = '#06b6d4';
+    ctx.fillStyle = '#ffffff';
     ctx.fillText('CH2: 3.3V CLK  AUTO TRIG', 260, 18);
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
@@ -217,7 +217,7 @@ export function Oscilloscope({ position = [3.6, 0.95, -0.8], rotation = [0, -0.4
         <meshStandardMaterial color="#1f242d" roughness={0.6} />
       </mesh>
       <mesh geometry={probeCable2} castShadow>
-        <meshStandardMaterial color="#10b981" roughness={0.5} />
+        <meshStandardMaterial color="#c9b8a0" roughness={0.5} />
       </mesh>
 
       {/* Probe Tips with Gold Contact Pins */}

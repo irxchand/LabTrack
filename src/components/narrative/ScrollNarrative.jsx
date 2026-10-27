@@ -136,7 +136,7 @@ export function ScrollNarrative({
             <span>WB-04 // NIST-TRACEABLE</span>
           </span>
           <span className="flex items-center space-x-1.5">
-            <span className="text-emerald-400">STATUS:</span>
+            <span className="text-[#c9b8a0]">STATUS:</span>
             <span>CIRCULATION ACTIVE</span>
           </span>
         </div>
@@ -234,7 +234,7 @@ export function ScrollNarrative({
           </div>
           <div>
             <div className="text-[10px] font-mono-tech text-zinc-500 uppercase">Active Circulations</div>
-            <div className="text-xl md:text-2xl font-mono-tech text-emerald-400 font-semibold mt-1">
+            <div className="text-xl md:text-2xl font-mono-tech text-[#c9b8a0] font-semibold mt-1">
               {activeLoans?.length || 18} Active
             </div>
             <div className="text-[11px] text-zinc-400 mt-0.5">0 Overdue Loans</div>
@@ -374,7 +374,7 @@ export function ScrollNarrative({
             </div>
             <div className="flex justify-between py-1.5 border-b border-white/10">
               <span>CALIBRATION PROTOCOL</span>
-              <span className="text-emerald-400">NIST TRACEABLE // PASSED</span>
+              <span className="text-[#c9b8a0]">NIST TRACEABLE // PASSED</span>
             </div>
           </div>
         </div>
@@ -410,7 +410,7 @@ export function ScrollNarrative({
 
           <h2 className="editorial-heading text-4xl md:text-6xl font-bold tracking-tight text-white uppercase">
             Custody Basket. <br />
-            <span className="text-emerald-400">Supervisory Sign-Off.</span>
+            <span className="text-[#c9b8a0]">Supervisory Sign-Off.</span>
           </h2>
 
           <p className="text-sm md:text-base text-zinc-300 font-light leading-relaxed">
@@ -425,7 +425,7 @@ export function ScrollNarrative({
             </div>
             <div className="flex items-center justify-between text-xs font-mono-tech">
               <span className="text-zinc-400">HARDWARE QUOTA:</span>
-              <span className="text-emerald-400">{basket?.length || 0} of 4 Assets in Staging Basket</span>
+              <span className="text-[#c9b8a0]">{basket?.length || 0} of 4 Assets in Staging Basket</span>
             </div>
             <div className="flex items-center justify-between text-xs font-mono-tech">
               <span className="text-zinc-400">SUPERVISOR MENTOR:</span>
@@ -479,7 +479,7 @@ export function ScrollNarrative({
           </p>
 
           <div className="space-y-2 pt-2 text-xs font-mono-tech text-zinc-400">
-            <div className="flex items-center space-x-2 text-emerald-400">
+            <div className="flex items-center space-x-2 text-[#c9b8a0]">
               <CheckCircle2 className="w-4 h-4" />
               <span>Zero paper registers: 100% auditable timestamped checkout.</span>
             </div>
@@ -517,7 +517,7 @@ export function ScrollNarrative({
 
           <h2 className="editorial-heading text-4xl md:text-6xl font-bold tracking-tight text-white uppercase">
             Student Reliability. <br />
-            <span className="text-[#10b981]">{calculatedReliability} / 100 Score.</span>
+            <span className="text-[#c9b8a0]">{calculatedReliability} / 100 Score.</span>
           </h2>
 
           <p className="text-sm md:text-base text-zinc-300 font-light leading-relaxed">
@@ -551,7 +551,7 @@ export function ScrollNarrative({
           <div className="grid grid-cols-3 gap-3 pt-2">
             <div className="p-3 rounded bg-zinc-900 border border-white/10">
               <div className="text-[10px] font-mono-tech text-zinc-400 uppercase">Standing</div>
-              <div className="text-base font-mono-tech text-emerald-400 font-semibold mt-1">
+              <div className="text-base font-mono-tech text-[#c9b8a0] font-semibold mt-1">
                 {calculatedReliability >= 90 ? 'Exemplary' : calculatedReliability >= 75 ? 'Standard' : 'Probation'}
               </div>
             </div>
@@ -573,7 +573,7 @@ export function ScrollNarrative({
               className="py-2.5 px-4 rounded text-xs font-mono-tech bg-white/10 border border-white/20 text-white hover:bg-white/20 transition flex items-center space-x-2"
             >
               <span>View Full Student Compliance Dossier</span>
-              <ArrowRight className="w-4 h-4 text-emerald-400" />
+              <ArrowRight className="w-4 h-4 text-[#c9b8a0]" />
             </button>
           </div>
         </div>
@@ -616,7 +616,7 @@ export function ScrollNarrative({
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono-tech font-bold text-white">TEAM HYPERION (AERO-24)</span>
-                <span className="text-[10px] font-mono-tech text-emerald-400">ACTIVE</span>
+                <span className="text-[10px] font-mono-tech text-[#c9b8a0]">ACTIVE</span>
               </div>
               <p className="text-xs text-zinc-400">Autonomous Quadrotor VTOL Flight Computer</p>
               <div className="text-[11px] font-mono-tech text-zinc-500 pt-1">
@@ -637,7 +637,7 @@ export function ScrollNarrative({
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono-tech font-bold text-white">NEURAL-SOC (ECE-492)</span>
-                <span className="text-[10px] font-mono-tech text-emerald-400">ACTIVE</span>
+                <span className="text-[10px] font-mono-tech text-[#c9b8a0]">ACTIVE</span>
               </div>
               <p className="text-xs text-zinc-400">Edge TPU Neural Accelerator Synthesis</p>
               <div className="text-[11px] font-mono-tech text-zinc-500 pt-1">
@@ -756,10 +756,10 @@ export function ScrollNarrative({
 
           <div
             onClick={() => navigate('/workspace/custody/active')}
-            className="p-5 rounded-lg bg-zinc-900/60 border border-white/10 hover:border-emerald-500/40 hover:bg-zinc-900/90 transition cursor-pointer group"
+            className="p-5 rounded-lg bg-zinc-900/60 border border-white/10 hover:border-[#c9b8a0]/40 hover:bg-zinc-900/90 transition cursor-pointer group"
           >
-            <div className="text-xs font-mono-tech text-emerald-400 mb-1">MODULE 02</div>
-            <div className="text-base font-semibold text-white group-hover:text-emerald-400 transition">
+            <div className="text-xs font-mono-tech text-[#c9b8a0] mb-1">MODULE 02</div>
+            <div className="text-base font-semibold text-white group-hover:text-[#c9b8a0] transition">
               Custody Circulation
             </div>
             <p className="text-xs text-zinc-400 mt-1">Active loans, due-date countdowns, and return logs</p>
@@ -784,7 +784,7 @@ export function ScrollNarrative({
           </div>
           <div className="flex items-center space-x-4">
             <span className="flex items-center space-x-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="w-2 h-2 rounded-full bg-[#c9b8a0]" />
               <span className="text-zinc-400">DATABASE: POSTGRESQL CONNECTED</span>
             </span>
             <span>LATENCY: 14ms</span>

@@ -14,7 +14,7 @@ export function Shell() {
   }
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#08090d] text-white font-sans relative selection:bg-indigo-500/30 selection:text-white">
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#08090d] text-white font-sans relative selection:bg-[#c9b8a0]/30 selection:text-[#f5e6c8]">
       {/* ───────────────────────────────────────────────────────────── */}
       {/* WHOLE-PAGE INTERACTIVE WAVES BACKGROUND (Workspace Canvas) */}
       {/* ───────────────────────────────────────────────────────────── */}

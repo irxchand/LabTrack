@@ -41,8 +41,8 @@ export function ResetPasswordPage() {
         </div>
 
         {submitted ? (
-          <div className="p-5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl space-y-3 font-sans text-xs">
-            <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
+          <div className="p-5 bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 rounded-2xl space-y-3 font-sans text-xs">
+            <div className="flex items-center gap-2 text-[#f5e6c8] font-semibold text-sm">
               <CheckCircle2 className="w-4 h-4" />
               <span>Challenge Dispatched</span>
             </div>

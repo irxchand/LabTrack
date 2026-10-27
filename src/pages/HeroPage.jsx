@@ -15,7 +15,6 @@ import {
   Radio,
   Server,
   Shield,
-  Terminal,
   X,
   Zap,
 } from 'lucide-react';
@@ -292,7 +291,7 @@ export function HeroPage() {
                   logout();
                   navigate('/login');
                 }}
-                className="text-[11px] font-medium uppercase tracking-[0.2em] text-[#c9b8a0] hover:text-rose-400 transition-colors px-2.5 py-1.5 cursor-pointer"
+                className="text-[11px] font-medium uppercase tracking-[0.2em] text-[#c9b8a0] hover:text-white transition-colors px-2.5 py-1.5 cursor-pointer"
               >
                 Sign Out
               </button>
@@ -322,7 +321,7 @@ export function HeroPage() {
         id="hardware-mesh"
         ref={heroContainerRef}
         onMouseMove={handleMouseMove}
-        className="relative pt-36 pb-28 px-6 sm:px-12 flex flex-col items-center z-10 min-h-screen"
+        className="relative pt-28 pb-10 sm:pt-32 sm:pb-12 px-6 sm:px-12 flex flex-col items-center z-10"
       >
 
 
@@ -338,14 +337,14 @@ export function HeroPage() {
         </h1>
 
         {/* Subtext */}
-        <p className="text-gray-400 text-base sm:text-lg font-normal text-center max-w-2xl mx-auto mb-10 leading-relaxed tracking-wide font-sans">
+        <p className="text-gray-400 text-base sm:text-lg font-normal text-center max-w-2xl mx-auto mb-8 leading-relaxed tracking-wide font-sans">
           The unified operating system for academic laboratories. Real-time instrument
           tracking, student capstone requisitions, bench custody countdowns, and
           zero-trust hardware dispatch.
         </p>
 
         {/* Dual-Button CTA Group */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-12 sm:mb-16">
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-6 sm:mb-8">
           {/* Solid White CTA */}
           <button
             onClick={() => navigate('/workspace')}
@@ -371,9 +370,9 @@ export function HeroPage() {
       ───────────────────────────────────────────────────────────────────────── */}
       <section
         id="capabilities"
-        className="py-28 px-6 sm:px-12 max-w-7xl mx-auto relative z-10 border-t border-white/5"
+        className="pt-10 pb-20 px-6 sm:px-12 max-w-7xl mx-auto relative z-10 border-t border-white/5"
       >
-        <div className="text-center mb-20 max-w-3xl mx-auto px-4">
+        <div className="text-center mb-10 max-w-3xl mx-auto px-4">
           <h2 className="font-display font-semibold text-3xl sm:text-4xl lg:text-[44px] text-white leading-[1.25] tracking-[-0.01em]">
             From Project Proposal{' '}
             <span className="block mt-1.5 text-transparent bg-clip-text bg-gradient-to-r from-[#e8d5b7] via-[#c9b8a0] to-[#a78b71]">

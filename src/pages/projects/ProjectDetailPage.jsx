@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
-import { ArrowLeft, Users, Cpu, ShieldCheck, ShieldAlert, Check, Sparkles, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Users, Cpu, ShieldCheck, ShieldAlert, Check, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 
 export function ProjectDetailPage() {
   const { projectId } = useParams();
@@ -158,8 +158,8 @@ export function ProjectDetailPage() {
                 {assignedLoans.length > 0 ? (
                   `${assignedLoans.length} ${assignedLoans.length === 1 ? 'unit' : 'units'}`
                 ) : returnedRequisitions.length > 0 ? (
-                  <span className="text-emerald-400 font-medium text-xs flex items-center gap-1.5 justify-end">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[#c9b8a0] font-medium text-xs flex items-center gap-1.5 justify-end">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] animate-pulse" />
                     0 (Restocked)
                   </span>
                 ) : (
@@ -217,14 +217,14 @@ export function ProjectDetailPage() {
 
                     <div className="text-right text-xs font-sans flex-shrink-0">
                       <div className="text-zinc-400">Due {formatHumanDate(loan.dueDate)}</div>
-                      <div className="text-amber-400 font-medium text-[11px] mt-0.5">{loan.daysRemaining} days remaining</div>
+                      <div className="text-[#f5e6c8] font-medium text-[11px] mt-0.5">{loan.daysRemaining} days remaining</div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : returnedRequisitions.length > 0 ? (
-              <div className="py-6 px-4 rounded-2xl bg-emerald-500/[0.04] border border-emerald-500/20 text-center space-y-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+              <div className="py-6 px-4 rounded-2xl bg-[#c9b8a0]/[0.05] border border-[#c9b8a0]/25 text-center space-y-3">
+                <div className="w-10 h-10 rounded-full bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-[#f5e6c8] flex items-center justify-center mx-auto shadow-[0_0_15px_rgba(201,184,160,0.15)]">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
@@ -236,10 +236,10 @@ export function ProjectDetailPage() {
                 <div className="pt-1">
                   <Link
                     to="/workspace/custody/requisitions?status=Returned"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-semibold text-xs transition-all shadow-sm active:scale-95 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#c9b8a0]/15 hover:bg-[#c9b8a0]/25 border border-[#c9b8a0]/30 text-[#f5e6c8] font-semibold text-xs transition-all shadow-sm active:scale-95 cursor-pointer"
                   >
                     <span>View Return Receipt ({returnedRequisitions[0].id})</span>
-                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                    <ArrowUpRight className="w-3.5 h-3.5 text-[#c9b8a0]" />
                   </Link>
                 </div>
               </div>
@@ -280,12 +280,22 @@ export function ProjectDetailPage() {
             </div>
 
             <div className="divide-y divide-white/5">
-              {project.members?.map((member) => (
-                <div key={member.prn} className="py-2.5 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-7 h-7 rounded-full bg-white/10 border border-white/10 text-white font-semibold text-[11px] flex items-center justify-center flex-shrink-0">
-                      {member.name.charAt(0)}
-                    </div>
+              {project.members?.map((member, mIdx) => {
+                const memberColors = [
+                  'from-indigo-600/40 to-blue-500/30 text-indigo-200 border-indigo-400/40',
+                  'from-emerald-600/40 to-teal-500/30 text-emerald-200 border-emerald-400/40',
+                  'from-amber-600/40 to-orange-500/30 text-amber-200 border-amber-400/40',
+                  'from-rose-600/40 to-pink-500/30 text-rose-200 border-rose-400/40',
+                  'from-purple-600/40 to-violet-500/30 text-purple-200 border-purple-400/40',
+                  'from-cyan-600/40 to-sky-500/30 text-cyan-200 border-cyan-400/40',
+                ];
+                const colorClass = memberColors[mIdx % memberColors.length];
+                return (
+                  <div key={member.prn} className="py-2.5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-7 h-7 rounded-full bg-gradient-to-tr ${colorClass} border font-semibold text-[11px] flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                        {member.name.charAt(0)}
+                      </div>
                     <div className="min-w-0">
                       <div className="font-medium text-white text-xs font-sans truncate">{member.name}</div>
                       <div className="text-zinc-500 text-[11px] font-sans truncate">{member.role}</div>
@@ -296,7 +306,8 @@ export function ProjectDetailPage() {
                     {member.prn}
                   </span>
                 </div>
-              ))}
+              );
+            })}
             </div>
           </div>
         </div>

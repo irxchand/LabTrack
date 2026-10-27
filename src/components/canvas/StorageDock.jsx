@@ -62,12 +62,12 @@ export function StorageDock({
           <meshStandardMaterial color="#1a1c22" roughness={0.5} />
         </mesh>
 
-        {/* Custody State Indicator LED (Crimson = Locked, Emerald = Released) */}
+        {/* Custody State Indicator LED (Crimson = Locked, Gold = Released) */}
         <mesh position={[1.15, 0.22, 0]}>
           <sphereGeometry args={[0.05, 12, 12]} />
           <meshStandardMaterial
-            color={isLocked ? '#e11d48' : '#10b981'}
-            emissive={isLocked ? '#8b1d2c' : '#10b981'}
+            color={isLocked ? '#e11d48' : '#c9b8a0'}
+            emissive={isLocked ? '#8b1d2c' : '#c9b8a0'}
             emissiveIntensity={3.0}
             toneMapped={false}
           />

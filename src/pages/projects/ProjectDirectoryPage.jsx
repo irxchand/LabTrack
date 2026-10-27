@@ -10,13 +10,11 @@ import {
   ArrowRight,
   ShieldCheck,
   Check,
-  Sparkles,
   Layers,
   Plus,
   X,
   UserPlus,
-  AlertCircle,
-} from 'lucide-react';
+  AlertCircle } from 'lucide-react';
 
 export function ProjectDirectoryPage() {
   const navigate = useNavigate();
@@ -99,14 +97,12 @@ export function ProjectDirectoryPage() {
       return {
         all: visibleProjectsPool.length,
         leading: visibleProjectsPool.filter(isUserLead).length,
-        collaborating: visibleProjectsPool.filter(isUserMember).length,
-      };
+        collaborating: visibleProjectsPool.filter(isUserMember).length };
     }
     return {
       all: projects.length,
       myTeam: projects.filter(isUserProject).length,
-      aiml: projects.filter((p) => p.department?.includes('AIML') || p.courseCode?.includes('AIML')).length,
-    };
+      aiml: projects.filter((p) => p.department?.includes('AIML') || p.courseCode?.includes('AIML')).length };
   }, [visibleProjectsPool, projects, isStudent, userPrn]);
 
   const filteredProjects = useMemo(() => {
@@ -143,8 +139,7 @@ export function ProjectDirectoryPage() {
       {
         name: friendName.trim(),
         prn: friendPrn.trim(),
-        role: friendRole.trim() || 'Co-Developer',
-      },
+        role: friendRole.trim() || 'Co-Developer' },
     ]);
     setFriendName('');
     setFriendPrn('');
@@ -167,8 +162,7 @@ export function ProjectDirectoryPage() {
     const leaderMember = {
       name: currentUser?.name || 'Rahul Sharma',
       prn: currentUser?.prn || '202401048',
-      role: 'Team Lead',
-    };
+      role: 'Team Lead' };
 
     const newProject = await createProject({
       title: title.trim(),
@@ -178,8 +172,7 @@ export function ProjectDirectoryPage() {
       teamLeaderPrn: currentUser?.prn || '202401048',
       members: [leaderMember, ...friends],
       abstract: abstract.trim() || 'Collegiate project hardware development and bench evaluation.',
-      hardwareBudgetCap: 3,
-    });
+      hardwareBudgetCap: 3 });
 
     if (newProject) {
       setTitle('');
@@ -446,10 +439,10 @@ export function ProjectDirectoryPage() {
                     ))}
                   </div>
                 ) : returnedReqs.length > 0 ? (
-                  <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-200 font-sans flex items-center justify-between">
+                  <div className="p-3.5 rounded-2xl bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 text-xs text-[#f5e6c8] font-sans flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-                      <span className="font-semibold text-emerald-300">Custody Cleared • Hardware Returned & Restocked</span>
+                      <span className="w-2 h-2 rounded-full bg-[#c9b8a0] shadow-[0_0_8px_rgba(201,184,160,0.6)]" />
+                      <span className="font-semibold text-[#f5e6c8]">Custody Cleared • Hardware Returned & Restocked</span>
                     </div>
                     <span className="text-[11px] text-zinc-400 font-medium">0 In Custody</span>
                   </div>
@@ -468,11 +461,13 @@ export function ProjectDirectoryPage() {
                   <div className="flex items-center -space-x-2 flex-shrink-0">
                     {project.members?.map((member, mIdx) => {
                       const avatarColors = [
-                        'from-indigo-500/30 to-blue-500/20 text-indigo-200 border-indigo-500/40',
-                        'from-sky-500/30 to-cyan-500/20 text-sky-200 border-sky-500/40',
-                        'from-amber-500/30 to-orange-500/20 text-amber-200 border-amber-500/40',
-                        'from-emerald-500/30 to-teal-500/20 text-emerald-200 border-emerald-500/40',
-                        'from-purple-500/30 to-pink-500/20 text-purple-200 border-purple-500/40',
+                        'from-indigo-600/40 to-blue-500/30 text-indigo-200 border-indigo-400/40',
+                        'from-emerald-600/40 to-teal-500/30 text-emerald-200 border-emerald-400/40',
+                        'from-amber-600/40 to-orange-500/30 text-amber-200 border-amber-400/40',
+                        'from-rose-600/40 to-pink-500/30 text-rose-200 border-rose-400/40',
+                        'from-purple-600/40 to-violet-500/30 text-purple-200 border-purple-400/40',
+                        'from-cyan-600/40 to-sky-500/30 text-cyan-200 border-cyan-400/40',
+                        'from-fuchsia-600/40 to-rose-500/30 text-fuchsia-200 border-fuchsia-400/40',
                       ];
                       const colorClass = avatarColors[mIdx % avatarColors.length];
                       return (
@@ -529,7 +524,7 @@ export function ProjectDirectoryPage() {
           {/* Project Title */}
           <div className="space-y-1.5">
             <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-semibold block">
-              Project Group Name <span className="text-rose-400">*</span>
+              Project Group Name <span className="text-[#c9b8a0]">*</span>
             </label>
             <input
               type="text"
@@ -608,15 +603,23 @@ export function ProjectDirectoryPage() {
               <div className="space-y-2 pt-1">
                 <div className="text-[10px] uppercase font-semibold text-zinc-500">Invited Teammates</div>
                 <div className="space-y-1.5">
-                  {friends.map((friend) => (
-                    <div
-                      key={friend.prn}
-                      className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-between text-xs"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-white/10 text-white font-semibold text-[10px] flex items-center justify-center">
-                          {friend.name.charAt(0)}
-                        </div>
+                  {friends.map((friend, fIdx) => {
+                    const friendColors = [
+                      'from-indigo-600/40 to-blue-500/30 text-indigo-200 border-indigo-400/40',
+                      'from-emerald-600/40 to-teal-500/30 text-emerald-200 border-emerald-400/40',
+                      'from-amber-600/40 to-orange-500/30 text-amber-200 border-amber-400/40',
+                      'from-rose-600/40 to-pink-500/30 text-rose-200 border-rose-400/40',
+                      'from-purple-600/40 to-violet-500/30 text-purple-200 border-purple-400/40',
+                    ];
+                    return (
+                      <div
+                        key={friend.prn}
+                        className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-between text-xs"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className={`w-6 h-6 rounded-full bg-gradient-to-tr ${friendColors[fIdx % friendColors.length]} border font-semibold text-[10px] flex items-center justify-center shadow-sm`}>
+                            {friend.name.charAt(0)}
+                          </div>
                         <div>
                           <span className="text-white font-medium">{friend.name}</span>
                           <span className="text-zinc-400 font-sans text-[11px] ml-1.5">({friend.prn})</span>
@@ -628,14 +631,15 @@ export function ProjectDirectoryPage() {
                         <button
                           type="button"
                           onClick={() => handleRemoveFriend(friend.prn)}
-                          className="w-5 h-5 rounded-full hover:bg-white/10 text-zinc-400 hover:text-rose-400 flex items-center justify-center transition-colors cursor-pointer"
+                          className="w-5 h-5 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
                           title="Remove teammate"
                         >
                           <X className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
-                  ))}
+                  );
+                })}
                 </div>
               </div>
             )}
@@ -720,8 +724,8 @@ export function ProjectDirectoryPage() {
           </div>
 
           {formError && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+            <div className="p-3 rounded-xl bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 text-[#f5e6c8] text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-[#c9b8a0] flex-shrink-0" />
               <span>{formError}</span>
             </div>
           )}

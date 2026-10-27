@@ -156,8 +156,8 @@ export function FpgaBoard({
         <mesh ref={ledRef1} position={[1.4, 0.08, 1.2]}>
           <boxGeometry args={[0.08, 0.06, 0.08]} />
           <meshStandardMaterial
-            color="#10b981"
-            emissive="#10b981"
+            color="#c9b8a0"
+            emissive="#c9b8a0"
             emissiveIntensity={2.5}
             toneMapped={false}
           />

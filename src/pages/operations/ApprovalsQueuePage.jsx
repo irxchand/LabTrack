@@ -4,6 +4,7 @@ import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
 import { DataTable } from '../../components/common/DataTable';
 import { Modal } from '../../components/common/Modal';
+import { AuditTimelineProgression, normalizeRequisitionTimeline } from '../../components/common/AuditTimelineProgression';
 import {
   CheckSquare,
   AlertTriangle,
@@ -14,7 +15,6 @@ import {
   Boxes,
   MapPin,
   Clock,
-  Sparkles,
   ShieldCheck,
   Search,
   LayoutGrid,
@@ -82,6 +82,10 @@ export function ApprovalsQueuePage() {
 
   const [timelineModalReq, setTimelineModalReq] = useState(null);
   const [isBatchApproving, setIsBatchApproving] = useState(false);
+
+  const getTimelineSteps = (req) => {
+    return normalizeRequisitionTimeline(req);
+  };
 
   // VIEW & FILTER CONTROLS
   const [searchQuery, setSearchQuery] = useState('');
@@ -593,7 +597,7 @@ export function ApprovalsQueuePage() {
               <span>Mentor:</span>
               <span className="text-zinc-300 font-medium">{row.mentorName}</span>
               {isMyMentored && (
-                <span className="ml-auto text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-300 font-medium border border-emerald-500/25">
+                <span className="ml-auto text-[10px] px-1.5 py-0.2 rounded bg-[#c9b8a0]/15 text-[#f5e6c8] font-medium border border-[#c9b8a0]/25">
                   Mentored
                 </span>
               )}
@@ -610,16 +614,16 @@ export function ApprovalsQueuePage() {
         const capitalTier = getRequisitionCapitalTier(row);
         if (capitalTier === 'Tier 4 High Value') {
           return (
-            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30 flex items-center gap-1 w-fit">
-              <ShieldCheck className="w-3.5 h-3.5 text-rose-400" />
+            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#c9b8a0]/25 text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1 w-fit">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#f5e6c8]" />
               <span>Tier 4 High Value</span>
             </span>
           );
         }
         if (capitalTier === 'Tier 3 Advanced') {
           return (
-            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1 w-fit">
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 flex items-center gap-1 w-fit">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#c9b8a0]" />
               <span>Tier 3 Advanced</span>
             </span>
           );
@@ -665,7 +669,7 @@ export function ApprovalsQueuePage() {
         if (!isPending) {
           return (
             <div className="flex items-center justify-end gap-2 font-sans text-xs">
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/25">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/25">
                 {row.status === 'Ready for Counter Pickup' ? 'Sanctioned / Staged' : row.status === 'Dispatched' ? 'Dispatched' : 'Approved'}
               </span>
               <button
@@ -693,8 +697,8 @@ export function ApprovalsQueuePage() {
         return (
           <div className="flex items-center justify-end gap-1.5 font-sans text-xs">
             {shortage.hasShortage && (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3 text-amber-400" />
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 flex items-center gap-1">
+                <AlertTriangle className="w-3 h-3 text-[#f5e6c8]" />
                 <span>Shortage: Req {shortage.requested} / Avail {shortage.available}</span>
               </span>
             )}
@@ -707,7 +711,7 @@ export function ApprovalsQueuePage() {
             </button>
             <button
               onClick={() => handleOpenReject(row)}
-              className="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/25 text-[11px] cursor-pointer"
+              className="px-2.5 py-1 rounded-full bg-white/[0.04] hover:bg-white/10 text-zinc-300 hover:text-white border border-white/15 text-[11px] font-medium cursor-pointer transition-colors"
             >
               Reject
             </button>
@@ -843,15 +847,15 @@ export function ApprovalsQueuePage() {
               onClick={() => setCapitalFilter(capitalFilter === 'TIER3_4' ? 'ALL' : 'TIER3_4')}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                 capitalFilter === 'TIER3_4'
-                  ? 'bg-gradient-to-r from-amber-400 via-amber-300 to-amber-200 text-black font-bold shadow-md'
-                  : 'bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:border-amber-500/60'
+                  ? 'bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] text-black font-bold shadow-md'
+                  : 'bg-white/[0.04] text-zinc-300 border border-white/10 hover:border-[#c9b8a0]/40 hover:text-white'
               }`}
               title="Filter Tier 3 Advanced and Tier 4 High-Value capital assets requiring executive authorization"
             >
-              <ShieldCheck className="w-4 h-4 text-amber-400" />
+              <ShieldCheck className="w-4 h-4 text-[#c9b8a0]" />
               <span>Tier 3/4 Capital Sign-Offs</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                capitalFilter === 'TIER3_4' ? 'bg-black/20 text-black' : 'bg-amber-500/20 text-amber-300'
+                capitalFilter === 'TIER3_4' ? 'bg-black/20 text-black' : 'bg-white/[0.08] text-[#f5e6c8]'
               }`}>
                 {tier3And4Count}
               </span>
@@ -987,26 +991,26 @@ export function ApprovalsQueuePage() {
                       <span className="px-2 py-0.5 rounded-md bg-white/[0.05] text-[#c9b8a0] border border-white/10 text-[11px] font-medium">
                         {req.projectId}
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-[11px] font-semibold">
+                      <span className="px-2 py-0.5 rounded-md bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 text-[11px] font-semibold">
                         {deptCode} Dept
                       </span>
 
                       {/* Prominent Faculty Endorsement & Capital Tier Badges */}
                       {isFacultyEndorsed && (
-                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold flex items-center gap-1 shadow-sm">
-                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 text-[11px] font-semibold flex items-center gap-1 shadow-sm">
+                          <Check className="w-3.5 h-3.5 text-[#c9b8a0]" />
                           <span>Stage 2 • Faculty Endorsed • Awaiting HoD Sanction</span>
                         </span>
                       )}
                       {capitalTier === 'Tier 4 High Value' && (
-                        <span className="px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 text-[11px] font-bold flex items-center gap-1 shadow-sm">
-                          <ShieldCheck className="w-3.5 h-3.5 text-rose-400" />
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#c9b8a0]/25 text-[#f5e6c8] border border-[#c9b8a0]/40 text-[11px] font-bold flex items-center gap-1 shadow-sm">
+                          <ShieldCheck className="w-3.5 h-3.5 text-[#f5e6c8]" />
                           <span>Tier 4 High Value Capital</span>
                         </span>
                       )}
                       {capitalTier === 'Tier 3 Advanced' && (
-                        <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[11px] font-bold flex items-center gap-1 shadow-sm">
-                          <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 text-[11px] font-bold flex items-center gap-1 shadow-sm">
+                          <ShieldCheck className="w-3.5 h-3.5 text-[#c9b8a0]" />
                           <span>Tier 3 Advanced Asset</span>
                         </span>
                       )}
@@ -1019,8 +1023,8 @@ export function ApprovalsQueuePage() {
                       <span
                         className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
                           (req.teamReliabilityScore || 90) >= 75
-                            ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-                            : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
+                            ? 'bg-[#c9b8a0]/15 text-[#f5e6c8] border-[#c9b8a0]/30'
+                            : 'bg-white/[0.06] text-zinc-300 border-white/15'
                         }`}
                       >
                         {req.teamReliabilityScore || 95}/100 Integrity
@@ -1060,7 +1064,7 @@ export function ApprovalsQueuePage() {
                             <div className="flex items-center gap-2 mt-0.5 text-[11px]">
                               <span className="font-semibold text-[#f5e6c8]">Qty {comp.quantity}</span>
                               <span className="text-zinc-600">•</span>
-                              <span className={isShortage ? 'text-amber-400 font-medium' : 'text-zinc-400'}>
+                              <span className={isShortage ? 'text-[#f5e6c8] font-medium' : 'text-zinc-400'}>
                                 {stock.count > 0 ? `${stock.count} bench stock` : 'Awaiting restock'}
                               </span>
                             </div>
@@ -1083,10 +1087,10 @@ export function ApprovalsQueuePage() {
                     )}
 
                     {req.supervisorNotes && isFacultyEndorsed && (
-                      <div className="px-3.5 py-2 rounded-xl bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-200 text-xs font-sans flex items-center gap-2">
-                        <UserCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <div className="px-3.5 py-2 rounded-xl bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 text-[#f5e6c8] text-xs font-sans flex items-center gap-2">
+                        <UserCheck className="w-4 h-4 text-[#c9b8a0] shrink-0" />
                         <div>
-                          <span className="font-semibold text-emerald-300">Faculty Guide Endorsement ({req.mentorName || 'Faculty'}): </span>
+                          <span className="font-semibold text-[#f5e6c8]">Faculty Guide Endorsement ({req.mentorName || 'Faculty'}): </span>
                           <span className="italic">"{req.supervisorNotes}"</span>
                         </div>
                       </div>
@@ -1135,17 +1139,17 @@ export function ApprovalsQueuePage() {
                             {isHoD && capitalTier && (
                               <button
                                 onClick={() => handleOpenInstitutionalOverride(req)}
-                                className="px-3 py-1.5 rounded-full text-xs font-semibold text-amber-300 hover:text-black bg-amber-500/10 hover:bg-amber-400 border border-amber-500/30 transition-all cursor-pointer flex items-center gap-1"
+                                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-black bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 shadow-md transition-all cursor-pointer flex items-center gap-1.5"
                                 title="Executive institutional sign-off bypassing standard policy constraints"
                               >
-                                <Sparkles className="w-3.5 h-3.5" />
+                                <ShieldCheck className="w-3.5 h-3.5" />
                                 <span>Institutional Override</span>
                               </button>
                             )}
 
                             <button
                               onClick={() => handleOpenReject(req)}
-                              className="px-3 py-1.5 rounded-full text-xs font-medium text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition-colors cursor-pointer"
+                              className="px-3 py-1.5 rounded-full text-xs font-medium text-zinc-300 hover:text-white bg-white/[0.04] hover:bg-white/10 border border-white/15 transition-colors cursor-pointer"
                             >
                               Reject
                             </button>
@@ -1281,7 +1285,7 @@ export function ApprovalsQueuePage() {
         <form onSubmit={handleConfirmReject} className="space-y-4 text-xs font-sans text-zinc-300">
           <div>
             <label className="block text-[11px] uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
-              Academic Reason / Rejection Rationale <span className="text-rose-400">*</span>
+              Academic Reason / Rejection Rationale <span className="text-[#c9b8a0]">*</span>
             </label>
             <textarea
               required
@@ -1289,7 +1293,7 @@ export function ApprovalsQueuePage() {
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               placeholder="e.g. Scope exceeding approved capstone milestones; please consult with faculty mentor during office hours."
-              className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-rose-500/50"
+              className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#c9b8a0]"
             />
           </div>
 
@@ -1303,7 +1307,7 @@ export function ApprovalsQueuePage() {
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-full bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-md"
+              className="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black text-xs font-bold shadow-md cursor-pointer"
             >
               Record Rejection
             </button>
@@ -1391,12 +1395,12 @@ export function ApprovalsQueuePage() {
         maxWidth="max-w-md"
       >
         <form onSubmit={handleSaveModifiedQuantities} className="space-y-4 text-xs font-sans text-zinc-300">
-          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-200 space-y-1">
-            <div className="font-semibold text-xs flex items-center gap-1.5">
-              <AlertTriangle className="w-4 h-4 text-amber-400" />
+          <div className="p-3.5 rounded-xl bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 text-[#f5e6c8] space-y-1">
+            <div className="font-semibold text-xs flex items-center gap-1.5 text-[#f5e6c8]">
+              <AlertTriangle className="w-4 h-4 text-[#c9b8a0]" />
               <span>Inventory Allocation Adjustment</span>
             </div>
-            <p className="text-[11px] leading-relaxed opacity-90">
+            <p className="text-[11px] leading-relaxed text-zinc-300">
               Adjust the approved quantity for each requested component to match available lab bench stock before giving supervisory sanction.
             </p>
           </div>
@@ -1410,7 +1414,7 @@ export function ApprovalsQueuePage() {
                 <div key={idx} className="p-3 rounded-xl bg-white/[0.03] border border-white/10 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-white text-xs">{comp.nomenclature}</span>
-                    <span className={`text-[11px] font-semibold ${isShortage ? 'text-amber-400' : 'text-emerald-400'}`}>
+                    <span className={`text-[11px] font-semibold ${isShortage ? 'text-[#f5e6c8]' : 'text-[#c9b8a0]'}`}>
                       {stock.count} in stock
                     </span>
                   </div>
@@ -1481,19 +1485,19 @@ export function ApprovalsQueuePage() {
         maxWidth="max-w-md"
       >
         <form onSubmit={handleConfirmInstitutionalOverride} className="space-y-4 text-xs font-sans text-zinc-300">
-          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-200 space-y-1">
-            <div className="font-semibold text-xs flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-amber-400" />
+          <div className="p-3.5 rounded-xl bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 text-[#f5e6c8] space-y-1">
+            <div className="font-semibold text-xs flex items-center gap-1.5 text-[#f5e6c8]">
+              <ShieldCheck className="w-4 h-4 text-[#c9b8a0]" />
               <span>Head of Department Executive Sign-Off</span>
             </div>
-            <p className="text-[11px] leading-relaxed opacity-90">
+            <p className="text-[11px] leading-relaxed text-zinc-300">
               This action overrides student quota limits, high-value asset restrictions, and issues formal departmental authorization for capital equipment.
             </p>
           </div>
 
           <div>
             <label className="block text-[11px] uppercase tracking-wider text-zinc-400 mb-1 font-semibold">
-              Administrative Override Rationale <span className="text-amber-400">*</span>
+              Administrative Override Rationale <span className="text-[#c9b8a0]">*</span>
             </label>
             <textarea
               required
@@ -1501,7 +1505,7 @@ export function ApprovalsQueuePage() {
               value={overrideReason}
               onChange={(e) => setOverrideReason(e.target.value)}
               placeholder="e.g. Authorized by Head of Department under Capstone Special Research Grant 2026."
-              className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white font-sans text-xs focus:outline-none focus:border-amber-400"
+              className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white font-sans text-xs focus:outline-none focus:border-[#c9b8a0]"
             />
           </div>
 
@@ -1515,7 +1519,7 @@ export function ApprovalsQueuePage() {
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-full bg-amber-400 hover:bg-amber-300 text-black text-xs font-bold shadow-md"
+              className="px-5 py-2 rounded-full bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black text-xs font-bold shadow-md cursor-pointer"
             >
               Commit Executive Override
             </button>
@@ -1544,29 +1548,11 @@ export function ApprovalsQueuePage() {
           </div>
 
           <div>
-            <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold block mb-2">
+            <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold block mb-3">
               Progression Steps
             </span>
-            <div className="relative pl-6 space-y-3.5 before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/10">
-              {timelineModalReq?.timeline?.map((step, idx) => (
-                <div key={idx} className="relative">
-                  <div className={`absolute -left-6 top-1 w-2.5 h-2.5 rounded-full border ${
-                    step.completed || step.actor ? 'bg-emerald-400 border-emerald-500' : 'bg-zinc-700 border-zinc-600'
-                  }`} />
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-white">{step.stage || step.step}</span>
-                    <span className="text-[11px] text-zinc-500">{step.timestamp || 'Pending'}</span>
-                  </div>
-                  <div className="text-[11px] text-zinc-400 mt-0.5">
-                    Actor: <span className="text-zinc-300">{step.actor || 'Pending review'}</span>
-                  </div>
-                  {step.note && (
-                    <div className="text-[11px] text-emerald-300/90 mt-0.5 italic">
-                      "{step.note}"
-                    </div>
-                  )}
-                </div>
-              ))}
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10">
+              <AuditTimelineProgression steps={getTimelineSteps(timelineModalReq)} />
             </div>
           </div>
 
@@ -1592,9 +1578,9 @@ export function ApprovalsQueuePage() {
         maxWidth="max-w-lg"
       >
         <form onSubmit={handleConfirmApprovalWithNotes} className="space-y-4 text-xs font-sans text-zinc-300">
-          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-200 space-y-1">
-            <div className="font-semibold text-xs flex items-center gap-1.5">
-              <Check className="w-4 h-4 text-emerald-400" />
+          <div className="p-3.5 rounded-xl bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 text-[#f5e6c8] space-y-1">
+            <div className="font-semibold text-xs flex items-center gap-1.5 text-white">
+              <Check className="w-4 h-4 text-[#c9b8a0]" />
               <span>{isHoD ? 'Department Allocation Sanction' : 'Curriculum Endorsement'}</span>
             </div>
             <p className="text-[11px] leading-relaxed opacity-90">
@@ -1621,7 +1607,7 @@ export function ApprovalsQueuePage() {
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-semibold">
-                {isHoD ? 'HoD Department Notes & Directives' : 'Faculty Mentor Notes & Feedback'} <span className="text-emerald-400">*</span>
+                {isHoD ? 'HoD Department Notes & Directives' : 'Faculty Mentor Notes & Feedback'} <span className="text-[#c9b8a0]">*</span>
               </label>
               <span className="text-[10px] text-zinc-500">Recorded into official audit trail</span>
             </div>
@@ -1658,7 +1644,7 @@ export function ApprovalsQueuePage() {
               value={approvalNotes}
               onChange={(e) => setApprovalNotes(e.target.value)}
               placeholder={isHoD ? 'Enter departmental allocation notes, bench permissions, or pickup directives...' : 'Enter mentor remarks, milestone verification, or usage conditions...'}
-              className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white font-sans text-xs focus:outline-none focus:border-emerald-400 leading-relaxed"
+              className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white font-sans text-xs focus:outline-none focus:border-[#c9b8a0] leading-relaxed"
             />
           </div>
 

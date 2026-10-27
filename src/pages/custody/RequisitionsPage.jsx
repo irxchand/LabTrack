@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
 import { Modal } from '../../components/common/Modal';
+import { AuditTimelineProgression, normalizeRequisitionTimeline } from '../../components/common/AuditTimelineProgression';
 import {
   Inbox,
   ShoppingBag,
@@ -9,15 +10,13 @@ import {
   Check,
   AlertCircle,
   Clock,
-  Sparkles,
   Layers,
   Bell,
   CheckCircle2,
   XCircle,
   AlertTriangle,
   X,
-  Trash2,
-} from 'lucide-react';
+  Trash2 } from 'lucide-react';
 
 export function RequisitionsPage() {
   const { requisitions, setIsBasketOpen, inventory, deleteRequisition } = useLabData();
@@ -46,8 +45,7 @@ export function RequisitionsPage() {
         month: 'short',
         day: 'numeric',
         hour: 'numeric',
-        minute: '2-digit',
-      });
+        minute: '2-digit' });
     } catch {
       return dateStr;
     }
@@ -131,80 +129,7 @@ export function RequisitionsPage() {
   };
 
   const getNormalizedTimeline = (req) => {
-    if (!req) return [];
-    const tl = Array.isArray(req.timeline) ? [...req.timeline] : [];
-    const isReturned = isReturnedStatus(req.status);
-    const isDispatched = req.status === 'Dispatched' || isDispatchedStatus(req.status) || isReturned;
-    const isEndorsed = req.status === 'Faculty Endorsed' || req.status === 'Ready for Counter Pickup' || isDispatched;
-    const isHodSanctioned = req.status === 'Ready for Counter Pickup' || isDispatched || Boolean(req.hodSanctionedBy);
-
-    const mapped = tl.map((step) => {
-      const stepLower = (step.step || '').toLowerCase();
-      const stageLower = (step.stage || '').toLowerCase();
-
-      if (stepLower.includes('mentor') || stageLower.includes('mentor') || stepLower.includes('faculty')) {
-        if (isEndorsed) {
-          return {
-            ...step,
-            completed: true,
-            actor: step.actor && !step.actor.includes('N/A') ? step.actor : `${req.mentorName || 'Dr. Manoj Patil'} (${req.mentorId || 'T100460'})`,
-            timestamp: step.timestamp || req.requestDate || new Date().toISOString(),
-            note: step.note || req.supervisorNotes || 'Approved by Dr. Manoj Patil for departmental coursework milestones.',
-          };
-        }
-      }
-
-      if (stepLower.includes('hod') || stageLower.includes('hod')) {
-        if (isHodSanctioned) {
-          return {
-            ...step,
-            completed: true,
-            actor: step.actor && !step.actor.includes('N/A') ? step.actor : `${req.hodSanctionedBy || 'Dr. Sumit Kumar (HoD)'} (T100101)`,
-            timestamp: step.timestamp || req.requestDate || new Date().toISOString(),
-            note: step.note || req.hodSanctionedNotes || 'Department allocation sanctioned by HoD. Passed to Counter Desk. — Endorsed by Dr. Sumit Kumar.',
-          };
-        }
-      }
-
-      if (stepLower.includes('dispatch') || stageLower.includes('dispatch') || stepLower.includes('custody')) {
-        if (isDispatched) {
-          return {
-            ...step,
-            completed: true,
-            actor: step.actor && !step.actor.includes('N/A') ? step.actor : `${req.dispatchedBy || 'Ramesh Patil (Lab Assistant)'}`,
-            timestamp: step.timestamp || req.requestDate || new Date().toISOString(),
-            note: step.note || 'Physical hardware kit handover committed at counter desk.',
-          };
-        }
-      }
-
-      if (stepLower.includes('return') || stageLower.includes('return') || stepLower.includes('restock')) {
-        if (isReturned) {
-          return {
-            ...step,
-            completed: true,
-            actor: step.actor && !step.actor.includes('N/A') ? step.actor : 'Ramesh Patil (Lab Assistant)',
-            timestamp: step.timestamp || new Date().toISOString(),
-            note: step.note || 'Hardware returned & restocked into central depot inventory pool.',
-          };
-        }
-      }
-
-      return step;
-    });
-
-    if (isReturned && !mapped.some((s) => (s.step || '').toLowerCase().includes('return') || (s.stage || '').toLowerCase().includes('return'))) {
-      mapped.push({
-        step: 'Returned & Restocked',
-        stage: 'Returned',
-        completed: true,
-        actor: 'Ramesh Patil (Lab Assistant)',
-        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-        note: 'Hardware returned & restocked into central depot inventory pool. Custody cleared.',
-      });
-    }
-
-    return mapped;
+    return normalizeRequisitionTimeline(req);
   };
 
   const counts = useMemo(() => ({
@@ -213,8 +138,7 @@ export function RequisitionsPage() {
     ready: roleRequisitions.filter((r) => isReadyStatus(r.status) && !isReturnedStatus(r.status)).length,
     dispatched: roleRequisitions.filter((r) => isDispatchedStatus(r.status) && !isReturnedStatus(r.status)).length,
     returned: roleRequisitions.filter((r) => isReturnedStatus(r.status)).length,
-    rejected: roleRequisitions.filter((r) => isRejectedStatus(r.status)).length,
-  }), [roleRequisitions]);
+    rejected: roleRequisitions.filter((r) => isRejectedStatus(r.status)).length }), [roleRequisitions]);
 
   const filteredRequisitions = useMemo(() => {
     if (activeFilter === 'submitted') {
@@ -238,13 +162,13 @@ export function RequisitionsPage() {
   const getStageInfo = (status) => {
     const s = String(status || '').trim().toLowerCase();
     if (isReturnedStatus(s)) {
-      return { index: 5, label: 'Returned & Restocked', color: 'emerald' };
+      return { index: 5, label: 'Returned & Restocked', color: 'gold' };
     }
     if (s.includes('reject')) {
       return { index: 0, label: 'Rejected by Supervisor', color: 'rose' };
     }
     if (s.includes('endorsed') || s.includes('staging')) {
-      return { index: 2, label: 'Faculty Endorsed • Staging', color: 'emerald' };
+      return { index: 2, label: 'Faculty Endorsed • Staging', color: 'gold' };
     }
     if (s.includes('ready') || s.includes('pickup') || s.includes('sanctioned')) {
       return { index: 3, label: 'Ready for Pickup (Desk 2)', color: 'champagne' };
@@ -284,8 +208,7 @@ export function RequisitionsPage() {
           ? `${primaryComp} (Qty ${qty}) verified. Awaiting counter pickup.`
           : `${primaryComp} (Qty ${qty}) awaiting Dr. Manoj Patil review.`,
         type: isRej ? 'error' : isEnd ? 'success' : 'info',
-        date: req.requestDate || req.submittedDate,
-      };
+        date: req.requestDate || req.submittedDate };
     });
   }, [roleRequisitions]);
 
@@ -382,8 +305,8 @@ export function RequisitionsPage() {
           onClick={() => setActiveFilter('returned')}
           className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'returned'
-              ? 'bg-emerald-400 text-black font-semibold shadow-sm'
-              : 'text-zinc-400 hover:text-emerald-300 hover:bg-emerald-500/10'
+              ? 'bg-[#c9b8a0] text-black font-semibold shadow-sm'
+              : 'text-zinc-400 hover:text-[#f5e6c8] hover:bg-white/[0.04]'
           }`}
         >
           <span>Returned</span>
@@ -397,8 +320,8 @@ export function RequisitionsPage() {
           onClick={() => setActiveFilter('rejected')}
           className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'rejected'
-              ? 'bg-rose-500 text-white font-semibold shadow-sm'
-              : 'text-zinc-400 hover:text-rose-300 hover:bg-rose-500/10'
+              ? 'bg-white text-black font-semibold shadow-sm'
+              : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
           }`}
         >
           <span>Rejected</span>
@@ -446,16 +369,16 @@ export function RequisitionsPage() {
                 onClick={() => setSelectedReq(notif.req)}
                 className={`p-3.5 rounded-xl border transition-all duration-200 cursor-pointer flex flex-col justify-between gap-2.5 group ${
                   notif.type === 'error'
-                    ? 'bg-rose-500/[0.06] hover:bg-rose-500/[0.12] border-rose-500/30 shadow-[0_4px_20px_rgba(244,63,94,0.1)]'
+                    ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/15 shadow-[0_4px_20px_rgba(0,0,0,0.5)]'
                     : notif.type === 'success'
-                    ? 'bg-emerald-500/[0.06] hover:bg-emerald-500/[0.12] border-emerald-500/30'
+                    ? 'bg-[#c9b8a0]/[0.08] hover:bg-[#c9b8a0]/[0.15] border-[#c9b8a0]/30 shadow-[0_4px_20px_rgba(201,184,160,0.1)]'
                     : 'bg-white/[0.03] hover:bg-white/[0.06] border-white/10'
                 }`}
               >
                 <div className="flex items-start gap-2.5">
                   <div className="mt-0.5 flex-shrink-0">
-                    {notif.type === 'error' && <XCircle className="w-4 h-4 text-rose-400" />}
-                    {notif.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+                    {notif.type === 'error' && <XCircle className="w-4 h-4 text-zinc-300" />}
+                    {notif.type === 'success' && <CheckCircle2 className="w-4 h-4 text-[#c9b8a0]" />}
                     {notif.type === 'info' && <Inbox className="w-4 h-4 text-[#c9b8a0]" />}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -517,11 +440,7 @@ export function RequisitionsPage() {
               <div
                 key={req.id}
                 onClick={() => setSelectedReq(req)}
-                className={`group relative rounded-3xl border transition-all duration-500 flex flex-col justify-between cursor-pointer overflow-hidden min-h-[500px] ${
-                  isRejected
-                    ? 'border-rose-500/40 hover:border-rose-500/70 hover:shadow-[0_24px_60px_rgba(244,63,94,0.25)]'
-                    : 'border-white/10 hover:border-[#c9b8a0]/50 hover:shadow-[0_24px_60px_rgba(0,0,0,0.95)]'
-                }`}
+                className="group relative rounded-3xl border border-white/10 hover:border-[#c9b8a0]/50 hover:shadow-[0_24px_60px_rgba(0,0,0,0.95)] transition-all duration-500 flex flex-col justify-between cursor-pointer overflow-hidden min-h-[500px]"
               >
                 {/* Full Image Box Background - Picture fills 100% of the box edge-to-edge */}
                 <img
@@ -537,7 +456,7 @@ export function RequisitionsPage() {
                 <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/45 to-black/95 pointer-events-none z-10" />
 
                 {/* Specular hairline top rim */}
-                <div className={`absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent ${isRejected ? 'via-rose-500/50' : 'via-white/30'} to-transparent pointer-events-none rounded-t-3xl z-20`} />
+                <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none rounded-t-3xl z-20" />
 
                 {/* Details Layered Directly On Top of the Picture */}
                 <div className="relative z-20 p-6 sm:p-7 flex flex-col justify-between h-full min-h-[500px] space-y-6">
@@ -555,14 +474,14 @@ export function RequisitionsPage() {
 
                     {/* Cupertino Status Pill */}
                     {stageInfo.color === 'rose' && (
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/25 backdrop-blur-md text-rose-300 border border-rose-500/40 flex items-center gap-1.5 shadow-lg">
-                        <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/[0.06] backdrop-blur-md text-zinc-300 border border-white/15 flex items-center gap-1.5 shadow-lg">
+                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
                         <span>{stageInfo.label}</span>
                       </span>
                     )}
-                    {stageInfo.color === 'emerald' && (
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 backdrop-blur-md text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    {stageInfo.color === 'gold' && (
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#c9b8a0]/20 backdrop-blur-md text-[#f5e6c8] border border-[#c9b8a0]/40 flex items-center gap-1.5 shadow-lg">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
                         <span>{stageInfo.label}</span>
                       </span>
                     )}
@@ -638,20 +557,20 @@ export function RequisitionsPage() {
                   <div className="space-y-4">
                     {/* Tactile Progression Stepper */}
                     {isRejected ? (
-                      <div className="space-y-2.5 pt-3 border-t border-rose-500/30">
+                      <div className="space-y-2.5 pt-3 border-t border-[#c9b8a0]/30">
                         <div className="flex items-center justify-between text-[11px] font-sans">
-                          <span className="text-rose-400 font-semibold drop-shadow-sm flex items-center gap-1.5">
-                            <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
+                          <span className="text-[#f5e6c8] font-semibold drop-shadow-sm flex items-center gap-1.5">
+                            <AlertCircle className="w-3.5 h-3.5 text-[#c9b8a0]" />
                             <span>Circulation Halted • Requisition Declined</span>
                           </span>
-                          <span className="text-rose-300 font-medium">Stage 0 of 4</span>
+                          <span className="text-zinc-400 font-medium">Stage 0 of 4</span>
                         </div>
-                        <div className="px-4 py-3 rounded-2xl bg-rose-500/20 backdrop-blur-md border border-rose-500/40 text-rose-200 text-xs font-sans flex flex-col gap-1.5 shadow-sm">
-                          <div className="font-semibold text-rose-300 flex items-center justify-between">
+                        <div className="px-4 py-3 rounded-2xl bg-[#c9b8a0]/10 backdrop-blur-md border border-[#c9b8a0]/25 text-[#f5e6c8] text-xs font-sans flex flex-col gap-1.5 shadow-sm">
+                          <div className="font-semibold text-[#f5e6c8] flex items-center justify-between">
                             <span>Supervisor Feedback:</span>
-                            <span className="text-[11px] font-normal text-rose-300/80">{req.mentorName || 'Faculty Guide'}</span>
+                            <span className="text-[11px] font-normal text-zinc-400">{req.mentorName || 'Faculty Guide'}</span>
                           </div>
-                          <div className="italic text-rose-100 bg-black/50 px-3 py-2 rounded-xl border border-rose-500/20 font-sans">
+                          <div className="italic text-zinc-200 bg-black/50 px-3 py-2 rounded-xl border border-white/10 font-sans">
                             "{req.supervisorNotes || 'Requisition declined during review.'}"
                           </div>
                         </div>
@@ -675,9 +594,7 @@ export function RequisitionsPage() {
                                   className={`h-1.5 rounded-full transition-all duration-300 ${
                                     isCompleted
                                       ? isCurrent
-                                        ? stageInfo.color === 'emerald'
-                                          ? 'bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]'
-                                          : 'bg-[#c9b8a0] shadow-[0_0_12px_rgba(201,184,160,0.8)]'
+                                        ? 'bg-[#c9b8a0] shadow-[0_0_12px_rgba(201,184,160,0.8)]'
                                         : 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.4)]'
                                       : 'bg-white/15 backdrop-blur-sm'
                                   }`}
@@ -685,9 +602,7 @@ export function RequisitionsPage() {
                                 <span
                                   className={`text-[10px] font-sans block truncate drop-shadow-sm ${
                                     isCurrent
-                                      ? stageInfo.color === 'emerald'
-                                        ? 'text-emerald-300 font-bold'
-                                        : 'text-[#f5e6c8] font-bold'
+                                      ? 'text-[#f5e6c8] font-bold'
                                       : isCompleted
                                       ? 'text-zinc-300'
                                       : 'text-zinc-500'
@@ -728,7 +643,7 @@ export function RequisitionsPage() {
                               e.stopPropagation();
                               handleCancelRequisition(req.id || req.requestNumber);
                             }}
-                            className="px-3 py-2 rounded-full text-xs font-semibold text-rose-400 hover:text-white bg-rose-500/10 hover:bg-rose-500/30 border border-rose-500/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
+                            className="px-3 py-2 rounded-full text-xs font-semibold text-zinc-300 hover:text-white bg-white/[0.04] hover:bg-white/10 border border-white/15 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
                             title="Cancel requisition before approval"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -768,11 +683,11 @@ export function RequisitionsPage() {
           <div className="space-y-6 text-xs font-sans">
             {/* Rejection Alert Banner if rejected */}
             {isRejectedStatus(selectedReq.status) && (
-              <div className="p-4 bg-rose-500/20 border border-rose-500/40 rounded-2xl text-rose-200 text-xs flex items-start gap-3 shadow-sm">
-                <AlertCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
+              <div className="p-4 bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 rounded-2xl text-[#f5e6c8] text-xs flex items-start gap-3 shadow-sm">
+                <AlertCircle className="w-5 h-5 text-[#c9b8a0] flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <div className="font-bold text-rose-300 text-sm">Requisition Declined by Faculty Supervisor</div>
-                  <p className="text-rose-100">
+                  <div className="font-bold text-[#f5e6c8] text-sm">Requisition Declined by Faculty Supervisor</div>
+                  <p className="text-zinc-200">
                     Reason: <span className="font-semibold underline">"{selectedReq.supervisorNotes || 'Declined during review.'}"</span>
                   </p>
                   <p className="text-zinc-400 text-[11px]">
@@ -836,25 +751,8 @@ export function RequisitionsPage() {
               <div className="text-[10px] font-sans uppercase tracking-wider text-zinc-400 font-semibold">
                 Audit Timeline Progression
               </div>
-
-              <div className="relative pl-7 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/10">
-                {getNormalizedTimeline(selectedReq).map((step, idx) => (
-                  <div key={idx} className="relative space-y-1">
-                    <span className="absolute -left-7 top-0.5 w-5 h-5 rounded-full bg-[#c9b8a0] text-black flex items-center justify-center text-[10px] font-bold shadow-md">
-                      {idx + 1}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white font-sans text-xs">{step.step}</span>
-                      <span className="text-[11px] text-zinc-500 font-sans">• {formatHumanDateTime(step.timestamp)}</span>
-                    </div>
-                    <div className="text-[11px] text-zinc-400 font-sans">Recorded by: {step.actor}</div>
-                    {step.note && (
-                      <div className="text-zinc-300 bg-white/[0.03] p-3 rounded-xl border border-white/10 mt-1 text-xs leading-relaxed">
-                        "{step.note}"
-                      </div>
-                    )}
-                  </div>
-                ))}
+              <div className="pt-1">
+                <AuditTimelineProgression steps={getNormalizedTimeline(selectedReq)} />
               </div>
             </div>
 
@@ -863,9 +761,9 @@ export function RequisitionsPage() {
                 <button
                   type="button"
                   onClick={() => handleCancelRequisition(selectedReq.id || selectedReq.requestNumber)}
-                  className="px-4 py-2 rounded-full bg-rose-500/15 hover:bg-rose-500/30 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
+                  className="px-4 py-2 rounded-full bg-white/[0.04] hover:bg-white/10 text-zinc-300 hover:text-white border border-white/15 text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
                 >
-                  <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                  <Trash2 className="w-3.5 h-3.5 text-zinc-400" />
                   <span>Cancel Requisition</span>
                 </button>
               ) : <div />}

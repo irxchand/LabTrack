@@ -11,9 +11,7 @@ import {
   Sliders,
   Archive,
   FileText,
-  Clock,
-  Sparkles,
-} from 'lucide-react';
+  Clock } from 'lucide-react';
 
 export function DefectManagementPage() {
   const { defects, updateDefectStatus, retireAsset } = useLabData();
@@ -51,11 +49,10 @@ export function DefectManagementPage() {
       width: '160px',
       render: (row) => (
         <div className="font-sans text-xs">
-          <div className="font-semibold text-rose-400">{row.id}</div>
+          <div className="font-semibold text-[#f5e6c8]">{row.id}</div>
           <div className="text-zinc-500 text-[11px] mt-0.5">{row.reportedDate?.split(' ')[0]}</div>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Hardware Asset',
       accessor: 'nomenclature',
@@ -66,14 +63,12 @@ export function DefectManagementPage() {
             Tag: <span className="text-[#c9b8a0] font-semibold">{row.assetTag}</span> • Category: {row.defectCategory}
           </div>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Severity',
       accessor: 'severity',
       width: '140px',
-      render: (row) => <StatusBadge status={row.severity} type="severity" size="xs" />,
-    },
+      render: (row) => <StatusBadge status={row.severity} type="severity" size="xs" /> },
     {
       header: 'Diagnosis Summary & Responsible Project',
       accessor: 'conditionSummary',
@@ -84,25 +79,23 @@ export function DefectManagementPage() {
             Logged from PRN: {row.associatedPrn} ({row.associatedProject})
           </div>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Repair Status',
       accessor: 'repairStatus',
       width: '160px',
       render: (row) => {
         let badgeColor = 'bg-white/[0.04] text-zinc-300 border-white/10';
-        if (row.repairStatus === 'Repaired') badgeColor = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
-        else if (row.repairStatus === 'Under Inspection') badgeColor = 'bg-amber-500/10 text-amber-400 border-amber-500/30';
-        else if (row.repairStatus === 'Decommissioned') badgeColor = 'bg-rose-500/10 text-rose-400 border-rose-500/30';
+        if (row.repairStatus === 'Repaired') badgeColor = 'bg-[#c9b8a0]/15 text-[#f5e6c8] border-[#c9b8a0]/30';
+        else if (row.repairStatus === 'Under Inspection') badgeColor = 'bg-[#c9b8a0]/15 text-[#f5e6c8] border-[#c9b8a0]/30';
+        else if (row.repairStatus === 'Decommissioned') badgeColor = 'bg-white/[0.04] text-zinc-400 border-white/10';
 
         return (
           <span className={`px-2.5 py-0.5 rounded-full font-sans text-[11px] font-semibold border ${badgeColor}`}>
             {row.repairStatus}
           </span>
         );
-      },
-    },
+      } },
     {
       header: 'Actions',
       width: '180px',
@@ -120,15 +113,14 @@ export function DefectManagementPage() {
           {role === 'HoD / Admin' && row.repairStatus !== 'Decommissioned' && (
             <button
               onClick={() => setRetireDefect(row)}
-              className="p-1.5 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-colors cursor-pointer"
+              className="p-1.5 rounded-full bg-white/[0.04] hover:bg-white/10 text-zinc-300 hover:text-white border border-white/10 transition-colors cursor-pointer"
               title="Decommission & Retire Asset"
             >
               <Archive className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
-      ),
-    },
+      ) },
   ];
 
   return (
@@ -149,7 +141,7 @@ export function DefectManagementPage() {
         </div>
 
         <div className="text-xs font-sans text-zinc-300 px-3.5 py-1.5 bg-white/[0.03] border border-white/10 rounded-full shadow-sm">
-          Active Defect Incidents: <span className="text-rose-400 font-bold">{defects.length}</span>
+          Active Defect Incidents: <span className="text-[#f5e6c8] font-bold">{defects.length}</span>
         </div>
       </div>
 
@@ -223,12 +215,12 @@ export function DefectManagementPage() {
         subtitle="Permanent removal of hardware from collegiate active registry."
       >
         <div className="space-y-4 text-xs font-sans">
-          <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-200 space-y-1.5 font-sans">
-            <div className="font-bold uppercase text-[11px] flex items-center gap-1.5 text-rose-400">
-              <AlertTriangle className="w-4 h-4 text-rose-400" />
+          <div className="p-4 bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 rounded-2xl text-[#f5e6c8] space-y-1.5 font-sans">
+            <div className="font-bold uppercase text-[11px] flex items-center gap-1.5 text-[#f5e6c8]">
+              <AlertTriangle className="w-4 h-4 text-[#c9b8a0]" />
               Administrative Decommission Warning
             </div>
-            <p className="text-xs text-rose-300 leading-relaxed">
+            <p className="text-xs text-zinc-300 leading-relaxed">
               Retiring asset <span className="font-bold text-white">{retireDefect?.assetTag}</span> will irrevocably write off the unit from collegiate lab books. An immutable retirement audit event will be recorded under your HoD credentials.
             </p>
           </div>
@@ -247,7 +239,7 @@ export function DefectManagementPage() {
             </button>
             <button
               onClick={handleConfirmRetire}
-              className="px-5 py-2 rounded-full bg-rose-600 hover:bg-rose-500 font-sans text-xs font-bold text-white shadow-sm transition-colors cursor-pointer"
+              className="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 font-sans text-xs font-bold text-black shadow-md transition-colors cursor-pointer"
             >
               Confirm Asset Retirement
             </button>

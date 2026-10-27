@@ -13,13 +13,11 @@ import {
   FileText,
   FolderGit2,
   CheckSquare,
-  Terminal,
+  Layers,
   Wrench,
   ChevronLeft,
   ChevronRight,
-  Lock,
-  Sparkles,
-} from 'lucide-react';
+  Lock } from 'lucide-react';
 
 export function NavigationRail() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -35,22 +33,18 @@ export function NavigationRail() {
           to: '/workspace/inventory',
           icon: Boxes,
           exact: true,
-          count: inventory.length,
-        },
+          count: inventory.length },
         {
           label: 'Assets (Serialized)',
           to: '/workspace/inventory/assets',
           icon: Cpu,
-          count: inventory.filter((i) => i.classification === 'Asset').length,
-        },
+          count: inventory.filter((i) => i.classification === 'Asset').length },
         {
           label: 'Consumables & Stock',
           to: '/workspace/inventory/consumables',
           icon: Package,
-          count: inventory.filter((i) => i.classification === 'Consumable').length,
-        },
-      ],
-    },
+          count: inventory.filter((i) => i.classification === 'Consumable').length },
+      ] },
     {
       title: 'CIRCULATION',
       items: [
@@ -58,48 +52,39 @@ export function NavigationRail() {
           label: 'Active Loans',
           to: '/workspace/custody/active',
           icon: Clock,
-          count: activeLoans.length,
-        },
+          count: activeLoans.length },
         {
           label: 'Requisitions',
           to: '/workspace/custody/requests',
           icon: Inbox,
-          count: requisitions.length,
-        },
+          count: requisitions.length },
         {
           label: 'FIFO Queue',
           to: '/workspace/custody/reservations',
           icon: BookmarkCheck,
-          count: reservations.length,
-        },
-      ],
-    },
+          count: reservations.length },
+      ] },
     {
       title: 'ACCOUNTABILITY',
       items: [
         {
           label: 'Reliability Desk',
           to: '/workspace/accountability/reliability',
-          icon: ShieldCheck,
-        },
+          icon: ShieldCheck },
         {
           label: 'Audit Trail',
           to: '/workspace/accountability/audit-log',
           icon: FileText,
-          requiredRoles: ['Lab Assistant', 'HoD / Admin'],
-        },
-      ],
-    },
+          requiredRoles: ['Lab Assistant', 'HoD / Admin'] },
+      ] },
     {
       title: 'ACADEMICS',
       items: [
         {
           label: 'Project Profiles',
           to: '/workspace/projects/overview',
-          icon: FolderGit2,
-        },
-      ],
-    },
+          icon: FolderGit2 },
+      ] },
     {
       title: 'OPERATIONS',
       items: [
@@ -107,23 +92,19 @@ export function NavigationRail() {
           label: 'Faculty Approvals',
           to: '/workspace/operations/approvals',
           icon: CheckSquare,
-          requiredRoles: ['Faculty', 'HoD / Admin'],
-        },
+          requiredRoles: ['Faculty', 'HoD / Admin'] },
         {
-          label: 'Dispatch Terminal',
+          label: 'Dispatch Desk',
           to: '/workspace/operations/dispatch',
-          icon: Terminal,
-          requiredRoles: ['Lab Assistant', 'HoD / Admin'],
-        },
+          icon: Layers,
+          requiredRoles: ['Lab Assistant', 'HoD / Admin'] },
         {
           label: 'Defect Triage',
           to: '/workspace/operations/defects',
           icon: Wrench,
           count: defects.length,
-          requiredRoles: ['Faculty', 'Lab Assistant', 'HoD / Admin'],
-        },
-      ],
-    },
+          requiredRoles: ['Faculty', 'Lab Assistant', 'HoD / Admin'] },
+      ] },
   ];
 
   return (
@@ -218,7 +199,7 @@ export function NavigationRail() {
       <div className="p-3 border-t border-white/10 flex items-center justify-between text-xs text-zinc-500">
         {!isCollapsed && (
           <div className="flex items-center gap-2 text-[11px] font-sans">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[#c9b8a0] animate-pulse" />
             <span className="text-zinc-400 font-medium">Node L2-A Cluster</span>
           </div>
         )}

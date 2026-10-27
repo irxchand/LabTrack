@@ -10,7 +10,7 @@ import {
   Inbox,
   FolderGit2,
   CheckSquare,
-  Terminal,
+  Send,
   Wrench,
   FileText,
   BookmarkCheck,
@@ -132,7 +132,7 @@ export function TopHeader() {
           {
             label: 'Dispatch Desk',
             to: '/workspace/operations/dispatch',
-            icon: Terminal,
+            icon: Send,
             count: requisitions.filter((r) => r.status === 'Ready for Counter Pickup' || r.status === 'Faculty Endorsed').length,
             isActive: (pathname) => pathname.includes('/operations/dispatch'),
           },
@@ -178,7 +178,7 @@ export function TopHeader() {
           {
             label: 'Dispatch Desk',
             to: '/workspace/operations/dispatch',
-            icon: Terminal,
+            icon: Send,
             isActive: (pathname) => pathname.includes('/operations/dispatch'),
           },
           {
@@ -296,7 +296,7 @@ export function TopHeader() {
               <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-zinc-300 group-hover:text-white transition-colors">
                 {selectedDepartment} DEPT
               </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
               <ChevronDown
                 className={`w-3 h-3 text-zinc-400 group-hover:text-zinc-200 transition-transform duration-200 ${
                   isLabDropdownOpen ? 'rotate-180' : ''
@@ -374,13 +374,12 @@ export function TopHeader() {
                 key={item.label}
                 type="button"
                 onClick={() => navigate(item.to)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap flex-shrink-0 ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer whitespace-nowrap flex-shrink-0 ${
                   active
                     ? 'bg-gradient-to-b from-white to-zinc-200 text-black font-semibold shadow-[0_2px_12px_rgba(255,255,255,0.25)]'
                     : 'text-zinc-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
-                <item.icon className={`w-3.5 h-3.5 flex-shrink-0 ${active ? 'text-black' : 'text-zinc-400'}`} />
                 <span className="whitespace-nowrap">{item.label}</span>
                 {typeof item.count === 'number' && (
                   <span
@@ -403,20 +402,22 @@ export function TopHeader() {
           {/* Notification Center Trigger & Popup Panel */}
           <NotificationCenter />
 
-          {/* Requisition Basket Shortcut */}
-          <button
-            type="button"
-            onClick={() => setIsBasketOpen(true)}
-            className="relative p-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white transition-all cursor-pointer"
-            title="Open Requisition Kit"
-          >
-            <ShoppingBag className="w-4 h-4 text-[#c9b8a0]" />
-            {basket.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#f5e6c8] text-black text-[10px] font-bold flex items-center justify-center shadow-sm">
-                {basket.length}
-              </span>
-            )}
-          </button>
+          {/* Requisition Basket Shortcut (Student borrower persona only) */}
+          {role === 'Student' && (
+            <button
+              type="button"
+              onClick={() => setIsBasketOpen(true)}
+              className="relative p-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white transition-all cursor-pointer"
+              title="Open Requisition Kit"
+            >
+              <ShoppingBag className="w-4 h-4 text-[#c9b8a0]" />
+              {basket.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#f5e6c8] text-black text-[10px] font-bold flex items-center justify-center shadow-sm">
+                  {basket.length}
+                </span>
+              )}
+            </button>
+          )}
 
           <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
 
@@ -486,7 +487,7 @@ export function TopHeader() {
                           </div>
                           <div className="text-[10px] text-zinc-400 mt-0.5">{p.desc}</div>
                         </div>
-                        {isCurrent && <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />}
+                        {isCurrent && <Check className="w-4 h-4 text-[#c9b8a0] flex-shrink-0" />}
                       </button>
                     );
                   })}
@@ -502,10 +503,10 @@ export function TopHeader() {
               logout();
               navigate('/login');
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 text-xs font-sans text-zinc-300 hover:text-rose-300 transition-all cursor-pointer shadow-sm group"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/10 border border-white/10 hover:border-white/20 text-xs font-sans text-zinc-300 hover:text-white transition-all cursor-pointer shadow-sm group"
             title="Log out of LabTrack"
           >
-            <LogOut className="w-3.5 h-3.5 text-zinc-400 group-hover:text-rose-400 transition-colors" />
+            <LogOut className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors" />
             <span className="font-medium text-xs">Log out</span>
           </button>
         </div>
@@ -520,13 +521,12 @@ export function TopHeader() {
               key={item.label}
               type="button"
               onClick={() => navigate(item.to)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 cursor-pointer ${
                 active
                   ? 'bg-white text-black font-semibold shadow-sm'
                   : 'text-zinc-400 hover:text-white bg-white/[0.04]'
               }`}
             >
-              <item.icon className="w-3.5 h-3.5 flex-shrink-0" />
               <span className="whitespace-nowrap">{item.label}</span>
               {typeof item.count === 'number' && (
                 <span className="text-[10px] opacity-75">({item.count})</span>

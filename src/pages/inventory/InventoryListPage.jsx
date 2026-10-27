@@ -24,13 +24,11 @@ import {
   Clock,
   ChevronRight,
   ArrowLeft,
-  Sparkles,
   Layers,
   CheckCircle2,
   SlidersHorizontal,
   Lock,
-  Building2,
-} from 'lucide-react';
+  Building2 } from 'lucide-react';
 
 export function InventoryListPage({ initialClassification = null }) {
   const navigate = useNavigate();
@@ -46,8 +44,7 @@ export function InventoryListPage({ initialClassification = null }) {
     departments,
     userDepartment,
     getItemDeptStock,
-    resolveItemLocationForDept,
-  } = useLabData();
+    resolveItemLocationForDept } = useLabData();
   const { role, permissions } = useAuth();
   const isStudent = role === 'Student';
   const activeDept = isStudent ? userDepartment : (selectedDepartment && selectedDepartment !== 'ALL' ? selectedDepartment : userDepartment || 'AIML');
@@ -102,8 +99,7 @@ export function InventoryListPage({ initialClassification = null }) {
     totalStock: 1,
     availableStock: 1,
     image: '/images/hardware/raspberry-pi-5.jpg',
-    notes: '',
-  });
+    notes: '' });
 
   const handleCopyTag = (tag, e) => {
     e.stopPropagation();
@@ -193,8 +189,7 @@ export function InventoryListPage({ initialClassification = null }) {
       queueDepth: 0,
       custodyHolder: null,
       dateAcquired: new Date().toISOString().substring(0, 10),
-      custodyHistory: [],
-    };
+      custodyHistory: [] };
     await addNewInventoryItem(item);
     setIsAddModalOpen(false);
   };
@@ -214,14 +209,13 @@ export function InventoryListPage({ initialClassification = null }) {
             title="Copy SKU / Tag"
           >
             {copiedTag === row.assetTag ? (
-              <Check className="w-3 h-3 text-emerald-400" />
+              <Check className="w-3 h-3 text-[#c9b8a0]" />
             ) : (
               <Copy className="w-3 h-3" />
             )}
           </button>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Component',
       accessor: 'nomenclature',
@@ -249,14 +243,12 @@ export function InventoryListPage({ initialClassification = null }) {
             </div>
           </div>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Classification',
       accessor: 'classification',
       width: '120px',
-      render: (row) => <StatusBadge status={row.classification} type="classification" size="xs" />,
-    },
+      render: (row) => <StatusBadge status={row.classification} type="classification" size="xs" /> },
     {
       header: 'Coordinates',
       accessor: 'coordinates',
@@ -269,14 +261,12 @@ export function InventoryListPage({ initialClassification = null }) {
             <span>{deptLoc.coordinates}</span>
           </div>
         );
-      },
-    },
+      } },
     {
       header: 'Status',
       accessor: 'stockStatus',
       width: '120px',
-      render: (row) => <StatusBadge status={row.stockStatus} type="stock" size="xs" />,
-    },
+      render: (row) => <StatusBadge status={row.stockStatus} type="stock" size="xs" /> },
     {
       header: 'Available',
       accessor: 'availableStock',
@@ -294,8 +284,7 @@ export function InventoryListPage({ initialClassification = null }) {
             </span>
           </div>
         );
-      },
-    },
+      } },
     {
       header: 'Action',
       width: '160px',
@@ -330,88 +319,80 @@ export function InventoryListPage({ initialClassification = null }) {
             )}
           </div>
         );
-      },
-    },
+      } },
   ];
 
   const getCategoryStyle = (item) => {
     const cat = (item.category || item.classification || '').toLowerCase();
     const nom = (item.nomenclature || '').toLowerCase();
 
-    // 1. Microprocessors: Deep Indigo / Sapphire
+    // 1. Microprocessors: Champagne Gold Highlight
     if (cat.includes('microprocessor') || cat.includes('ai edge') || cat.includes('sbc') || nom.includes('jetson') || nom.includes('raspberry') || nom.includes('imac') || nom.includes('rtx')) {
       return {
-        badgeBg: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
-        pedestalGlow: 'bg-indigo-500/25',
-        borderHover: 'hover:border-indigo-500/40',
-        cardBg: 'from-[#121422]/90 via-[#0e0f18]/85 to-[#08090f]/95',
-        tag: 'Microprocessor',
-      };
+        badgeBg: 'bg-[#c9b8a0]/25 text-[#f5e6c8] border-[#c9b8a0]/40 font-semibold',
+        pedestalGlow: 'bg-[#c9b8a0]/15',
+        borderHover: 'hover:border-[#c9b8a0]/40',
+        cardBg: 'from-[#141416]/90 via-[#0e0f12]/85 to-[#08090f]/95',
+        tag: 'Microprocessor' };
     }
 
-    // 2. Microcontrollers: Electric Sky / Cyan
+    // 2. Microcontrollers: Pure White Frosted Glass
     if (cat.includes('microcontroller') || cat === 'mc' || nom.includes('arduino') || nom.includes('esp32') || nom.includes('pico') || nom.includes('plc')) {
       return {
-        badgeBg: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
-        pedestalGlow: 'bg-sky-500/25',
-        borderHover: 'hover:border-sky-500/40',
-        cardBg: 'from-[#0e1622]/90 via-[#0a111a]/85 to-[#08090f]/95',
-        tag: 'Microcontroller',
-      };
+        badgeBg: 'bg-white/[0.08] text-white border-white/20',
+        pedestalGlow: 'bg-white/10',
+        borderHover: 'hover:border-white/30',
+        cardBg: 'from-[#141416]/90 via-[#0e0f12]/85 to-[#08090f]/95',
+        tag: 'Microcontroller' };
     }
 
-    // 3. Sensors: Warm Amber / Sunset Bronze
+    // 3. Sensors: Champagne Gold
     if (cat.includes('sensor') || nom.includes('camera') || nom.includes('lidar') || nom.includes('imu') || nom.includes('bmp') || nom.includes('dht')) {
       return {
-        badgeBg: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
-        pedestalGlow: 'bg-amber-500/25',
-        borderHover: 'hover:border-amber-500/40',
-        cardBg: 'from-[#1a160e]/90 via-[#14100a]/85 to-[#08090f]/95',
-        tag: 'Sensor',
-      };
+        badgeBg: 'bg-[#c9b8a0]/15 text-[#f5e6c8] border-[#c9b8a0]/30',
+        pedestalGlow: 'bg-[#c9b8a0]/15',
+        borderHover: 'hover:border-[#c9b8a0]/40',
+        cardBg: 'from-[#141416]/90 via-[#0e0f12]/85 to-[#08090f]/95',
+        tag: 'Sensor' };
     }
 
-    // 4. Motors & Actuators: Radiant Violet / Magenta
+    // 4. Motors & Actuators: Pure White Neutral
     if (cat.includes('motor') || nom.includes('robot') || nom.includes('arm') || nom.includes('turtlebot') || nom.includes('servo') || nom.includes('stepper') || nom.includes('driver')) {
       return {
-        badgeBg: 'bg-violet-500/15 text-violet-300 border-violet-500/30',
-        pedestalGlow: 'bg-violet-500/25',
-        borderHover: 'hover:border-violet-500/40',
-        cardBg: 'from-[#191022]/90 via-[#130b1c]/85 to-[#08090f]/95',
-        tag: 'Motor & Actuator',
-      };
+        badgeBg: 'bg-white/[0.06] text-zinc-200 border-white/15',
+        pedestalGlow: 'bg-white/10',
+        borderHover: 'hover:border-white/30',
+        cardBg: 'from-[#141416]/90 via-[#0e0f12]/85 to-[#08090f]/95',
+        tag: 'Motor & Actuator' };
     }
 
     // 5. Communication Modules: Radiant Teal / Cyan
     if (cat.includes('communication') || nom.includes('gps') || nom.includes('nrf') || nom.includes('transceiver')) {
       return {
-        badgeBg: 'bg-teal-500/15 text-teal-300 border-teal-500/30',
-        pedestalGlow: 'bg-teal-500/25',
-        borderHover: 'hover:border-teal-500/40',
-        cardBg: 'from-[#0e1a19]/90 via-[#0a1413]/85 to-[#08090f]/95',
-        tag: 'Communication Module',
-      };
+        badgeBg: 'bg-white/[0.08] text-zinc-200 border-white/15',
+        pedestalGlow: 'bg-white/10',
+        borderHover: 'hover:border-white/30',
+        cardBg: 'from-[#141416]/90 via-[#0e0f12]/85 to-[#08090f]/95',
+        tag: 'Communication Module' };
     }
 
-    // 6. Batteries: Crimson / Rose Amber
+    // 6. Batteries: Pure White Neutral
     if (cat.includes('batter') || nom.includes('lipo') || nom.includes('18650') || nom.includes('cell')) {
       return {
-        badgeBg: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
-        pedestalGlow: 'bg-rose-500/25',
-        borderHover: 'hover:border-rose-500/40',
-        cardBg: 'from-[#1f0e12]/90 via-[#170a0d]/85 to-[#08090f]/95',
-        tag: 'Battery',
-      };
+        badgeBg: 'bg-white/[0.08] text-white border-white/20',
+        pedestalGlow: 'bg-white/10',
+        borderHover: 'hover:border-white/30',
+        cardBg: 'from-[#141416]/90 via-[#0e0f12]/85 to-[#08090f]/95',
+        tag: 'Battery' };
     }
 
-    // 7. Misc & Instrumentation: Mint Emerald
+    // 7. Misc & Instrumentation: Champagne Gold
     return {
-      badgeBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
-      pedestalGlow: 'bg-emerald-500/25',
-      borderHover: 'hover:border-emerald-500/40',
-      cardBg: 'from-[#0e1a16]/90 via-[#0a1411]/85 to-[#08090f]/95',
-      tag: item.category || 'Misc',
-    };
+      badgeBg: 'bg-[#c9b8a0]/15 text-[#f5e6c8] border-[#c9b8a0]/30',
+      pedestalGlow: 'bg-[#c9b8a0]/15',
+      borderHover: 'hover:border-[#c9b8a0]/40',
+      cardBg: 'from-[#141416]/90 via-[#0e0f12]/85 to-[#08090f]/95',
+      tag: item.category || 'Misc' };
   };
 
   const getSpecChips = (item) => {
@@ -517,7 +498,7 @@ export function InventoryListPage({ initialClassification = null }) {
                   <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
                     <div className="flex flex-col text-xs">
                       <div className="flex items-center gap-1.5">
-                        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${canIssue ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${canIssue ? 'bg-[#c9b8a0]' : 'bg-white/40'}`} />
                         <span className="text-xs text-white font-semibold">
                           {canIssue ? `${deptStock.available} Available` : 'Out of Stock'}
                         </span>
@@ -547,7 +528,7 @@ export function InventoryListPage({ initialClassification = null }) {
                         className="px-3.5 py-2 rounded-full bg-white/[0.06] border border-white/10 text-zinc-400 font-medium text-[11px] tracking-tight flex items-center gap-1.5 cursor-not-allowed opacity-80 flex-shrink-0"
                         title={`Item currently depleted in ${activeDept} laboratories.`}
                       >
-                        <Lock className="w-3 h-3 text-amber-400/80" />
+                        <Lock className="w-3 h-3 text-[#c9b8a0]" />
                         <span>{activeDept} Depleted</span>
                       </button>
                     )}
@@ -573,7 +554,7 @@ export function InventoryListPage({ initialClassification = null }) {
               {selectedDepartment === 'ALL' ? 'Central Hardware Depot' : `${selectedDepartment} Department Depot`}
             </span>
             {isStudent && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-medium">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-[#f5e6c8] font-medium">
                 Enrolled: {userDepartment} Dept
               </span>
             )}
@@ -780,11 +761,11 @@ export function InventoryListPage({ initialClassification = null }) {
                   <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
                     <div className="text-xs text-zinc-400">
                       {canIssue ? (
-                        <span className="text-emerald-400 font-medium">
+                        <span className="text-[#c9b8a0] font-medium">
                           ✓ {modalDeptStock.available} available in {activeDept} labs
                         </span>
                       ) : (
-                        <span className="text-amber-400 flex items-center gap-1 font-medium">
+                        <span className="text-[#f5e6c8] flex items-center gap-1 font-medium">
                           <Lock className="w-3.5 h-3.5" />
                           <span>Currently depleted in {activeDept} labs</span>
                         </span>
@@ -842,7 +823,7 @@ export function InventoryListPage({ initialClassification = null }) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
-                Asset Tag / SKU <span className="text-rose-400">*</span>
+                Asset Tag / SKU <span className="text-[#c9b8a0]">*</span>
               </label>
               <input
                 type="text"
@@ -870,7 +851,7 @@ export function InventoryListPage({ initialClassification = null }) {
 
           <div>
             <label className="block text-[10px] font-sans uppercase font-medium text-[#8a8f98] mb-1">
-              Component Name <span className="text-rose-400">*</span>
+              Component Name <span className="text-[#c9b8a0]">*</span>
             </label>
             <input
               type="text"
@@ -939,8 +920,7 @@ export function InventoryListPage({ initialClassification = null }) {
                   setNewItemData({
                     ...newItemData,
                     availableStock: parseInt(e.target.value) || 1,
-                    totalStock: parseInt(e.target.value) || 1,
-                  })
+                    totalStock: parseInt(e.target.value) || 1 })
                 }
                 className="w-full px-2.5 py-1.5 bg-[#0a0b0e] border border-white/[0.1] rounded font-sans text-white text-xs"
               />

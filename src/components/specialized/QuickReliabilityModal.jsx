@@ -15,7 +15,7 @@ export function QuickReliabilityModal({ isOpen, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/10">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+            <div className="p-2 rounded bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-[#f5e6c8]">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
@@ -39,23 +39,23 @@ export function QuickReliabilityModal({ isOpen, onClose }) {
         <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-6 border-b border-white/10">
           <div className="flex items-center space-x-5">
             {/* Circular Rating Gauge */}
-            <div className="relative w-24 h-24 flex items-center justify-center rounded-full border-4 border-emerald-500/30 bg-emerald-500/10">
+            <div className="relative w-24 h-24 flex items-center justify-center rounded-full border-4 border-[#c9b8a0]/30 bg-[#c9b8a0]/10">
               <div className="text-center">
-                <div className="text-2xl font-bold text-emerald-400">96.4</div>
+                <div className="text-2xl font-bold text-[#f5e6c8]">96.4</div>
                 <div className="text-[10px] text-zinc-400">/ 100</div>
               </div>
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-base font-bold text-white">{user?.name || 'Aarav Patel'}</span>
-                <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] uppercase font-semibold">
+                <span className="px-2 py-0.5 rounded bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-[#f5e6c8] text-[10px] uppercase font-semibold">
                   Exemplary Tier
                 </span>
               </div>
               <div className="text-xs text-zinc-400 mt-1">
                 PRN: {user?.prn || '2024881'} • Project: Team Hyperion (AERO-24)
               </div>
-              <div className="text-xs text-emerald-400 mt-1 flex items-center space-x-1.5">
+              <div className="text-xs text-[#c9b8a0] mt-1 flex items-center space-x-1.5">
                 <Award className="w-3.5 h-3.5" />
                 <span>Eligibility: Priority hardware booking & expanded 4-asset quota.</span>
               </div>
@@ -68,7 +68,7 @@ export function QuickReliabilityModal({ isOpen, onClose }) {
           <div className="p-3 rounded bg-zinc-900/60 border border-white/5">
             <div className="text-[10px] text-zinc-500 uppercase">On-Time Return Rate</div>
             <div className="text-lg font-bold text-white mt-1">98.2%</div>
-            <div className="text-[10px] text-emerald-400 mt-0.5">24 of 25 Returns on-time</div>
+            <div className="text-[10px] text-[#c9b8a0] mt-0.5">24 of 25 Returns on-time</div>
           </div>
           <div className="p-3 rounded bg-zinc-900/60 border border-white/5">
             <div className="text-[10px] text-zinc-500 uppercase">Hardware Care Index</div>
@@ -78,7 +78,7 @@ export function QuickReliabilityModal({ isOpen, onClose }) {
           <div className="p-3 rounded bg-zinc-900/60 border border-white/5">
             <div className="text-[10px] text-zinc-500 uppercase">Audit Strike Penalty</div>
             <div className="text-lg font-bold text-zinc-400 mt-1">0 Pts</div>
-            <div className="text-[10px] text-emerald-400 mt-0.5">Zero Infractions</div>
+            <div className="text-[10px] text-[#c9b8a0] mt-0.5">Zero Infractions</div>
           </div>
         </div>
 
@@ -90,14 +90,14 @@ export function QuickReliabilityModal({ isOpen, onClose }) {
           <div className="space-y-1.5 text-xs text-zinc-300">
             <div className="p-2 rounded bg-white/5 flex items-center justify-between">
               <span className="flex items-center space-x-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#c9b8a0]" />
                 <span>Returned Jetson Orin Nano (SBC-8821) in pristine condition</span>
               </span>
               <span className="text-[10px] text-zinc-500">2026-03-14</span>
             </div>
             <div className="p-2 rounded bg-white/5 flex items-center justify-between">
               <span className="flex items-center space-x-2">
-                <Clock className="w-3.5 h-3.5 text-blue-400" />
+                <Clock className="w-3.5 h-3.5 text-[#c9b8a0]" />
                 <span>Requisition approved by Dr. Robert Chen for RIG-8840-FPGA</span>
               </span>
               <span className="text-[10px] text-zinc-500">2026-03-10</span>

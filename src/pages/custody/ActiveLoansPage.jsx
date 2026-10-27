@@ -12,7 +12,6 @@ import {
   CalendarPlus,
   CheckCircle2,
   ShieldAlert,
-  Sparkles,
   MapPin,
   Eye,
   LayoutGrid,
@@ -27,8 +26,7 @@ import {
   HelpCircle,
   ArrowRight,
   Wrench,
-  RotateCcw,
-} from 'lucide-react';
+  RotateCcw } from 'lucide-react';
 
 export function ActiveLoansPage() {
   const navigate = useNavigate();
@@ -250,8 +248,7 @@ export function ActiveLoansPage() {
             </div>
           </div>
         );
-      },
-    },
+      } },
     {
       header: 'Component Nomenclature',
       accessor: 'nomenclature',
@@ -263,8 +260,7 @@ export function ActiveLoansPage() {
             <span>Origin: {row.locationCoordinates}</span>
           </div>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Custody Holder',
       accessor: 'borrowerName',
@@ -274,8 +270,7 @@ export function ActiveLoansPage() {
           <div className="text-white font-medium">{row.borrowerName}</div>
           <div className="text-zinc-500 text-[11px] font-sans">{row.borrowerPrn} • {row.courseCode}</div>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Issued Date',
       accessor: 'checkedOutDate',
@@ -284,8 +279,7 @@ export function ActiveLoansPage() {
         <span className="font-sans text-xs text-zinc-400">
           {row.checkedOutDate?.split(' ')[0]}
         </span>
-      ),
-    },
+      ) },
     {
       header: 'Scheduled Return',
       accessor: 'dueDate',
@@ -296,18 +290,18 @@ export function ActiveLoansPage() {
           <div
             className={`text-[11px] font-medium flex items-center gap-1.5 mt-0.5 ${
               row.daysRemaining < 0
-                ? 'text-rose-400 font-semibold'
+                ? 'text-[#f5e6c8] font-semibold'
                 : row.daysRemaining <= 3
-                ? 'text-amber-400 font-semibold'
+                ? 'text-white font-semibold'
                 : 'text-zinc-400'
             }`}
           >
             <span
               className={`w-1.5 h-1.5 rounded-full ${
                 row.daysRemaining < 0
-                  ? 'bg-rose-400 animate-pulse'
+                  ? 'bg-white animate-pulse'
                   : row.daysRemaining <= 3
-                  ? 'bg-amber-400 animate-pulse'
+                  ? 'bg-[#c9b8a0] animate-pulse'
                   : 'bg-[#c9b8a0]'
               }`}
             />
@@ -316,8 +310,7 @@ export function ActiveLoansPage() {
               : `${row.daysRemaining} Days Remaining`}
           </div>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Action',
       width: '180px',
@@ -342,7 +335,7 @@ export function ActiveLoansPage() {
                     `/workspace/operations/dispatch?mode=checkin&assetTag=${encodeURIComponent(row.assetTag)}`
                   )
                 }
-                className="px-3.5 py-1.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer transition-all"
+                className="px-3.5 py-1.5 rounded-full bg-[#c9b8a0]/15 hover:bg-[#c9b8a0]/25 text-[#f5e6c8] border border-[#c9b8a0]/30 text-xs font-semibold flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer transition-all"
                 title="Intake & process return inspection at counter"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -364,8 +357,7 @@ export function ActiveLoansPage() {
             )}
           </div>
         );
-      },
-    },
+      } },
   ];
 
   const getCategoryStyle = (item) => {
@@ -374,47 +366,42 @@ export function ActiveLoansPage() {
 
     if (cat.includes('ai edge') || cat.includes('sbc') || nom.includes('jetson') || nom.includes('raspberry')) {
       return {
-        badgeBg: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
-        pedestalGlow: 'bg-indigo-500/25',
-        borderHover: 'hover:border-indigo-500/40',
-        cardBg: 'from-[#121422]/90 via-[#0e0f18]/85 to-[#08090f]/95',
-        tag: 'AI Compute & Edge',
-      };
+        badgeBg: 'bg-[#c9b8a0]/25 text-[#f5e6c8] border-[#c9b8a0]/40 font-semibold',
+        pedestalGlow: 'bg-[#c9b8a0]/15',
+        borderHover: 'hover:border-[#c9b8a0]/40',
+        cardBg: 'from-[#141416]/90 via-[#0e0f12]/85 to-[#08090f]/95',
+        tag: 'AI Compute & Edge' };
     }
     if (cat.includes('microcontroller') || nom.includes('arduino') || nom.includes('esp32')) {
       return {
-        badgeBg: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
-        pedestalGlow: 'bg-sky-500/25',
-        borderHover: 'hover:border-sky-500/40',
-        cardBg: 'from-[#0e1622]/90 via-[#0a111a]/85 to-[#08090f]/95',
-        tag: 'Microcontroller',
-      };
+        badgeBg: 'bg-white/[0.08] text-white border-white/20',
+        pedestalGlow: 'bg-white/10',
+        borderHover: 'hover:border-white/30',
+        cardBg: 'from-[#141416]/90 via-[#0e0f12]/85 to-[#08090f]/95',
+        tag: 'Microcontroller' };
     }
     if (cat.includes('sensor') || nom.includes('sensor') || nom.includes('imu') || nom.includes('oled') || nom.includes('bmp')) {
       return {
-        badgeBg: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
-        pedestalGlow: 'bg-amber-500/25',
-        borderHover: 'hover:border-amber-500/40',
-        cardBg: 'from-[#1a160e]/90 via-[#14100a]/85 to-[#08090f]/95',
-        tag: 'Sensor & Module',
-      };
+        badgeBg: 'bg-[#c9b8a0]/15 text-[#f5e6c8] border-[#c9b8a0]/30',
+        pedestalGlow: 'bg-[#c9b8a0]/15',
+        borderHover: 'hover:border-[#c9b8a0]/40',
+        cardBg: 'from-[#141416]/90 via-[#0e0f12]/85 to-[#08090f]/95',
+        tag: 'Sensor & Module' };
     }
     if (cat.includes('instrument') || nom.includes('oscilloscope') || nom.includes('analyzer')) {
       return {
-        badgeBg: 'bg-purple-500/15 text-purple-300 border-purple-500/30',
-        pedestalGlow: 'bg-purple-500/25',
-        borderHover: 'hover:border-purple-500/40',
-        cardBg: 'from-[#191022]/90 via-[#130b1c]/85 to-[#08090f]/95',
-        tag: 'Test Instrument',
-      };
+        badgeBg: 'bg-white/[0.08] text-zinc-200 border-white/15',
+        pedestalGlow: 'bg-white/10',
+        borderHover: 'hover:border-white/30',
+        cardBg: 'from-[#141416]/90 via-[#0e0f12]/85 to-[#08090f]/95',
+        tag: 'Test Instrument' };
     }
     return {
-      badgeBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
-      pedestalGlow: 'bg-emerald-500/25',
-      borderHover: 'hover:border-emerald-500/40',
-      cardBg: 'from-[#0e1a16]/90 via-[#0a1411]/85 to-[#08090f]/95',
-      tag: item?.category || 'Bench Hardware',
-    };
+      badgeBg: 'bg-[#c9b8a0]/15 text-[#f5e6c8] border-[#c9b8a0]/30',
+      pedestalGlow: 'bg-[#c9b8a0]/15',
+      borderHover: 'hover:border-[#c9b8a0]/40',
+      cardBg: 'from-[#141416]/90 via-[#0e0f12]/85 to-[#08090f]/95',
+      tag: item?.category || 'Bench Hardware' };
   };
 
   const getSpecChips = (item) => {
@@ -528,10 +515,10 @@ export function ActiveLoansPage() {
                   <span
                     className={`w-2 h-2 rounded-full flex-shrink-0 ${
                       loan.daysRemaining < 0
-                        ? 'bg-rose-400'
+                        ? 'bg-white animate-pulse'
                         : loan.daysRemaining <= 3
-                        ? 'bg-amber-400'
-                        : 'bg-emerald-400'
+                        ? 'bg-[#c9b8a0] animate-pulse'
+                        : 'bg-[#c9b8a0]'
                     }`}
                   />
                   <span className="text-xs font-semibold text-white truncate">
@@ -552,10 +539,10 @@ export function ActiveLoansPage() {
                     e.stopPropagation();
                     setDefectLoan(loan);
                   }}
-                  className="px-3 py-2 rounded-full text-xs font-medium bg-white/[0.06] hover:bg-rose-500/15 text-zinc-300 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
+                  className="px-3 py-2 rounded-full text-xs font-medium bg-white/[0.06] hover:bg-white/10 text-zinc-300 hover:text-white border border-white/10 hover:border-white/20 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
                   title="Report a defect or issue with this hardware unit"
                 >
-                  <Wrench className="w-3.5 h-3.5 text-zinc-400 group-hover:text-rose-300" />
+                  <Wrench className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white" />
                   <span>Report Fault</span>
                 </button>
 
@@ -568,7 +555,7 @@ export function ActiveLoansPage() {
                         `/workspace/operations/dispatch?mode=checkin&assetTag=${encodeURIComponent(loan.assetTag)}`
                       );
                     }}
-                    className="px-4 py-2 rounded-full text-xs font-semibold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95 flex-shrink-0"
+                    className="px-4 py-2 rounded-full text-xs font-semibold bg-[#c9b8a0]/15 hover:bg-[#c9b8a0]/25 text-[#f5e6c8] border border-[#c9b8a0]/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95 flex-shrink-0"
                     title="Intake return and inspect hardware condition"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
@@ -627,9 +614,9 @@ export function ActiveLoansPage() {
       {/* 2. OVERDUE ACCOUNTABILITY NOTICE (Apple Style Minimal Toast)  */}
       {/* ───────────────────────────────────────────────────────────── */}
       {userHasOverdue && (
-        <div className="px-5 py-3.5 rounded-2xl bg-white/[0.03] border border-rose-500/20 backdrop-blur-xl flex items-center justify-between text-xs">
+        <div className="px-5 py-3.5 rounded-2xl bg-white/[0.03] border border-[#c9b8a0]/30 backdrop-blur-xl flex items-center justify-between text-xs">
           <div className="flex items-center gap-3">
-            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse flex-shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-[#c9b8a0] animate-pulse flex-shrink-0" />
             <span className="text-zinc-300 text-[12px]">
               One or more items are overdue. Please surrender the equipment at Lab 1 Counter (Desk 2).
             </span>
@@ -742,9 +729,9 @@ export function ActiveLoansPage() {
       {/* ───────────────────────────────────────────────────────────── */}
       {filteredLoans.length === 0 ? (
         userReturnedRequisitions.length > 0 ? (
-          <div className="text-center py-16 px-6 text-zinc-400 text-sm bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-emerald-500/20 rounded-3xl backdrop-blur-xl shadow-lg relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-3.5 shadow-[0_0_20px_rgba(16,185,129,0.15)]">
+          <div className="text-center py-16 px-6 text-zinc-400 text-sm bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-[#c9b8a0]/25 rounded-3xl backdrop-blur-xl shadow-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#c9b8a0]/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="w-12 h-12 rounded-2xl bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-[#f5e6c8] flex items-center justify-center mx-auto mb-3.5 shadow-[0_0_20px_rgba(201,184,160,0.15)]">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <p className="font-semibold text-white text-base">Bench Clean • Hardware Returned & Restocked</p>
@@ -755,7 +742,7 @@ export function ActiveLoansPage() {
               <button
                 type="button"
                 onClick={() => navigate('/workspace/custody/requisitions?status=Returned')}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-95"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#c9b8a0]/15 hover:bg-[#c9b8a0]/25 border border-[#c9b8a0]/30 text-[#f5e6c8] text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-95"
               >
                 <span>View Return Receipts</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -827,7 +814,7 @@ export function ActiveLoansPage() {
                 </div>
                 <div className="flex items-center gap-2 mt-1 text-xs">
                   <span className="text-zinc-500">Current Due:</span>
-                  <span className="text-amber-400 font-sans font-medium">
+                  <span className="text-[#f5e6c8] font-sans font-medium">
                     {selectedLoan.dueDate?.split(' ')[0]}
                   </span>
                 </div>
@@ -879,7 +866,7 @@ export function ActiveLoansPage() {
             {/* Quick Reason Presets */}
             <div>
               <label className="block text-[11px] uppercase tracking-wider font-semibold text-zinc-400 mb-1.5">
-                Justification & Rationale <span className="text-rose-400">*</span>
+                Justification & Rationale <span className="text-[#c9b8a0]">*</span>
               </label>
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {[
@@ -1027,8 +1014,7 @@ export function ActiveLoansPage() {
                   projectId: defectLoan.projectId,
                   severity: defectSeverity,
                   defectCategory,
-                  description: defectDescription,
-                });
+                  description: defectDescription });
                 setDefectLoan(null);
                 setDefectDescription('');
               } finally {
@@ -1037,8 +1023,8 @@ export function ActiveLoansPage() {
             }}
             className="space-y-4 text-xs font-sans"
           >
-            <div className="p-3.5 bg-amber-500/[0.08] border border-amber-500/20 rounded-2xl text-amber-200 text-xs leading-relaxed flex items-start gap-2.5">
-              <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+            <div className="p-3.5 bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 rounded-2xl text-[#f5e6c8] text-xs leading-relaxed flex items-start gap-2.5">
+              <AlertTriangle className="w-4 h-4 text-[#c9b8a0] flex-shrink-0 mt-0.5" />
               <span>
                 Reporting a hardware fault alerts the lab technician bench. If approved for return/swap, bring this physical unit to Counter Desk 1 for inspection without incurring a personal penalty.
               </span>
@@ -1103,7 +1089,7 @@ export function ActiveLoansPage() {
               <button
                 type="submit"
                 disabled={isSubmittingDefect || !defectDescription.trim()}
-                className="px-5 py-2 rounded-full bg-gradient-to-r from-rose-500 to-amber-500 hover:opacity-90 text-white font-semibold text-xs transition-all shadow-md active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all shadow-md active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {isSubmittingDefect ? 'Submitting Ticket...' : 'Submit Fault Report'}
               </button>

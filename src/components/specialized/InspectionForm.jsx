@@ -132,11 +132,11 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
             onClick={() => setReturnMode('clean')}
             className={`p-3 rounded-2xl border flex items-center justify-center gap-2 font-sans text-xs transition-all cursor-pointer ${
               returnMode === 'clean'
-                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold shadow-sm'
+                ? 'bg-[#c9b8a0]/20 border-[#c9b8a0]/40 text-[#f5e6c8] font-semibold shadow-sm'
                 : 'bg-white/[0.02] border-white/10 text-zinc-400 hover:bg-white/[0.05]'
             }`}
           >
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <ShieldCheck className="w-4 h-4 text-[#c9b8a0]" />
             Accept Clean Return
           </button>
 
@@ -145,11 +145,11 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
             onClick={() => setReturnMode('defect')}
             className={`p-3 rounded-2xl border flex items-center justify-center gap-2 font-sans text-xs transition-all cursor-pointer ${
               returnMode === 'defect'
-                ? 'bg-rose-500/15 border-rose-500/40 text-rose-300 font-semibold shadow-sm'
+                ? 'bg-[#c9b8a0]/20 border-[#c9b8a0]/50 text-[#f5e6c8] font-semibold shadow-sm'
                 : 'bg-white/[0.02] border-white/10 text-zinc-400 hover:bg-white/[0.05]'
             }`}
           >
-            <Wrench className="w-4 h-4 text-rose-400" />
+            <Wrench className="w-4 h-4 text-[#c9b8a0]" />
             Route to Defect Log
           </button>
         </div>
@@ -157,8 +157,8 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
 
       {/* Defect Details Form when mode === 'defect' */}
       {returnMode === 'defect' && (
-        <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl space-y-3 pt-3">
-          <div className="flex items-center gap-1.5 text-rose-300 font-sans text-xs font-semibold">
+        <div className="p-4 bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 rounded-2xl space-y-3 pt-3">
+          <div className="flex items-center gap-1.5 text-[#f5e6c8] font-sans text-xs font-semibold">
             <AlertTriangle className="w-3.5 h-3.5" />
             Defect Condition Logging Parameters
           </div>
@@ -200,7 +200,7 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
               value={defectDetails.conditionSummary}
               onChange={(e) => setDefectDetails({ ...defectDetails, conditionSummary: e.target.value })}
               placeholder="Describe physical flaw or electrical test result..."
-              className="w-full mt-1 bg-[#141417] border border-white/15 rounded-xl px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-rose-500 font-sans"
+              className="w-full mt-1 bg-[#141417] border border-white/15 rounded-xl px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#c9b8a0] font-sans"
             />
           </div>
         </div>
@@ -220,8 +220,8 @@ export function InspectionForm({ loan, onComplete, onCancel }) {
           type="submit"
           className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-sans text-xs font-semibold tracking-wide transition-all shadow-sm cursor-pointer ${
             returnMode === 'clean'
-              ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:opacity-95 text-white'
-              : 'bg-rose-600 hover:bg-rose-500 text-white'
+              ? 'bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] hover:opacity-95 text-black'
+              : 'bg-white hover:bg-neutral-200 text-black font-bold shadow-md'
           }`}
         >
           {returnMode === 'clean' ? (

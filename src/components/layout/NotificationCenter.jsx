@@ -13,7 +13,6 @@ import {
   XCircle,
   AlertTriangle,
   Clock,
-  Sparkles,
   ArrowRight,
   ChevronRight,
   ShieldAlert,
@@ -418,26 +417,26 @@ export function NotificationCenter() {
     switch (notif.type) {
       case 'success':
         return (
-          <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-sm flex-shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 flex items-center justify-center text-[#c9b8a0] shadow-sm flex-shrink-0">
             <CheckCircle2 className="w-4 h-4" />
           </div>
         );
       case 'error':
         return (
-          <div className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 shadow-sm flex-shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-white/[0.06] border border-white/15 flex items-center justify-center text-zinc-300 shadow-sm flex-shrink-0">
             <XCircle className="w-4 h-4" />
           </div>
         );
       case 'warning':
         return (
-          <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-sm flex-shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 flex items-center justify-center text-[#f5e6c8] shadow-sm flex-shrink-0">
             <AlertTriangle className="w-4 h-4" />
           </div>
         );
       case 'info':
       default:
         return (
-          <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-sm flex-shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#c9b8a0] shadow-sm flex-shrink-0">
             <Inbox className="w-4 h-4" />
           </div>
         );
@@ -464,7 +463,7 @@ export function NotificationCenter() {
 
         {/* Dynamic Badge Counter */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-400 text-black text-[10px] font-extrabold flex items-center justify-center shadow-[0_0_8px_rgba(245,158,11,0.6)] animate-pulse">
+          <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-gradient-to-r from-[#c9b8a0] to-[#f5e6c8] text-black text-[10px] font-extrabold flex items-center justify-center shadow-[0_0_8px_rgba(201,184,160,0.5)]">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -485,7 +484,7 @@ export function NotificationCenter() {
                 <h3 className="font-semibold text-xs text-white tracking-tight flex items-center gap-2">
                   <span>Notifications</span>
                   {unreadCount > 0 && (
-                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/30">
                       {unreadCount} new
                     </span>
                   )}
@@ -534,13 +533,13 @@ export function NotificationCenter() {
               onClick={() => setActiveTab('unread')}
               className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer flex items-center gap-1 ${
                 activeTab === 'unread'
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold'
+                  ? 'bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/30 font-semibold'
                   : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]'
               }`}
             >
               <span>Unread</span>
               {unreadCount > 0 && (
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#f5e6c8] inline-block" />
               )}
             </button>
             <button
@@ -573,7 +572,7 @@ export function NotificationCenter() {
                   >
                     {/* Unread Accent Pill */}
                     {!isRead && (
-                      <span className="absolute top-3.5 left-1.5 w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.8)]" />
+                      <span className="absolute top-3.5 left-1.5 w-1.5 h-1.5 rounded-full bg-[#f5e6c8] shadow-[0_0_6px_rgba(245,230,200,0.8)]" />
                     )}
 
                     {/* Contextual Icon */}
@@ -629,7 +628,7 @@ export function NotificationCenter() {
             ) : (
               <div className="py-12 px-6 text-center flex flex-col items-center justify-center">
                 <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-zinc-500 mb-3">
-                  <Sparkles className="w-5 h-5 text-[#c9b8a0]/60" />
+                  <CheckCircle2 className="w-5 h-5 text-[#c9b8a0]/60" />
                 </div>
                 <h4 className="text-xs font-semibold text-zinc-300 mb-1">All Caught Up</h4>
                 <p className="text-[11px] text-zinc-500 max-w-[220px]">

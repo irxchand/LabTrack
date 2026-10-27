@@ -33,11 +33,11 @@ export function NotificationProvider({ children }) {
   const getToastIcon = (type) => {
     switch (type) {
       case 'success':
-        return <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />;
+        return <CheckCircle2 className="w-4 h-4 text-[#c9b8a0] flex-shrink-0" />;
       case 'error':
-        return <XCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />;
+        return <XCircle className="w-4 h-4 text-zinc-300 flex-shrink-0" />;
       case 'warning':
-        return <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />;
+        return <AlertTriangle className="w-4 h-4 text-[#c9b8a0] flex-shrink-0" />;
       case 'info':
       default:
         return <Bell className="w-4 h-4 text-[#c9b8a0] flex-shrink-0" />;
@@ -54,11 +54,11 @@ export function NotificationProvider({ children }) {
             key={toast.id}
             className={`pointer-events-auto p-4 rounded-2xl border shadow-[0_20px_50px_rgba(0,0,0,0.65)] backdrop-blur-2xl transition-all duration-300 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-4 ${
               toast.type === 'success'
-                ? 'bg-[#0a1813]/95 border-emerald-500/30 text-emerald-100'
+                ? 'bg-[#141416]/95 border-[#c9b8a0]/35 text-[#f5e6c8]'
                 : toast.type === 'error'
-                ? 'bg-[#1a0a0d]/95 border-rose-500/30 text-rose-100'
+                ? 'bg-[#141416]/95 border-white/20 text-white'
                 : toast.type === 'warning'
-                ? 'bg-[#181309]/95 border-amber-500/30 text-amber-100'
+                ? 'bg-[#141416]/95 border-[#c9b8a0]/35 text-[#f5e6c8]'
                 : 'bg-[#0c0d14]/95 border-white/15 text-zinc-100'
             }`}
           >

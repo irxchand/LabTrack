@@ -120,8 +120,8 @@ export function LoginPage() {
 
             {/* Error Message Alert */}
             {errorMessage && (
-              <div className="mb-4 p-3 rounded-xl bg-red-950/40 border border-red-500/30 text-red-200 text-xs flex items-center space-x-2 backdrop-blur-md">
-                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+              <div className="mb-4 p-3 rounded-xl bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 text-[#f5e6c8] text-xs flex items-center space-x-2 backdrop-blur-md">
+                <AlertCircle className="w-4 h-4 text-[#c9b8a0] flex-shrink-0" />
                 <span>{errorMessage}</span>
               </div>
             )}

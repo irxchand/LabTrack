@@ -8,7 +8,6 @@ import { InspectionForm } from '../../components/specialized/InspectionForm';
 import { DataTable } from '../../components/common/DataTable';
 import { Modal } from '../../components/common/Modal';
 import {
-  Terminal,
   Search,
   CheckCircle2,
   Package,
@@ -28,7 +27,6 @@ import {
   AlertTriangle,
   QrCode,
   Scan,
-  Sparkles,
   ArrowRight,
   ExternalLink,
 } from 'lucide-react';
@@ -470,16 +468,14 @@ export function DispatchDeskPage() {
       {/* ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div>
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.04] text-[10px] font-sans uppercase tracking-wider text-[#c9b8a0] mb-2 border border-white/10">
-            <Sparkles className="w-3 h-3 text-[#a78b71]" />
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/[0.04] text-[10px] font-sans uppercase tracking-wider text-[#c9b8a0] mb-2 border border-white/10">
             <span>OPERATIONAL COUNTER TERMINAL • SENIOR STAFF DESK</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white flex items-center gap-2.5 font-display">
-            <Terminal className="w-6 h-6 text-[#a78b71]" />
             Lab Assistant Dispatch & Return Terminal
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Authenticated Staff: <span className="text-white font-medium">{currentUser?.name || 'Ramesh Patil (N10001)'}</span> • 36 Physical SIT Barcodes Bound • Invariant: <code className="text-[#f5e6c8]">good + bad = total</code>.
+            Authenticated Staff: <span className="text-white font-medium">{currentUser?.name || 'Ramesh Patil (N10001)'}</span> • 36 Physical SIT Barcodes Bound
           </p>
         </div>
 
@@ -525,8 +521,8 @@ export function DispatchDeskPage() {
 
       {/* Success Toasts */}
       {dispatchSuccess && (
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3 text-xs text-emerald-300">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+        <div className="p-4 rounded-2xl bg-[#c9b8a0]/15 border border-[#c9b8a0]/35 flex items-center gap-3 text-xs text-[#f5e6c8]">
+          <CheckCircle2 className="w-5 h-5 text-[#c9b8a0] shrink-0" />
           <div>
             <div className="font-semibold text-white">Physical Handover Committed</div>
             <div>
@@ -537,8 +533,8 @@ export function DispatchDeskPage() {
       )}
 
       {returnSuccess && (
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3 text-xs text-emerald-300">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+        <div className="p-4 rounded-2xl bg-[#c9b8a0]/15 border border-[#c9b8a0]/35 flex items-center gap-3 text-xs text-[#f5e6c8]">
+          <CheckCircle2 className="w-5 h-5 text-[#c9b8a0] shrink-0" />
           <div>
             <div className="font-semibold text-white">
               {returnSuccess.returnType === 'clean' ? 'Certified Clean Return Restocked' : 'Defect Logged on Intake'}
@@ -631,7 +627,7 @@ export function DispatchDeskPage() {
                 <span className="px-2 py-0.5 rounded bg-white/[0.05] text-[#c9b8a0] text-[10px] font-mono">
                   Default ID: {resolvedScanResult.defaultId || 'N/A'}
                 </span>
-                <span className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 text-[10px] font-semibold">
+                <span className="px-2 py-0.5 rounded bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 text-[10px] font-semibold">
                   {resolvedScanResult.department} Dept ({resolvedScanResult.labId})
                 </span>
               </div>
@@ -640,10 +636,10 @@ export function DispatchDeskPage() {
                 <span
                   className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
                     resolvedScanResult.state === 'AVAILABLE'
-                      ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                      ? 'bg-[#c9b8a0]/15 text-[#f5e6c8] border-[#c9b8a0]/30'
                       : resolvedScanResult.state === 'IN_USE'
-                      ? 'bg-blue-500/10 text-blue-300 border-blue-500/30'
-                      : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
+                      ? 'bg-white/[0.08] text-white border-white/20'
+                      : 'bg-white/[0.04] text-zinc-400 border-white/10'
                   }`}
                 >
                   {resolvedScanResult.state}
@@ -717,10 +713,10 @@ export function DispatchDeskPage() {
                     <span
                       className={`px-1.5 py-0.2 rounded text-[10px] font-semibold ${
                         asset.state === 'AVAILABLE'
-                          ? 'text-emerald-400 bg-emerald-500/10'
+                          ? 'text-[#c9b8a0] bg-[#c9b8a0]/15'
                           : asset.state === 'IN_USE'
-                          ? 'text-blue-400 bg-blue-500/10'
-                          : 'text-rose-400 bg-rose-500/10'
+                          ? 'text-white bg-white/10'
+                          : 'text-zinc-400 bg-white/[0.04]'
                       }`}
                     >
                       {asset.state}
@@ -794,7 +790,7 @@ export function DispatchDeskPage() {
                               Stage 3 • Staged at Desk 2
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30">
                               Stage 2 • Sanctioned
                             </span>
                           )}
@@ -842,10 +838,10 @@ export function DispatchDeskPage() {
                 <form onSubmit={handleExecuteDispatch} className="space-y-4 text-xs">
                   {/* Stock Shortage Warning Banner */}
                   {selectedReqShortage && (
-                    <div className="p-4 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-200 text-xs flex items-start gap-3">
-                      <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+                    <div className="p-4 rounded-xl bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 text-[#f5e6c8] text-xs flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-[#c9b8a0] shrink-0 mt-0.5" />
                       <div>
-                        <div className="font-bold text-rose-300 text-sm">
+                        <div className="font-bold text-[#f5e6c8] text-sm">
                           Stock Shortage Detected — Handover Blocked
                         </div>
                         <div className="text-zinc-300 text-xs mt-1 leading-relaxed">
@@ -907,10 +903,10 @@ export function DispatchDeskPage() {
                                     <button
                                       type="button"
                                       onClick={() => handleFutureProspectScan(comp.nomenclature, unitIdx + 1)}
-                                      className="px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] text-amber-300 hover:text-amber-200 flex items-center gap-1 transition-all cursor-pointer"
+                                      className="px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] text-[#f5e6c8] hover:text-white flex items-center gap-1 transition-all cursor-pointer"
                                       title="Optical / Laser Barcode Gun (Future Prospect)"
                                     >
-                                      <Scan className="w-3 h-3 text-amber-400" />
+                                      <Scan className="w-3 h-3 text-[#c9b8a0]" />
                                       <span>Scan Gun (Future)</span>
                                     </button>
                                   </div>

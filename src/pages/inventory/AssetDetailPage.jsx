@@ -12,9 +12,7 @@ import {
   History,
   Clock,
   Layers,
-  Sparkles,
-  ShieldCheck,
-} from 'lucide-react';
+  ShieldCheck } from 'lucide-react';
 
 export function AssetDetailPage() {
   const { itemId } = useParams();
@@ -99,7 +97,7 @@ export function AssetDetailPage() {
               <span>Join FIFO Backlog Queue (Pos #{item.queueDepth + 1})</span>
             </button>
           ) : (
-            <span className="px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/20 font-sans text-xs text-rose-400 font-medium">
+            <span className="px-4 py-2 rounded-full bg-white/[0.06] border border-white/15 font-sans text-xs text-zinc-300 font-medium">
               Locked for Maintenance
             </span>
           )}
@@ -185,7 +183,7 @@ export function AssetDetailPage() {
                     </div>
                     <div className="text-right flex-shrink-0 text-zinc-500 text-[11px]">
                       <div>{log.date}</div>
-                      <div className="text-emerald-400 font-medium mt-0.5">{log.condition}</div>
+                      <div className="text-[#c9b8a0] font-medium mt-0.5">{log.condition}</div>
                     </div>
                   </div>
                 ))}
@@ -264,13 +262,13 @@ export function AssetDetailPage() {
                   <span className="text-zinc-500">Course Code:</span>
                   <span className="text-zinc-300">{item.custodyHolder.courseCode}</span>
                 </div>
-                <div className="flex justify-between pt-2 border-t border-white/5 text-amber-400 font-semibold">
+                <div className="flex justify-between pt-2 border-t border-white/5 text-[#f5e6c8] font-semibold">
                   <span>Scheduled Due:</span>
                   <span>{item.custodyHolder.dueDate}</span>
                 </div>
               </div>
             ) : (
-              <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-center text-xs font-sans text-emerald-400">
+              <div className="p-4 bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 rounded-2xl text-center text-xs font-sans text-[#f5e6c8]">
                 Unit currently resting in assigned physical bin coordinates. Ready for immediate requisition.
               </div>
             )}

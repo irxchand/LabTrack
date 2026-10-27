@@ -10,9 +10,7 @@ import {
   AlertOctagon,
   FileSpreadsheet,
   Sliders,
-  CheckCircle2,
-  Sparkles,
-} from 'lucide-react';
+  CheckCircle2 } from 'lucide-react';
 
 export function ReliabilityReportPage() {
   const { reliabilityData, incidentLedger } = useLabData();
@@ -33,8 +31,7 @@ export function ReliabilityReportPage() {
         return d.toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
-          year: 'numeric',
-        });
+          year: 'numeric' });
       }
       return dateStr;
     } catch {
@@ -52,8 +49,7 @@ export function ReliabilityReportPage() {
           <div className="font-semibold text-white">{row.id}</div>
           <div className="text-zinc-400 text-[11px] mt-0.5">{formatHumanDate(row.date)}</div>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Hardware Asset',
       accessor: 'nomenclature',
@@ -62,8 +58,7 @@ export function ReliabilityReportPage() {
           <div className="font-medium text-white text-xs">{row.nomenclature}</div>
           <div className="text-[11px] text-[#c9b8a0] mt-0.5 font-medium">{row.assetTag}</div>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Return Rating',
       accessor: 'conditionRating',
@@ -87,11 +82,11 @@ export function ReliabilityReportPage() {
 
         if (isDefect) {
           return (
-            <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-rose-500/[0.06] border border-rose-500/20 text-xs font-sans">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shadow-[0_0_6px_rgba(244,63,94,0.6)] shrink-0" />
-              <span className="font-medium text-rose-200">{title}</span>
+            <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 text-xs font-sans">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shadow-[0_0_6px_rgba(201,184,160,0.6)] shrink-0" />
+              <span className="font-medium text-[#f5e6c8]">{title}</span>
               {tag && (
-                <span className="text-[10px] font-semibold tracking-tight text-rose-300 bg-rose-500/15 border border-rose-500/25 px-1.5 py-0.5 rounded">
+                <span className="text-[10px] font-semibold tracking-tight text-[#f5e6c8] bg-[#c9b8a0]/20 border border-[#c9b8a0]/30 px-1.5 py-0.5 rounded">
                   {tag}
                 </span>
               )}
@@ -101,11 +96,11 @@ export function ReliabilityReportPage() {
 
         if (isLate) {
           return (
-            <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-amber-500/[0.06] border border-amber-500/20 text-xs font-sans">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.6)] shrink-0" />
-              <span className="font-medium text-amber-200">{title}</span>
+            <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-white/[0.05] border border-white/15 text-xs font-sans">
+              <span className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_6px_rgba(255,255,255,0.6)] shrink-0" />
+              <span className="font-medium text-white">{title}</span>
               {tag && (
-                <span className="text-[10px] font-semibold tracking-tight text-amber-300 bg-amber-500/15 border border-amber-500/25 px-1.5 py-0.5 rounded">
+                <span className="text-[10px] font-semibold tracking-tight text-zinc-300 bg-white/10 border border-white/20 px-1.5 py-0.5 rounded">
                   {tag}
                 </span>
               )}
@@ -114,18 +109,17 @@ export function ReliabilityReportPage() {
         }
 
         return (
-          <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-emerald-500/[0.06] border border-emerald-500/20 text-xs font-sans">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-            <span className="font-medium text-emerald-200">{title}</span>
+          <div className="inline-flex items-center gap-2 whitespace-nowrap px-2.5 py-1 rounded-md bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 text-xs font-sans">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] shrink-0" />
+            <span className="font-medium text-[#f5e6c8]">{title}</span>
             {tag && (
-              <span className="text-[10px] font-semibold tracking-tight text-emerald-300 bg-emerald-500/15 border border-emerald-500/25 px-1.5 py-0.5 rounded">
+              <span className="text-[10px] font-semibold tracking-tight text-[#f5e6c8] bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 px-1.5 py-0.5 rounded">
                 {tag}
               </span>
             )}
           </div>
         );
-      },
-    },
+      } },
     {
       header: 'Technician Inspection Notes',
       accessor: 'technicianNotes',
@@ -134,8 +128,7 @@ export function ReliabilityReportPage() {
           <div className="text-zinc-200">{row.technicianNotes || row.returnCondition || 'Inspection completed; asset integrity verified.'}</div>
           <div className="text-[11px] text-zinc-500 mt-0.5">Verified by {row.technicianPrn || row.technicianSignOff || 'Depot Staff'}</div>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Score Impact',
       accessor: 'pointsImpact',
@@ -158,9 +151,9 @@ export function ReliabilityReportPage() {
             <div
               className={`font-semibold tracking-tight ${
                 isPositive
-                  ? 'text-emerald-400'
+                  ? 'text-[#c9b8a0]'
                   : isNegative
-                  ? 'text-rose-400'
+                  ? 'text-white'
                   : 'text-zinc-400'
               }`}
             >
@@ -171,8 +164,7 @@ export function ReliabilityReportPage() {
             </div>
           </div>
         );
-      },
-    },
+      } },
   ];
 
   return (
@@ -183,7 +175,7 @@ export function ReliabilityReportPage() {
           <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2 mb-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
             COLLEGIATE ACCOUNTABILITY • REPUTATION SCORE
-            <span className="ml-1 px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-bold tracking-wider">
+            <span className="ml-1 px-2 py-0.5 rounded-full bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 text-[10px] font-bold tracking-wider">
               Demo Feature
             </span>
           </div>
@@ -284,8 +276,8 @@ export function ReliabilityReportPage() {
             <div className="mt-4">
               <div className="flex items-center gap-2.5">
                 <span className="text-3xl font-bold font-sans text-white tracking-tight">92.8%</span>
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-sans font-medium bg-emerald-500/[0.08] text-emerald-300 border border-emerald-500/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-sans font-medium bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
                   On-Time
                 </span>
               </div>

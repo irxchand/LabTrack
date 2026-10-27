@@ -13,9 +13,7 @@ import {
   Layers,
   ArrowRight,
   CheckCircle2,
-  Sparkles,
-  Search,
-} from 'lucide-react';
+  Search } from 'lucide-react';
 
 export function ReservationsPage() {
   const navigate = useNavigate();
@@ -95,8 +93,7 @@ export function ReservationsPage() {
             {row.requestDate?.split(' ')[0] || 'Oct 18'}
           </div>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Queued Component',
       accessor: 'nomenclature',
@@ -124,8 +121,7 @@ export function ReservationsPage() {
             </div>
           </div>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Requisitioner / Team',
       accessor: 'studentName',
@@ -147,8 +143,7 @@ export function ReservationsPage() {
             <div className="text-zinc-500 text-[11px] mt-0.5">{row.projectId} • {row.studentPrn}</div>
           </div>
         );
-      },
-    },
+      } },
     {
       header: 'FIFO Position',
       accessor: 'queuePosition',
@@ -160,18 +155,17 @@ export function ReservationsPage() {
             <span
               className={`px-3 py-1 rounded-full font-bold text-[11px] shadow-sm flex items-center gap-1.5 ${
                 isFirst
-                  ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                  : 'bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30'
+                  ? 'bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/40'
+                  : 'bg-white/[0.05] text-zinc-300 border border-white/10'
               }`}
             >
-              {isFirst && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
+              {isFirst && <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0] animate-pulse" />}
               <span>Pos #{row.queuePosition}</span>
             </span>
             <span className="text-zinc-500 text-[11px]">of {row.totalInQueue}</span>
           </div>
         );
-      },
-    },
+      } },
     {
       header: 'Est. Next Allocation',
       accessor: 'estimatedAvailability',
@@ -181,8 +175,7 @@ export function ReservationsPage() {
           <Calendar className="w-3.5 h-3.5 text-[#c9b8a0]" />
           <span>{row.estimatedAvailability}</span>
         </div>
-      ),
-    },
+      ) },
     {
       header: 'Action',
       width: '120px',
@@ -193,15 +186,14 @@ export function ReservationsPage() {
         return (
           <button
             onClick={() => leaveWaitlist(row.id)}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-rose-500/15 hover:text-rose-300 text-zinc-400 font-sans text-xs transition-colors border border-white/10 cursor-pointer shadow-sm active:scale-95"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/10 hover:text-white text-zinc-400 font-sans text-xs transition-colors border border-white/10 cursor-pointer shadow-sm active:scale-95"
             title="Withdraw from waitlist backlog"
           >
             <XCircle className="w-3.5 h-3.5" />
             <span>Cancel</span>
           </button>
         );
-      },
-    },
+      } },
   ];
 
   return (
@@ -215,8 +207,8 @@ export function ReservationsPage() {
             <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#c9b8a0]">
               Hardware Circulation & Fairness
             </span>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className="px-2 py-0.5 rounded-full bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
               FIFO Engine Active
             </span>
           </div>
@@ -255,8 +247,8 @@ export function ReservationsPage() {
           <div className="text-[11px] text-zinc-500 mt-0.5">In student queue</div>
         </div>
         <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Next In Line (#1)</div>
-          <div className="text-2xl font-bold font-sans text-emerald-400 mt-1">
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-[#c9b8a0]">Next In Line (#1)</div>
+          <div className="text-2xl font-bold font-sans text-[#f5e6c8] mt-1">
             {(reservations || []).filter((r) => r.queuePosition === 1).length}
           </div>
           <div className="text-[11px] text-zinc-500 mt-0.5">Awaiting counter drop-off</div>
@@ -264,7 +256,7 @@ export function ReservationsPage() {
         <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
           <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Sequencing Policy</div>
           <div className="text-sm font-semibold font-sans text-white mt-1 flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <CheckCircle2 className="w-4 h-4 text-[#c9b8a0]" />
             <span>Strict FIFO Timestamp</span>
           </div>
           <div className="text-[11px] text-zinc-500 mt-0.5">Anti-hoarding fair rotation</div>

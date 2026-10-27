@@ -115,7 +115,7 @@ export function HardwareParamControls({
               : 'RIG-8840 Telemetry Matrix'}
           </span>
         </div>
-        <span className="text-[10px] font-mono-tech px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+        <span className="text-[10px] font-mono-tech px-2 py-0.5 rounded bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-[#f5e6c8]">
           NIST CALIBRATED
         </span>
       </div>
@@ -179,7 +179,7 @@ export function HardwareParamControls({
             setExploded(Number(e.target.value));
             audioFx.playTick();
           }}
-          className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+          className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#c9b8a0]"
         />
       </div>
 
@@ -192,7 +192,7 @@ export function HardwareParamControls({
           }}
           className={`py-2 px-3 rounded flex items-center justify-center space-x-1.5 text-xs font-mono-tech transition-all border ${
             isInspecting
-              ? 'bg-emerald-600/20 text-emerald-300 border-emerald-500/40'
+              ? 'bg-[#c9b8a0]/20 text-[#f5e6c8] border-[#c9b8a0]/40'
               : 'bg-zinc-800/80 text-zinc-300 border-white/10 hover:border-[#c8963e]/40 hover:text-white'
           }`}
         >
@@ -253,7 +253,7 @@ export function DispatchCounterWidget({
           className={`text-[10px] font-mono-tech px-2 py-0.5 rounded border ${
             isLocked
               ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
-              : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+              : 'bg-[#c9b8a0]/15 text-[#f5e6c8] border-[#c9b8a0]/30'
           }`}
         >
           {isLocked ? 'SOLENOID LOCKED' : 'CUSTODY RELEASED'}
@@ -265,8 +265,8 @@ export function DispatchCounterWidget({
       </p>
 
       {scanResult ? (
-        <div className="p-3 mb-4 rounded bg-emerald-950/20 border border-emerald-500/30 text-xs font-mono-tech space-y-1">
-          <div className="flex items-center space-x-1.5 text-emerald-400 font-semibold">
+        <div className="p-3 mb-4 rounded bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-xs font-mono-tech space-y-1">
+          <div className="flex items-center space-x-1.5 text-[#f5e6c8] font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>{scanResult.status}</span>
           </div>

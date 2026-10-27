@@ -17,17 +17,17 @@ export function ReliabilityGauge({ score = 94, size = 300, showDetails = true, i
     if (clampedScore >= 75) {
       return {
         tier: 'Standard Tier',
-        badgeStyle: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
-        arcGradId: 'amberArcGradient',
-        strokeGlow: 'rgba(245, 158, 11, 0.35)',
+        badgeStyle: 'bg-white/[0.08] text-white border-white/20',
+        arcGradId: 'whiteArcGradient',
+        strokeGlow: 'rgba(255, 255, 255, 0.25)',
         message: 'Standard collegiate lending privileges. Hardware extensions subject to single-term cap verification.',
       };
     }
     return {
       tier: 'Restricted Status',
-      badgeStyle: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
-      arcGradId: 'roseArcGradient',
-      strokeGlow: 'rgba(244, 63, 94, 0.35)',
+      badgeStyle: 'bg-white/[0.04] text-zinc-300 border-white/15',
+      arcGradId: 'zincArcGradient',
+      strokeGlow: 'rgba(201, 184, 160, 0.2)',
       message: 'Accountability threshold breached (< 75). Requires direct faculty supervisor endorsement before dispatch.',
     };
   }, [clampedScore]);
@@ -123,10 +123,10 @@ export function ReliabilityGauge({ score = 94, size = 300, showDetails = true, i
         <div className="mt-5 text-center max-w-sm w-full space-y-3">
           {/* Refined Three-Tier Scale Indicator */}
           <div className="grid grid-cols-3 gap-1.5 p-1 rounded-2xl bg-white/[0.02] border border-white/5 text-[10px] font-sans">
-            <div className={`py-1 rounded-xl text-center transition-colors ${clampedScore < 75 ? 'bg-rose-500/20 text-rose-300 font-semibold' : 'text-zinc-500'}`}>
+            <div className={`py-1 rounded-xl text-center transition-colors ${clampedScore < 75 ? 'bg-white/[0.08] text-white font-semibold' : 'text-zinc-500'}`}>
               &lt; 75 Restricted
             </div>
-            <div className={`py-1 rounded-xl text-center transition-colors ${clampedScore >= 75 && clampedScore < 90 ? 'bg-amber-500/20 text-amber-300 font-semibold' : 'text-zinc-500'}`}>
+            <div className={`py-1 rounded-xl text-center transition-colors ${clampedScore >= 75 && clampedScore < 90 ? 'bg-white/[0.08] text-white font-semibold' : 'text-zinc-500'}`}>
               75-89 Standard
             </div>
             <div className={`py-1 rounded-xl text-center transition-colors ${clampedScore >= 90 ? 'bg-[#c9b8a0]/20 text-[#f5e6c8] font-semibold' : 'text-zinc-500'}`}>

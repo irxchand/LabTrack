@@ -36,7 +36,7 @@ export function TechnicalLeaderLine({
         />
 
         {/* Destination Reticle Anchor */}
-        <circle cx={endX} cy={endY} r="3" fill="#10b981" />
+        <circle cx={endX} cy={endY} r="3" fill="#c9b8a0" />
       </svg>
 
       {/* Spatial Tag Pill */}

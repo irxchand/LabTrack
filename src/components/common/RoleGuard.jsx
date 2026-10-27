@@ -20,7 +20,7 @@ export function RoleGuard({ allowedRoles, children }) {
     return (
       <div className="h-full min-h-[60vh] flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-[#111215]/95 border border-white/10 rounded-3xl p-8 text-center space-y-4 shadow-2xl backdrop-blur-xl text-white">
-          <div className="w-14 h-14 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 mx-auto flex items-center justify-center shadow-[0_0_20px_rgba(244,63,94,0.2)]">
+          <div className="w-14 h-14 rounded-full bg-[#c9b8a0]/15 border border-[#c9b8a0]/30 text-[#f5e6c8] mx-auto flex items-center justify-center shadow-[0_0_20px_rgba(201,184,160,0.2)]">
             <ShieldAlert className="w-7 h-7" />
           </div>
 

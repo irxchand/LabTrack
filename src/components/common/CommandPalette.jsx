@@ -7,7 +7,6 @@ import {
   ArrowRight,
   Plus,
   MapPin,
-  Sparkles,
 } from 'lucide-react';
 
 export function CommandPalette({ isOpen, onClose }) {
@@ -173,7 +172,7 @@ export function CommandPalette({ isOpen, onClose }) {
                           <span>{item.coordinates}</span>
                         </span>
                         <span>•</span>
-                        <span className={inStock ? 'text-emerald-400 font-medium' : 'text-amber-400 font-medium'}>
+                        <span className={inStock ? 'text-[#c9b8a0] font-medium' : 'text-[#f5e6c8] font-medium'}>
                           {inStock
                             ? `${item.availableStock || 1} of ${item.totalStock || 1} available`
                             : 'All Units Loaned (Join Waitlist)'}
@@ -225,7 +224,7 @@ export function CommandPalette({ isOpen, onClose }) {
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-[#c9b8a0]">
-            <Sparkles className="w-3.5 h-3.5 text-[#c9b8a0]" />
+            <Search className="w-3.5 h-3.5 text-[#c9b8a0]" />
             <span className="font-medium text-xs">Hardware Catalog Spotlight</span>
           </div>
         </div>

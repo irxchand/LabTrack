@@ -156,7 +156,7 @@ export function RequisitionDrawer() {
 
             <div className="flex items-center gap-2">
               <span className="text-zinc-500 text-[11px]">Enrolled Dept:</span>
-              <span className="font-semibold text-emerald-400">
+              <span className="font-semibold text-[#c9b8a0]">
                 {userDepartment}
               </span>
               <span className="text-zinc-600">•</span>
@@ -169,10 +169,10 @@ export function RequisitionDrawer() {
 
           {/* Cross-Department Policy Alert Banner */}
           {hasCrossDeptItems && (
-            <div className="mx-6 mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start gap-2.5">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-400" />
+            <div className="mx-6 mt-3 p-3 rounded-xl bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 text-[#f5e6c8] text-xs flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#c9b8a0]" />
               <div>
-                <span className="font-semibold block">Cross-Department Issue Prohibited</span>
+                <span className="font-semibold block text-[#f5e6c8]">Cross-Department Issue Prohibited</span>
                 <span className="text-zinc-300 text-[11px] leading-relaxed">
                   SIT policy strictly restricts student issues to their own department ({userDepartment}). Basket contains hardware housed in other departments ({crossDeptItems.map((i) => i.nomenclature).join(', ')}). Please remove them to submit.
                 </span>
@@ -257,14 +257,14 @@ export function RequisitionDrawer() {
                           const stock = getItemDeptStock(item, userDepartment);
                           if (stock.available <= 0) {
                             return (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 font-semibold">
                                 <AlertCircle className="w-2.5 h-2.5" />
                                 <span>{stock.depts.length > 0 ? `${stock.depts.join('/')} Dept Only` : `Not in ${userDepartment}`}</span>
                               </span>
                             );
                           }
                           return (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-[#c9b8a0]/15 text-[#f5e6c8] border border-[#c9b8a0]/30 font-medium">
                               <span>✓ In {userDepartment} Labs ({stock.available} avail)</span>
                             </span>
                           );
@@ -277,7 +277,7 @@ export function RequisitionDrawer() {
                   <div className="flex flex-col items-end justify-between gap-3 flex-shrink-0">
                     <button
                       onClick={() => removeFromBasket(item.id)}
-                      className="text-zinc-500 hover:text-rose-400 p-1 rounded-lg transition-colors cursor-pointer"
+                      className="text-zinc-500 hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
                       title="Remove item"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -416,8 +416,8 @@ export function RequisitionDrawer() {
                 />
 
                 {error && (
-                  <div className="flex items-center gap-1.5 text-xs text-rose-400 mt-1.5">
-                    <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                  <div className="flex items-center gap-1.5 text-xs text-[#f5e6c8] mt-1.5">
+                    <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 text-[#c9b8a0]" />
                     <span>{error}</span>
                   </div>
                 )}
@@ -438,7 +438,7 @@ export function RequisitionDrawer() {
                   disabled={isSubmitting || hasCrossDeptItems}
                   className={`flex-1 py-2.5 px-5 rounded-full font-semibold text-xs tracking-wide transition-all flex items-center justify-center gap-2 shadow-sm ${
                     hasCrossDeptItems
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 cursor-not-allowed opacity-80'
+                      ? 'bg-white/[0.04] text-zinc-500 border border-white/10 cursor-not-allowed opacity-80'
                       : 'bg-white hover:bg-[#f5e6c8] text-black cursor-pointer active:scale-[0.99] disabled:opacity-50'
                   }`}
                 >

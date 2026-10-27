@@ -26,7 +26,7 @@ export function HoloGauge({ position = [0, 1.2, 0], score = 96.4, visible = fals
       <mesh ref={outerRingRef}>
         <ringGeometry args={[2.4, 2.45, 64]} />
         <meshBasicMaterial
-          color="#10b981"
+          color="#c9b8a0"
           transparent
           opacity={0.7}
           side={THREE.DoubleSide}
@@ -38,7 +38,7 @@ export function HoloGauge({ position = [0, 1.2, 0], score = 96.4, visible = fals
       <mesh ref={innerRingRef}>
         <ringGeometry args={[2.1, 2.18, 64, 1, 0, Math.PI * 1.65]} />
         <meshBasicMaterial
-          color="#c8963e"
+          color="#c9b8a0"
           transparent
           opacity={0.8}
           side={THREE.DoubleSide}
@@ -56,7 +56,7 @@ export function HoloGauge({ position = [0, 1.2, 0], score = 96.4, visible = fals
             <mesh key={i} position={[x, y, 0]} rotation={[0, 0, angle]}>
               <planeGeometry args={[0.02, 0.14]} />
               <meshBasicMaterial
-                color={i % 6 === 0 ? '#10b981' : 'rgba(255, 255, 255, 0.3)'}
+                color={i % 6 === 0 ? '#c9b8a0' : 'rgba(255, 255, 255, 0.3)'}
                 transparent
                 opacity={0.6}
                 side={THREE.DoubleSide}
@@ -70,7 +70,7 @@ export function HoloGauge({ position = [0, 1.2, 0], score = 96.4, visible = fals
       <mesh>
         <circleGeometry args={[2.5, 32]} />
         <meshBasicMaterial
-          color="#10b981"
+          color="#c9b8a0"
           transparent
           opacity={0.04}
           side={THREE.DoubleSide}
