@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
+import { useNotification } from '../../context/NotificationContext';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { InspectionForm } from '../../components/specialized/InspectionForm';
 import { DataTable } from '../../components/common/DataTable';
@@ -45,8 +46,10 @@ export function DispatchDeskPage() {
     resolveBarcode,
     executeDispatch,
     executeReturn,
+    stageRequisitionForPickup,
   } = useLabData();
   const { currentUser } = useAuth();
+  const { addToast } = useNotification();
 
   // Mode switcher: 'dispatch' | 'checkin' | 'circulation'
   const [terminalMode, setTerminalMode] = useState(() => {
@@ -62,6 +65,7 @@ export function DispatchDeskPage() {
   const [dueDateDays, setDueDateDays] = useState('14');
   const [isDispatching, setIsDispatching] = useState(false);
   const [dispatchSuccess, setDispatchSuccess] = useState(null);
+  const [futureScanModal, setFutureScanModal] = useState(null);
 
   // CHECKIN & BARCODE SCANNER STATE
   const [scannedBarcode, setScannedBarcode] = useState(urlAssetTag || '');
@@ -175,13 +179,21 @@ export function DispatchDeskPage() {
   useEffect(() => {
     if (selectedRequisition?.componentsRequested?.length) {
       const initial = {};
-      selectedRequisition.componentsRequested.forEach((comp, idx) => {
+      selectedRequisition.componentsRequested.forEach((comp, compIdx) => {
         const availableOptions = getAvailableAssetsForComponent(comp);
-        if (availableOptions.length > 0) {
-          initial[idx] = availableOptions[0].barcode;
-        } else {
-          // Fallback to item ID or generic placeholder tag
-          initial[idx] = comp.itemId || `SIT-DEPOT-${idx + 1}`;
+        const qty = comp.quantity || 1;
+        for (let u = 0; u < qty; u++) {
+          const unitKey = `${compIdx}_${u}`;
+          if (availableOptions.length > u) {
+            initial[unitKey] = availableOptions[u].barcode;
+          } else if (availableOptions.length > 0) {
+            initial[unitKey] = availableOptions[u % availableOptions.length].barcode;
+          } else {
+            initial[unitKey] = comp.itemId || `SIT-DEPOT-${compIdx + 1}-${u + 1}`;
+          }
+          if (u === 0) {
+            initial[compIdx] = initial[unitKey];
+          }
         }
       });
       setAssignedBarcodes(initial);
@@ -189,6 +201,32 @@ export function DispatchDeskPage() {
       setAssignedBarcodes({});
     }
   }, [selectedRequisition, assets]);
+
+  // Future Prospect Scanner Trigger
+  const handleFutureProspectScan = (nomenclature, unitNumber) => {
+    setFutureScanModal({ nomenclature, unitNumber });
+    addToast('Optical barcode scanner gun integration is a planned future prospect. Manual selection active.', 'info');
+  };
+
+  // Live stock shortage check for selected requisition at the dispatch counter
+  const selectedReqShortage = useMemo(() => {
+    if (!selectedRequisition?.componentsRequested?.length) return null;
+    for (const comp of selectedRequisition.componentsRequested) {
+      const availableOptions = getAvailableAssetsForComponent(comp);
+      const invItem = inventory.find((i) => i.id === comp.itemId || i.assetTag === comp.itemId);
+      const count = comp.classification === 'Asset'
+        ? availableOptions.length
+        : (invItem?.availableStock ?? availableOptions.length);
+      if (count < (comp.quantity || 1)) {
+        return {
+          item: comp.nomenclature,
+          requested: comp.quantity || 1,
+          available: count,
+        };
+      }
+    }
+    return null;
+  }, [selectedRequisition, availablePhysicalAssets, inventory]);
 
   // Filter active loans for check-in
   const filteredReturnLoans = useMemo(() => {
@@ -273,6 +311,10 @@ export function DispatchDeskPage() {
   const handleExecuteDispatch = async (e) => {
     e.preventDefault();
     if (!selectedRequisition) return;
+    if (selectedReqShortage) {
+      alert(`Cannot issue components: Stock shortage detected for ${selectedReqShortage.item}. Requested quantity (${selectedReqShortage.requested}) exceeds available inventory (${selectedReqShortage.available} in depot).`);
+      return;
+    }
     setIsDispatching(true);
 
     const dueDate = new Date();
@@ -287,21 +329,27 @@ export function DispatchDeskPage() {
 
       for (let i = 0; i < components.length; i++) {
         const comp = components[i];
-        const assignedTag = assignedBarcodes[i] || comp.itemId || `SIT-DEPOT-${i + 1}`;
+        const qty = comp.quantity || 1;
+        const availableOptions = getAvailableAssetsForComponent(comp);
 
-        await executeDispatch({
-          requisitionId: selectedRequisition.id || selectedRequisition.requestNumber,
-          assetTag: assignedTag,
-          itemId: comp.itemId,
-          nomenclature: comp.nomenclature,
-          studentPrn: selectedRequisition.studentPrn || selectedRequisition.borrowerPrn,
-          studentName: selectedRequisition.studentName || selectedRequisition.submittedBy,
-          projectId: selectedRequisition.projectId,
-          courseCode: selectedRequisition.courseCode || 'AIML-CAPSTONE-2026',
-          dueDate: formattedDueDate,
-          coordinates: 'Counter Desk Staging Tray',
-        });
-        dispatchedTags.push(assignedTag);
+        for (let u = 0; u < qty; u++) {
+          const unitKey = `${i}_${u}`;
+          const assignedTag = assignedBarcodes[unitKey] || (u === 0 ? assignedBarcodes[i] : null) || availableOptions[u]?.barcode || comp.itemId || `SIT-DEPOT-${i + 1}-${u + 1}`;
+
+          await executeDispatch({
+            requisitionId: selectedRequisition.id || selectedRequisition.requestNumber,
+            assetTag: assignedTag,
+            itemId: comp.itemId,
+            nomenclature: qty > 1 ? `${comp.nomenclature} (Unit ${u + 1}/${qty})` : comp.nomenclature,
+            studentPrn: selectedRequisition.studentPrn || selectedRequisition.borrowerPrn,
+            studentName: selectedRequisition.studentName || selectedRequisition.submittedBy,
+            projectId: selectedRequisition.projectId,
+            courseCode: selectedRequisition.courseCode || 'AIML-CAPSTONE-2026',
+            dueDate: formattedDueDate,
+            coordinates: 'Counter Desk Staging Tray',
+          });
+          dispatchedTags.push(assignedTag);
+        }
       }
 
       setDispatchSuccess({
@@ -740,7 +788,18 @@ export function DispatchDeskPage() {
                     >
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-semibold text-white">{studentName}</span>
-                        <span className="font-mono text-[#c9b8a0] text-[11px]">{reqId}</span>
+                        <div className="flex items-center gap-1.5">
+                          {req.status === 'Ready for Counter Pickup' ? (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#c9b8a0]/20 text-[#f5e6c8] border border-[#c9b8a0]/40">
+                              Stage 3 • Staged at Desk 2
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                              Stage 2 • Sanctioned
+                            </span>
+                          )}
+                          <span className="font-mono text-[#c9b8a0] text-[11px]">{reqId}</span>
+                        </div>
                       </div>
                       <div className="text-[11px] text-zinc-400 flex items-center gap-2">
                         <span>PRN: {studentPrn}</span>
@@ -781,6 +840,22 @@ export function DispatchDeskPage() {
 
               {selectedRequisition ? (
                 <form onSubmit={handleExecuteDispatch} className="space-y-4 text-xs">
+                  {/* Stock Shortage Warning Banner */}
+                  {selectedReqShortage && (
+                    <div className="p-4 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-200 text-xs flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+                      <div>
+                        <div className="font-bold text-rose-300 text-sm">
+                          Stock Shortage Detected — Handover Blocked
+                        </div>
+                        <div className="text-zinc-300 text-xs mt-1 leading-relaxed">
+                          Requested quantity for <strong>{selectedReqShortage.item}</strong> ({selectedReqShortage.requested} units) exceeds available inventory ({selectedReqShortage.available} in depot).
+                          The lab assistant cannot issue items until depot stock is replenished or the requisition quantity is adjusted by faculty/HoD.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Requester Dossier */}
                   <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10 space-y-1">
                     <div className="text-white font-medium">
@@ -797,11 +872,13 @@ export function DispatchDeskPage() {
                       Bind Physical Serialized Assets (36 SIT Barcodes)
                     </label>
 
-                    {selectedRequisition.componentsRequested?.map((comp, idx) => {
+                    {selectedRequisition.componentsRequested?.map((comp, compIdx) => {
                       const availableOptions = getAvailableAssetsForComponent(comp);
+                      const qty = comp.quantity || 1;
+                      const isAsset = comp.classification === 'Asset' || availableOptions.length > 0;
 
                       return (
-                        <div key={idx} className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10 space-y-2">
+                        <div key={compIdx} className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10 space-y-3">
                           <div className="flex items-center justify-between">
                             <span className="text-white font-medium text-xs">
                               {comp.quantity}x {comp.nomenclature}
@@ -811,38 +888,72 @@ export function DispatchDeskPage() {
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-2">
-                            <label className="text-zinc-400 text-[11px] shrink-0">Assigned SIT Tag:</label>
-                            {availableOptions.length > 0 ? (
-                              <select
-                                value={assignedBarcodes[idx] || availableOptions[0].barcode}
-                                onChange={(e) =>
-                                  setAssignedBarcodes({
-                                    ...assignedBarcodes,
-                                    [idx]: e.target.value,
-                                  })
-                                }
-                                className="w-full px-3 py-1.5 bg-[#141417] border border-white/15 rounded-lg text-white font-mono text-xs focus:outline-none focus:border-white/30"
-                              >
-                                {availableOptions.map((opt) => (
-                                  <option key={opt.barcode} value={opt.barcode}>
-                                    {opt.barcode} ({opt.defaultId} • {opt.department} • Bill {opt.billNumber})
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <input
-                                type="text"
-                                value={assignedBarcodes[idx] || comp.itemId}
-                                onChange={(e) =>
-                                  setAssignedBarcodes({
-                                    ...assignedBarcodes,
-                                    [idx]: e.target.value,
-                                  })
-                                }
-                                className="w-full px-3 py-1.5 bg-[#141417] border border-white/15 rounded-lg text-white font-mono text-xs focus:outline-none focus:border-white/30"
-                              />
-                            )}
+                          {/* Unit-by-unit barcode binding */}
+                          <div className="space-y-2 pt-1 border-t border-white/5">
+                            {Array.from({ length: qty }).map((_, unitIdx) => {
+                              const unitKey = `${compIdx}_${unitIdx}`;
+                              const currentBarcode =
+                                assignedBarcodes[unitKey] ||
+                                (unitIdx === 0 ? assignedBarcodes[compIdx] : '') ||
+                                availableOptions[unitIdx]?.barcode ||
+                                '';
+
+                              return (
+                                <div key={unitIdx} className="p-2.5 rounded-lg bg-black/30 border border-white/5 space-y-1.5">
+                                  <div className="flex items-center justify-between text-[11px]">
+                                    <span className="text-[#f5e6c8] font-mono">
+                                      Unit {unitIdx + 1} of {qty} {isAsset ? '• Serialized Asset' : '• Consumable'}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleFutureProspectScan(comp.nomenclature, unitIdx + 1)}
+                                      className="px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] text-amber-300 hover:text-amber-200 flex items-center gap-1 transition-all cursor-pointer"
+                                      title="Optical / Laser Barcode Gun (Future Prospect)"
+                                    >
+                                      <Scan className="w-3 h-3 text-amber-400" />
+                                      <span>Scan Gun (Future)</span>
+                                    </button>
+                                  </div>
+
+                                  <div className="flex items-center gap-2">
+                                    <label className="text-zinc-400 text-[11px] shrink-0 font-mono">SIT Tag:</label>
+                                    {availableOptions.length > 0 ? (
+                                      <select
+                                        value={currentBarcode || availableOptions[unitIdx % availableOptions.length]?.barcode}
+                                        onChange={(e) =>
+                                          setAssignedBarcodes((prev) => ({
+                                            ...prev,
+                                            [unitKey]: e.target.value,
+                                            ...(unitIdx === 0 ? { [compIdx]: e.target.value } : {}),
+                                          }))
+                                        }
+                                        className="w-full px-3 py-1.5 bg-[#141417] border border-white/15 rounded-lg text-white font-mono text-xs focus:outline-none focus:border-white/30"
+                                      >
+                                        {availableOptions.map((opt) => (
+                                          <option key={opt.barcode} value={opt.barcode}>
+                                            {opt.barcode} ({opt.defaultId} • {opt.department} • Bill {opt.billNumber})
+                                          </option>
+                                        ))}
+                                      </select>
+                                    ) : (
+                                      <input
+                                        type="text"
+                                        placeholder={`Enter SIT barcode or serial for unit ${unitIdx + 1}`}
+                                        value={currentBarcode}
+                                        onChange={(e) =>
+                                          setAssignedBarcodes((prev) => ({
+                                            ...prev,
+                                            [unitKey]: e.target.value,
+                                            ...(unitIdx === 0 ? { [compIdx]: e.target.value } : {}),
+                                          }))
+                                        }
+                                        className="w-full px-3 py-1.5 bg-[#141417] border border-white/15 rounded-lg text-white font-mono text-xs focus:outline-none focus:border-white/30"
+                                      />
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       );
@@ -865,14 +976,39 @@ export function DispatchDeskPage() {
                     </select>
                   </div>
 
-                  <div className="flex justify-end pt-3 border-t border-white/10">
+                  <div className="flex items-center justify-between pt-3 border-t border-white/10 flex-wrap gap-2">
+                    {selectedRequisition.status !== 'Ready for Counter Pickup' ? (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const reqId = selectedRequisition.id || selectedRequisition.requestNumber;
+                          await stageRequisitionForPickup(reqId, 'Components assembled in Counter Desk 2 staging tray.');
+                          setSelectedRequisition((prev) => prev ? { ...prev, status: 'Ready for Counter Pickup' } : null);
+                        }}
+                        className="px-4 py-2 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-[#f5e6c8] border border-white/15 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                      >
+                        <Boxes className="w-3.5 h-3.5 text-[#c9b8a0]" />
+                        <span>Stage Kit in Desk 2 Tray (Stage 3)</span>
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-1.5 text-xs text-[#f5e6c8]">
+                        <CheckCircle2 className="w-4 h-4 text-[#c9b8a0]" />
+                        <span>Staged at Desk 2 Staging Tray</span>
+                      </div>
+                    )}
+
                     <button
                       type="submit"
-                      disabled={isDispatching}
-                      className="px-6 py-2.5 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2"
+                      disabled={isDispatching || !!selectedReqShortage}
+                      className={`ml-auto px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider shadow-md transition-all flex items-center gap-2 ${
+                        selectedReqShortage
+                          ? 'bg-zinc-800 text-zinc-500 border border-white/5 cursor-not-allowed opacity-60'
+                          : 'bg-white hover:bg-neutral-200 text-black cursor-pointer active:scale-95'
+                      }`}
+                      title={selectedReqShortage ? `Blocked: Stock shortage (${selectedReqShortage.available} available / ${selectedReqShortage.requested} requested)` : 'Execute Counter Handover'}
                     >
                       <Check className="w-4 h-4 stroke-[2.5]" />
-                      <span>{isDispatching ? 'Committing Handover...' : 'Execute Counter Handover'}</span>
+                      <span>{selectedReqShortage ? 'Blocked: Stock Shortage' : isDispatching ? 'Committing Handover...' : 'Execute Counter Handover (Stage 4)'}</span>
                     </button>
                   </div>
                 </form>
@@ -1030,6 +1166,43 @@ export function DispatchDeskPage() {
             emptyMessage="No active hardware loans currently registered in circulation."
           />
         </div>
+      )}
+
+      {/* Future Prospect Optical Scanner Modal */}
+      {futureScanModal && (
+        <Modal
+          isOpen={!!futureScanModal}
+          onClose={() => setFutureScanModal(null)}
+          title="Hardware Scanner Integration — Future Prospect"
+        >
+          <div className="p-4 space-y-4 text-xs">
+            <div className="flex items-center gap-3 p-3.5 bg-[#c9b8a0]/10 border border-[#c9b8a0]/25 rounded-xl text-[#f5e6c8]">
+              <Scan className="w-6 h-6 text-[#c9b8a0] shrink-0" />
+              <div>
+                <div className="font-semibold text-white text-sm">Optical & Laser Scanner Gun (Planned)</div>
+                <div className="text-zinc-400 mt-0.5 text-xs">Direct optical camera scanning and USB hand-held laser barcode gun integration is slated for the next hardware iteration.</div>
+              </div>
+            </div>
+            <div className="p-3 rounded-xl bg-white/[0.02] border border-white/10 space-y-2 text-zinc-300">
+              <div className="text-white font-medium">Currently Selected Component:</div>
+              <div className="font-mono text-[#f5e6c8] text-xs">
+                {futureScanModal.nomenclature} • Unit #{futureScanModal.unitNumber}
+              </div>
+              <p className="text-zinc-400 text-xs leading-relaxed">
+                For current lab operations, the counter attendant can manually select from the verified in-stock SIT barcode registry or type the tag into the input field.
+              </p>
+            </div>
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setFutureScanModal(null)}
+                className="px-4 py-2 bg-white text-black font-semibold rounded-lg hover:bg-neutral-200 transition-all cursor-pointer"
+              >
+                Continue with Manual Tag Assignment
+              </button>
+            </div>
+          </div>
+        </Modal>
       )}
     </div>
   );

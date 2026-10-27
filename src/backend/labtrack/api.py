@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from datetime import timedelta
 from pathlib import Path
 from fastapi import FastAPI, Depends, Header, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response, FileResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.staticfiles import StaticFiles
@@ -105,6 +106,135 @@ async def lifespan(app):
 
 
 app = FastAPI(title="LabTrack API", version="0.1.0", lifespan=lifespan, responses={401: {"model": ErrorEnvelope}, 403: {"model": ErrorEnvelope}, 409: {"model": ErrorEnvelope}, 422: {"model": ErrorEnvelope}, 503: {"model": ErrorEnvelope}})
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+_EVENTS_FILE = Path(__file__).resolve().parent.parent.parent.parent / "fixtures" / "requisition_events.json"
+
+def _load_events():
+    try:
+        if _EVENTS_FILE.exists():
+            with open(_EVENTS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return []
+
+def _save_events(events):
+    try:
+        _EVENTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with open(_EVENTS_FILE, "w", encoding="utf-8") as f:
+            json.dump(events, f, indent=2)
+    except Exception:
+        pass
+
+_REQUISITION_EVENTS_LEDGER = []
+_save_events([])
+
+
+@app.get("/api/notifications/requisition-events")
+def get_requisition_events():
+    """Retrieve history of life-cycle requisition events dispatched by the application."""
+    global _REQUISITION_EVENTS_LEDGER
+    _REQUISITION_EVENTS_LEDGER = _load_events()
+    return {"events": _REQUISITION_EVENTS_LEDGER}
+
+
+@app.post("/api/notifications/requisition-events/clear")
+def clear_requisition_events():
+    """Clear in-memory and on-disk requisition events ledger."""
+    global _REQUISITION_EVENTS_LEDGER
+    _REQUISITION_EVENTS_LEDGER = []
+    _save_events([])
+    return {"status": "cleared", "events": []}
+
+
+@app.post("/api/notifications/requisition-event")
+def notify_requisition_event(body: dict):
+    """Bridge endpoint enabling the web frontend to dispatch real SMTP lifecycle emails."""
+    event = body.get("event", "REQUEST_SUBMITTED")
+    req_id = body.get("request_id", "REQ-LIVE")
+    student_name = body.get("student_name", "Ishaan Chand")
+    student_prn = body.get("student_prn", "25070126076")
+    project_name = body.get("project_name", "Autonomous Quadruped Vision Robot")
+    mentor_name = body.get("mentor_name", "Dr. Meenakshi Sharma")
+    technical_purpose = body.get("technical_purpose", "Coursework Project")
+    components = body.get("components", [])
+
+    entry = {
+        "event": event,
+        "request_id": req_id,
+        "student_name": student_name,
+        "student_prn": student_prn,
+        "project_name": project_name,
+        "mentor_name": mentor_name,
+        "technical_purpose": technical_purpose,
+        "components": components,
+    }
+    _REQUISITION_EVENTS_LEDGER.insert(0, entry)
+    _save_events(_REQUISITION_EVENTS_LEDGER)
+
+    from .adapters import email_provider
+    import uuid
+
+    identifier = f"fe:{req_id}:{uuid.uuid4().hex[:6]}"
+    target = settings.email_override or settings.smtp_username or "labtrack821@gmail.com"
+
+    payload = {
+        "event": event,
+        "request_id": req_id,
+        "link": "/workspace/operations/approvals",
+        "details": {
+            "student_name": student_name,
+            "student_prn": student_prn,
+            "project_name": project_name,
+            "mentor_name": mentor_name,
+            "technical_purpose": technical_purpose,
+            "components": components,
+        }
+    }
+
+    try:
+        provider = email_provider()
+        provider.send(identifier, target, payload)
+        return {"status": "dispatched", "target": target, "event": event, "request_id": req_id}
+    except Exception as exc:
+        return JSONResponse(status_code=500, content={"error": {"code": "EMAIL_DISPATCH_FAILED", "message": str(exc)}})
+
+
+@app.post("/api/notifications/test-email")
+def test_email():
+    """Manual trigger to verify Gmail SMTP dispatch to configured target."""
+    from .adapters import email_provider
+    import uuid
+    identifier = f"test:{uuid.uuid4().hex[:6]}"
+    target = settings.email_override or settings.smtp_username or "labtrack821@gmail.com"
+    payload = {
+        "event": "PORTAL_EMAIL_CHECK",
+        "request_id": "TEST-2026",
+        "link": "/workspace",
+        "details": {
+            "student_name": "Ishaan Chand",
+            "student_prn": "25070126076",
+            "project_name": "Autonomous Quadruped Vision Robot",
+            "mentor_name": "Dr. Meenakshi Sharma",
+            "technical_purpose": "Testing institutional live SMTP dispatch to Google inbox.",
+            "components": [{"nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit", "quantity": 1}],
+        }
+    }
+    try:
+        provider = email_provider()
+        provider.send(identifier, target, payload)
+        return {"status": "dispatched", "target": target}
+    except Exception as exc:
+        return JSONResponse(status_code=500, content={"error": {"code": "EMAIL_DISPATCH_FAILED", "message": str(exc)}})
 
 
 @app.exception_handler(svc.DomainError)

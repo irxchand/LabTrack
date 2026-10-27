@@ -72,8 +72,8 @@ for row in ws_items.iter_rows(min_row=2, values_only=True):
         "description": desc,
         "datasheetUrl": "https://datasheets.raspberrypi.com/" if "RPI" in item_id else "",
         "notes": f"Institutional stock item. Verified for curriculum.",
-        "labRoom": "Central Hardware Depot",
-        "coordinates": "DEPOT-R1-B1",
+        "labRoom": "SIT Central Lab",
+        "coordinates": "SIT-MAIN-01",
         "stockStatus": "Available",
         "totalStock": 0,
         "availableStock": 0,
@@ -100,6 +100,7 @@ for item_id, item in item_meta.items():
         primary = item_labs[item_id][0]
         item["labRoom"] = primary["lab_name"]
         item["primaryLabId"] = primary["lab_id"]
+        item["coordinates"] = primary["lab_id"]
         item["labBreakdown"] = item_labs[item_id]
 
 inventory_list = list(item_meta.values())
@@ -158,7 +159,6 @@ for row in ws_projects.iter_rows(min_row=2, values_only=True):
         "mentorName": mentor_name,
         "teamLeaderPrn": str(lead_prn),
         "members": members_by_proj.get(proj_id, [{"prn": str(lead_prn), "name": lead_name, "role": "LEAD"}]),
-        "hardwareBudgetCap": 4,
         "currentAllocatedCount": 1 if proj_id in ["PROJ-000001", "PROJ-000002", "PROJ-000005"] else 0,
         "reliabilityScore": 95.0,
         "allocatedItems": [],
@@ -316,14 +316,14 @@ out_lines = [
     teamReliabilityScore: 90,
     status: 'Pending Approval',
     stage: 'Faculty Mentor Review',
-    technicalPurpose: 'High-throughput edge neural training and TensorRT quantization on Jetson Orin Nano bench.',
-    purposeDescription: 'High-throughput edge neural training and TensorRT quantization on Jetson Orin Nano bench.',
+    technicalPurpose: 'High-throughput edge computing and embedded Linux node with camera streaming.',
+    purposeDescription: 'High-throughput edge computing and embedded Linux node with camera streaming.',
     componentsRequested: [
-      { itemId: 'DEV-JET-02', nomenclature: 'NVIDIA Jetson Orin Nano Developer Kit (8GB)', quantity: 1, classification: 'Asset', type: 'Asset' },
-      { itemId: 'SBC-RPI-05', nomenclature: 'Raspberry Pi 5 Model B 8GB RAM', quantity: 1, classification: 'Asset', type: 'Asset' }
+      { itemId: 'SBC-RPI-05', nomenclature: 'Raspberry Pi 5 Model B 8GB RAM', quantity: 1, classification: 'Asset', type: 'Asset' },
+      { itemId: 'SEN-CAM-01', nomenclature: 'Raspberry Pi Camera Module 3', quantity: 1, classification: 'Asset', type: 'Asset' }
     ],
     timeline: [
-      { step: 'Request Submitted', stage: 'Request Submitted', completed: true, actor: 'Raghavendra Joshi (25070122045)', timestamp: '2026-10-17 14:00:00', note: 'Tier 4 compute asset sign-off required' },
+      { step: 'Request Submitted', stage: 'Request Submitted', completed: true, actor: 'Raghavendra Joshi (25070122045)', timestamp: '2026-10-17 14:00:00', note: 'Single board compute asset sign-off required' },
       { step: 'Faculty Mentor Review', stage: 'Mentor Review', completed: false, actor: 'Dr. Anand Deshmukh (T100455)', timestamp: null },
       { step: 'HoD Review', stage: 'HoD Review', completed: false, actor: 'Dr. Sonali Kothari (T100102)', timestamp: null }
     ],
@@ -488,7 +488,7 @@ out_lines = [
     technicalPurpose: 'Edge compute acceleration on NVIDIA Jetson Orin Nano for distributed particulate air quality predictive inference.',
     purposeDescription: 'Edge compute acceleration on NVIDIA Jetson Orin Nano for distributed particulate air quality predictive inference.',
     componentsRequested: [
-      { itemId: 'DEV-JET-02', nomenclature: 'NVIDIA Jetson Orin Nano Developer Kit (8GB)', quantity: 1, classification: 'Asset', type: 'Asset' },
+      { itemId: 'SBC-JET-02', nomenclature: 'NVIDIA Jetson Orin Nano Developer Kit (8GB)', quantity: 1, classification: 'Asset', type: 'Asset' },
       { itemId: 'SEN-BMP-01', nomenclature: 'BMP280 Barometric Pressure & Altitude Sensor', quantity: 2, classification: 'Consumable', type: 'Consumable' }
     ],
     timeline: [
@@ -520,13 +520,13 @@ out_lines = [
     """export const INITIAL_DEFECT_LOGS = [
   {
     id: 'DEF-2026-001',
-    assetTag: 'SIT-CSE-4CL07-0046',
+    assetTag: 'SIT-AIML-5CL02-0046',
     nomenclature: 'NVIDIA Jetson Nano 4GB B01 Developer Kit',
     reportedDate: '2026-10-02 11:20:00',
-    inspectorPrn: 'LA-01',
-    inspectorName: 'Ramesh Patil',
-    associatedPrn: '25070122045',
-    associatedProject: 'PROJ-000002',
+    inspectorPrn: 'LA-04',
+    inspectorName: 'Ganesh Jadhav',
+    associatedPrn: '25070126076',
+    associatedProject: 'PROJ-000001',
     severity: 'Moderate',
     defectCategory: 'Physical Damage (Port/Connector)',
     conditionSummary: 'Micro-USB power socket sheared from PCB traces during bench test.',

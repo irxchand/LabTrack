@@ -28,6 +28,7 @@ export function RequisitionDrawer() {
     activeLoans,
     userDepartment,
     getItemDeptStock,
+    resolveItemLocationForDept,
   } = useLabData();
   const { currentUser } = useAuth();
   const isStudent = currentUser?.role === 'Student';
@@ -57,6 +58,7 @@ export function RequisitionDrawer() {
   }, [userProjects, selectedProjectId]);
 
   const [purpose, setPurpose] = useState('');
+  const [durationDays, setDurationDays] = useState(14);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [copiedId, setCopiedId] = useState(null);
@@ -72,12 +74,6 @@ export function RequisitionDrawer() {
   const hasCrossDeptItems = crossDeptItems.length > 0;
 
   if (!isBasketOpen) return null;
-
-  const quickPills = [
-    'Mini-project defense',
-    'Lab practicals & sensor logging',
-    'Firmware validation & bench test',
-  ];
 
   const handleCopyTag = (tag) => {
     navigator.clipboard?.writeText(tag);
@@ -243,12 +239,17 @@ export function RequisitionDrawer() {
                       {item.nomenclature}
                     </h4>
 
-                    <div className="mt-1 flex items-center gap-1.5 text-xs text-zinc-400">
-                      <MapPin className="w-3.5 h-3.5 text-[#c9b8a0] flex-shrink-0" />
-                      <span className="text-zinc-300">{item.coordinates}</span>
-                      <span className="text-zinc-600">•</span>
-                      <span className="truncate">{item.labRoom}</span>
-                    </div>
+                    {(() => {
+                      const loc = resolveItemLocationForDept(item, userDepartment);
+                      return (
+                        <div className="mt-1 flex items-center gap-1.5 text-xs text-zinc-400">
+                          <MapPin className="w-3.5 h-3.5 text-[#c9b8a0] flex-shrink-0" />
+                          <span className="text-zinc-300">{loc.coordinates}</span>
+                          <span className="text-zinc-600">•</span>
+                          <span className="truncate">{loc.labRoom}</span>
+                        </div>
+                      );
+                    })()}
 
                     {isStudent && (
                       <div className="mt-1.5">
@@ -282,37 +283,36 @@ export function RequisitionDrawer() {
                       <Trash2 className="w-4 h-4" />
                     </button>
 
-                    <div className="flex items-center bg-white/[0.05] border border-white/10 rounded-full p-0.5">
-                      <button
-                        onClick={() => updateBasketQuantity(item.id, (item.quantity || 1) - 1)}
-                        className="w-6 h-6 rounded-full hover:bg-white/10 text-zinc-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-                      >
-                        <Minus className="w-3 h-3" />
-                      </button>
-                      <span className="w-6 text-center text-xs font-semibold text-white">
-                        {item.quantity || 1}
-                      </span>
-                      <button
-                        onClick={() => updateBasketQuantity(item.id, (item.quantity || 1) + 1)}
-                        className="w-6 h-6 rounded-full hover:bg-white/10 text-zinc-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </button>
-                    </div>
+                    {(() => {
+                      const stock = getItemDeptStock(item, userDepartment);
+                      const isAtMax = (item.quantity || 1) >= (isStudent ? stock.available : (item.availableStock ?? 99));
+                      return (
+                        <div className="flex items-center bg-white/[0.05] border border-white/10 rounded-full p-0.5">
+                          <button
+                            onClick={() => updateBasketQuantity(item.id, (item.quantity || 1) - 1)}
+                            className="w-6 h-6 rounded-full hover:bg-white/10 text-zinc-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span className="w-6 text-center text-xs font-semibold text-white">
+                            {item.quantity || 1}
+                          </span>
+                          <button
+                            disabled={isAtMax}
+                            onClick={() => updateBasketQuantity(item.id, (item.quantity || 1) + 1)}
+                            className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+                              isAtMax ? 'text-zinc-600 cursor-not-allowed opacity-40' : 'hover:bg-white/10 text-zinc-300 hover:text-white cursor-pointer'
+                            }`}
+                            title={isAtMax ? 'Reached maximum available stock' : 'Increase quantity'}
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               ))
-            )}
-
-            {/* Logistics & Checkout Policy */}
-            {basket.length > 0 && (
-              <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 flex items-center justify-between text-xs text-zinc-400">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
-                  <span>14-day academic loan period</span>
-                </div>
-                <span className="text-zinc-500">Pick up at Lab 2 counter</span>
-              </div>
             )}
           </div>
 
@@ -345,7 +345,7 @@ export function RequisitionDrawer() {
                       const assignedCount = (activeLoans || []).filter((l) => l.projectId === p.id).length;
                       return (
                         <option key={p.id} value={p.id} className="bg-[#141417] text-white py-1">
-                          {p.id} • {p.title} ({assignedCount}/{p.hardwareBudgetCap} units active)
+                          {p.id} • {p.title} ({assignedCount} items active)
                         </option>
                       );
                     })}
@@ -359,13 +359,41 @@ export function RequisitionDrawer() {
                   <div className="flex items-center justify-between text-[11px] text-zinc-500 px-0.5 pt-0.5">
                     <span>Course: {activeSelectedProject.courseCode}</span>
                     <span className="text-zinc-400">
-                      Remaining Quota:{' '}
-                      {activeSelectedProject.hardwareBudgetCap -
-                        (activeLoans || []).filter((l) => l.projectId === activeSelectedProject.id).length}{' '}
-                      units
+                      {(activeLoans || []).filter((l) => l.projectId === activeSelectedProject.id).length} hardware items checked out
                     </span>
                   </div>
                 )}
+              </div>
+
+              {/* Loan Duration Selector */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-medium text-zinc-200">
+                    Requisition Duration
+                  </label>
+                  <span className="text-[11px] text-[#c9b8a0] font-semibold">{durationDays} Days</span>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { days: 3, label: '3 Days' },
+                    { days: 7, label: '1 Week' },
+                    { days: 14, label: '2 Weeks' },
+                    { days: 30, label: '1 Month' },
+                  ].map((option) => (
+                    <button
+                      key={option.days}
+                      type="button"
+                      onClick={() => setDurationDays(option.days)}
+                      className={`py-2 px-1 rounded-xl text-xs font-medium border transition-all cursor-pointer text-center ${
+                        durationDays === option.days
+                          ? 'bg-gradient-to-r from-[#c9b8a0] to-[#e2d2bc] text-black font-semibold border-transparent shadow-sm'
+                          : 'bg-white/[0.04] border-white/10 text-zinc-300 hover:bg-white/[0.08]'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div>
@@ -376,28 +404,14 @@ export function RequisitionDrawer() {
                   <span className="text-[11px] text-zinc-500">Required</span>
                 </div>
 
-                {/* Quick Selection Pills */}
-                <div className="flex flex-wrap gap-1.5 mb-2.5">
-                  {quickPills.map((pill) => (
-                    <button
-                      key={pill}
-                      type="button"
-                      onClick={() => setPurpose(pill)}
-                      className="px-2.5 py-1 rounded-full bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-[11px] text-zinc-300 hover:text-white transition-colors cursor-pointer"
-                    >
-                      {pill}
-                    </button>
-                  ))}
-                </div>
-
                 <textarea
                   value={purpose}
                   onChange={(e) => {
                     setPurpose(e.target.value);
                     if (error) setError('');
                   }}
-                  placeholder="Describe how this hardware will be used in your project..."
-                  rows={2}
+                  placeholder="Describe your experimental methodology and technical justification for faculty review..."
+                  rows={3}
                   className="w-full px-3.5 py-2.5 bg-white/[0.03] border border-white/15 rounded-xl text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#c9b8a0] focus:ring-1 focus:ring-[#c9b8a0]/30 transition-all leading-relaxed"
                 />
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useLabData } from '../../context/LabDataContext';
+import { useLabData, getItemDeptStock } from '../../context/LabDataContext';
 import {
   ShoppingBag,
   LogOut,
@@ -17,11 +17,12 @@ import {
   ChevronDown,
   Check,
 } from 'lucide-react';
+import { NotificationCenter } from './NotificationCenter';
 
 export function TopHeader() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser, role, logout } = useAuth();
+  const { currentUser, role, logout, switchRole } = useAuth();
   const {
     basket,
     setIsBasketOpen,
@@ -44,6 +45,9 @@ export function TopHeader() {
   const [isLabDropdownOpen, setIsLabDropdownOpen] = useState(false);
   const labDropdownRef = useRef(null);
 
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+
   const getUserInitials = (name) => {
     if (!name) return 'U';
     const parts = name.trim().split(/\s+/);
@@ -53,19 +57,23 @@ export function TopHeader() {
     return parts[0].slice(0, 2).toUpperCase();
   };
 
-  // Outside click listener for lab dropdown
+  // Outside click listener for lab dropdown & user menu
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (labDropdownRef.current && !labDropdownRef.current.contains(e.target)) {
         setIsLabDropdownOpen(false);
       }
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setIsUserMenuOpen(false);
+      }
     };
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         setIsLabDropdownOpen(false);
+        setIsUserMenuOpen(false);
       }
     };
-    if (isLabDropdownOpen) {
+    if (isLabDropdownOpen || isUserMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleKeyDown);
     }
@@ -73,7 +81,7 @@ export function TopHeader() {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isLabDropdownOpen]);
+  }, [isLabDropdownOpen, isUserMenuOpen]);
 
 
 
@@ -86,14 +94,14 @@ export function TopHeader() {
             label: 'Workstation',
             to: '/workspace/inventory',
             icon: Cpu,
-            count: inventory.length,
+            count: inventory.filter((item) => getItemDeptStock(item, selectedDepartment || userDepartment || 'AIML').total > 0).length,
             isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
           },
           {
             label: 'Approvals',
             to: '/workspace/operations/approvals',
             icon: CheckSquare,
-            count: requisitions.filter((r) => r.status === 'Pending' || r.status === 'Submitted').length,
+            count: requisitions.filter((r) => r.status === 'Pending' || r.status === 'Submitted' || r.status === 'Pending Approval').length,
             isActive: (pathname) => pathname.includes('/operations/approvals'),
           },
           {
@@ -118,7 +126,7 @@ export function TopHeader() {
             label: 'Workstation',
             to: '/workspace/inventory',
             icon: Cpu,
-            count: inventory.length,
+            count: inventory.filter((item) => getItemDeptStock(item, selectedDepartment || userDepartment || 'AIML').total > 0).length,
             isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
           },
           {
@@ -157,7 +165,7 @@ export function TopHeader() {
             label: 'Workstation',
             to: '/workspace/inventory',
             icon: Cpu,
-            count: inventory.length,
+            count: inventory.filter((item) => getItemDeptStock(item, selectedDepartment || userDepartment || 'AIML').total > 0).length,
             isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
           },
           {
@@ -197,45 +205,62 @@ export function TopHeader() {
         ];
 
       case 'Student':
-      default:
+      default: {
         // Student Primary macOS Toolbar Flow: Projects -> Workstation -> Requisitions -> Waitlist -> My Bench
+        const studentLoans = activeLoans.filter(
+          (loan) => loan.borrowerPrn === currentUser?.prn
+        );
+        const studentRequisitions = requisitions.filter(
+          (req) => req.borrowerPrn === currentUser?.prn || req.studentPrn === currentUser?.prn || req.submittedBy === currentUser?.name
+        );
+        const studentProjects = projects.filter(
+          (p) => p.teamLeaderPrn === currentUser?.prn || p.members?.some((m) => m.prn === currentUser?.prn) || (currentUser?.projectId && p.id === currentUser?.projectId)
+        );
+        const studentReservations = reservations.filter(
+          (res) =>
+            res.requestorPrn === currentUser?.prn ||
+            res.studentPrn === currentUser?.prn ||
+            res.borrowerPrn === currentUser?.prn
+        );
+
         return [
           {
             label: 'Projects',
             to: '/workspace/projects',
             icon: FolderGit2,
-            count: projects.length,
+            count: studentProjects.length,
             isActive: (pathname) => pathname.includes('/projects'),
           },
           {
             label: 'Workstation',
             to: '/workspace/inventory',
             icon: Cpu,
-            count: inventory.length,
+            count: inventory.filter((item) => getItemDeptStock(item, userDepartment).total > 0).length,
             isActive: (pathname) => pathname.includes('/inventory') || pathname === '/workspace',
           },
           {
             label: 'Requisitions',
             to: '/workspace/custody/requests',
             icon: Inbox,
-            count: requisitions.length,
+            count: studentRequisitions.length,
             isActive: (pathname) => pathname.includes('/custody/requests'),
           },
           {
             label: 'Waitlist',
             to: '/workspace/custody/reservations',
             icon: BookmarkCheck,
-            count: reservations.length,
+            count: studentReservations.length,
             isActive: (pathname) => pathname.includes('/custody/reservations'),
           },
           {
             label: 'My Bench',
             to: '/workspace/custody/active',
             icon: Clock,
-            count: activeLoans.length,
+            count: studentLoans.length,
             isActive: (pathname) => pathname.includes('/custody/active') || pathname.includes('/custody/bench'),
           },
         ];
+      }
     }
   };
 
@@ -258,22 +283,20 @@ export function TopHeader() {
 
           <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
 
-          {/* Institutional Department Selector Dropdown */}
+          {/* Institutional Department Selector (Clickable Dropdown for All Roles) */}
           <div className="relative hidden sm:block" ref={labDropdownRef}>
             <button
               type="button"
               onClick={() => setIsLabDropdownOpen((prev) => !prev)}
               className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#c9b8a0]/40 transition-all cursor-pointer group shadow-sm select-none"
-              title="Select Engineering Department"
+              title="Switch Engineering Department Facility"
               aria-expanded={isLabDropdownOpen}
               aria-haspopup="true"
             >
               <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-zinc-300 group-hover:text-white transition-colors">
-                {selectedDepartment === 'ALL' ? 'ALL DEPTS' : `${selectedDepartment} DEPT`}
+                {selectedDepartment} DEPT
               </span>
-              {role === 'Student' && selectedDepartment === userDepartment && (
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" title="Your Enrolled Department" />
-              )}
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               <ChevronDown
                 className={`w-3 h-3 text-zinc-400 group-hover:text-zinc-200 transition-transform duration-200 ${
                   isLabDropdownOpen ? 'rotate-180' : ''
@@ -281,70 +304,64 @@ export function TopHeader() {
               />
             </button>
 
-            {/* Dropdown Menu */}
-            {isLabDropdownOpen && (
-              <div
-                className="absolute left-0 top-full mt-2 w-80 rounded-2xl bg-[#0c0d12]/95 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150"
-                role="menu"
-              >
-                <div className="px-3 py-2 border-b border-white/5 flex items-center justify-between">
-                  <span className="text-[9px] font-sans font-semibold uppercase tracking-[0.15em] text-zinc-400">
-                    DEPARTMENT REGISTRY
-                  </span>
-                  <span className="text-[9px] font-sans text-zinc-400">
-                    SIT Pune • 2026
-                  </span>
-                </div>
-                <div className="p-1 space-y-1">
-                  {(departments || []).map((dept) => {
-                    const isSelected = selectedDepartment === dept.code;
-                    const isUserDept = role === 'Student' && userDepartment === dept.code;
-                    return (
-                      <button
-                        key={dept.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedDepartment(dept.code);
-                          setIsLabDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-2 rounded-xl text-xs font-sans transition-all flex items-start justify-between group cursor-pointer ${
-                          isSelected
-                            ? 'bg-white/[0.08] text-white border border-white/10 shadow-sm'
-                            : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
-                        }`}
-                        role="menuitem"
-                      >
-                        <div className="flex flex-col pr-2">
-                          <div className="flex items-center gap-1.5">
-                            <span
-                              className={`font-semibold text-xs tracking-wide ${
-                                isSelected ? 'text-[#f5e6c8]' : 'text-zinc-200 group-hover:text-white'
-                              }`}
-                            >
-                              {dept.name}
-                            </span>
-                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400 border border-white/5">
-                              {dept.floor}
-                            </span>
-                            {isUserDept && (
-                              <span className="text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
-                                Your Dept
+                {/* Dropdown Menu */}
+                {isLabDropdownOpen && (
+                  <div
+                    className="absolute left-0 top-full mt-2 w-80 rounded-2xl bg-[#0c0d12]/95 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150"
+                    role="menu"
+                  >
+                    <div className="px-3 py-2 border-b border-white/5 flex items-center justify-between">
+                      <span className="text-[9px] font-sans font-semibold uppercase tracking-[0.15em] text-zinc-400">
+                        DEPARTMENT FACILITY
+                      </span>
+                      <span className="text-[9px] font-sans text-zinc-400">
+                        SIT Pune • 2026
+                      </span>
+                    </div>
+                    <div className="p-1 space-y-1">
+                      {(departments || []).map((dept) => {
+                        const isSelected = selectedDepartment === dept.code;
+                        return (
+                          <button
+                            key={dept.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedDepartment(dept.code);
+                              setIsLabDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-xl text-xs font-sans transition-all flex items-start justify-between group cursor-pointer ${
+                              isSelected
+                                ? 'bg-white/[0.08] text-white border border-white/10 shadow-sm'
+                                : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                            }`}
+                            role="menuitem"
+                          >
+                            <div className="flex flex-col pr-2">
+                              <div className="flex items-center gap-1.5">
+                                <span
+                                  className={`font-semibold text-xs tracking-wide ${
+                                    isSelected ? 'text-[#f5e6c8]' : 'text-zinc-200 group-hover:text-white'
+                                  }`}
+                                >
+                                  {dept.name}
+                                </span>
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400 border border-white/5">
+                                  {dept.floor}
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-zinc-400 font-normal mt-0.5 leading-snug">
+                                {dept.subTitle}
                               </span>
+                            </div>
+                            {isSelected && (
+                              <Check className="w-3.5 h-3.5 text-[#c9b8a0] mt-0.5 flex-shrink-0" />
                             )}
-                          </div>
-                          <span className="text-[10px] text-zinc-400 font-normal mt-0.5 leading-snug">
-                            {dept.subTitle}
-                          </span>
-                        </div>
-                        {isSelected && (
-                          <Check className="w-3.5 h-3.5 text-[#c9b8a0] mt-0.5 flex-shrink-0" />
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
           </div>
         </div>
 
@@ -383,6 +400,9 @@ export function TopHeader() {
 
         {/* Right: Requisition Basket, User Identity, Direct Logout */}
         <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+          {/* Notification Center Trigger & Popup Panel */}
+          <NotificationCenter />
+
           {/* Requisition Basket Shortcut */}
           <button
             type="button"
@@ -400,17 +420,79 @@ export function TopHeader() {
 
           <div className="h-3.5 w-px bg-white/10 hidden sm:block" />
 
-          {/* Current User Identity (Apple-Style Monogram Pill) */}
-          <div className="hidden lg:flex items-center gap-2.5 pl-1.5 pr-2.5 py-1 rounded-full bg-white/[0.03] border border-white/10 hover:border-[#a78b71]/40 transition-all backdrop-blur-md shadow-sm">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#a78b71]/35 to-[#e8d5b7]/20 border border-[#c9b8a0]/30 flex items-center justify-center text-[10px] font-semibold text-[#f5e6c8] tracking-tight select-none">
-              {getUserInitials(currentUser?.name || role)}
-            </div>
-            <span className="font-medium text-white/90 text-xs tracking-tight">
-              {currentUser?.name || role}
-            </span>
-            <span className="text-[10px] font-medium text-[#c9b8a0] bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/10">
-              {role}
-            </span>
+          {/* Current User Identity & Quick Switcher */}
+          <div className="relative hidden lg:block" ref={userMenuRef}>
+            <button
+              type="button"
+              onClick={() => setIsUserMenuOpen((prev) => !prev)}
+              className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-[#a78b71]/40 transition-all backdrop-blur-md shadow-sm cursor-pointer group select-none"
+              title="Click to peek or switch between accounts"
+            >
+              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#a78b71]/35 to-[#e8d5b7]/20 border border-[#c9b8a0]/30 flex items-center justify-center text-[10px] font-semibold text-[#f5e6c8] tracking-tight select-none">
+                {getUserInitials(currentUser?.name || role)}
+              </div>
+              <span className="font-medium text-white/90 text-xs tracking-tight">
+                {currentUser?.name || role}
+              </span>
+              <span className="text-[10px] font-medium text-[#c9b8a0] bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/10">
+                {role}
+              </span>
+              <ChevronDown className={`w-3 h-3 text-zinc-400 group-hover:text-white transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isUserMenuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-[#0c0d12]/95 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="px-3 py-2 border-b border-white/10 mb-1">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-[#c9b8a0]">
+                    Peek Into Accounts
+                  </p>
+                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                    Instantly view workspace from any persona
+                  </p>
+                </div>
+
+                <div className="space-y-1">
+                  {[
+                    { roleName: 'Student', name: 'Ishaan Chand', prn: '25070126076', desc: 'SE Lead • AIML Bench' },
+                    { roleName: 'Faculty', name: 'Dr. Manoj Patil', prn: 'T100460', desc: 'Faculty Supervisor Desk' },
+                    { roleName: 'Lab Assistant', name: 'Ramesh Patil', prn: 'N10001', desc: 'Counter Desk 2 • Dispatch' },
+                    { roleName: 'HoD / Admin', name: 'Dr. Sumit Kumar', prn: 'T100101', desc: 'Department Executive' },
+                  ].map((p) => {
+                    const isCurrent = (currentUser?.prn === p.prn) || (role === p.roleName && !currentUser?.prn);
+                    return (
+                      <button
+                        key={p.roleName}
+                        type="button"
+                        onClick={() => {
+                          switchRole(p.roleName);
+                          setIsUserMenuOpen(false);
+                          if (p.roleName === 'Student') navigate('/workspace/projects');
+                          else if (p.roleName === 'Faculty') navigate('/workspace/operations/approvals');
+                          else if (p.roleName === 'Lab Assistant') navigate('/workspace/operations/dispatch');
+                          else if (p.roleName === 'HoD / Admin') navigate('/workspace/operations/approvals');
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-xl text-xs transition-all flex items-center justify-between cursor-pointer ${
+                          isCurrent
+                            ? 'bg-white/10 text-white font-semibold border border-[#c9b8a0]/40'
+                            : 'text-zinc-300 hover:bg-white/[0.05] hover:text-white'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-medium text-white">{p.name}</span>
+                            <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-white/[0.06] text-[#c9b8a0]">
+                              {p.roleName}
+                            </span>
+                          </div>
+                          <div className="text-[10px] text-zinc-400 mt-0.5">{p.desc}</div>
+                        </div>
+                        {isCurrent && <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Direct Logout Action */}

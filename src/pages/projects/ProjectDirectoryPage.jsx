@@ -20,10 +20,10 @@ import {
 
 export function ProjectDirectoryPage() {
   const navigate = useNavigate();
-  const { projects, inventory, createProject } = useLabData();
+  const { projects, inventory, createProject, userDepartment, activeLoans = [], requisitions = [] } = useLabData();
   const { currentUser, role } = useAuth();
   const isStudent = !role || role === 'Student';
-  const userPrn = currentUser?.prn || '202401048';
+  const userPrn = currentUser?.prn || '25070126076';
 
   const [activeFilter, setActiveFilter] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -347,7 +347,14 @@ export function ProjectDirectoryPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filteredProjects.map((project) => {
             const isLeader = project.teamLeaderPrn === userPrn;
-            const quotaPercentage = Math.round((project.currentAllocatedCount / project.hardwareBudgetCap) * 100);
+            const projectLoans = activeLoans.filter((l) => l.projectId === project.id);
+            const projectReqs = requisitions.filter((r) => r.projectId === project.id);
+            const returnedReqs = projectReqs.filter((r) => {
+              const s = String(r.status || '').toLowerCase();
+              const st = String(r.stage || '').toLowerCase();
+              return s.includes('return') || s.includes('restock') || st.includes('return') || st.includes('restock');
+            });
+            const allocatedCount = projectLoans.length;
 
             return (
               <div
@@ -406,13 +413,13 @@ export function ProjectDirectoryPage() {
                     <span>Allocated Hardware Staging</span>
                   </span>
                   <span className="text-zinc-400 font-sans text-xs">
-                    {project.currentAllocatedCount} of {project.hardwareBudgetCap} Units Used
+                    {allocatedCount} {allocatedCount === 1 ? 'item assigned' : 'items assigned'}
                   </span>
                 </div>
 
-                {project.allocatedItems && project.allocatedItems.length > 0 ? (
+                {projectLoans.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {project.allocatedItems.map((item, idx) => (
+                    {projectLoans.map((item, idx) => (
                       <div
                         key={idx}
                         className="p-3 rounded-2xl bg-black/60 border border-white/10 flex items-center gap-3 group-hover:border-white/20 transition-all shadow-inner"
@@ -438,22 +445,20 @@ export function ProjectDirectoryPage() {
                       </div>
                     ))}
                   </div>
+                ) : returnedReqs.length > 0 ? (
+                  <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-200 font-sans flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                      <span className="font-semibold text-emerald-300">Custody Cleared • Hardware Returned & Restocked</span>
+                    </div>
+                    <span className="text-[11px] text-zinc-400 font-medium">0 In Custody</span>
+                  </div>
                 ) : (
                   <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 text-xs text-zinc-400 font-sans flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
-                    <span>All {project.hardwareBudgetCap} hardware allocation slots currently available.</span>
+                    <span>No physical hardware items currently assigned.</span>
                   </div>
                 )}
-
-                {/* Quota Progress Bar (Luxury Gold Matching Brand Design) */}
-                <div className="space-y-1 pt-1">
-                  <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
-                    <div
-                      className="bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] h-full rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(201,184,160,0.6)]"
-                      style={{ width: `${Math.min(100, quotaPercentage)}%` }}
-                    />
-                  </div>
-                </div>
               </div>
 
               {/* Footer with Team Roster & Inspect CTA */}

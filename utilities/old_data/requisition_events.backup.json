@@ -1,0 +1,403 @@
+[
+  {
+    "event": "REQUISITION_DISPATCHED",
+    "request_id": "REQ-2026-512",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "PROJ-000001",
+    "mentor_name": "Counter Desk 2 (Staff)",
+    "technical_purpose": "Physical handover committed. Asset SIT-AIML-5CL02-0045 (NVIDIA Jetson Nano 4GB B01 Developer Kit) in student custody.",
+    "components": [
+      {
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 1,
+        "itemId": "SBC-JET-01"
+      }
+    ]
+  },
+  {
+    "event": "REQUISITION_DISPATCHED",
+    "request_id": "REQ-2026-209",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "PROJ-000001",
+    "mentor_name": "Counter Desk 2 (Staff)",
+    "technical_purpose": "Physical handover committed. Asset SIT-AIML-5CL07-0044 (NVIDIA Jetson Nano 4GB B01 Developer Kit) in student custody.",
+    "components": [
+      {
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 1,
+        "itemId": "SBC-JET-01"
+      }
+    ]
+  },
+  {
+    "event": "REQUISITION_DISPATCHED",
+    "request_id": "REQ-2026-539",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "PROJ-000001",
+    "mentor_name": "Counter Desk 2 (Staff)",
+    "technical_purpose": "Physical handover committed. Asset SIT-AIML-5CL07-0042 (NVIDIA Jetson Nano 4GB B01 Developer Kit) in student custody.",
+    "components": [
+      {
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 1,
+        "itemId": "SBC-JET-01"
+      }
+    ]
+  },
+  {
+    "event": "REQUISITION_DISPATCHED",
+    "request_id": "REQ-2026-446",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "PROJ-000001",
+    "mentor_name": "Counter Desk 2 (Staff)",
+    "technical_purpose": "Physical handover committed. Asset SIT-AIML-5CL07-0041 (NVIDIA Jetson Nano 4GB B01 Developer Kit) in student custody.",
+    "components": [
+      {
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 1,
+        "itemId": "SBC-JET-01"
+      }
+    ]
+  },
+  {
+    "event": "HOD_APPROVED",
+    "request_id": "REQ-2026-446",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Sumit Kumar",
+    "technical_purpose": "Department allocation sanctioned by HoD. Passed to Counter Desk. \u2014 Endorsed by Dr. Sumit Kumar.",
+    "components": [
+      {
+        "itemId": "SBC-JET-01",
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 9,
+        "type": "Asset"
+      },
+      {
+        "itemId": "SBC-JET-02",
+        "nomenclature": "NVIDIA Jetson Orin Nano Developer Kit (8GB)",
+        "quantity": 1,
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "MENTOR_APPROVED",
+    "request_id": "REQ-2026-446",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "Approved by Dr. Manoj Patil for departmental coursework milestones.",
+    "components": [
+      {
+        "itemId": "SBC-JET-01",
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 9,
+        "type": "Asset"
+      },
+      {
+        "itemId": "SBC-JET-02",
+        "nomenclature": "NVIDIA Jetson Orin Nano Developer Kit (8GB)",
+        "quantity": 1,
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "REQUEST_SUBMITTED",
+    "request_id": "REQ-2026-446",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "I NEED\n",
+    "components": [
+      {
+        "itemId": "SBC-JET-01",
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 9,
+        "type": "Asset"
+      },
+      {
+        "itemId": "SBC-JET-02",
+        "nomenclature": "NVIDIA Jetson Orin Nano Developer Kit (8GB)",
+        "quantity": 1,
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "MENTOR_APPROVED",
+    "request_id": "REQ-2026-539",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "Batch endorsement: Dr. Manoj Patil verified compliant curriculum proposal.",
+    "components": [
+      {
+        "itemId": "SBC-JET-01",
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 8,
+        "type": "Asset"
+      },
+      {
+        "itemId": "SBC-JET-02",
+        "nomenclature": "NVIDIA Jetson Orin Nano Developer Kit (8GB)",
+        "quantity": 1,
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "REQUEST_SUBMITTED",
+    "request_id": "REQ-2026-539",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "DO\n",
+    "components": [
+      {
+        "itemId": "SBC-JET-01",
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 8,
+        "type": "Asset"
+      },
+      {
+        "itemId": "SBC-JET-02",
+        "nomenclature": "NVIDIA Jetson Orin Nano Developer Kit (8GB)",
+        "quantity": 1,
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "REQUEST_SUBMITTED",
+    "request_id": "REQ-2026-209",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "DONE",
+    "components": [
+      {
+        "itemId": "SBC-JET-01",
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 7,
+        "type": "Asset"
+      },
+      {
+        "itemId": "SBC-JET-02",
+        "nomenclature": "NVIDIA Jetson Orin Nano Developer Kit (8GB)",
+        "quantity": 1,
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "REQUISITION_DISPATCHED",
+    "request_id": "REQ-2026-512",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "PROJ-000001",
+    "mentor_name": "Counter Desk 2 (Staff)",
+    "technical_purpose": "Physical handover committed. Asset SIT-AIML-5CL07-0041 (NVIDIA Jetson Nano 4GB B01 Developer Kit) in student custody.",
+    "components": [
+      {
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 1,
+        "itemId": "SBC-JET-01"
+      }
+    ]
+  },
+  {
+    "event": "HOD_APPROVED",
+    "request_id": "REQ-2026-512",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Sumit Kumar",
+    "technical_purpose": "Department allocation sanctioned by HoD. Passed to Counter Desk. \u2014 Endorsed by Dr. Sumit Kumar.",
+    "components": [
+      {
+        "itemId": "SBC-JET-01",
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 4,
+        "classification": "Asset",
+        "type": "Asset"
+      },
+      {
+        "itemId": "SBC-JET-02",
+        "nomenclature": "NVIDIA Jetson Orin Nano Developer Kit (8GB)",
+        "quantity": 1,
+        "classification": "Asset",
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "MENTOR_APPROVED",
+    "request_id": "REQ-2026-512",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "Approved by Dr. Manoj Patil for departmental coursework milestones.",
+    "components": [
+      {
+        "itemId": "SBC-JET-01",
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 4,
+        "type": "Asset"
+      },
+      {
+        "itemId": "SBC-JET-02",
+        "nomenclature": "NVIDIA Jetson Orin Nano Developer Kit (8GB)",
+        "quantity": 1,
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "REQUEST_SUBMITTED",
+    "request_id": "REQ-2026-512",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "FOR A PROJECT",
+    "components": [
+      {
+        "itemId": "SBC-JET-01",
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 4,
+        "type": "Asset"
+      },
+      {
+        "itemId": "SBC-JET-02",
+        "nomenclature": "NVIDIA Jetson Orin Nano Developer Kit (8GB)",
+        "quantity": 1,
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "REQUISITION_REJECTED",
+    "request_id": "REQ-2026-984",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "Rejection reason: NOPE!!",
+    "components": [
+      {
+        "itemId": "SBC-JET-01",
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 1,
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "REQUEST_SUBMITTED",
+    "request_id": "REQ-2026-984",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "I NEED",
+    "components": [
+      {
+        "itemId": "SBC-JET-01",
+        "nomenclature": "NVIDIA Jetson Nano 4GB B01 Developer Kit",
+        "quantity": 1,
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "REQUISITION_REJECTED",
+    "request_id": "REQ-2026-961",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "Rejection reason: NOPE!!\n",
+    "components": [
+      {
+        "itemId": "CAM-FLI-01",
+        "nomenclature": "FLIR Lepton 3.5 Radiometric LWIR Thermal Camera",
+        "quantity": 1,
+        "classification": "Asset",
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "REQUEST_SUBMITTED",
+    "request_id": "REQ-2026-961",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "do it",
+    "components": [
+      {
+        "itemId": "CAM-FLI-01",
+        "nomenclature": "FLIR Lepton 3.5 Radiometric LWIR Thermal Camera",
+        "quantity": 1,
+        "type": "Asset"
+      }
+    ]
+  },
+  {
+    "event": "REQUISITION_REJECTED",
+    "request_id": "REQ-2026-101",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "Rejection reason: no",
+    "components": [
+      {
+        "itemId": "CAM-INT-01",
+        "nomenclature": "Intel RealSense Depth Camera D435i",
+        "quantity": 1,
+        "classification": "Asset",
+        "type": "Asset"
+      },
+      {
+        "itemId": "SEN-IMU-01",
+        "nomenclature": "MPU6050 6-Axis Gyro & Accelerometer Module",
+        "quantity": 2,
+        "classification": "Consumable",
+        "type": "Consumable"
+      }
+    ]
+  },
+  {
+    "event": "REQUISITION_REJECTED",
+    "request_id": "REQ-2026-546",
+    "student_name": "Ishaan Chand",
+    "student_prn": "25070126076",
+    "project_name": "Autonomous Quadruped Vision Robot",
+    "mentor_name": "Dr. Manoj Patil",
+    "technical_purpose": "Rejection reason: no",
+    "components": [
+      {
+        "itemId": "ROB-TB3-01",
+        "nomenclature": "TurtleBot 3 Burger Mobile Robot",
+        "quantity": 1,
+        "classification": "Asset",
+        "type": "Asset"
+      }
+    ]
+  }
+]

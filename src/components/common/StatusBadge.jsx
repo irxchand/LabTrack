@@ -86,6 +86,11 @@ export function StatusBadge({ status, type = 'stock', size = 'sm', className = '
         colorClasses = 'bg-white/[0.06] text-zinc-300 border-white/10';
         dotColor = 'bg-zinc-400';
         break;
+      case 'Returned':
+      case 'Returned & Restocked':
+        colorClasses = 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+        dotColor = 'bg-emerald-400';
+        break;
       case 'Rejected':
         colorClasses = 'bg-rose-500/15 text-rose-300 border-rose-500/30';
         dotColor = 'bg-rose-400';

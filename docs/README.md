@@ -22,7 +22,8 @@ docs/
 │   ├── EXECUTION_PLAN.md             # Execution phase roadmap & implementation strategy
 │   ├── EXECUTION_DECISIONS.md        # Technical selections & unresolved business policy log
 │   ├── EXECUTION_TRACEABILITY.md     # 85-requirement traceability matrix to code & tests
-│   └── VALIDATION_REPORT.md          # Measured test results, coverage, & runtime limitations
+│   ├── VALIDATION_REPORT.md          # Measured test results, coverage, & runtime limitations
+│   └── LABTRACK_CHATS_TRANSCRIPT.md  # Complete historical transcript of user prompts & session directives
 ├── academic/                         # Official university rubrics & literature references
 │   ├── DCDSL_Evaluation_Plan.pdf     # Distributed & Cloud Database Systems Lab rubric
 │   ├── CCE_Evaluation_Plan.pdf       # Cloud Computing Essentials rubric

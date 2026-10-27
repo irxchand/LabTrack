@@ -9,7 +9,7 @@ import {
 const DEFECTS_KEY = 'labtrack_defects_v5';
 const AUDIT_KEY = 'labtrack_audit_v5';
 const INCIDENTS_KEY = 'labtrack_incidents_v5';
-const PROJECTS_KEY = 'labtrack_projects_v5';
+const PROJECTS_KEY = 'labtrack_projects_v15';
 
 function getStored(key, initial) {
   const data = localStorage.getItem(key);

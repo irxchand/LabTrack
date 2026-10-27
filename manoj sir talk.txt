@@ -38,6 +38,6 @@ asset use and asset issuance are two permissions
 sensor:decrirption, brand, range 
 no need for consumable details. Description of consumables is required if the variety is more.
 bill number annotations availability is a good add on extra benefit (CPR number, bill or purchase number)
-bill tracking if possibele
+bill tracking if possibelete
 
 

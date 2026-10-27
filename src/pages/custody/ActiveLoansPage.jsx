@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
 import { DataTable } from '../../components/common/DataTable';
@@ -26,10 +27,12 @@ import {
   HelpCircle,
   ArrowRight,
   Wrench,
+  RotateCcw,
 } from 'lucide-react';
 
 export function ActiveLoansPage() {
-  const { activeLoans, inventory, requestExtension, reportDefect } = useLabData();
+  const navigate = useNavigate();
+  const { activeLoans, requisitions, inventory, requestExtension, reportDefect } = useLabData();
   const { currentUser, role } = useAuth();
 
   const [selectedLoan, setSelectedLoan] = useState(null);
@@ -46,6 +49,16 @@ export function ActiveLoansPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('grid'); // Default to Apple Hardware Stage Cards
+
+  const isStaff = useMemo(() => {
+    return (
+      role === 'Lab Assistant' ||
+      role === 'HoD / Admin' ||
+      currentUser?.role?.toLowerCase().includes('assistant') ||
+      currentUser?.role?.toLowerCase().includes('admin') ||
+      currentUser?.role?.toLowerCase().includes('technician')
+    );
+  }, [role, currentUser]);
 
   // Check if current user has any unreturned overdue hardware
   const userHasOverdue = useMemo(() => {
@@ -72,6 +85,20 @@ export function ActiveLoansPage() {
     }
     return activeLoans;
   }, [activeLoans, role, currentUser]);
+
+  // Returned requisitions for the current user/project
+  const userReturnedRequisitions = useMemo(() => {
+    return (requisitions || []).filter(
+      (r) =>
+        (r.studentPrn === currentUser?.prn ||
+         r.borrowerPrn === currentUser?.prn ||
+         r.requesterPrn === currentUser?.prn ||
+         r.submittedBy === currentUser?.name ||
+         r.studentName === currentUser?.name ||
+         (role === 'Student' && (r.studentPrn === '25070126076' || r.borrowerPrn === '25070126076'))) &&
+        (r.status === 'Returned' || r.status === 'Returned & Restocked')
+    );
+  }, [requisitions, currentUser, role]);
 
   // Real-time telemetry metrics
   const stats = useMemo(() => {
@@ -100,8 +127,51 @@ export function ActiveLoansPage() {
   };
 
   // Inventory lookup helper for rich photos & specs
-  const getInventoryItem = (assetTag) => {
-    return inventory.find((i) => i.assetTag === assetTag || i.id === assetTag) || {};
+  const getInventoryItem = (assetTag, nomenclature) => {
+    let item = inventory.find((i) => i.assetTag === assetTag || i.id === assetTag);
+    if (!item && nomenclature) {
+      item = inventory.find((i) => i.nomenclature?.toLowerCase() === nomenclature?.toLowerCase());
+      if (!item) {
+        const nom = nomenclature.toLowerCase();
+        if (nom.includes('jetson') || nom.includes('orin') || nom.includes('nano')) {
+          item = inventory.find((i) => i.id?.includes('JET') || i.nomenclature?.toLowerCase().includes('jetson'));
+        } else if (nom.includes('raspberry') || nom.includes('rpi')) {
+          item = inventory.find((i) => i.id?.includes('RPI') || i.nomenclature?.toLowerCase().includes('raspberry'));
+        }
+      }
+    }
+    return item || {};
+  };
+
+  const resolveHardwareImage = (itemOrNom) => {
+    const nom = (typeof itemOrNom === 'string' ? itemOrNom : itemOrNom?.nomenclature || '').toLowerCase();
+    if (nom.includes('jetson') || nom.includes('orin')) return '/images/hardware/jetson-nano.jpg';
+    if (nom.includes('raspberry') || nom.includes('rpi')) return '/images/hardware/raspberry-pi-5.jpg';
+    if (nom.includes('esp32')) return '/images/hardware/esp32-wroom.jpg';
+    if (nom.includes('arduino') || nom.includes('uno')) return '/images/hardware/arduino-uno-r3.jpg';
+    if (nom.includes('oscilloscope') || nom.includes('rigol')) return '/images/hardware/oscilloscope.jpg';
+    if (nom.includes('realsense')) return '/images/hardware/realsense-camera.jpg';
+    if (nom.includes('thermal') || nom.includes('flir')) return '/images/hardware/thermal-camera.jpg';
+    if (nom.includes('turtlebot')) return '/images/hardware/turtlebot-robot.jpg';
+    if (nom.includes('dobot') || nom.includes('kinova') || nom.includes('arm')) return '/images/hardware/robotic-arm.jpg';
+    if (nom.includes('multimeter')) return '/images/hardware/digital-multimeter.jpg';
+    if (nom.includes('breadboard')) return '/images/hardware/breadboard-830.jpg';
+    if (nom.includes('jumper')) return '/images/hardware/jumper-wires.jpg';
+    if (nom.includes('relay')) return '/images/hardware/relay-module.jpg';
+    if (nom.includes('oled')) return '/images/hardware/oled-display.jpg';
+    if (nom.includes('lcd')) return '/images/hardware/lcd-1602.jpg';
+    if (nom.includes('servo')) return '/images/hardware/sg90-servo.jpg';
+    if (nom.includes('stepper')) return '/images/hardware/nema17-stepper.jpg';
+    if (nom.includes('driver')) return '/images/hardware/l298n-motor-driver.jpg';
+    if (nom.includes('battery') || nom.includes('lipo')) return '/images/hardware/18650-battery.jpg';
+    if (nom.includes('ultrasonic') || nom.includes('hc-sr04')) return '/images/hardware/hcsr04-ultrasonic.jpg';
+    if (nom.includes('dht11') || nom.includes('temperature')) return '/images/hardware/dht11-sensor.jpg';
+    if (nom.includes('pir')) return '/images/hardware/pir-motion-sensor.jpg';
+    if (nom.includes('ir ') || nom.includes('infrared')) return '/images/hardware/ir-sensor-module.jpg';
+    if (nom.includes('bmp280')) return '/images/hardware/bmp280-sensor.jpg';
+    if (nom.includes('mpu6050') || nom.includes('imu')) return '/images/hardware/mpu6050-sensor.jpg';
+    if (nom.includes('piezo')) return '/images/hardware/piezo-sensor.jpg';
+    return '/images/hardware/raspberry-pi-5.jpg';
   };
 
   // Filtered list based on search and status tabs
@@ -250,7 +320,7 @@ export function ActiveLoansPage() {
     },
     {
       header: 'Action',
-      width: '150px',
+      width: '180px',
       align: 'right',
       render: (row) => {
         const isBorrower = row.borrowerPrn === currentUser?.prn;
@@ -265,18 +335,33 @@ export function ActiveLoansPage() {
             >
               <Eye className="w-3.5 h-3.5" />
             </button>
-            <button
-              onClick={() => handleOpenExtension(row)}
-              disabled={isDisabled}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${
-                isDisabled
-                  ? 'bg-white/[0.03] text-zinc-600 border border-white/5 cursor-not-allowed'
-                  : 'bg-white hover:bg-zinc-200 text-black shadow-sm active:scale-95 cursor-pointer font-semibold'
-              }`}
-            >
-              <CalendarPlus className="w-3.5 h-3.5" />
-              <span>Extend</span>
-            </button>
+            {isStaff ? (
+              <button
+                onClick={() =>
+                  navigate(
+                    `/workspace/operations/dispatch?mode=checkin&assetTag=${encodeURIComponent(row.assetTag)}`
+                  )
+                }
+                className="px-3.5 py-1.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer transition-all"
+                title="Intake & process return inspection at counter"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Intake Return</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => handleOpenExtension(row)}
+                disabled={isDisabled}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${
+                  isDisabled
+                    ? 'bg-white/[0.03] text-zinc-600 border border-white/5 cursor-not-allowed'
+                    : 'bg-white hover:bg-zinc-200 text-black shadow-sm active:scale-95 cursor-pointer font-semibold'
+                }`}
+              >
+                <CalendarPlus className="w-3.5 h-3.5" />
+                <span>Extend</span>
+              </button>
+            )}
           </div>
         );
       },
@@ -355,7 +440,8 @@ export function ActiveLoansPage() {
 
   // Render Cupertino Product Staging Card for Issued Hardware
   const renderHardwareCard = (loan) => {
-    const invItem = getInventoryItem(loan.assetTag);
+    const invItem = getInventoryItem(loan.assetTag, loan.nomenclature);
+    const cardImage = invItem?.image || resolveHardwareImage(loan.nomenclature);
     const isBorrower = loan.borrowerPrn === currentUser?.prn;
     const isExtensionDisabled = userHasOverdue && isBorrower;
     const style = getCategoryStyle(invItem);
@@ -369,11 +455,11 @@ export function ActiveLoansPage() {
       >
         {/* Full Image Box Background - Picture fills 100% of the box edge-to-edge */}
         <img
-          src={invItem?.image || '/images/hardware/raspberry-pi-5.jpg'}
+          src={cardImage}
           alt={loan.nomenclature}
           className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out z-0"
           onError={(e) => {
-            e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+            e.target.src = resolveHardwareImage(loan.nomenclature);
           }}
         />
 
@@ -473,26 +559,43 @@ export function ActiveLoansPage() {
                   <span>Report Fault</span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleOpenExtension(loan);
-                  }}
-                  disabled={isExtensionDisabled}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all shadow-lg active:scale-95 flex-shrink-0 cursor-pointer ${
-                    isExtensionDisabled
-                      ? 'bg-white/[0.06] text-zinc-500 border border-white/10 cursor-not-allowed'
-                      : 'bg-white hover:bg-zinc-200 text-black'
-                  }`}
-                  title={
-                    isExtensionDisabled
-                      ? 'Extension locked: overdue item pending return'
-                      : 'Request Term Extension'
-                  }
-                >
-                  Extend
-                </button>
+                {isStaff ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(
+                        `/workspace/operations/dispatch?mode=checkin&assetTag=${encodeURIComponent(loan.assetTag)}`
+                      );
+                    }}
+                    className="px-4 py-2 rounded-full text-xs font-semibold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95 flex-shrink-0"
+                    title="Intake return and inspect hardware condition"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Intake Return</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenExtension(loan);
+                    }}
+                    disabled={isExtensionDisabled}
+                    className={`px-4 py-2 rounded-full text-xs font-semibold tracking-tight transition-all shadow-lg active:scale-95 flex-shrink-0 cursor-pointer ${
+                      isExtensionDisabled
+                        ? 'bg-white/[0.06] text-zinc-500 border border-white/10 cursor-not-allowed'
+                        : 'bg-white hover:bg-zinc-200 text-black'
+                    }`}
+                    title={
+                      isExtensionDisabled
+                        ? 'Extension locked: overdue item pending return'
+                        : 'Request Term Extension'
+                    }
+                  >
+                    Extend
+                  </button>
+                )}
               </div>
           </div>
         </div>
@@ -637,10 +740,34 @@ export function ActiveLoansPage() {
       {/* ───────────────────────────────────────────────────────────── */}
       {/* 4. HARDWARE PRESENTATION (Unified Cupertino Grid vs Ledger)   */}
       {/* ───────────────────────────────────────────────────────────── */}
-      {viewMode === 'grid' ? (
-        filteredLoans.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredLoans.map(renderHardwareCard)}
+      {filteredLoans.length === 0 ? (
+        userReturnedRequisitions.length > 0 ? (
+          <div className="text-center py-16 px-6 text-zinc-400 text-sm bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-emerald-500/20 rounded-3xl backdrop-blur-xl shadow-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-3.5 shadow-[0_0_20px_rgba(16,185,129,0.15)]">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <p className="font-semibold text-white text-base">Bench Clean • Hardware Returned & Restocked</p>
+            <p className="text-xs text-zinc-400 mt-1.5 max-w-md mx-auto leading-relaxed">
+              All previously requisitioned hardware units have been inspected, restocked at Lab 1 Counter (Desk 2), and cleared from your active custody.
+            </p>
+            <div className="mt-5 flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => navigate('/workspace/custody/requisitions?status=Returned')}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-95"
+              >
+                <span>View Return Receipts</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/workspace/workstation')}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-95"
+              >
+                <span>Workstation Catalog</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="text-center py-20 text-zinc-400 text-sm bg-white/[0.02] border border-white/[0.08] rounded-3xl backdrop-blur-xl">
@@ -651,6 +778,10 @@ export function ActiveLoansPage() {
             </p>
           </div>
         )
+      ) : viewMode === 'grid' ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredLoans.map(renderHardwareCard)}
+        </div>
       ) : (
         <DataTable
           columns={tableColumns}
@@ -810,23 +941,24 @@ export function ActiveLoansPage() {
           maxWidth="max-w-lg"
         >
           {(() => {
-            const invItem = getInventoryItem(inspectedLoan.assetTag);
+            const invItem = getInventoryItem(inspectedLoan.assetTag, inspectedLoan.nomenclature);
+            const modalImage = invItem?.image || resolveHardwareImage(inspectedLoan.nomenclature);
             return (
               <div className="space-y-4 text-xs font-sans text-white">
                 <div className="w-full h-48 rounded-2xl bg-black/50 border border-white/10 p-3 flex items-center justify-center overflow-hidden">
                   <img
-                    src={invItem.image || '/images/hardware/raspberry-pi-5.jpg'}
+                    src={modalImage}
                     alt={inspectedLoan.nomenclature}
                     className="h-full object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.8)]"
                     onError={(e) => {
-                      e.target.src = '/images/hardware/raspberry-pi-5.jpg';
+                      e.target.src = resolveHardwareImage(inspectedLoan.nomenclature);
                     }}
                   />
                 </div>
 
                 <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Origin Depot Coordinates:</span>
+                    <span className="text-zinc-500">Origin Lab Room:</span>
                     <span className="font-sans text-white font-medium">
                       {inspectedLoan.locationCoordinates}
                     </span>

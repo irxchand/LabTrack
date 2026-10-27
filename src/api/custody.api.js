@@ -6,32 +6,57 @@ import {
   INITIAL_AUDIT_LOGS
 } from '../data/mockData';
 
-const CURRENT_SCHEMA_VERSION = 'v9_canonical_components_2026';
-const LOANS_KEY = 'labtrack_loans_v9';
-const REQ_KEY = 'labtrack_requisitions_v9';
-const RES_KEY = 'labtrack_reservations_v9';
-const AUDIT_KEY = 'labtrack_audit_v9';
+const CURRENT_SCHEMA_VERSION = 'v16_clean_retry_2026';
+const LOANS_KEY = 'labtrack_loans_v16';
+const REQ_KEY = 'labtrack_requisitions_v16';
+const RES_KEY = 'labtrack_reservations_v16_fifo';
+const AUDIT_KEY = 'labtrack_audit_v16';
 
-function getStored(key, initial) {
+function checkSchemaMigration() {
   try {
     const version = localStorage.getItem('labtrack_schema_version');
     if (version !== CURRENT_SCHEMA_VERSION) {
+      localStorage.setItem('labtrack_schema_version', CURRENT_SCHEMA_VERSION);
+      localStorage.removeItem('labtrack_loans_v15');
+      localStorage.removeItem('labtrack_requisitions_v15');
+      localStorage.removeItem('labtrack_audit_v15');
+      localStorage.removeItem('labtrack_assets_v15');
+      localStorage.removeItem('labtrack_requisition_basket');
+      localStorage.removeItem('labtrack_loans_v14');
+      localStorage.removeItem('labtrack_requisitions_v14');
+      localStorage.removeItem('labtrack_reservations_v14');
+      localStorage.removeItem('labtrack_audit_v14');
+      localStorage.removeItem('labtrack_assets_v14');
+      localStorage.removeItem('labtrack_active_dept');
+    }
+  } catch (e) {}
+}
+checkSchemaMigration();
+
+function getStored(key, initial) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) {
       localStorage.setItem(key, JSON.stringify(initial));
       return initial;
     }
-    const data = localStorage.getItem(key);
-    if (!data) {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
       localStorage.setItem(key, JSON.stringify(initial));
       return initial;
     }
-    return JSON.parse(data);
+    return parsed;
   } catch (e) {
     return initial;
   }
 }
 
 function saveStored(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (e) {
+    console.error('Failed to save data:', e);
+  }
 }
 
 function appendAudit(action, targetId, details, actorRole = 'Student', actorPrn = '202401048') {
@@ -41,7 +66,7 @@ function appendAudit(action, targetId, details, actorRole = 'Student', actorPrn 
     timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
     actorPrn,
     actorRole,
-    actorName: actorRole === 'Student' ? 'Rahul Sharma' : actorRole === 'Faculty' ? 'Dr. Meenakshi Sharma' : actorRole === 'Lab Assistant' ? 'Ramesh Patil' : 'Dr. Sumit Kumar',
+    actorName: actorRole === 'Student' ? 'Ishaan Chand' : actorRole === 'Faculty' ? 'Dr. Manoj Patil' : actorRole === 'Lab Assistant' ? 'Ramesh Patil' : 'Dr. Sumit Kumar',
     action,
     targetId,
     details,
@@ -95,25 +120,63 @@ export const custodyApi = {
   submitRequisition: async (requisitionData) => {
     return apiClient.simulatedFetch('SUBMIT_REQUISITION', () => {
       const requisitions = getStored(REQ_KEY, INITIAL_REQUISITIONS);
+      const reqId = `REQ-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`;
+      const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+      const neededDate = new Date(Date.now() + 14 * 86400000).toISOString().substring(0, 10);
+
       const newReq = {
-        id: `REQ-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`,
-        requestDate: new Date().toISOString().replace('T', ' ').substring(0, 19),
-        studentPrn: requisitionData.studentPrn || '202401048',
-        studentName: requisitionData.studentName || 'Aryan Sharma',
-        projectId: requisitionData.projectId || 'PRJ-AIML-08',
-        courseCode: requisitionData.courseCode || 'DCDS-SY-AIML',
-        mentorId: requisitionData.mentorId || 'FAC-AI-019',
-        mentorName: requisitionData.mentorName || 'Prof. Sneha Kulkarni',
-        teamReliabilityScore: 94,
+        id: reqId,
+        requestNumber: reqId,
+        requestDate: now,
+        submittedDate: now,
+        neededUntilDate: neededDate,
+        studentPrn: requisitionData.studentPrn || '25070126076',
+        borrowerPrn: requisitionData.studentPrn || '25070126076',
+        studentName: requisitionData.studentName || 'Ishaan Chand',
+        submittedBy: requisitionData.studentName || 'Ishaan Chand',
+        role: 'Student',
+        projectId: requisitionData.projectId || 'PROJ-000001',
+        projectTitle: requisitionData.projectTitle || 'Autonomous Quadruped Vision Robot',
+        department: requisitionData.department || 'Artificial Intelligence & Machine Learning',
+        courseCode: requisitionData.courseCode || 'AIML-CAPSTONE-2026',
+        mentorId: requisitionData.mentorId || 'T100460',
+        mentorName: requisitionData.mentorName || 'Dr. Manoj Patil',
+        teamReliabilityScore: 96,
+        status: 'Pending Approval',
+        stage: 'Faculty Mentor Review',
         technicalPurpose: requisitionData.technicalPurpose,
+        purposeDescription: requisitionData.technicalPurpose,
         componentsRequested: requisitionData.componentsRequested,
-        status: 'Submitted',
         timeline: [
           {
-            step: 'Submitted',
-            timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-            actor: requisitionData.studentName || 'Aryan Sharma',
-            note: 'Requisition submitted through institutional portal',
+            step: 'Request Submitted',
+            stage: 'Request Submitted',
+            completed: true,
+            actor: `${requisitionData.studentName || 'Ishaan Chand'} (${requisitionData.studentPrn || '25070126076'})`,
+            timestamp: now,
+            note: 'Curriculum proposal submitted',
+          },
+          {
+            step: 'Central Store Validation',
+            stage: 'Central Store Validation',
+            completed: true,
+            actor: 'System Verification',
+            timestamp: now,
+            note: 'Hardware stock verified',
+          },
+          {
+            step: 'Faculty Mentor Review',
+            stage: 'Mentor Review',
+            completed: false,
+            actor: `${requisitionData.mentorName || 'Dr. Manoj Patil'} (${requisitionData.mentorId || 'T100460'})`,
+            timestamp: null,
+          },
+          {
+            step: 'HoD Review',
+            stage: 'HoD Review',
+            completed: false,
+            actor: 'Dr. Sumit Kumar (T100101)',
+            timestamp: null,
           },
         ],
         supervisorNotes: '',
@@ -126,42 +189,141 @@ export const custodyApi = {
     });
   },
 
-  approveRequisition: async (reqId, supervisorNotes = 'Approved for laboratory coursework.') => {
+  approveRequisition: async (reqId, supervisorNotes = 'Approved for laboratory coursework.', actorName = 'Dr. Manoj Patil', actorPrn = 'T100460') => {
     return apiClient.simulatedFetch('APPROVE_REQUISITION', () => {
       const requisitions = getStored(REQ_KEY, INITIAL_REQUISITIONS);
-      const idx = requisitions.findIndex((r) => r.id === reqId);
+      const targetKey = String(reqId || '').trim().toLowerCase();
+      const idx = requisitions.findIndex(
+        (r) => String(r.id || '').trim().toLowerCase() === targetKey || String(r.requestNumber || '').trim().toLowerCase() === targetKey
+      );
       if (idx !== -1) {
-        requisitions[idx].status = 'Faculty Endorsed';
-        requisitions[idx].supervisorNotes = supervisorNotes;
-        requisitions[idx].timeline.push({
-          step: 'Faculty Endorsed',
-          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-          actor: 'Prof. Sneha Kulkarni (FAC-AI-019)',
-          note: supervisorNotes,
-        });
-        saveStored(REQ_KEY, requisitions);
-        appendAudit('REQUISITION_APPROVED', reqId, `Faculty endorsement: ${supervisorNotes}`, 'Faculty', 'FAC-AI-019');
-        return requisitions[idx];
+        const req = requisitions[idx];
+        const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+        const isHodActor = actorPrn?.startsWith('T1001') || actorName?.toLowerCase().includes('hod') || actorName?.toLowerCase().includes('sumit');
+        const isAlreadyEndorsed = req.status === 'Faculty Endorsed' || req.status?.toLowerCase().includes('endorsed');
+
+        if (isAlreadyEndorsed || isHodActor) {
+          // HoD Department Sanction: Advances Stage 2 -> Stage 3 (Ready for Counter Pickup / Staged)
+          req.status = 'Ready for Counter Pickup';
+          req.stage = 'Ready for Counter Pickup';
+          req.hodSanctionedBy = actorName;
+          req.hodSanctionedNotes = supervisorNotes;
+
+          let hodStepFound = false;
+          if (Array.isArray(req.timeline)) {
+            req.timeline = req.timeline.map((step) => {
+              if (step.step?.toLowerCase().includes('mentor') || step.stage?.toLowerCase().includes('mentor') || step.step?.toLowerCase().includes('faculty')) {
+                return {
+                  ...step,
+                  completed: true,
+                  actor: step.actor && !step.actor.includes('N/A') ? step.actor : `${req.mentorName || 'Dr. Manoj Patil'} (${req.mentorId || 'T100460'})`,
+                  timestamp: step.timestamp || now,
+                  note: step.note || 'Approved for departmental coursework milestones.',
+                };
+              }
+              if (step.step?.toLowerCase().includes('hod') || step.stage?.toLowerCase().includes('hod')) {
+                hodStepFound = true;
+                return {
+                  ...step,
+                  completed: true,
+                  actor: `${actorName} (${actorPrn})`,
+                  timestamp: now,
+                  note: supervisorNotes,
+                };
+              }
+              return step;
+            });
+          }
+
+          if (!hodStepFound) {
+            req.timeline.push({
+              step: 'HoD Review',
+              stage: 'HoD Review',
+              completed: true,
+              timestamp: now,
+              actor: `${actorName} (${actorPrn})`,
+              note: supervisorNotes,
+            });
+          }
+
+          saveStored(REQ_KEY, requisitions);
+          appendAudit('HOD_SANCTION_GRANTED', reqId, `Department allocation sanctioned by HoD: ${supervisorNotes}`, 'HoD / Admin', actorPrn);
+          return req;
+        } else {
+          // Faculty Guide Endorsement: Advances Stage 1 -> Stage 2 (Faculty Endorsed)
+          req.status = 'Faculty Endorsed';
+          req.stage = 'Faculty Endorsed • Staging';
+          req.supervisorNotes = supervisorNotes;
+          req.approvedBy = actorName;
+
+          let mentorStepFound = false;
+          if (Array.isArray(req.timeline)) {
+            req.timeline = req.timeline.map((step) => {
+              if (step.step?.toLowerCase().includes('faculty') || step.stage?.toLowerCase().includes('mentor') || step.step?.toLowerCase().includes('mentor')) {
+                mentorStepFound = true;
+                return {
+                  ...step,
+                  completed: true,
+                  actor: `${actorName} (${actorPrn})`,
+                  timestamp: now,
+                  note: supervisorNotes,
+                };
+              }
+              return step;
+            });
+          }
+
+          if (!mentorStepFound) {
+            req.timeline.push({
+              step: 'Faculty Mentor Review',
+              stage: 'Mentor Review',
+              completed: true,
+              timestamp: now,
+              actor: `${actorName} (${actorPrn})`,
+              note: supervisorNotes,
+            });
+          }
+
+          saveStored(REQ_KEY, requisitions);
+          appendAudit('REQUISITION_APPROVED', reqId, `Faculty endorsement: ${supervisorNotes}`, 'Faculty', actorPrn);
+          return req;
+        }
       }
       return null;
     });
   },
 
-  rejectRequisition: async (reqId, reason) => {
+  deleteRequisition: async (reqId, actorName = 'Ishaan Chand', actorPrn = '25070126076') => {
+    return apiClient.simulatedFetch('DELETE_REQUISITION', () => {
+      const requisitions = getStored(REQ_KEY, INITIAL_REQUISITIONS);
+      const targetKey = String(reqId || '').trim().toLowerCase();
+      const filtered = requisitions.filter(
+        (r) => String(r.id || '').trim().toLowerCase() !== targetKey && String(r.requestNumber || '').trim().toLowerCase() !== targetKey
+      );
+      saveStored(REQ_KEY, filtered);
+      appendAudit('REQUISITION_CANCELLED', reqId, `Requisition cancelled before approval by ${actorName}`, 'Student', actorPrn);
+      return { success: true, id: reqId };
+    });
+  },
+
+  rejectRequisition: async (reqId, reason, actorName = 'Dr. Manoj Patil', actorPrn = 'T100460') => {
     return apiClient.simulatedFetch('REJECT_REQUISITION', () => {
       const requisitions = getStored(REQ_KEY, INITIAL_REQUISITIONS);
-      const idx = requisitions.findIndex((r) => r.id === reqId);
+      const targetKey = String(reqId || '').trim().toLowerCase();
+      const idx = requisitions.findIndex(
+        (r) => String(r.id || '').trim().toLowerCase() === targetKey || String(r.requestNumber || '').trim().toLowerCase() === targetKey
+      );
       if (idx !== -1) {
         requisitions[idx].status = 'Rejected';
         requisitions[idx].supervisorNotes = reason;
         requisitions[idx].timeline.push({
           step: 'Rejected',
           timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-          actor: 'Prof. Sneha Kulkarni (FAC-AI-019)',
+          actor: `${actorName} (${actorPrn})`,
           note: `Rejected with reason: ${reason}`,
         });
         saveStored(REQ_KEY, requisitions);
-        appendAudit('REQUISITION_REJECTED', reqId, `Rejected request: ${reason}`, 'Faculty', 'FAC-AI-019');
+        appendAudit('REQUISITION_REJECTED', reqId, `Rejected request: ${reason}`, 'Faculty', actorPrn);
         return requisitions[idx];
       }
       return null;
@@ -171,7 +333,10 @@ export const custodyApi = {
   modifyQuantity: async (reqId, itemIndex, newQty) => {
     return apiClient.simulatedFetch('MODIFY_REQUISITION_QTY', () => {
       const requisitions = getStored(REQ_KEY, INITIAL_REQUISITIONS);
-      const idx = requisitions.findIndex((r) => r.id === reqId);
+      const targetKey = String(reqId || '').trim().toLowerCase();
+      const idx = requisitions.findIndex(
+        (r) => String(r.id || '').trim().toLowerCase() === targetKey || String(r.requestNumber || '').trim().toLowerCase() === targetKey
+      );
       if (idx !== -1 && requisitions[idx].componentsRequested[itemIndex]) {
         requisitions[idx].componentsRequested[itemIndex].quantity = Number(newQty);
         requisitions[idx].timeline.push({
@@ -191,7 +356,10 @@ export const custodyApi = {
   stageForCounterPickup: async (reqId, counterNotes = 'Staged at Desk 2') => {
     return apiClient.simulatedFetch('STAGE_PICKUP', () => {
       const requisitions = getStored(REQ_KEY, INITIAL_REQUISITIONS);
-      const idx = requisitions.findIndex((r) => r.id === reqId);
+      const targetKey = String(reqId || '').trim().toLowerCase();
+      const idx = requisitions.findIndex(
+        (r) => String(r.id || '').trim().toLowerCase() === targetKey || String(r.requestNumber || '').trim().toLowerCase() === targetKey
+      );
       if (idx !== -1) {
         requisitions[idx].status = 'Ready for Counter Pickup';
         requisitions[idx].counterNotes = counterNotes;
@@ -216,6 +384,7 @@ export const custodyApi = {
       const loans = getStored(LOANS_KEY, INITIAL_ACTIVE_LOANS);
       const newLoan = {
         id: `LN-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`,
+        requisitionId: dispatchPayload.requisitionId || null,
         assetTag: dispatchPayload.assetTag,
         nomenclature: dispatchPayload.nomenclature,
         borrowerPrn: dispatchPayload.studentPrn,
@@ -235,14 +404,22 @@ export const custodyApi = {
       // 2. Mark requisition as Dispatched if tied to one
       if (dispatchPayload.requisitionId) {
         const requisitions = getStored(REQ_KEY, INITIAL_REQUISITIONS);
-        const reqIdx = requisitions.findIndex((r) => r.id === dispatchPayload.requisitionId);
+        const reqTarget = String(dispatchPayload.requisitionId || '').trim().toLowerCase();
+        const reqIdx = requisitions.findIndex(
+          (r) => String(r.id || '').trim().toLowerCase() === reqTarget || String(r.requestNumber || '').trim().toLowerCase() === reqTarget
+        );
         if (reqIdx !== -1) {
+          const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
           requisitions[reqIdx].status = 'Dispatched';
+          requisitions[reqIdx].stage = 'Dispatched & In Custody';
+          if (!requisitions[reqIdx].timeline) requisitions[reqIdx].timeline = [];
           requisitions[reqIdx].timeline.push({
-            step: 'Dispatched',
-            timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+            step: 'Dispatched & In Custody',
+            stage: 'Dispatched',
+            completed: true,
+            timestamp: now,
             actor: 'Ramesh Patil (Lab Assistant)',
-            note: `Physical handover executed. Loan tag: ${newLoan.id}`,
+            note: `Physical hardware kit handover committed at counter desk. Asset tag: ${newLoan.assetTag} (Loan ID: ${newLoan.id})`,
           });
           saveStored(REQ_KEY, requisitions);
         }
@@ -263,6 +440,35 @@ export const custodyApi = {
       if (loanIdx !== -1) {
         loans.splice(loanIdx, 1);
         saveStored(LOANS_KEY, loans);
+      }
+
+      // Update tied requisition if found
+      if (loan) {
+        const requisitions = getStored(REQ_KEY, INITIAL_REQUISITIONS);
+        const reqIdx = requisitions.findIndex(
+          (r) =>
+            (loan.requisitionId && (r.id === loan.requisitionId || r.requestNumber === loan.requisitionId)) ||
+            ((r.studentPrn === loan.borrowerPrn || r.borrowerPrn === loan.borrowerPrn) &&
+             (r.status === 'Dispatched' || r.stage?.includes('Dispatched') || r.status?.toLowerCase().includes('dispatch')))
+        );
+        if (reqIdx !== -1) {
+          const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+          requisitions[reqIdx].status = 'Returned';
+          requisitions[reqIdx].stage = 'Returned & Restocked';
+          if (!requisitions[reqIdx].timeline) requisitions[reqIdx].timeline = [];
+          const hasReturn = requisitions[reqIdx].timeline.some((s) => (s.step || '').toLowerCase().includes('return'));
+          if (!hasReturn) {
+            requisitions[reqIdx].timeline.push({
+              step: 'Returned & Restocked',
+              stage: 'Returned',
+              completed: true,
+              timestamp: now,
+              actor: 'Ramesh Patil (Lab Assistant)',
+              note: `Hardware (${loan.assetTag}) checked back into depot. Inventory balance restocked (+1). Condition: ${returnType === 'clean' ? 'Clean & Operational' : 'Flagged Defective'}.`,
+            });
+          }
+          saveStored(REQ_KEY, requisitions);
+        }
       }
 
       if (returnType === 'clean') {
@@ -286,21 +492,28 @@ export const custodyApi = {
     return apiClient.simulatedFetch('JOIN_FIFO_QUEUE', () => {
       const res = getStored(RES_KEY, INITIAL_RESERVATIONS);
       const existing = res.filter((r) => r.itemId === item.id);
+      const activePrn = localStorage.getItem('labtrack_active_prn') || '25070126076';
+      const activeRole = localStorage.getItem('labtrack_active_role') || 'Student';
+      const studentName = activePrn === '25070126076' ? 'Ishaan Chand' : 'Student Requisitioner';
       const newReservation = {
         id: `RES-FIFO-${Math.floor(100 + Math.random() * 900)}`,
-        itemId: item.id,
+        itemId: item.id || item.assetTag,
         nomenclature: item.nomenclature,
-        studentPrn: '202401048',
-        studentName: 'Aryan Sharma',
-        projectId: 'PRJ-AIML-08',
+        studentPrn: activePrn,
+        borrowerPrn: activePrn,
+        requestorPrn: activePrn,
+        studentName: studentName,
+        projectId: 'PROJ-000001',
         queuePosition: existing.length + 1,
         totalInQueue: existing.length + 1,
-        estimatedAvailability: '2026-10-25',
+        estimatedAvailability: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
         requestDate: new Date().toISOString().replace('T', ' ').substring(0, 19),
         status: 'Active Waitlist',
+        department: item.department || 'AIML',
+        notes: `Position #${existing.length + 1} in FIFO backlog`,
       };
       saveStored(RES_KEY, [...res, newReservation]);
-      appendAudit('FIFO_QUEUE_JOINED', newReservation.id, `Joined waitlist position ${newReservation.queuePosition} for ${item.id}`, 'Student', '202401048');
+      appendAudit('FIFO_QUEUE_JOINED', newReservation.id, `Joined waitlist position ${newReservation.queuePosition} for ${item.id}`, activeRole, activePrn);
       return newReservation;
     });
   },
@@ -309,8 +522,10 @@ export const custodyApi = {
     return apiClient.simulatedFetch('LEAVE_FIFO_QUEUE', () => {
       const res = getStored(RES_KEY, INITIAL_RESERVATIONS);
       const filtered = res.filter((r) => r.id !== resId);
+      const activePrn = localStorage.getItem('labtrack_active_prn') || '25070126076';
+      const activeRole = localStorage.getItem('labtrack_active_role') || 'Student';
       saveStored(RES_KEY, filtered);
-      appendAudit('FIFO_QUEUE_CANCELLED', resId, 'Withdrew from FIFO reservation waitlist', 'Student', '202401048');
+      appendAudit('FIFO_QUEUE_CANCELLED', resId, 'Withdrew from FIFO reservation waitlist', activeRole, activePrn);
       return { success: true };
     });
   },

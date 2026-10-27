@@ -33,7 +33,7 @@ import { isRequisitionMentoredByUser } from '../../utils/facultyAuth';
 
 export function ApprovalsQueuePage() {
   const navigate = useNavigate();
-  const { requisitions, inventory, activeLoans, projects, approveRequisition, rejectRequisition } = useLabData();
+  const { requisitions, inventory, activeLoans, projects, approveRequisition, rejectRequisition, getItemDeptStock } = useLabData();
   const { currentUser } = useAuth();
 
   const isHoD = currentUser?.role === 'HoD / Admin';
@@ -76,6 +76,9 @@ export function ApprovalsQueuePage() {
 
   const [overrideModalReq, setOverrideModalReq] = useState(null);
   const [overrideReason, setOverrideReason] = useState('');
+
+  const [approveModalReq, setApproveModalReq] = useState(null);
+  const [approvalNotes, setApprovalNotes] = useState('');
 
   const [timelineModalReq, setTimelineModalReq] = useState(null);
   const [isBatchApproving, setIsBatchApproving] = useState(false);
@@ -239,14 +242,12 @@ export function ApprovalsQueuePage() {
   }, [requisitions]);
 
   // Master Scoped Pool:
-  // 1. HoD: Scoped by Department filter (Default = HoD's department, or CSE/RA/ALL)
-  // 2. Faculty: Scoped strictly to their mentorship wing (or Audit read-only)
+  // Faculty is strictly one department (AIML). HoD is department executive (AIML).
   const scopedRequisitions = useMemo(() => {
+    const userDept = isHoD ? hodDepartment : 'AIML';
+    let pool = requisitions.filter((r) => getReqDepartmentCode(r) === userDept);
+
     if (isHoD) {
-      let pool = requisitions;
-      if (selectedDeptFilter !== 'ALL') {
-        pool = pool.filter((r) => getReqDepartmentCode(r) === selectedDeptFilter);
-      }
       if (selectedFacultyFilter !== 'ALL') {
         pool = pool.filter((r) => r.mentorName === selectedFacultyFilter);
       }
@@ -255,34 +256,77 @@ export function ApprovalsQueuePage() {
 
     if (isFaculty) {
       if (facultyScopeTab === 'mentored') {
-        return requisitions.filter(isMentorMatch);
+        return pool.filter(isMentorMatch);
       } else {
-        // Read-only department audit view: requisitions not mentored by this professor
-        return requisitions.filter((r) => !isMentorMatch(r));
+        // Read-only department audit view: requisitions not mentored by this professor in the department
+        return pool.filter((r) => !isMentorMatch(r));
       }
     }
 
-    return requisitions;
-  }, [requisitions, isHoD, isFaculty, selectedDeptFilter, selectedFacultyFilter, facultyScopeTab, isMentorMatch]);
+    return pool;
+  }, [requisitions, isHoD, isFaculty, hodDepartment, selectedFacultyFilter, facultyScopeTab, isMentorMatch]);
 
   // Pending vs Past approvals
   const pendingRequisitions = useMemo(() => {
-    return scopedRequisitions.filter(
-      (r) => r.status === 'Submitted' || r.status === 'Pending Approval'
-    );
-  }, [scopedRequisitions]);
+    return scopedRequisitions.filter((r) => {
+      const s = (r.status || '').toLowerCase().trim();
+      if (s.includes('returned') || s.includes('restock') || s.includes('rejected') || s.includes('dispatched')) {
+        return false;
+      }
+      if (isHoD) {
+        // For HoD: Items awaiting initial executive review OR faculty endorsed items awaiting departmental sanction!
+        return (
+          s === 'submitted' ||
+          s === 'pending approval' ||
+          s === 'pending' ||
+          s === 'faculty endorsed' ||
+          s.includes('endorsed') ||
+          s === 'under review' ||
+          s === 'mentor review' ||
+          s === 'hod review'
+        );
+      }
+      return (
+        s === 'submitted' ||
+        s === 'pending approval' ||
+        s === 'pending' ||
+        s === 'mentor_review' ||
+        s === 'mentor review' ||
+        s === 'under review' ||
+        s === 'faculty mentor review' ||
+        (!s.includes('approved') && !s.includes('endorsed') && !s.includes('pickup') && !s.includes('dispatched') && !s.includes('rejected') && !s.includes('completed') && !s.includes('returned'))
+      );
+    });
+  }, [scopedRequisitions, isHoD]);
 
   const pastApprovedRequisitions = useMemo(() => {
-    return scopedRequisitions.filter(
-      (r) =>
-        r.status === 'Approved' ||
-        r.status === 'Faculty Endorsed' ||
-        r.status === 'Ready for Counter Pickup' ||
-        r.status === 'Dispatched' ||
-        r.timeline?.some((t) => t.step?.includes('Endorsed') || t.stage?.includes('Review') && t.completed) ||
+    return scopedRequisitions.filter((r) => {
+      const s = (r.status || '').toLowerCase().trim();
+      if (isHoD) {
+        // For HoD: items that have passed HoD sanction (ready for pickup, staged, dispatched, or returned)
+        return (
+          s === 'ready for counter pickup' ||
+          s === 'dispatched' ||
+          s.includes('returned') ||
+          s.includes('restock') ||
+          s === 'completed' ||
+          r.timeline?.some((t) => (t.step?.toLowerCase().includes('hod') || t.stage?.toLowerCase().includes('hod')) && t.completed) ||
+          Boolean(r.hodSanctionedBy)
+        );
+      }
+      return (
+        s === 'approved' ||
+        s === 'faculty endorsed' ||
+        s === 'ready for counter pickup' ||
+        s === 'dispatched' ||
+        s.includes('returned') ||
+        s.includes('restock') ||
+        s === 'completed' ||
+        r.timeline?.some((t) => t.step?.includes('Endorsed') || (t.stage?.includes('Review') && t.completed)) ||
         Boolean(r.approvedBy)
-    );
-  }, [scopedRequisitions]);
+      );
+    });
+  }, [scopedRequisitions, isHoD]);
 
   const activeRequisitionPool = useMemo(() => {
     if (activeTab === 'pending') return pendingRequisitions;
@@ -295,32 +339,45 @@ export function ApprovalsQueuePage() {
     return activeRequisitionPool.filter((r) => Boolean(getRequisitionCapitalTier(r))).length;
   }, [activeRequisitionPool]);
 
-  // Filter by Real-time search and Capital filter
+  // Filter by Real-time search and Capital filter, sorted newest first
   const filteredRequisitions = useMemo(() => {
     let pool = activeRequisitionPool;
     if (capitalFilter === 'TIER3_4') {
       pool = pool.filter((r) => Boolean(getRequisitionCapitalTier(r)));
     }
-    if (!searchQuery.trim()) return pool;
-    const q = searchQuery.toLowerCase();
-    return pool.filter(
-      (r) =>
-        r.studentName?.toLowerCase().includes(q) ||
-        r.submittedBy?.toLowerCase().includes(q) ||
-        r.studentPrn?.toLowerCase().includes(q) ||
-        r.borrowerPrn?.toLowerCase().includes(q) ||
-        r.projectId?.toLowerCase().includes(q) ||
-        r.id?.toLowerCase().includes(q) ||
-        r.requestNumber?.toLowerCase().includes(q) ||
-        r.technicalPurpose?.toLowerCase().includes(q) ||
-        r.purposeDescription?.toLowerCase().includes(q) ||
-        r.mentorName?.toLowerCase().includes(q) ||
-        r.componentsRequested?.some((c) => c.nomenclature?.toLowerCase().includes(q))
-    );
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      pool = pool.filter(
+        (r) =>
+          r.studentName?.toLowerCase().includes(q) ||
+          r.submittedBy?.toLowerCase().includes(q) ||
+          r.studentPrn?.toLowerCase().includes(q) ||
+          r.borrowerPrn?.toLowerCase().includes(q) ||
+          r.projectId?.toLowerCase().includes(q) ||
+          r.id?.toLowerCase().includes(q) ||
+          r.requestNumber?.toLowerCase().includes(q) ||
+          r.technicalPurpose?.toLowerCase().includes(q) ||
+          r.purposeDescription?.toLowerCase().includes(q) ||
+          r.mentorName?.toLowerCase().includes(q) ||
+          r.componentsRequested?.some((c) => c.nomenclature?.toLowerCase().includes(q))
+      );
+    }
+
+    // Always sort descending by date and request ID so the latest submission is immediately at the top
+    return [...pool].sort((a, b) => {
+      const dateA = new Date((a.requestDate || a.submittedDate || '2000-01-01').replace(' ', 'T')).getTime();
+      const dateB = new Date((b.requestDate || b.submittedDate || '2000-01-01').replace(' ', 'T')).getTime();
+      if (!isNaN(dateA) && !isNaN(dateB) && Math.abs(dateB - dateA) > 1000) {
+        return dateB - dateA;
+      }
+      const numA = parseInt(String(a.id || a.requestNumber || '').replace(/\D/g, ''), 10) || 0;
+      const numB = parseInt(String(b.id || b.requestNumber || '').replace(/\D/g, ''), 10) || 0;
+      return numB - numA;
+    });
   }, [activeRequisitionPool, capitalFilter, searchQuery]);
 
-  // Live component bench stock lookup
-  const getComponentStock = (comp) => {
+  // Live component bench stock lookup (strictly department-scoped)
+  const getComponentStock = (comp, req) => {
     const match = inventory?.find(
       (i) =>
         i.id === comp.itemId ||
@@ -331,7 +388,9 @@ export function ApprovalsQueuePage() {
         ))
     );
     if (!match) return { inStock: true, count: 4, coordinates: 'Central Depot' };
-    const count = match.availableStock ?? (match.stockStatus === 'Available' ? 1 : 0);
+    const deptCode = req ? getReqDepartmentCode(req) : (isHoD ? hodDepartment : 'AIML');
+    const deptStock = getItemDeptStock ? getItemDeptStock(match, deptCode) : { available: match.availableStock ?? 0 };
+    const count = deptStock.available ?? match.availableStock ?? 0;
     return {
       inStock: count > 0,
       count,
@@ -339,12 +398,94 @@ export function ApprovalsQueuePage() {
     };
   };
 
+  // Live stock shortage checker
+  const checkRequisitionStockShortage = (req) => {
+    if (!req?.componentsRequested?.length) return { hasShortage: false, item: null };
+    for (const comp of req.componentsRequested) {
+      const stock = getComponentStock(comp, req);
+      if (stock.count < (comp.quantity || 1)) {
+        return {
+          hasShortage: true,
+          item: comp.nomenclature,
+          requested: comp.quantity || 1,
+          available: stock.count,
+        };
+      }
+    }
+    return { hasShortage: false, item: null };
+  };
+
+  const handleOpenModify = (req) => {
+    setModifyModalReq(req);
+    const initialQty = {};
+    req.componentsRequested?.forEach((c, idx) => {
+      initialQty[idx] = c.quantity || 1;
+    });
+    setModifiedQuantities(initialQty);
+  };
+
+  const handleSaveModifiedQuantities = (e) => {
+    e.preventDefault();
+    if (!modifyModalReq) return;
+    const reqId = modifyModalReq.id || modifyModalReq.requestNumber;
+    const updatedComponents = modifyModalReq.componentsRequested.map((c, idx) => {
+      const stock = getComponentStock(c);
+      const chosen = Number(modifiedQuantities[idx] ?? c.quantity);
+      const safeQty = Math.max(1, Math.min(chosen, stock.count > 0 ? stock.count : 1));
+      return {
+        ...c,
+        quantity: safeQty,
+      };
+    });
+
+    setRequisitions((prev) =>
+      prev.map((r) =>
+        r.id === reqId || r.requestNumber === reqId
+          ? { ...r, componentsRequested: updatedComponents }
+          : r
+      )
+    );
+    setModifyModalReq(null);
+  };
+
   // Handlers for approval actions
-  const handleQuickApprove = (id, preset = null) => {
-    const note = preset
-      ? `${preset} — Endorsed by ${approverName}.`
+  const handleOpenApproveModal = (req, preset = null) => {
+    setApproveModalReq(req);
+    const statusLower = String(req.status || '').toLowerCase().trim();
+    const isFacultyEndorsed = statusLower.includes('endorsed');
+    if (preset) {
+      setApprovalNotes(preset);
+    } else if (isHoD) {
+      setApprovalNotes(isFacultyEndorsed ? 'Department allocation sanctioned by HoD. Passed to Counter Desk.' : 'Executive sanction endorsed by HoD for capstone coursework.');
+    } else {
+      setApprovalNotes('Approved by faculty mentor for departmental coursework milestones.');
+    }
+  };
+
+  const handleConfirmApprovalWithNotes = async (e) => {
+    e.preventDefault();
+    if (!approveModalReq) return;
+    const reqId = approveModalReq.id || approveModalReq.requestNumber;
+    const finalNote = approvalNotes.trim()
+      ? `${approvalNotes.trim()} — Endorsed by ${approverName}.`
       : `Approved by ${approverName} for departmental coursework milestones.`;
-    approveRequisition(id, note);
+    setApproveModalReq(null);
+    try {
+      await approveRequisition(reqId, finalNote);
+    } catch (err) {
+      console.error('Failed to approve requisition with notes:', err);
+    }
+  };
+
+  const handleQuickApprove = async (id, preset = null) => {
+    try {
+      const note = preset
+        ? `${preset} — Endorsed by ${approverName}.`
+        : `Approved by ${approverName} for departmental coursework milestones.`;
+      await approveRequisition(id, note);
+    } catch (err) {
+      console.error('Failed to quick-approve requisition:', err);
+    }
   };
 
   const handleOpenEndorseWithCaveat = (req) => {
@@ -354,12 +495,17 @@ export function ApprovalsQueuePage() {
     setCustomEndorsementNotes('Coursework validated. In-lab supervision required.');
   };
 
-  const handleConfirmEndorseWithCaveat = (e) => {
+  const handleConfirmEndorseWithCaveat = async (e) => {
     e.preventDefault();
     if (!endorseModalReq) return;
+    const reqId = endorseModalReq.id || endorseModalReq.requestNumber;
     const combinedNotes = `[Caveat Endorsement] Location: ${authorizedLocation} • Cap: ${authorizedTerm} • Conditions: ${customEndorsementNotes} (${approverName})`;
-    approveRequisition(endorseModalReq.id, combinedNotes);
     setEndorseModalReq(null);
+    try {
+      await approveRequisition(reqId, combinedNotes);
+    } catch (err) {
+      console.error('Failed to endorse with caveat:', err);
+    }
   };
 
   const handleOpenInstitutionalOverride = (req) => {
@@ -367,12 +513,17 @@ export function ApprovalsQueuePage() {
     setOverrideReason('Head of Department capital sign-off: Authorized under Capstone Research Grant 2026.');
   };
 
-  const handleConfirmInstitutionalOverride = (e) => {
+  const handleConfirmInstitutionalOverride = async (e) => {
     e.preventDefault();
     if (!overrideModalReq) return;
+    const reqId = overrideModalReq.id || overrideModalReq.requestNumber;
     const note = `[Institutional HoD Override] ${overrideReason} — Authorized by ${approverName}`;
-    approveRequisition(overrideModalReq.id, note);
     setOverrideModalReq(null);
+    try {
+      await approveRequisition(reqId, note);
+    } catch (err) {
+      console.error('Failed institutional override:', err);
+    }
   };
 
   const handleBatchEndorseCompliant = async () => {
@@ -396,32 +547,15 @@ export function ApprovalsQueuePage() {
     setRejectReason('');
   };
 
-  const handleConfirmReject = (e) => {
+  const handleConfirmReject = async (e) => {
     e.preventDefault();
     if (!rejectModalReq) return;
-    rejectRequisition(rejectModalReq.id, rejectReason, approverName);
+    const reqId = rejectModalReq.id;
+    const reason = rejectReason;
     setRejectModalReq(null);
+    await rejectRequisition(reqId, reason, approverName);
   };
 
-  const handleOpenModify = (req) => {
-    setModifyModalReq(req);
-    const initialMap = {};
-    req.componentsRequested.forEach((c, idx) => {
-      initialMap[idx] = c.quantity;
-    });
-    setModifiedQuantities(initialMap);
-  };
-
-  const handleConfirmModify = (e) => {
-    e.preventDefault();
-    if (!modifyModalReq) return;
-    const updatedComponents = modifyModalReq.componentsRequested.map((c, idx) => ({
-      ...c,
-      quantity: Number(modifiedQuantities[idx]) || c.quantity,
-    }));
-    approveRequisition(modifyModalReq.id, approverName, updatedComponents);
-    setModifyModalReq(null);
-  };
 
   // Compact Table Columns
   const columns = [
@@ -517,18 +651,22 @@ export function ApprovalsQueuePage() {
     },
     {
       header: 'Supervisor Review Controls',
-      width: '260px',
+      width: '280px',
       align: 'right',
       render: (row) => {
-        const isPending = row.status === 'Submitted' || row.status === 'Pending Approval';
+        const statusLower = String(row.status || '').toLowerCase().trim();
+        const isFacultyEndorsed = statusLower.includes('endorsed');
+        const isPending = isHoD
+          ? (statusLower === 'submitted' || statusLower === 'pending approval' || statusLower === 'pending' || isFacultyEndorsed || statusLower.includes('review'))
+          : (statusLower === 'submitted' || statusLower === 'pending approval' || statusLower === 'pending' || statusLower.includes('review'));
         const isMyMentored = isMentorMatch(row);
-        const canAct = isHoD || (isFaculty && isMyMentored);
+        const canAct = isHoD || (isFaculty && isMyMentored) || !isFaculty;
 
         if (!isPending) {
           return (
             <div className="flex items-center justify-end gap-2 font-sans text-xs">
               <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/25">
-                Approved
+                {row.status === 'Ready for Counter Pickup' ? 'Sanctioned / Staged' : row.status === 'Dispatched' ? 'Dispatched' : 'Approved'}
               </span>
               <button
                 type="button"
@@ -550,27 +688,41 @@ export function ApprovalsQueuePage() {
           );
         }
 
+        const shortage = checkRequisitionStockShortage(row);
+
         return (
           <div className="flex items-center justify-end gap-1.5 font-sans text-xs">
+            {shortage.hasShortage && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                <AlertTriangle className="w-3 h-3 text-amber-400" />
+                <span>Shortage: Req {shortage.requested} / Avail {shortage.available}</span>
+              </span>
+            )}
             <button
               onClick={() => handleOpenModify(row)}
-              className="p-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 border border-white/10"
+              className="p-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 border border-white/10 cursor-pointer"
               title="Adjust Quantity"
             >
               <Edit3 className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => handleOpenReject(row)}
-              className="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/25 text-[11px]"
+              className="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/25 text-[11px] cursor-pointer"
             >
               Reject
             </button>
             <button
-              onClick={() => handleQuickApprove(row.id)}
-              className="px-3.5 py-1 rounded-full bg-white hover:bg-neutral-200 text-black font-semibold text-[11px] shadow-sm flex items-center gap-1"
+              disabled={shortage.hasShortage}
+              onClick={() => !shortage.hasShortage && handleQuickApprove(row.id, isFacultyEndorsed ? 'Department allocation sanctioned by HoD. Passed to Counter Desk.' : null)}
+              className={`px-3.5 py-1 rounded-full font-semibold text-[11px] shadow-sm flex items-center gap-1 ${
+                shortage.hasShortage
+                  ? 'bg-zinc-800 text-zinc-500 border border-white/5 cursor-not-allowed opacity-60'
+                  : 'bg-white hover:bg-neutral-200 text-black cursor-pointer'
+              }`}
+              title={shortage.hasShortage ? `Cannot approve: Requested ${shortage.requested} exceeds available stock (${shortage.available}). Adjust quantity first.` : 'Approve Requisition'}
             >
               <Check className="w-3 h-3 stroke-[2.5]" />
-              <span>{isHoD ? 'Executive Endorse' : 'Approve'}</span>
+              <span>{shortage.hasShortage ? 'Blocked: Stock Shortage' : isHoD ? (isFacultyEndorsed ? 'Sanction & Pass to Counter' : 'Executive Endorse') : 'Approve'}</span>
             </button>
           </div>
         );
@@ -724,99 +876,43 @@ export function ApprovalsQueuePage() {
           </div>
         </div>
 
-        {/* ─── HOD CONTROLS: DEPARTMENT SCOPING & FACULTY WINGS ─── */}
+        {/* ─── DEPARTMENT SCOPING & FACULTY WINGS ─── */}
+        {/* ─── HOD CONTROLS: FACULTY WINGS (NO DEPT QUEUE) ─── */}
         {isHoD && (
-          <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/10 space-y-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#c9b8a0] flex items-center gap-1.5 mr-2">
-                <Building className="w-3.5 h-3.5 text-[#a78b71]" />
-                <span>Department Queue:</span>
-              </span>
-
-              {/* My Department Button */}
+          <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/10 flex items-center gap-2 flex-wrap">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#c9b8a0] mr-1 flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-[#a78b71]" />
+              <span>Faculty Wing:</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedFacultyFilter('ALL')}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                selectedFacultyFilter === 'ALL'
+                  ? 'bg-white text-black font-semibold shadow-sm'
+                  : 'bg-white/[0.03] text-zinc-400 hover:text-white'
+              }`}
+            >
+              All Wings
+            </button>
+            {facultyMentors.map((m) => (
               <button
+                key={m}
                 type="button"
-                onClick={() => setSelectedDeptFilter(hodDepartment)}
-                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                  selectedDeptFilter === hodDepartment
-                    ? 'bg-white text-black shadow-sm'
-                    : 'bg-white/[0.04] text-zinc-300 border border-white/10 hover:text-white'
-                }`}
-              >
-                <span>My Dept ({hodDepartment})</span>
-                <span className="text-[10px] opacity-75">★ Overseer</span>
-              </button>
-
-              {/* Specific Department Buttons */}
-              {['AIML', 'CSE', 'RA'].map((dept) => {
-                if (dept === hodDepartment) return null; // Already shown above
-                const count = requisitions.filter((r) => getReqDepartmentCode(r) === dept).length;
-                return (
-                  <button
-                    key={dept}
-                    type="button"
-                    onClick={() => setSelectedDeptFilter(dept)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
-                      selectedDeptFilter === dept
-                        ? 'bg-white text-black font-semibold shadow-sm'
-                        : 'bg-white/[0.04] text-zinc-400 border border-white/10 hover:text-white'
-                    }`}
-                  >
-                    {dept} Dept ({count})
-                  </button>
-                );
-              })}
-
-              {/* All Departments Option */}
-              <button
-                type="button"
-                onClick={() => setSelectedDeptFilter('ALL')}
+                onClick={() => setSelectedFacultyFilter(m)}
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
-                  selectedDeptFilter === 'ALL'
+                  selectedFacultyFilter === m
                     ? 'bg-white text-black font-semibold shadow-sm'
-                    : 'bg-white/[0.04] text-zinc-400 border border-white/10 hover:text-white'
-                }`}
-              >
-                All Departments ({requisitions.length})
-              </button>
-            </div>
-
-            {/* Sub-filter: Faculty Mentors */}
-            <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-white/5">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mr-1 flex items-center gap-1">
-                <Layers className="w-3 h-3 text-[#c9b8a0]" />
-                <span>Faculty Wing:</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => setSelectedFacultyFilter('ALL')}
-                className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
-                  selectedFacultyFilter === 'ALL'
-                    ? 'bg-white text-black font-semibold'
                     : 'bg-white/[0.03] text-zinc-400 hover:text-white'
                 }`}
               >
-                All Wings
+                {m}
               </button>
-              {facultyMentors.map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setSelectedFacultyFilter(m)}
-                  className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
-                    selectedFacultyFilter === m
-                      ? 'bg-white text-black font-semibold'
-                      : 'bg-white/[0.03] text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
+            ))}
           </div>
         )}
 
-        {/* ─── FACULTY CONTROLS: MENTORED TEAMS VS AUDIT VIEW ─── */}
+        {/* ─── FACULTY CONTROLS: MENTORED TEAMS VS AUDIT VIEW (ONE DEPT ONLY) ─── */}
         {isFaculty && (
           <div className="flex items-center justify-between gap-3 p-2.5 rounded-2xl bg-white/[0.02] border border-white/10 flex-wrap">
             <div className="flex items-center gap-2">
@@ -833,7 +929,7 @@ export function ApprovalsQueuePage() {
                     : 'bg-white/[0.04] text-zinc-400 border border-white/10 hover:text-white'
                 }`}
               >
-                My Mentored Teams ({requisitions.filter(isMentorMatch).length})
+                My Mentored Teams ({requisitions.filter((r) => getReqDepartmentCode(r) === 'AIML' && isMentorMatch(r)).length})
               </button>
               <button
                 type="button"
@@ -845,11 +941,11 @@ export function ApprovalsQueuePage() {
                 }`}
               >
                 <Lock className="w-3 h-3" />
-                <span>Department Audit (Read-Only) ({requisitions.filter((r) => !isMentorMatch(r)).length})</span>
+                <span>Department Audit (Read-Only) ({requisitions.filter((r) => getReqDepartmentCode(r) === 'AIML' && !isMentorMatch(r)).length})</span>
               </button>
             </div>
             <div className="text-[11px] text-zinc-400">
-              Mentor Wing: <span className="text-white font-medium">{currentUser?.name}</span>
+              Department: <span className="text-white font-medium">AIML</span> • Mentor Wing: <span className="text-white font-medium">{currentUser?.name || 'Dr. Manoj Patil'}</span>
             </div>
           </div>
         )}
@@ -864,9 +960,13 @@ export function ApprovalsQueuePage() {
             filteredRequisitions.map((req) => {
               const capitalTier = getRequisitionCapitalTier(req);
               const deptCode = getReqDepartmentCode(req);
-              const isPending = req.status === 'Submitted' || req.status === 'Pending Approval';
+              const statusLower = String(req.status || '').toLowerCase().trim();
+              const isFacultyEndorsed = statusLower.includes('endorsed');
+              const isPending = isHoD
+                ? (statusLower === 'submitted' || statusLower === 'pending approval' || statusLower === 'pending' || isFacultyEndorsed || statusLower.includes('review'))
+                : (statusLower === 'submitted' || statusLower === 'pending approval' || statusLower === 'pending' || statusLower.includes('review'));
               const isMyMentored = isMentorMatch(req);
-              const canAct = isHoD || (isFaculty && isMyMentored);
+              const canAct = isHoD || (isFaculty && isMyMentored) || !isFaculty;
 
               const studentName = req.studentName || req.submittedBy;
               const studentPrn = req.studentPrn || req.borrowerPrn;
@@ -891,7 +991,13 @@ export function ApprovalsQueuePage() {
                         {deptCode} Dept
                       </span>
 
-                      {/* Prominent Capital Tier Badges */}
+                      {/* Prominent Faculty Endorsement & Capital Tier Badges */}
+                      {isFacultyEndorsed && (
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold flex items-center gap-1 shadow-sm">
+                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Stage 2 • Faculty Endorsed • Awaiting HoD Sanction</span>
+                        </span>
+                      )}
                       {capitalTier === 'Tier 4 High Value' && (
                         <span className="px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 text-[11px] font-bold flex items-center gap-1 shadow-sm">
                           <ShieldCheck className="w-3.5 h-3.5 text-rose-400" />
@@ -928,7 +1034,7 @@ export function ApprovalsQueuePage() {
                   {/* Row 2: Requested Hardware Items */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                     {req.componentsRequested?.map((comp, idx) => {
-                      const stock = getComponentStock(comp);
+                      const stock = getComponentStock(comp, req);
                       const image = getItemImage(comp);
                       const isShortage = stock.count < comp.quantity;
 
@@ -967,13 +1073,25 @@ export function ApprovalsQueuePage() {
                     })}
                   </div>
 
-                  {/* Row 3: Stated Technical Purpose */}
-                  {(req.technicalPurpose || req.purposeDescription) && (
-                    <p className="text-xs text-zinc-300 font-sans leading-relaxed line-clamp-2 px-1">
-                      <span className="text-zinc-500 font-medium">Academic Rationale: </span>
-                      {(req.technicalPurpose || req.purposeDescription).replace(/^\[Faculty Endorsement\]\s*/, '')}
-                    </p>
-                  )}
+                  {/* Row 3: Stated Technical Purpose & Faculty Endorsement Note */}
+                  <div className="space-y-2">
+                    {(req.technicalPurpose || req.purposeDescription) && (
+                      <p className="text-xs text-zinc-300 font-sans leading-relaxed line-clamp-2 px-1">
+                        <span className="text-zinc-500 font-medium">Academic Rationale: </span>
+                        {(req.technicalPurpose || req.purposeDescription).replace(/^\[Faculty Endorsement\]\s*/, '')}
+                      </p>
+                    )}
+
+                    {req.supervisorNotes && isFacultyEndorsed && (
+                      <div className="px-3.5 py-2 rounded-xl bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-200 text-xs font-sans flex items-center gap-2">
+                        <UserCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <div>
+                          <span className="font-semibold text-emerald-300">Faculty Guide Endorsement ({req.mentorName || 'Faculty'}): </span>
+                          <span className="italic">"{req.supervisorNotes}"</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Row 4: Action Command Bar */}
                   <div className="pt-3 border-t border-white/5 flex items-center justify-between gap-3 flex-wrap">
@@ -981,11 +1099,14 @@ export function ApprovalsQueuePage() {
                       canAct ? (
                         <>
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            {['Curriculum Validated', 'Capstone Milestone', 'Sprint Authorized'].map((preset) => (
+                            {((isHoD && isFacultyEndorsed)
+                              ? ['Curriculum Sanctioned', 'Tier 3/4 Authorized', 'Pass to Counter Desk']
+                              : ['Curriculum Validated', 'Capstone Milestone', 'Sprint Authorized']
+                            ).map((preset) => (
                               <button
                                 key={preset}
                                 type="button"
-                                onClick={() => handleQuickApprove(reqId, preset)}
+                                onClick={() => handleOpenApproveModal(req, preset)}
                                 className="px-2.5 py-1 rounded-full text-[11px] font-sans text-zinc-400 hover:text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 transition-all cursor-pointer"
                               >
                                 {preset}
@@ -1029,13 +1150,24 @@ export function ApprovalsQueuePage() {
                               Reject
                             </button>
 
-                            <button
-                              onClick={() => handleQuickApprove(reqId)}
-                              className="px-4 py-1.5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95"
-                            >
-                              <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                              <span>{isHoD ? 'Executive Endorse' : 'Approve'}</span>
-                            </button>
+                            {(() => {
+                              const shortage = checkRequisitionStockShortage(req);
+                              return (
+                                <button
+                                  disabled={shortage.hasShortage}
+                                  onClick={() => !shortage.hasShortage && handleOpenApproveModal(req, isFacultyEndorsed ? 'Department allocation sanctioned by HoD. Passed to Counter Desk.' : null)}
+                                  className={`px-4 py-1.5 rounded-full font-semibold text-xs transition-all shadow-sm flex items-center gap-1.5 ${
+                                    shortage.hasShortage
+                                      ? 'bg-zinc-800 text-zinc-500 border border-white/5 cursor-not-allowed opacity-60'
+                                      : 'bg-white hover:bg-[#f5e6c8] text-black cursor-pointer active:scale-95'
+                                  }`}
+                                  title={shortage.hasShortage ? `Cannot approve: Requested ${shortage.requested} exceeds available stock (${shortage.available}). Use 'Adjust Qty' to reduce quantity.` : 'Approve with Custom Notes'}
+                                >
+                                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                                  <span>{shortage.hasShortage ? 'Blocked: Stock Shortage' : isHoD ? (isFacultyEndorsed ? 'Sanction & Notes' : 'Endorse & Notes') : 'Approve with Notes'}</span>
+                                </button>
+                              );
+                            })()}
                           </div>
                         </>
                       ) : (
@@ -1094,8 +1226,31 @@ export function ApprovalsQueuePage() {
               <p className="text-xs text-zinc-500 mt-1 max-w-md mx-auto">
                 {isHoD
                   ? `No hardware requisitions currently pending authorization for ${selectedDeptFilter === 'ALL' ? 'any engineering department' : `${selectedDeptFilter} Department`}.`
-                  : 'No student capstone requisitions currently pending faculty review in this queue.'}
+                  : `No student capstone requisitions currently pending under your mentorship wing (${currentUser?.name || 'Faculty'}).`}
               </p>
+              {isFaculty && facultyScopeTab === 'mentored' && (
+                <div className="flex items-center justify-center gap-2 mt-3.5 flex-wrap">
+                  {scopedRequisitions.length > 0 && activeTab !== 'all' && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('all')}
+                      className="px-4 py-1.5 rounded-full bg-white text-black text-xs font-semibold shadow-sm hover:bg-neutral-200 transition-all cursor-pointer inline-flex items-center gap-1.5"
+                    >
+                      <span>View All ({scopedRequisitions.length}) Mentored Requisitions</span>
+                    </button>
+                  )}
+                  {requisitions.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setFacultyScopeTab('audit')}
+                      className="px-4 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 hover:text-white text-xs font-semibold border border-white/15 transition-all cursor-pointer inline-flex items-center gap-1.5"
+                    >
+                      <Lock className="w-3.5 h-3.5 text-[#c9b8a0]" />
+                      <span>View All {requisitions.length} Requisitions in Department Audit (Read-Only)</span>
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -1156,58 +1311,6 @@ export function ApprovalsQueuePage() {
         </form>
       </Modal>
 
-      {/* ───────────────────────────────────────────────────────────── */}
-      {/* MODAL 2: ADJUST ALLOCATED QUANTITIES                          */}
-      {/* ───────────────────────────────────────────────────────────── */}
-      <Modal
-        isOpen={!!modifyModalReq}
-        onClose={() => setModifyModalReq(null)}
-        title={`Adjust Allocated Quantities: ${modifyModalReq?.id || modifyModalReq?.requestNumber}`}
-        subtitle="Decrease or adjust authorized component counts prior to counter dispatch."
-        maxWidth="max-w-md"
-      >
-        <form onSubmit={handleConfirmModify} className="space-y-4 text-xs font-sans text-zinc-300">
-          <div className="space-y-2.5">
-            {modifyModalReq?.componentsRequested?.map((comp, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3.5 bg-white/[0.02] border border-white/10 rounded-xl font-sans">
-                <span className="text-white text-xs truncate max-w-[240px]">{comp.nomenclature}</span>
-                <div className="flex items-center gap-2">
-                  <label className="text-zinc-400 text-[11px]">Approved Qty:</label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={modifiedQuantities[idx] ?? comp.quantity}
-                    onChange={(e) =>
-                      setModifiedQuantities({
-                        ...modifiedQuantities,
-                        [idx]: e.target.value,
-                      })
-                    }
-                    className="w-16 px-2.5 py-1.5 bg-[#141417] border border-white/15 rounded-xl text-white text-center text-xs font-semibold focus:outline-none focus:border-white/30"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex justify-end gap-2.5 pt-3 border-t border-white/10">
-            <button
-              type="button"
-              onClick={() => setModifyModalReq(null)}
-              className="px-4 py-2 rounded-full border border-white/10 text-xs text-zinc-400 hover:text-white"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black text-xs font-semibold shadow-md"
-            >
-              Save Allocation Changes
-            </button>
-          </div>
-        </form>
-      </Modal>
 
       {/* ───────────────────────────────────────────────────────────── */}
       {/* MODAL 3: APPROVE WITH CAVEAT / RESTRICTIONS                   */}
@@ -1272,6 +1375,96 @@ export function ApprovalsQueuePage() {
               className="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black text-xs font-semibold shadow-md"
             >
               Commit Caveat Endorsement
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* MODAL: ADJUST QUANTITIES (STOCK RESOLUTION)                   */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <Modal
+        isOpen={!!modifyModalReq}
+        onClose={() => setModifyModalReq(null)}
+        title={`Adjust Authorized Quantities: ${modifyModalReq?.id || modifyModalReq?.requestNumber}`}
+        subtitle={`Align request with available depot inventory for ${modifyModalReq?.studentName || modifyModalReq?.submittedBy}`}
+        maxWidth="max-w-md"
+      >
+        <form onSubmit={handleSaveModifiedQuantities} className="space-y-4 text-xs font-sans text-zinc-300">
+          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-200 space-y-1">
+            <div className="font-semibold text-xs flex items-center gap-1.5">
+              <AlertTriangle className="w-4 h-4 text-amber-400" />
+              <span>Inventory Allocation Adjustment</span>
+            </div>
+            <p className="text-[11px] leading-relaxed opacity-90">
+              Adjust the approved quantity for each requested component to match available lab bench stock before giving supervisory sanction.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {modifyModalReq?.componentsRequested?.map((comp, idx) => {
+              const stock = getComponentStock(comp);
+              const isShortage = stock.count < (modifiedQuantities[idx] ?? comp.quantity);
+
+              return (
+                <div key={idx} className="p-3 rounded-xl bg-white/[0.03] border border-white/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-white text-xs">{comp.nomenclature}</span>
+                    <span className={`text-[11px] font-semibold ${isShortage ? 'text-amber-400' : 'text-emerald-400'}`}>
+                      {stock.count} in stock
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <label className="text-zinc-400 text-xs">Approved Quantity:</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="1"
+                        max={stock.count > 0 ? stock.count : 1}
+                        value={modifiedQuantities[idx] ?? comp.quantity}
+                        onChange={(e) =>
+                          setModifiedQuantities({
+                            ...modifiedQuantities,
+                            [idx]: Number(e.target.value),
+                          })
+                        }
+                        className="w-20 px-2.5 py-1.5 bg-[#141417] border border-white/15 rounded-lg text-white font-semibold text-xs text-center focus:outline-none focus:border-[#c9b8a0]"
+                      />
+                      {stock.count > 0 && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setModifiedQuantities({
+                              ...modifiedQuantities,
+                              [idx]: stock.count,
+                            })
+                          }
+                          className="px-2 py-1 rounded bg-white/[0.05] hover:bg-white/[0.1] text-[10px] text-zinc-300 border border-white/10 cursor-pointer"
+                        >
+                          Set to Max ({stock.count})
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex justify-end gap-2.5 pt-3 border-t border-white/10">
+            <button
+              type="button"
+              onClick={() => setModifyModalReq(null)}
+              className="px-4 py-2 rounded-full border border-white/10 text-xs text-zinc-400 hover:text-white"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black text-xs font-semibold shadow-md cursor-pointer"
+            >
+              Save Quantities
             </button>
           </div>
         </form>
@@ -1387,6 +1580,105 @@ export function ApprovalsQueuePage() {
             </button>
           </div>
         </div>
+      </Modal>
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* MODAL: FACULTY / HOD APPROVAL & SUPERVISOR NOTES               */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <Modal
+        isOpen={!!approveModalReq}
+        onClose={() => setApproveModalReq(null)}
+        title={isHoD ? `HoD Department Sanction: ${approveModalReq?.id || approveModalReq?.requestNumber}` : `Faculty Supervisor Endorsement: ${approveModalReq?.id || approveModalReq?.requestNumber}`}
+        subtitle={`Academic authorization for ${approveModalReq?.studentName || approveModalReq?.submittedBy} (${approveModalReq?.studentPrn || approveModalReq?.borrowerPrn}) • ${approveModalReq?.projectId}`}
+        maxWidth="max-w-lg"
+      >
+        <form onSubmit={handleConfirmApprovalWithNotes} className="space-y-4 text-xs font-sans text-zinc-300">
+          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-200 space-y-1">
+            <div className="font-semibold text-xs flex items-center gap-1.5">
+              <Check className="w-4 h-4 text-emerald-400" />
+              <span>{isHoD ? 'Department Allocation Sanction' : 'Curriculum Endorsement'}</span>
+            </div>
+            <p className="text-[11px] leading-relaxed opacity-90">
+              {isHoD
+                ? 'Review hardware allocation and append departmental sanction remarks before forwarding kit to the Counter Dispatch Desk.'
+                : 'Review academic rationale and record supervisory notes or project milestone conditions for this requisition.'}
+            </p>
+          </div>
+
+          <div className="p-3 rounded-xl bg-white/[0.02] border border-white/10 space-y-1 text-zinc-400">
+            <div className="text-white font-medium text-xs">
+              Project: {approveModalReq?.projectId}
+            </div>
+            <div className="text-[11px]">
+              Components: {approveModalReq?.componentsRequested?.map((c) => `${c.quantity}x ${c.nomenclature}`).join(', ')}
+            </div>
+            {approveModalReq?.technicalPurpose && (
+              <div className="text-[11px] text-zinc-500 italic mt-1">
+                Rationale: "{approveModalReq.technicalPurpose}"
+              </div>
+            )}
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-semibold">
+                {isHoD ? 'HoD Department Notes & Directives' : 'Faculty Mentor Notes & Feedback'} <span className="text-emerald-400">*</span>
+              </label>
+              <span className="text-[10px] text-zinc-500">Recorded into official audit trail</span>
+            </div>
+
+            {/* Quick Note Presets */}
+            <div className="flex items-center gap-1.5 flex-wrap mb-2">
+              {(isHoD
+                ? [
+                    'Department allocation sanctioned by HoD. Passed to Counter Desk.',
+                    'Authorized under Capstone Research Grant 2026.',
+                    'Approved for departmental coursework milestones.',
+                  ]
+                : [
+                    'Approved for departmental coursework milestones.',
+                    'Curriculum proposal and technical scope verified.',
+                    'Capstone sprint authorized. Lab supervision required.',
+                  ]
+              ).map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => setApprovalNotes(preset)}
+                  className="px-2 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-[10px] text-zinc-300 hover:text-white transition-all cursor-pointer truncate max-w-[220px]"
+                  title={preset}
+                >
+                  {preset}
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              required
+              rows={3}
+              value={approvalNotes}
+              onChange={(e) => setApprovalNotes(e.target.value)}
+              placeholder={isHoD ? 'Enter departmental allocation notes, bench permissions, or pickup directives...' : 'Enter mentor remarks, milestone verification, or usage conditions...'}
+              className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white font-sans text-xs focus:outline-none focus:border-emerald-400 leading-relaxed"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2.5 pt-3 border-t border-white/10">
+            <button
+              type="button"
+              onClick={() => setApproveModalReq(null)}
+              className="px-4 py-2 rounded-full border border-white/10 text-xs text-zinc-400 hover:text-white cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5"
+            >
+              <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>{isHoD ? 'Sanction & Release Order' : 'Endorse Requisition'}</span>
+            </button>
+          </div>
+        </form>
       </Modal>
     </div>
   );

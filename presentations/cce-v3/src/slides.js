@@ -16,17 +16,11 @@ export const slides = [
           Hardware Lifecycle Governance &amp; Containerized Laboratory Automation for SIT Pune<br>
           <span style="font-size: 24px; color: var(--deck-gold-bright); font-weight: 400;">Autonomous Microservices Architecture for Symbiosis Institute of Technology Engineering Labs</span>
         </p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; max-width: 1050px; border-top: 1px solid rgba(201, 184, 160, 0.2); padding-top: 24px;">
+        <div style="max-width: 1050px; border-top: 1px solid rgba(201, 184, 160, 0.2); padding-top: 24px;">
           <div>
-            <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--deck-gold); margin: 0 0 5px;">CASE STUDY PRESENTED BY</p>
-            <p style="font-size: 21px; font-weight: 600; color: #ffffff; margin: 0;">Ishaan Chand &bull; <span style="font-size: 17px; color: var(--deck-gold-bright); font-weight: 400;">25070126076</span></p>
-            <p style="font-size: 21px; font-weight: 600; color: #ffffff; margin: 4px 0 0;">Keval Jatakia &bull; <span style="font-size: 17px; color: var(--deck-gold-bright); font-weight: 400;">25070126090</span></p>
-            <p style="font-size: 14px; color: #b4b0aa; margin: 6px 0 0;">Department of AI &amp; Machine Learning / Robotics &amp; Automation</p>
-          </div>
-          <div style="border-left: 1px solid rgba(201, 184, 160, 0.2); padding-left: 50px;">
-            <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--deck-gold); margin: 0 0 5px;">COURSE EVALUATION DETAILS</p>
-            <p style="font-size: 21px; font-weight: 600; color: #ffffff; margin: 0;">Dr. Chilukala Mahender Reddy</p>
-            <p style="font-size: 16px; color: #dedbd5; margin: 3px 0 0;">Symbiosis Institute of Technology (SIT), Pune</p>
+            <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--deck-gold); margin: 0 0 5px;">COURSE EVALUATION &bull; CLOUD COMPUTING ESSENTIALS</p>
+            <p style="font-size: 22px; font-weight: 600; color: #ffffff; margin: 0;">Dr. Chilukala Mahender Reddy</p>
+            <p style="font-size: 16px; color: #dedbd5; margin: 4px 0 0;">Symbiosis Institute of Technology (SIT), Pune &bull; Dept. of Computer Science &amp; AIML</p>
             <p style="font-size: 14px; color: var(--deck-gold); margin: 5px 0 0;">Course: Cloud Computing Essentials (CCE &bull; 2 Credits, 30 Marks)</p>
           </div>
         </div>
@@ -82,30 +76,30 @@ export const slides = [
     section: '01 Introduction & Aim',
     time: '0:45',
     html: `
-      <div class="split" style="gap: 55px;">
+      <div class="split" style="gap: 40px; margin-top: -6px;">
         <div>
-          <p class="eyebrow">SYSTEM DOMAIN &amp; OPERATIONAL AIM (SDD v0.1)</p>
-          <p style="font-size: 18px; line-height: 1.5; color: #dedbd5; margin-bottom: 16px;">
+          <p class="eyebrow" style="font-size: 14.5px; margin-bottom: 8px;">SYSTEM DOMAIN &amp; OPERATIONAL AIM (SDD v0.1)</p>
+          <p style="font-size: 15.5px; line-height: 1.45; color: #dedbd5; margin-bottom: 12px;">
             Replaces fragmented email, notebook, and spreadsheet handling with project-linked availability, approval, custody, and reconciliation history specifically for SIT Pune engineering laboratories.
           </p>
-          <ul style="color:#eceae4;line-height:1.55;font-size:16px;padding-left:22px;margin:0 0 10px;">
-            <li><strong>SIT Laboratory Scope:</strong> Robotics &amp; Automation and AI &amp; Machine Learning department laboratories.</li>
-            <li><strong>Non-Disposal Rule:</strong> Consumables and components are returnable and reusable, not disposed on checkout.</li>
-            <li><strong>Eliminate Paper Register Books:</strong> Authenticated digital custody bound to verified student PRNs and capstone project IDs.</li>
-            <li><strong>Prevent Inventory Corruption:</strong> Enforce atomic SQL decrements with row-level locks (Q<sub>available</sub> &ge; Q<sub>requested</sub>).</li>
-            <li><strong>Multi-Tier Academic Approval:</strong> Consumables route to Mentor; high-value assets strictly require Mentor + Lab In-Charge + HoD sign-off.</li>
+          <ul style="color:#eceae4;line-height:1.42;font-size:14.5px;padding-left:18px;margin:0;">
+            <li style="margin-bottom: 7px;"><strong>SIT Laboratory Scope:</strong> Robotics &amp; Automation and AI &amp; Machine Learning department laboratories.</li>
+            <li style="margin-bottom: 7px;"><strong>Non-Disposal Rule:</strong> Consumables and components are returnable and reusable, not disposed on checkout.</li>
+            <li style="margin-bottom: 7px;"><strong>Eliminate Paper Register Books:</strong> Authenticated digital custody bound to verified student PRNs and capstone project IDs.</li>
+            <li style="margin-bottom: 7px;"><strong>Prevent Inventory Corruption:</strong> Enforce atomic SQL decrements with row-level locks (Q<sub>available</sub> &ge; Q<sub>requested</sub>).</li>
+            <li style="margin-bottom: 7px;"><strong>Multi-Tier Academic Approval:</strong> Consumables route to Mentor; high-value assets strictly require Mentor + Lab In-Charge + HoD sign-off.</li>
           </ul>
         </div>
         <div>
-          <p class="eyebrow">THE HARDWARE CUSTODY ICEBERG</p>
-          <div class="iceberg-container">
-            <div class="iceberg-surface">
-              <strong style="color: var(--deck-gold-bright); font-size: 17px; display: block; margin-bottom: 4px;">Visible Surface: Simple Check-In / Check-Out</strong>
-              <span style="font-size: 14px; color: #dedbd5;">What naive commercial IT asset tools see: static barcode scans and binary in/out switches.</span>
+          <p class="eyebrow" style="font-size: 14.5px; margin-bottom: 8px;">THE HARDWARE CUSTODY ICEBERG</p>
+          <div class="iceberg-container" style="gap: 8px;">
+            <div class="iceberg-surface" style="padding: 10px 14px;">
+              <strong style="color: var(--deck-gold-bright); font-size: 15.5px; display: block; margin-bottom: 3px;">Visible Surface: Simple Check-In / Check-Out</strong>
+              <span style="font-size: 13px; color: #dedbd5;">What naive commercial IT asset tools see: static barcode scans and binary in/out switches.</span>
             </div>
-            <div class="iceberg-submerged">
-              <strong style="color: #ffffff; font-size: 16.5px; display: block; margin-bottom: 8px;">Submerged Realities Solved by LabTrack:</strong>
-              <div style="font-size: 13.5px; line-height: 1.45; color: #dedbd5; display: flex; flex-direction: column; gap: 6px;">
+            <div class="iceberg-submerged" style="padding: 10px 14px;">
+              <strong style="color: #ffffff; font-size: 15px; display: block; margin-bottom: 6px;">Submerged Realities Solved by LabTrack:</strong>
+              <div style="font-size: 12.5px; line-height: 1.38; color: #dedbd5; display: flex; flex-direction: column; gap: 4px;">
                 <p style="margin:0;">&bull; <strong>14-Stage SDD Lifecycle:</strong> Project &rarr; Requirement &rarr; Availability &rarr; Request &rarr; Faculty Review &rarr; Class Routing &rarr; HoD Sign-off &rarr; Dispatch &rarr; Tracking &rarr; Reminder &rarr; Return &rarr; Reconciliation &rarr; Stock Update &rarr; History.</p>
                 <p style="margin:0;">&bull; <strong>Capstone Role Hierarchy:</strong> Multi-tier approval routing based on academic project lead identity.</p>
                 <p style="margin:0;">&bull; <strong>Concurrency Contention:</strong> Database row locks preventing 2 students from claiming the final sensor.</p>
@@ -115,7 +109,7 @@ export const slides = [
           </div>
         </div>
       </div>
-      <p class="takeaway"><strong>System Aim:</strong> Unify SIT Pune hardware governance into an auditable, cloud-ready software architecture that guarantees zero inventory drift.</p>
+      <p class="takeaway" style="font-size: 16px; margin-top: 14px; padding: 6px 0 6px 16px; line-height: 1.35;"><strong>System Aim:</strong> Unify SIT Pune hardware governance into an auditable, cloud-ready software architecture that guarantees zero inventory drift.</p>
     `,
     notes: 'Walk through the problem definition from our SDD: In SIT Pune labs, hardware cannot be tracked like office laptops. Consumables are returnable, custody must bind to student PRNs and capstone projects, and the 14-stage SDD lifecycle ensures end-to-end accountability.'
   },
@@ -424,40 +418,40 @@ export const slides = [
     section: 'Institutional Impact',
     time: '0:45',
     html: `
-      <div class="split" style="gap: 55px;">
+      <div class="split" style="gap: 45px; margin-top: -12px;">
         <div>
-          <p class="eyebrow">QUANTIFIED SIT PUNE INSTITUTIONAL VALUE</p>
-          <ul style="color:#eceae4;line-height:1.6;font-size:16px;padding-left:20px;margin:0;">
-            <li><strong>100% Paperless Auditability:</strong> Full digital traceability across student PRNs and capstone project IDs for SIT department accreditation and review boards.</li>
-            <li><strong>Zero Technical Event Stagnation:</strong> Prevents component unavailability and execution delays for campus technical flagships like SymbiTech (CodeX Club).</li>
-            <li><strong>Circular Defect Triage:</strong> Physical return inspection separates repairable components (e.g. blown diodes) into triage quarantine instead of discarding.</li>
-            <li><strong>120+ Staff Hours Saved Annually:</strong> Eliminates manual paper register audits and end-of-semester physical stocktaking searches in student lockers.</li>
-            <li><strong>Zero Recurring Cloud Hosting Bills:</strong> Seamless deployment onto SIT Pune's existing bare metal campus server infrastructure eliminates ongoing monthly cloud hosting fees.</li>
+          <p class="eyebrow" style="font-size: 14.5px; margin-bottom: 8px;">QUANTIFIED SIT PUNE INSTITUTIONAL VALUE</p>
+          <ul style="color:#eceae4;line-height:1.45;font-size:15px;padding-left:18px;margin:0;">
+            <li style="margin-bottom: 7px;"><strong>100% Paperless Auditability:</strong> Full digital traceability across student PRNs and capstone project IDs for SIT department accreditation and review boards.</li>
+            <li style="margin-bottom: 7px;"><strong>Zero Technical Event Stagnation:</strong> Prevents component unavailability and execution delays for campus technical flagships like SymbiTech (CodeX Club).</li>
+            <li style="margin-bottom: 7px;"><strong>Circular Defect Triage:</strong> Physical return inspection separates repairable components (e.g. blown diodes) into triage quarantine instead of discarding.</li>
+            <li style="margin-bottom: 7px;"><strong>120+ Staff Hours Saved Annually:</strong> Eliminates manual paper register audits and end-of-semester physical stocktaking searches in student lockers.</li>
+            <li style="margin-bottom: 7px;"><strong>Zero Recurring Cloud Hosting Bills:</strong> Seamless deployment onto SIT Pune's existing bare metal campus server infrastructure eliminates ongoing monthly cloud hosting fees.</li>
           </ul>
         </div>
         <div>
-          <p class="eyebrow">CIRCULAR HARDWARE GOVERNANCE CYCLE</p>
-          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;">
-            <div style="padding: 12px 16px; background: rgba(255,255,255,0.025); border: 1px solid rgba(201, 184, 160, 0.22); border-radius: 10px;">
-              <strong style="color: var(--deck-gold-bright); font-size: 16px;">1. Procure &amp; SIT Barcode Tag:</strong>
-              <p style="font-size: 13.5px; color: #dedbd5; margin: 3px 0 0;">Verified asset entry bound to department inventory and serial records.</p>
+          <p class="eyebrow" style="font-size: 14.5px; margin-bottom: 8px;">CIRCULAR HARDWARE GOVERNANCE CYCLE</p>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 2px;">
+            <div style="padding: 10px 14px; background: rgba(255,255,255,0.025); border: 1px solid rgba(201, 184, 160, 0.22); border-radius: 8px;">
+              <strong style="color: var(--deck-gold-bright); font-size: 15px;">1. Procure &amp; SIT Barcode Tag:</strong>
+              <p style="font-size: 12.5px; color: #dedbd5; margin: 2px 0 0;">Verified asset entry bound to department inventory and serial records.</p>
             </div>
-            <div style="padding: 12px 16px; background: rgba(255,255,255,0.025); border: 1px solid rgba(201, 184, 160, 0.22); border-radius: 10px;">
-              <strong style="color: var(--deck-gold-bright); font-size: 16px;">2. Capstone Project Allocation:</strong>
-              <p style="font-size: 13.5px; color: #dedbd5; margin: 3px 0 0;">Role-approved issuance bound to registered student team and PRN.</p>
+            <div style="padding: 10px 14px; background: rgba(255,255,255,0.025); border: 1px solid rgba(201, 184, 160, 0.22); border-radius: 8px;">
+              <strong style="color: var(--deck-gold-bright); font-size: 15px;">2. Capstone Project Allocation:</strong>
+              <p style="font-size: 12.5px; color: #dedbd5; margin: 2px 0 0;">Role-approved issuance bound to registered student team and PRN.</p>
             </div>
-            <div style="padding: 12px 16px; background: rgba(255,255,255,0.025); border: 1px solid rgba(201, 184, 160, 0.22); border-radius: 10px;">
-              <strong style="color: var(--deck-gold-bright); font-size: 16px;">3. Physical Return Inspection:</strong>
-              <p style="font-size: 13.5px; color: #dedbd5; margin: 3px 0 0;">Strict condition math: Q<sub>good</sub> + Q<sub>defective</sub> = Q<sub>issued</sub>.</p>
+            <div style="padding: 10px 14px; background: rgba(255,255,255,0.025); border: 1px solid rgba(201, 184, 160, 0.22); border-radius: 8px;">
+              <strong style="color: var(--deck-gold-bright); font-size: 15px;">3. Physical Return Inspection:</strong>
+              <p style="font-size: 12.5px; color: #dedbd5; margin: 2px 0 0;">Strict condition math: Q<sub>good</sub> + Q<sub>defective</sub> = Q<sub>issued</sub>.</p>
             </div>
-            <div style="padding: 12px 16px; background: rgba(255,255,255,0.025); border: 1px solid rgba(201, 184, 160, 0.22); border-radius: 10px;">
-              <strong style="color: var(--deck-gold-bright); font-size: 16px;">4. Restock or Repair Triage:</strong>
-              <p style="font-size: 13.5px; color: #dedbd5; margin: 3px 0 0;">Circular hardware recovery: salvage diodes &amp; sensors on repair bench.</p>
+            <div style="padding: 10px 14px; background: rgba(255,255,255,0.025); border: 1px solid rgba(201, 184, 160, 0.22); border-radius: 8px;">
+              <strong style="color: var(--deck-gold-bright); font-size: 15px;">4. Restock or Repair Triage:</strong>
+              <p style="font-size: 12.5px; color: #dedbd5; margin: 2px 0 0;">Circular hardware recovery: salvage diodes &amp; sensors on repair bench.</p>
             </div>
           </div>
         </div>
       </div>
-      <p class="takeaway"><strong>Institutional Value:</strong> LabTrack transforms university hardware from an untracked consumable expense into a circular, auditable institutional asset.</p>
+      <p class="takeaway" style="font-size: 16.5px; margin-top: 12px; padding: 7px 0 7px 16px; line-height: 1.35;"><strong>Institutional Value:</strong> LabTrack transforms university hardware from an untracked consumable expense into a circular, auditable institutional asset.</p>
     `,
     notes: 'Explain our verified SIT institutional value: 100% paperless auditability for department accreditation, zero SymbiTech delays, 120+ staff hours saved annually, and circular defect triage that rescues salvageable components. All running cost-free on SIT bare metal servers.'
   },
@@ -652,19 +646,11 @@ export const slides = [
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; width: 100%; max-width: 1050px; border-top: 1px solid rgba(201, 184, 160, 0.2); padding-top: 18px; text-align: left;">
-          <div>
-            <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--deck-gold); margin: 0 0 4px;">PROJECT PRESENTERS</p>
-            <p style="font-size: 19px; font-weight: 600; color: #ffffff; margin: 0;">Ishaan Chand &bull; <span style="font-size: 16px; color: var(--deck-gold-bright); font-weight: 400;">25070126076</span></p>
-            <p style="font-size: 19px; font-weight: 600; color: #ffffff; margin: 3px 0 0;">Keval Jatakia &bull; <span style="font-size: 16px; color: var(--deck-gold-bright); font-weight: 400;">25070126090</span></p>
-            <p style="font-size: 13px; color: #b4b0aa; margin: 5px 0 0;">Dept. of AI &amp; Machine Learning / Robotics &amp; Automation, SIT Pune</p>
-          </div>
-          <div style="border-left: 1px solid rgba(201, 184, 160, 0.2); padding-left: 60px;">
-            <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--deck-gold); margin: 0 0 4px;">COURSE EVALUATOR</p>
-            <p style="font-size: 19px; font-weight: 600; color: #ffffff; margin: 0;">Dr. Chilukala Mahender Reddy</p>
-            <p style="font-size: 15px; color: #dedbd5; margin: 2px 0 0;">Symbiosis Institute of Technology (SIT), Pune</p>
-            <p style="font-size: 13px; color: var(--deck-gold); margin: 4px 0 0;">Course: Cloud Computing Essentials (CCE &bull; 2 Credits, 30 Marks)</p>
-          </div>
+        <div style="width: 100%; max-width: 800px; border-top: 1px solid rgba(201, 184, 160, 0.2); padding-top: 18px; text-align: center;">
+          <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--deck-gold); margin: 0 0 4px;">COURSE EVALUATION &bull; SIT PUNE</p>
+          <p style="font-size: 20px; font-weight: 600; color: #ffffff; margin: 0;">Dr. Chilukala Mahender Reddy</p>
+          <p style="font-size: 15px; color: #dedbd5; margin: 3px 0 0;">Symbiosis Institute of Technology (SIT), Pune &bull; Cloud Computing Essentials</p>
+          <p style="font-size: 13px; color: var(--deck-gold); margin: 4px 0 0;">CCE &bull; 2 Credits &bull; Official 30-Mark Rubric Evaluation</p>
         </div>
       </div>
     `,

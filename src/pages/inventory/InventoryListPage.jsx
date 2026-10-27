@@ -46,9 +46,11 @@ export function InventoryListPage({ initialClassification = null }) {
     departments,
     userDepartment,
     getItemDeptStock,
+    resolveItemLocationForDept,
   } = useLabData();
   const { role, permissions } = useAuth();
   const isStudent = role === 'Student';
+  const activeDept = isStudent ? userDepartment : (selectedDepartment && selectedDepartment !== 'ALL' ? selectedDepartment : userDepartment || 'AIML');
 
   // Determine initial category from props or route
   const routeClassification = useMemo(() => {
@@ -113,15 +115,16 @@ export function InventoryListPage({ initialClassification = null }) {
   // Filtered items (respecting active department, category & component class)
   const filteredItems = useMemo(() => {
     return inventory.filter((item) => {
+      // 1. Strict Department Isolation: Item MUST belong to activeDept!
+      const deptStock = getItemDeptStock(item, activeDept);
+      if (deptStock.total <= 0 && deptStock.available <= 0) {
+        return false;
+      }
+
       if (selectedCategory && selectedCategory !== 'all' && item.classification !== selectedCategory) {
         return false;
       }
-      if (selectedDepartment !== 'ALL') {
-        const deptStock = getItemDeptStock(item, selectedDepartment);
-        if (deptStock.total <= 0) {
-          return false;
-        }
-      }
+
       if (selectedClass && selectedClass !== 'ALL') {
         const itemCat = (item.category || '').toLowerCase();
         const targetClass = selectedClass.toLowerCase();
@@ -136,27 +139,26 @@ export function InventoryListPage({ initialClassification = null }) {
         }
       }
       if (inStockOnly) {
-        const checkStock = isStudent
-          ? getItemDeptStock(item, userDepartment)
-          : (selectedDepartment === 'ALL' ? { available: item.availableStock } : getItemDeptStock(item, selectedDepartment));
-        if (checkStock.available <= 0) {
+        if (deptStock.available <= 0) {
           return false;
         }
       }
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
+        const deptLoc = resolveItemLocationForDept(item, activeDept);
         return (
           item.nomenclature.toLowerCase().includes(q) ||
           item.assetTag.toLowerCase().includes(q) ||
           item.sku?.toLowerCase().includes(q) ||
           item.manufacturer?.toLowerCase().includes(q) ||
-          item.coordinates?.toLowerCase().includes(q) ||
+          deptLoc.coordinates?.toLowerCase().includes(q) ||
+          deptLoc.labRoom?.toLowerCase().includes(q) ||
           item.subSpecs?.toLowerCase().includes(q)
         );
       }
       return true;
     });
-  }, [inventory, selectedCategory, selectedDepartment, selectedClass, inStockOnly, searchQuery, isStudent, userDepartment]);
+  }, [inventory, selectedCategory, activeDept, selectedClass, inStockOnly, searchQuery]);
 
   const assetItems = useMemo(
     () => filteredItems.filter((i) => i.classification === 'Asset'),
@@ -167,13 +169,18 @@ export function InventoryListPage({ initialClassification = null }) {
     [filteredItems]
   );
 
+  const deptInventory = useMemo(
+    () => inventory.filter((i) => getItemDeptStock(i, activeDept).total > 0),
+    [inventory, activeDept]
+  );
+
   const assetsCount = useMemo(
-    () => inventory.filter((i) => i.classification === 'Asset').length,
-    [inventory]
+    () => deptInventory.filter((i) => i.classification === 'Asset').length,
+    [deptInventory]
   );
   const consumablesCount = useMemo(
-    () => inventory.filter((i) => i.classification === 'Consumable').length,
-    [inventory]
+    () => deptInventory.filter((i) => i.classification === 'Consumable').length,
+    [deptInventory]
   );
 
   const handleAddNewItem = async (e) => {
@@ -254,12 +261,15 @@ export function InventoryListPage({ initialClassification = null }) {
       header: 'Coordinates',
       accessor: 'coordinates',
       width: '130px',
-      render: (row) => (
-        <div className="inline-flex items-center gap-1 font-sans text-[11px] px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300">
-          <MapPin className="w-3 h-3 text-[#a78b71]" />
-          <span>{row.coordinates}</span>
-        </div>
-      ),
+      render: (row) => {
+        const deptLoc = resolveItemLocationForDept(row, activeDept);
+        return (
+          <div className="inline-flex items-center gap-1 font-sans text-[11px] px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300">
+            <MapPin className="w-3 h-3 text-[#a78b71]" />
+            <span>{deptLoc.coordinates}</span>
+          </div>
+        );
+      },
     },
     {
       header: 'Status',
@@ -273,19 +283,15 @@ export function InventoryListPage({ initialClassification = null }) {
       width: '120px',
       align: 'center',
       render: (row) => {
-        const stock = isStudent
-          ? getItemDeptStock(row, userDepartment)
-          : (selectedDepartment === 'ALL' ? { available: row.availableStock } : getItemDeptStock(row, selectedDepartment));
+        const stock = getItemDeptStock(row, activeDept);
         return (
           <div className="flex flex-col items-center">
             <span className={`font-sans text-xs font-semibold ${stock.available > 0 ? 'text-white' : 'text-zinc-500'}`}>
               {stock.available} {row.classification === 'Consumable' ? 'Units' : 'Unit'}
             </span>
-            {isStudent && (
-              <span className="text-[10px] text-zinc-400">
-                in {userDepartment} Labs
-              </span>
-            )}
+            <span className="text-[10px] text-zinc-400">
+              in {activeDept} Labs
+            </span>
           </div>
         );
       },
@@ -295,8 +301,8 @@ export function InventoryListPage({ initialClassification = null }) {
       width: '160px',
       align: 'right',
       render: (row) => {
-        const studentStock = getItemDeptStock(row, userDepartment);
-        const canIssue = !isStudent || studentStock.available > 0;
+        const stock = getItemDeptStock(row, activeDept);
+        const canIssue = stock.available > 0;
         return (
           <div
             className="flex items-center justify-end gap-1.5"
@@ -318,14 +324,9 @@ export function InventoryListPage({ initialClassification = null }) {
                 <span>Requisition</span>
               </button>
             ) : (
-              <button
-                disabled
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-white/[0.05] border border-white/10 text-zinc-500 font-inter text-[10px] font-semibold cursor-not-allowed"
-                title={`Restricted: Only available in ${studentStock.depts.join(', ') || 'other'} Dept labs`}
-              >
-                <Lock className="w-3 h-3 text-amber-400/80" />
-                <span>{studentStock.depts.length > 0 ? `${studentStock.depts.join('/')} Only` : 'Out of Stock'}</span>
-              </button>
+              <span className="text-[11px] font-sans text-zinc-500 italic">
+                Depleted
+              </span>
             )}
           </div>
         );
@@ -496,49 +497,34 @@ export function InventoryListPage({ initialClassification = null }) {
               ))}
             </div>
 
-            {/* Location & Depot Strip */}
-            <div className="flex items-center gap-2 text-xs">
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-zinc-200 font-sans font-medium text-[11px]">
-                <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
-                <span>{item.coordinates}</span>
-              </div>
-              <span className="text-zinc-400 text-xs font-sans drop-shadow-sm">{item.labRoom}</span>
-            </div>
+            {(() => {
+              const deptLoc = resolveItemLocationForDept(item, activeDept);
+              const deptStock = getItemDeptStock(item, activeDept);
+              const canIssue = deptStock.available > 0;
 
-            {/* Card Footer Actions with Departmental Governance */}
-            <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
-              {(() => {
-                const studentStock = getItemDeptStock(item, userDepartment);
-                const viewStock = getItemDeptStock(item, selectedDepartment);
-                const canIssue = !isStudent || studentStock.available > 0;
+              return (
+                <>
+                  {/* Location & Depot Strip */}
+                  <div className="flex items-center gap-2 text-xs">
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-zinc-200 font-sans font-medium text-[11px]">
+                      <MapPin className="w-3 h-3 text-[#c9b8a0] flex-shrink-0" />
+                      <span>{deptLoc.coordinates}</span>
+                    </div>
+                    <span className="text-zinc-400 text-xs font-sans drop-shadow-sm">{deptLoc.labRoom}</span>
+                  </div>
 
-                return (
-                  <>
+                  {/* Card Footer Actions with Departmental Governance */}
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
                     <div className="flex flex-col text-xs">
-                      {isStudent ? (
-                        <>
-                          <div className="flex items-center gap-1.5">
-                            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${studentStock.available > 0 ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-                            <span className="text-xs text-white font-semibold">
-                              {studentStock.available > 0 ? `${studentStock.available} Available` : 'Unavailable in Dept'}
-                            </span>
-                          </div>
-                          <span className="text-[10px] text-zinc-400">
-                            in {userDepartment} Labs {studentStock.available <= 0 && studentStock.depts.length > 0 ? `(${studentStock.depts.join(', ')})` : ''}
-                          </span>
-                        </>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${viewStock.available > 0 ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-                          <span className="text-xs text-white font-semibold">
-                            {viewStock.available > 0 ? 'In Stock' : 'Out of Stock'}
-                          </span>
-                          <span className="text-zinc-500">•</span>
-                          <span className="text-[11px] text-zinc-300">
-                            {viewStock.available} of {viewStock.total} available
-                          </span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-1.5">
+                        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${canIssue ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                        <span className="text-xs text-white font-semibold">
+                          {canIssue ? `${deptStock.available} Available` : 'Out of Stock'}
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-zinc-400">
+                        in {activeDept} Labs
+                      </span>
                     </div>
 
                     {canIssue ? (
@@ -559,19 +545,19 @@ export function InventoryListPage({ initialClassification = null }) {
                         disabled
                         onClick={(e) => e.stopPropagation()}
                         className="px-3.5 py-2 rounded-full bg-white/[0.06] border border-white/10 text-zinc-400 font-medium text-[11px] tracking-tight flex items-center gap-1.5 cursor-not-allowed opacity-80 flex-shrink-0"
-                        title={`Restricted: Students are enrolled in ${userDepartment} and can only requisition hardware from ${userDepartment} labs. This item is housed in ${studentStock.depts.join(', ')}.`}
+                        title={`Item currently depleted in ${activeDept} laboratories.`}
                       >
                         <Lock className="w-3 h-3 text-amber-400/80" />
-                        <span>{studentStock.depts.length > 0 ? `${studentStock.depts.join('/')} Dept Only` : `${userDepartment} Unavailable`}</span>
+                        <span>{activeDept} Depleted</span>
                       </button>
                     )}
-                  </>
-                );
-              })()}
+                  </div>
+                </>
+              );
+            })()}
             </div>
           </div>
         </div>
-      </div>
     );
   };
 
@@ -763,80 +749,82 @@ export function InventoryListPage({ initialClassification = null }) {
             </div>
 
             {/* Storage Bay & Stock Status */}
-            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-[#c9b8a0]" />
-                <span className="font-semibold text-white">{inspectedItem.coordinates}</span>
-                <span className="text-zinc-600">•</span>
-                <span className="text-zinc-400">{inspectedItem.labRoom}</span>
-              </div>
-              <span className="text-zinc-300 font-medium">
-                {inspectedItem.availableStock} of {inspectedItem.totalStock} in stock
-              </span>
-            </div>
+            {(() => {
+              const modalDeptLoc = resolveItemLocationForDept(inspectedItem, activeDept);
+              const modalDeptStock = getItemDeptStock(inspectedItem, activeDept);
+              const canIssue = modalDeptStock.available > 0;
 
-            {/* Technical Sub-Specifications */}
-            <div className="space-y-1.5">
-              <div className="font-medium text-zinc-300">Technical Specifications</div>
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10 text-xs text-zinc-300 leading-relaxed font-sans">
-                {inspectedItem.subSpecs}
-              </div>
-            </div>
+              return (
+                <>
+                  <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-[#c9b8a0]" />
+                      <span className="font-semibold text-white">{modalDeptLoc.coordinates}</span>
+                      <span className="text-zinc-600">•</span>
+                      <span className="text-zinc-400">{modalDeptLoc.labRoom}</span>
+                    </div>
+                    <span className="text-zinc-300 font-medium">
+                      {modalDeptStock.available} of {modalDeptStock.total} in {activeDept}
+                    </span>
+                  </div>
 
-            {/* Modal Actions */}
-            <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
-              <div className="text-xs text-zinc-400">
-                {isStudent && (
-                  (() => {
-                    const studentStock = getItemDeptStock(inspectedItem, userDepartment);
-                    if (studentStock.available <= 0) {
-                      return (
+                  {/* Technical Sub-Specifications */}
+                  <div className="space-y-1.5">
+                    <div className="font-medium text-zinc-300">Technical Specifications</div>
+                    <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10 text-xs text-zinc-300 leading-relaxed font-sans">
+                      {inspectedItem.subSpecs}
+                    </div>
+                  </div>
+
+                  {/* Modal Actions */}
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
+                    <div className="text-xs text-zinc-400">
+                      {canIssue ? (
+                        <span className="text-emerald-400 font-medium">
+                          ✓ {modalDeptStock.available} available in {activeDept} labs
+                        </span>
+                      ) : (
                         <span className="text-amber-400 flex items-center gap-1 font-medium">
                           <Lock className="w-3.5 h-3.5" />
-                          <span>Restricted: Not housed in {userDepartment} labs</span>
+                          <span>Currently depleted in {activeDept} labs</span>
                         </span>
-                      );
-                    }
-                    return (
-                      <span className="text-emerald-400 font-medium">
-                        ✓ {studentStock.available} available in {userDepartment} labs
-                      </span>
-                    );
-                  })()
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setInspectedItem(null)}
-                  className="px-4 py-2 rounded-full border border-white/10 text-xs font-medium text-zinc-400 hover:text-white transition-colors cursor-pointer"
-                >
-                  Close
-                </button>
-                {(!isStudent || getItemDeptStock(inspectedItem, userDepartment).available > 0) ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      addToBasket(inspectedItem, 1);
-                      setInspectedItem(null);
-                    }}
-                    className="py-2.5 px-5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs tracking-wide transition-all shadow-sm flex items-center gap-2 cursor-pointer active:scale-[0.99]"
-                  >
-                    <ShoppingBag className="w-3.5 h-3.5" />
-                    <span>Add to Requisition Kit</span>
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    disabled
-                    className="py-2 px-4 rounded-full bg-white/[0.06] border border-white/10 text-zinc-500 font-semibold text-xs flex items-center gap-2 cursor-not-allowed opacity-75"
-                  >
-                    <Lock className="w-3.5 h-3.5" />
-                    <span>Cross-Dept Prohibited</span>
-                  </button>
-                )}
-              </div>
-            </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setInspectedItem(null)}
+                        className="px-4 py-2 rounded-full border border-white/10 text-xs font-medium text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                      >
+                        Close
+                      </button>
+                      {canIssue ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            addToBasket(inspectedItem, 1);
+                            setInspectedItem(null);
+                          }}
+                          className="py-2.5 px-5 rounded-full bg-white hover:bg-[#f5e6c8] text-black font-semibold text-xs tracking-wide transition-all shadow-sm flex items-center gap-2 cursor-pointer active:scale-[0.99]"
+                        >
+                          <ShoppingBag className="w-3.5 h-3.5" />
+                          <span>Add to Requisition Kit</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled
+                          className="py-2 px-4 rounded-full bg-white/[0.06] border border-white/10 text-zinc-500 font-semibold text-xs flex items-center gap-2 cursor-not-allowed opacity-75"
+                        >
+                          <Lock className="w-3.5 h-3.5" />
+                          <span>Depleted in {activeDept}</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
           </div>
         </Modal>
       )}

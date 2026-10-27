@@ -183,13 +183,19 @@ export function ReliabilityReportPage() {
           <div className="text-[11px] font-sans font-semibold text-[#c9b8a0] tracking-wider uppercase flex items-center gap-2 mb-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#c9b8a0]" />
             COLLEGIATE ACCOUNTABILITY • REPUTATION SCORE
+            <span className="ml-1 px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-bold tracking-wider">
+              Demo Feature
+            </span>
           </div>
           <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
             <ShieldCheck className="w-7 h-7 text-[#c9b8a0]" />
-            Reputation & Reliability Score
+            <span>Reputation & Reliability Score</span>
+            <span className="text-xs font-sans font-normal text-zinc-500 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10">
+              Demo Preview
+            </span>
           </h1>
           <p className="text-sm font-sans text-zinc-400 mt-1 max-w-2xl leading-relaxed">
-            Algorithmic compliance scoring tracking hardware return punctuality, condition integrity, and borrowing priority tiers.
+            Algorithmic compliance scoring tracking hardware return punctuality, condition integrity, and borrowing priority tiers (Demo Mode).
           </p>
         </div>
 

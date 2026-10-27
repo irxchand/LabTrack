@@ -2,17 +2,23 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLabData } from '../../context/LabDataContext';
 import { useAuth } from '../../context/AuthContext';
-import { ArrowLeft, Users, Cpu, ShieldCheck, ShieldAlert, Check, Sparkles } from 'lucide-react';
+import { ArrowLeft, Users, Cpu, ShieldCheck, ShieldAlert, Check, Sparkles, CheckCircle2 } from 'lucide-react';
 
 export function ProjectDetailPage() {
   const { projectId } = useParams();
-  const { projects, activeLoans, inventory } = useLabData();
+  const { projects, activeLoans, requisitions, inventory } = useLabData();
   const { currentUser, role } = useAuth();
   const isStudent = !role || role === 'Student';
   const userPrn = currentUser?.prn || '202401048';
 
   const project = projects.find((p) => p.id === projectId);
   const assignedLoans = activeLoans.filter((l) => l.projectId === projectId);
+  const projectRequisitions = (requisitions || []).filter(
+    (r) => r.projectId === projectId || r.courseCode === project?.courseCode
+  );
+  const returnedRequisitions = projectRequisitions.filter(
+    (r) => r.status === 'Returned' || r.status === 'Returned & Restocked'
+  );
 
   const isUserProject = (p) => {
     if (!p) return false;
@@ -147,15 +153,18 @@ export function ProjectDetailPage() {
               <div className="font-sans text-sm font-bold text-white">{project.reliabilityScore}%</div>
             </div>
             <div className="px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-right backdrop-blur-md">
-              <div className="text-zinc-500 text-[10px] font-sans uppercase tracking-wider">Custody Quota</div>
+              <div className="text-zinc-500 text-[10px] font-sans uppercase tracking-wider">Active Deployments</div>
               <div className="font-sans text-sm font-semibold text-white">
-                {project.currentAllocatedCount} / {project.hardwareBudgetCap} units
-              </div>
-              <div className="w-full bg-white/10 rounded-full h-1 overflow-hidden mt-1.5">
-                <div
-                  className="bg-gradient-to-r from-[#c9b8a0] via-[#e2d2bc] to-[#f5e6c8] h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(201,184,160,0.6)]"
-                  style={{ width: `${Math.min(100, (assignedLoans.length / (project.hardwareBudgetCap || 1)) * 100)}%` }}
-                />
+                {assignedLoans.length > 0 ? (
+                  `${assignedLoans.length} ${assignedLoans.length === 1 ? 'unit' : 'units'}`
+                ) : returnedRequisitions.length > 0 ? (
+                  <span className="text-emerald-400 font-medium text-xs flex items-center gap-1.5 justify-end">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    0 (Restocked)
+                  </span>
+                ) : (
+                  '0 units'
+                )}
               </div>
             </div>
           </div>
@@ -181,7 +190,7 @@ export function ProjectDetailPage() {
                 Active Hardware Borrowings ({assignedLoans.length})
               </span>
               <span className="text-zinc-400 font-sans text-xs">
-                Remaining Quota: {project.hardwareBudgetCap - assignedLoans.length}
+                In Field Deployment
               </span>
             </div>
 
@@ -212,6 +221,27 @@ export function ProjectDetailPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            ) : returnedRequisitions.length > 0 ? (
+              <div className="py-6 px-4 rounded-2xl bg-emerald-500/[0.04] border border-emerald-500/20 text-center space-y-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold text-sm">Custody Cleared • Hardware Returned & Restocked</h4>
+                  <p className="text-zinc-400 text-xs mt-1 max-w-md mx-auto leading-relaxed">
+                    All components previously checked out for this project ({returnedRequisitions.map((r) => r.item || r.nomenclature).join(', ')}) have been returned and verified by Lab Assistant. 0 units currently in field deployment.
+                  </p>
+                </div>
+                <div className="pt-1">
+                  <Link
+                    to="/workspace/custody/requisitions?status=Returned"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-semibold text-xs transition-all shadow-sm active:scale-95 cursor-pointer"
+                  >
+                    <span>View Return Receipt ({returnedRequisitions[0].id})</span>
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="text-zinc-500 py-8 text-center text-xs font-sans space-y-1">

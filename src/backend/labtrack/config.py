@@ -9,9 +9,15 @@ class Settings(BaseSettings):
     document_store: Literal["local", "mongo"] = "local"
     mongo_url: str = "mongodb://localhost:27017"
     mongo_database: str = "labtrack"
-    email_provider: Literal["local", "gmail"] = "local"
+    email_provider: Literal["local", "gmail", "smtp"] = "local"
     gmail_access_token: str = ""
     email_sender: str = "labtrack@example.invalid"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_username: str = ""
+    smtp_password: str = ""
+    smtp_use_tls: bool = True
+    email_override: str = ""
     object_store: Literal["local", "s3"] = "local"
     s3_bucket: str = ""
     local_dir: Path = Path(".local")

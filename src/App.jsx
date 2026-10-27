@@ -78,7 +78,9 @@ export function App() {
                   <Route index element={<Navigate to="active" replace />} />
                   <Route path="active" element={<ActiveLoansPage />} />
                   <Route path="bench" element={<ActiveLoansPage />} />
+                  <Route path="loans" element={<ActiveLoansPage />} />
                   <Route path="requests" element={<RequisitionsPage />} />
+                  <Route path="requisitions" element={<RequisitionsPage />} />
                   <Route path="reservations" element={<ReservationsPage />} />
                 </Route>
 

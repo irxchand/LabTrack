@@ -106,7 +106,16 @@ export const ROLE_PERMISSIONS = {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(() => {
+    const savedPrn = localStorage.getItem('labtrack_active_prn');
     const savedRole = localStorage.getItem('labtrack_active_role') || 'Student';
+    if (savedPrn) {
+      const byPrn = INITIAL_USERS.find((u) => u.prn?.toLowerCase() === savedPrn.toLowerCase());
+      if (byPrn) return byPrn;
+    }
+    if (savedRole === 'Faculty') {
+      const manoj = INITIAL_USERS.find((u) => u.prn === 'T100460');
+      if (manoj) return manoj;
+    }
     const found = INITIAL_USERS.find((u) => u.role === savedRole);
     return found || INITIAL_USERS[0];
   });
@@ -143,11 +152,26 @@ export function AuthProvider({ children }) {
   }, [currentUser, isAuthenticated]);
 
   const switchRole = (newRole) => {
-    const matched = INITIAL_USERS.find((u) => u.role === newRole);
+    let matched = null;
+    if (newRole === 'Student') {
+      matched = INITIAL_USERS.find((u) => u.prn === '25070126076') || INITIAL_USERS.find((u) => u.name === 'Ishaan Chand');
+    } else if (newRole === 'Faculty') {
+      matched = INITIAL_USERS.find((u) => u.prn === 'T100460') || INITIAL_USERS.find((u) => u.name?.includes('Manoj'));
+    } else if (newRole === 'Lab Assistant') {
+      matched = INITIAL_USERS.find((u) => u.prn === 'N10001' || u.name?.includes('Ramesh')) || INITIAL_USERS.find((u) => u.role === 'Lab Assistant');
+    } else if (newRole === 'HoD / Admin') {
+      matched = INITIAL_USERS.find((u) => u.prn === 'T100101') || INITIAL_USERS.find((u) => u.name?.includes('Sumit'));
+    }
+    if (!matched) {
+      matched = INITIAL_USERS.find((u) => u.role === newRole);
+    }
     if (matched) {
       setCurrentUser(matched);
       setIsAuthenticated(true);
       apiClient.setAuth('mock_token_jwt', matched.role, matched.prn);
+      localStorage.setItem('labtrack_active_role', matched.role);
+      localStorage.setItem('labtrack_active_prn', matched.prn);
+      localStorage.setItem('labtrack_is_auth', 'true');
     }
   };
 
@@ -161,21 +185,29 @@ export function AuthProvider({ children }) {
     }
 
     const verified = res.user;
-    const baseProfile = INITIAL_USERS.find((u) => u.role === verified.role) || INITIAL_USERS[0];
+    const baseProfile =
+      INITIAL_USERS.find((u) => u.prn?.toLowerCase() === verified.id?.toLowerCase() || u.prn?.toLowerCase() === prn?.toLowerCase()) ||
+      INITIAL_USERS.find((u) => u.name?.toLowerCase() === verified.name?.toLowerCase()) ||
+      (verified.role === 'Faculty' ? INITIAL_USERS.find((u) => u.prn === 'T100460') : null) ||
+      INITIAL_USERS.find((u) => u.role === verified.role) ||
+      INITIAL_USERS[0];
 
     const customizedUser = {
       ...baseProfile,
-      prn: verified.id,
-      name: verified.name,
-      role: verified.role,
-      department: verified.department,
-      email: verified.email,
-      cohort: verified.cohort,
+      prn: verified.id || baseProfile.prn,
+      name: verified.name || baseProfile.name,
+      role: verified.role || baseProfile.role,
+      department: verified.department || baseProfile.department,
+      email: verified.email || baseProfile.email,
+      cohort: verified.cohort || baseProfile.cohort,
       authSource: 'MySQL (labtrack_db.users)',
     };
 
     setCurrentUser(customizedUser);
     setIsAuthenticated(true);
+    localStorage.setItem('labtrack_active_role', customizedUser.role);
+    localStorage.setItem('labtrack_active_prn', customizedUser.prn);
+    localStorage.setItem('labtrack_is_auth', 'true');
     return { success: true, user: customizedUser };
   };
 
