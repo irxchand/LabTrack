@@ -1,0 +1,13 @@
+FINAL REVIEW ONLY (unless I separately authorize edits). Inspect the complete Google Slides presentation linked here: [URL]. Use the uploaded official faculty PPTX plus `00`–`03` as the reference base.
+
+Check:
+- Exact 13-slide official order/headings/footer; no missing required fields.
+- Each of SIX DCDS rubric criteria (2+2+2+2+1+1) is mapped to visible authentic technical evidence.
+- Unit 3 concepts: design lifecycle, conceptual/logical/physical, genuine normalization/FDs, MySQL querying, MongoDB modelling/aggregation, transaction integrity, validation.
+- Main text is short PRESENTATION POINTERS, not paragraphs; fonts/contrast/spacing/template consistency.
+- Diagrams native/editable, technically accurate; SQL authoritative state vs Mongo async projections correctly drawn.
+- No invented UI, test, stored procedure, query output or cloud-deployment claim. Evidence placeholders clearly flagged.
+- Roles: user systems/backend; Raghu frontend; shared databases; live-demo handoff; SIT deployment is FUTURE.
+- Slide 13 includes correct submission checklist; Slide 11 shows 2–3 credible future steps.
+
+Return a short table: `Slide | Pass / Needs Fix | Specific Fix | Rubric Risk`. Then a prioritized list of only the blockers before final handoff. Do not pretend to have inspected slides you cannot open.

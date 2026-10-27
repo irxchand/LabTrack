@@ -1,0 +1,11 @@
+TASK: Initialize a persistent reference context for our LabTrack DCDS ESE presentation. Do NOT create or edit slides yet.
+
+I have uploaded FOUR files: `00_REFERENCE_ROUTER.md`, `01_PROJECT_AND_TECHNICAL_TRUTH.md`, `02_OFFICIAL_SLIDES_RUBRIC_AND_UNIT3.md`, `03_STYLE_PROOF_AND_SPEAKING.md`.
+
+1. Read all four, in that order; use `00` as the retrieval/router contract. Link concepts across filenames and their section IDs (`[P04]`, `[RUBRIC]`, `[S08]`, `[DIAGRAM]`, etc.). Do not store facts by re-copying entire files into the chat.
+2. Maintain a compact internal slide registry for S01–S13, with fields: template title, key teaching point, rubric, evidence status, visual composition, speaker, user-approved status. Start all slides as NOT STARTED.
+3. Treat the official faculty template (uploaded in a later turn) as binding for 13 headings/order/footers. Distinguish live evidence from plans and older code. No hallucinated test results or query outputs.
+4. If a referenced file cannot be read, identify it explicitly; otherwise do not ask for already-supplied context.
+5. Reply only with: `CONTEXT READY`, a four-row file-purpose index, the key unresolved evidence categories, and `AWAITING FACULTY PPTX`. No slide content, no deck, no project implementation.
+
+We will remain in THIS Gemini conversation for subsequent template upload, style lock and one-slide-at-a-time editing. When I later say `Slide N`, retrieve only the relevant passages by file/section ID rather than repeating the whole context.

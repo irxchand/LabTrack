@@ -1,0 +1,21 @@
+BUILD/UPDATE EXACTLY ONE EDITABLE GOOGLE SLIDE.
+
+Slide number: [REPLACE WITH 01–13]
+Google Slides presentation URL or active destination: [PASTE URL IF NEEDED]
+Visual reference: the screenshot I attached in this message. Use it for placement/composition; the faculty PPTX and reference files govern official heading/content.
+Specific revision request (optional): [LEAVE EMPTY IF NONE]
+
+Retrieve ONLY relevant context: `02_OFFICIAL_SLIDES_RUBRIC_AND_UNIT3.md` [Sxx] + [RUBRIC] / [UNIT3]; `01_PROJECT_AND_TECHNICAL_TRUTH.md` for facts; `03_STYLE_PROOF_AND_SPEAKING.md` for native shapes, short pointers, palette, diagram and evidence rules; `00_REFERENCE_ROUTER.md` for precedence. Do not make me reupload/restate them.
+
+DO:
+1. Infer this slide's intended objective from its screenshot and official slide number; keep mandatory title/footer and required template fields.
+2. Draft one sharp takeaway and up to 3–5 SHORT SPEAKING POINTERS (3–9 words each). For schema/SQL/diagrams use fewer bullets; fuller discussion belongs in 2–3 speaker-note cues.
+3. Use the locked navy/teal/mist visual scheme, consistent Arial/theme font, disciplined alignment, ample whitespace and a SLICK editable flowchart/diagram/table where suitable.
+4. Use genuine current technical facts and correct Python/MySQL/MongoDB semantics; do not fabricate database outputs, frontend QA, tests, completed Aiven migration, logs or SIT adoption. Mark unverified facts/results visibly as PENDING/INSERT VERIFIED OUTPUT.
+5. Use the **connected Google Slides creation/editing tool** if actually available and authorized. Create/rebuild THIS slide inside the requested presentation using editable Google Slides textboxes/shapes/lines/tables; real screenshots are inserted images only if I supplied them. Do not create the other 12 slides and do not modify LabTrack code.
+6. If you lack destination access or slide-edit capability, say so instead of claiming success. Provide: (a) exact copy-paste text grouped by textbox, (b) precise shape-by-shape slide layout instructions, (c) speaker cues, so I can implement it manually.
+7. Reply briefly with what you made, actual Slides link/slide ID if available, editable-object summary, placeholders still needing evidence, and no more than one blocking question if necessary.
+
+Do not repeat the entire project context or dump lengthy slide theory.
+
+TOKEN-EFFICIENCY: Use this full prompt for the FIRST built slide to establish the procedure. For later slides in the SAME chat, a short request is sufficient: `Slide 07. Screenshot attached. Google Slides: [URL]. Build/edit only this slide, using our locked context and native editable shapes; pointers not paragraphs.` Do not require me to paste this full instruction every time.

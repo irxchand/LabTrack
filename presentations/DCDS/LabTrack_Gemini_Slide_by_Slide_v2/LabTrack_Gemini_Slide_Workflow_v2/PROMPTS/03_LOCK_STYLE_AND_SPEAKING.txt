@@ -1,0 +1,14 @@
+TASK: Lock a consistent visual and speaking style for the faculty PPTX. Do not build or edit slides in this step.
+
+Use `03_STYLE_PROOF_AND_SPEAKING.md` [DESIGN], [PALETTE], [TYPE], [POINTERS], [LAYOUT], [DIAGRAM] as the style authority, constrained by the uploaded official PPTX. Critical: the slide should be a speaker's visual cue card, NOT a textbook page.
+
+LOCK:
+- Faculty's exact 13 headings/required footer and 16:9 canvas.
+- Midnight `#111827`, electric teal `#23C8B7`, deep teal `#0D9488`, mist `#F8FAFC`, consistent neutrals; preserve template contrast/recognizability.
+- Use Arial for cross-platform titles/body (or retain an equally compatible faculty theme font); Courier New/Consolas for short code only. Header ~28–34pt; pointers ~17–21pt; avoid microscopic code.
+- Main text = 3–5 short pointer FRAGMENTS (~3–9 words each), one takeaway, one crisp editable diagram or authentic evidence panel. Do not turn speaker notes into on-slide prose.
+- Straight, uncluttered flowcharts with native Google Slides shapes, labeled arrows and real SQL vs Mongo responsibilities; asynchronous links dashed. Native editable text/diagrams, not flattened slide images.
+- Dark/light rhythm matched to faculty PPTX. **No stock screenshots pretending to be real LabTrack UI**. Pending outputs are polished labeled placeholders.
+- User: systems/backend; Raghu: frontend; shared DB. Live demo. Future scope = SIT deployment, clearly future.
+
+Reply with a *concise* locked design-system card (palette, fonts, spacing, pointer limit, diagram grammar) and `STYLE LOCKED — READY FOR SCREENSHOT OF SLIDE 01–13`. Do not create any slide yet.

@@ -1,0 +1,5 @@
+REVISE ONLY SLIDE [N] IN THE EXISTING GOOGLE SLIDES PRESENTATION: [URL]. Attached screenshot shows the present state.
+
+My specific feedback: [WHAT TO CHANGE]
+
+Preserve official faculty title/footer, slide number, locked style, concise pointer fragments, genuine evidence/placeholder labels and editability. Use context `02` [Sxx] for content, `03` [PALETTE]/[POINTERS]/[LAYOUT]/[REVIEW] for execution, `01` for truth. Do not modify any other slide, rewrite my entire presentation, or change source code. Make the actual Google Slides edit only if a connected tool is available; otherwise give minimal copy-paste edits. Return a short change log and link if edited.

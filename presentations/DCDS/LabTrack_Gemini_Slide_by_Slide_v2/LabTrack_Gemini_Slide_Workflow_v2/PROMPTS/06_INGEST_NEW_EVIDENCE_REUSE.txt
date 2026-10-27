@@ -1,0 +1,6 @@
+EVIDENCE REFRESH — I am attaching new [QA / MYSQL / MONGODB / SCHEMA / UI SCREENSHOT / TEST] evidence. Ingest it as a new dated source without redesigning anything yet.
+
+1. Compare it with `01_PROJECT_AND_TECHNICAL_TRUTH.md` [P08] and the `00_REFERENCE_ROUTER.md` precedence rules. Summarize exactly what it confirms, what remains pending, and any contradictions.
+2. Identify which slide IDs [S01–S13] from `02_OFFICIAL_SLIDES_RUBRIC_AND_UNIT3.md` now need corrected content or replaced evidence slots.
+3. Update the working slide registry's evidence status; do not claim a pass/deployment from code presence alone.
+4. Give a compact `Claim → Source/Evidence → Affected Slides → Change Needed` table. Do not edit slides until I specify slide numbers or explicitly authorize an evidence-only batch update.

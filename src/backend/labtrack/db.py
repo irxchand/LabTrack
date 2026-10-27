@@ -5,9 +5,13 @@ from .config import settings
 
 
 def make_engine(url):
+    connect_args = {}
     if url.startswith("sqlite"):
         settings.local_dir.mkdir(parents=True, exist_ok=True)
-    engine = create_engine(url, pool_pre_ping=True, connect_args={"check_same_thread": False, "timeout": 30} if url.startswith("sqlite") else {})
+        connect_args = {"check_same_thread": False, "timeout": 30}
+    elif "mysql" in url:
+        connect_args = {"ssl": {"ssl_disabled": False}}
+    engine = create_engine(url, pool_pre_ping=True, connect_args=connect_args)
     if url.startswith("sqlite"):
         @event.listens_for(engine, "connect")
         def configure(dbapi_connection, _):

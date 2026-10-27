@@ -1,0 +1,7 @@
+TASK: Ingest the ATTACHED OFFICIAL faculty PPTX as the primary slide-layout authority. Do not generate any slides yet.
+
+1. Confirm the file has 13 slides; enumerate their exact required headings, footer pattern and mandatory fields, matching `02_OFFICIAL_SLIDES_RUBRIC_AND_UNIT3.md` [S01]–[S13].
+2. Note the actual template typography, color/background and content-area geometry as seen in the PPTX. A future styling overlay must remain coherent and must NOT erase official headers/footers or change order.
+3. Use `03_STYLE_PROOF_AND_SPEAKING.md` to identify only potential compatibility issues (color contrast, dense content, required placeholders), not to replace template rules.
+4. If connected Google Slides tools support importing/copying the faculty PPTX, identify the available workflow. Do not claim import unless performed. If unavailable, tell me the one simple manual step to import PPTX into a Google Slides presentation and obtain its URL.
+5. Respond with a concise 13-heading map, style-compatibility notes, and `TEMPLATE INGESTED — AWAITING STYLE LOCK`. Do NOT create the deck, change slides or write a full script.
