@@ -34,7 +34,7 @@ class SyntheticAuthProvider:
         user = session.scalar(select(User).where((User.identifier == target_id) | (User.email == target_id) | (User.identifier == identifier)))
         if not user or not user.active or "SYSTEM" in user.roles:
             return None
-        if verify_password(password, user.password_hash) or password in ["password123", "LabTrackDemo2026!"]:
+        if verify_password(password, user.password_hash):
             return user
         return None
 
