@@ -1,0 +1,601 @@
+{
+  "CRUD_1_INSERT": {
+    "sql": "\n        INSERT INTO reservations (project_id, item_id, quantity, state, created_at)\n        VALUES (1, 1, 3, 'WAITING_FIFO', NOW());\n        ",
+    "affected": 1
+  },
+  "CRUD_2_SELECT_FILTER_SORT": {
+    "sql": "\n        SELECT id, project_id, item_id, quantity, state, created_at\n        FROM reservations\n        WHERE state = 'WAITING_FIFO'\n        ORDER BY created_at DESC\n        LIMIT 5;\n        ",
+    "columns": [
+      "id",
+      "project_id",
+      "item_id",
+      "quantity",
+      "state",
+      "created_at"
+    ],
+    "rows": [
+      {
+        "id": 4,
+        "project_id": 1,
+        "item_id": 1,
+        "quantity": 3,
+        "state": "WAITING_FIFO",
+        "created_at": "2026-10-27 22:22:26"
+      },
+      {
+        "id": 1,
+        "project_id": 1,
+        "item_id": 6,
+        "quantity": 1,
+        "state": "WAITING_FIFO",
+        "created_at": "2026-10-15 18:03:23"
+      }
+    ],
+    "count": 2
+  },
+  "CRUD_3_UPDATE": {
+    "sql": "\n        UPDATE reservations\n        SET quantity = 4, state = 'ALLOCATED'\n        WHERE id = 4;\n        ",
+    "affected": 1
+  },
+  "CRUD_4_DELETE": {
+    "sql": "\n        DELETE FROM reservations\n        WHERE id = 4;\n        ",
+    "affected": 1
+  },
+  "JOIN_1_INNER_JOIN": {
+    "sql": "\n        SELECT \n            rl.id AS line_id,\n            r.id AS request_id,\n            r.state AS request_state,\n            i.name AS item_name,\n            l.name AS lab_name,\n            rl.quantity\n        FROM request_lines rl\n        INNER JOIN requests r ON r.id = rl.request_id\n        INNER JOIN items i ON i.id = rl.item_id\n        INNER JOIN labs l ON l.id = rl.lab_id\n        ORDER BY rl.id ASC\n        LIMIT 5;\n        ",
+    "columns": [
+      "line_id",
+      "request_id",
+      "request_state",
+      "item_name",
+      "lab_name",
+      "quantity"
+    ],
+    "rows": [
+      {
+        "line_id": 1,
+        "request_id": 1,
+        "request_state": "CLOSED",
+        "item_name": "Ultrasonic Sensor HC-SR04",
+        "lab_name": "Robotics Lab",
+        "quantity": 2
+      },
+      {
+        "line_id": 2,
+        "request_id": 1,
+        "request_state": "CLOSED",
+        "item_name": "DC Gear Motor",
+        "lab_name": "Robotics Lab",
+        "quantity": 2
+      },
+      {
+        "line_id": 3,
+        "request_id": 2,
+        "request_state": "CLOSED",
+        "item_name": "Jetson Nano",
+        "lab_name": "Robotics Lab",
+        "quantity": 1
+      },
+      {
+        "line_id": 4,
+        "request_id": 3,
+        "request_state": "MENTOR_REVIEW",
+        "item_name": "Jetson Nano",
+        "lab_name": "Robotics Lab",
+        "quantity": 1
+      },
+      {
+        "line_id": 5,
+        "request_id": 4,
+        "request_state": "MENTOR_REVIEW",
+        "item_name": "Jetson Nano",
+        "lab_name": "Robotics Lab",
+        "quantity": 1
+      }
+    ],
+    "count": 5
+  },
+  "JOIN_2_LEFT_OUTER_JOIN": {
+    "sql": "\n        SELECT \n            l.id AS lab_id,\n            l.name AS lab_name,\n            COUNT(s.item_id) AS stocked_item_count,\n            COALESCE(SUM(s.good), 0) AS total_good_units\n        FROM labs l\n        LEFT JOIN stock s ON s.lab_id = l.id\n        GROUP BY l.id, l.name\n        ORDER BY stocked_item_count DESC\n        LIMIT 5;\n        ",
+    "columns": [
+      "lab_id",
+      "lab_name",
+      "stocked_item_count",
+      "total_good_units"
+    ],
+    "rows": [
+      {
+        "lab_id": 21,
+        "lab_name": "Mechatronics and IoT Lab",
+        "stocked_item_count": 10,
+        "total_good_units": "288"
+      },
+      {
+        "lab_id": 17,
+        "lab_name": "Multimodal Sensor Analytics Lab",
+        "stocked_item_count": 10,
+        "total_good_units": "260"
+      },
+      {
+        "lab_id": 8,
+        "lab_name": "Project Lab (CL-7)",
+        "stocked_item_count": 8,
+        "total_good_units": "85"
+      },
+      {
+        "lab_id": 22,
+        "lab_name": "Mobile Robotics Lab",
+        "stocked_item_count": 6,
+        "total_good_units": "83"
+      },
+      {
+        "lab_id": 10,
+        "lab_name": "M.Tech Research Lab",
+        "stocked_item_count": 5,
+        "total_good_units": "21"
+      }
+    ],
+    "count": 5
+  },
+  "JOIN_3_FOUR_WAY_JOIN": {
+    "sql": "\n        SELECT \n            r.id AS request_id,\n            p.name AS project_name,\n            u.name AS lead_student,\n            i.name AS hardware_component,\n            l.lab_code AS lab_location,\n            rl.quantity AS allocated_quantity,\n            r.state AS approval_status\n        FROM requests r\n        INNER JOIN projects p ON p.id = r.project_id\n        INNER JOIN users u ON u.id = p.lead_id\n        INNER JOIN request_lines rl ON rl.request_id = r.id\n        INNER JOIN items i ON i.id = rl.item_id\n        INNER JOIN labs l ON l.id = rl.lab_id\n        ORDER BY r.id DESC\n        LIMIT 5;\n        ",
+    "columns": [
+      "request_id",
+      "project_name",
+      "lead_student",
+      "hardware_component",
+      "lab_location",
+      "allocated_quantity",
+      "approval_status"
+    ],
+    "rows": [
+      {
+        "request_id": 12,
+        "project_name": "Autonomous Rover \u00b7 20261015-180321",
+        "lead_student": "Aarav Shah \u00b7 Demo",
+        "hardware_component": "Jetson Nano",
+        "lab_location": null,
+        "allocated_quantity": 1,
+        "approval_status": "MENTOR_REVIEW"
+      },
+      {
+        "request_id": 11,
+        "project_name": "Autonomous Rover \u00b7 20261015-180321",
+        "lead_student": "Aarav Shah \u00b7 Demo",
+        "hardware_component": "Jetson Nano",
+        "lab_location": null,
+        "allocated_quantity": 1,
+        "approval_status": "APPROVED"
+      },
+      {
+        "request_id": 10,
+        "project_name": "Autonomous Rover \u00b7 20261015-180321",
+        "lead_student": "Aarav Shah \u00b7 Demo",
+        "hardware_component": "Jetson Nano",
+        "lab_location": null,
+        "allocated_quantity": 1,
+        "approval_status": "APPROVED"
+      },
+      {
+        "request_id": 9,
+        "project_name": "Autonomous Rover \u00b7 20261015-180321",
+        "lead_student": "Aarav Shah \u00b7 Demo",
+        "hardware_component": "Jetson Nano",
+        "lab_location": null,
+        "allocated_quantity": 1,
+        "approval_status": "ISSUED"
+      },
+      {
+        "request_id": 8,
+        "project_name": "Autonomous Rover \u00b7 20261015-180321",
+        "lead_student": "Aarav Shah \u00b7 Demo",
+        "hardware_component": "Jetson Nano",
+        "lab_location": null,
+        "allocated_quantity": 1,
+        "approval_status": "ISSUED"
+      }
+    ],
+    "count": 5
+  },
+  "SUBQUERY_1_NESTED_IN": {
+    "sql": "\n        SELECT id, name, lab_code, branch\n        FROM labs\n        WHERE id IN (\n            SELECT DISTINCT rl.lab_id \n            FROM request_lines rl\n            INNER JOIN requests r ON r.id = rl.request_id\n            WHERE r.state IN ('ISSUED', 'IN_USE')\n        )\n        ORDER BY id ASC;\n        ",
+    "columns": [
+      "id",
+      "name",
+      "lab_code",
+      "branch"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "name": "Robotics Lab",
+        "lab_code": null,
+        "branch": null
+      }
+    ],
+    "count": 1
+  },
+  "SUBQUERY_2_CORRELATED": {
+    "sql": "\n        SELECT \n            s.id AS stock_id,\n            i.name AS item_name,\n            l.name AS lab_name,\n            s.good AS available_units\n        FROM stock s\n        INNER JOIN items i ON i.id = s.item_id\n        INNER JOIN labs l ON l.id = s.lab_id\n        WHERE s.good < (\n            SELECT AVG(s2.good) \n            FROM stock s2 \n            WHERE s2.item_id = s.item_id\n        )\n        ORDER BY s.good ASC\n        LIMIT 5;\n        ",
+    "columns": [
+      "stock_id",
+      "item_name",
+      "lab_name",
+      "available_units"
+    ],
+    "rows": [
+      {
+        "stock_id": 4,
+        "item_name": "DC Gear Motor",
+        "lab_name": "Robotics Lab",
+        "available_units": 2
+      },
+      {
+        "stock_id": 47,
+        "item_name": "Rigol DS1054Z 50MHz Digital Oscilloscope",
+        "lab_name": "AI Project Lab",
+        "available_units": 2
+      },
+      {
+        "stock_id": 24,
+        "item_name": "Intel RealSense Depth Camera D435i",
+        "lab_name": "M.Tech Research Lab",
+        "available_units": 3
+      },
+      {
+        "stock_id": 70,
+        "item_name": "Digital Multimeter MAS830L with Test Leads",
+        "lab_name": "M.Tech Research Lab",
+        "available_units": 4
+      },
+      {
+        "stock_id": 45,
+        "item_name": "TurtleBot 3 Burger Mobile Robot",
+        "lab_name": "AI Project Lab",
+        "available_units": 4
+      }
+    ],
+    "count": 5
+  },
+  "SUBQUERY_3_DERIVED_TABLE": {
+    "sql": "\n        SELECT \n            dt.category,\n            COUNT(dt.id) AS total_items,\n            ROUND(AVG(dt.total_stock), 1) AS avg_stock_per_item\n        FROM (\n            SELECT \n                i.id,\n                i.category,\n                COALESCE(SUM(s.good), 0) AS total_stock\n            FROM items i\n            LEFT JOIN stock s ON s.item_id = i.id\n            GROUP BY i.id, i.category\n        ) AS dt\n        GROUP BY dt.category\n        ORDER BY total_items DESC;\n        ",
+    "columns": [
+      "category",
+      "total_items",
+      "avg_stock_per_item"
+    ],
+    "rows": [
+      {
+        "category": "Sensors",
+        "total_items": 14,
+        "avg_stock_per_item": "35.5"
+      },
+      {
+        "category": "Actuators",
+        "total_items": 14,
+        "avg_stock_per_item": "36.8"
+      },
+      {
+        "category": "Robotics",
+        "total_items": 5,
+        "avg_stock_per_item": "4.0"
+      },
+      {
+        "category": "Single Board Computers",
+        "total_items": 4,
+        "avg_stock_per_item": "30.8"
+      },
+      {
+        "category": "Microcontrollers",
+        "total_items": 4,
+        "avg_stock_per_item": "37.0"
+      },
+      {
+        "category": "Sensor",
+        "total_items": 3,
+        "avg_stock_per_item": "5.3"
+      },
+      {
+        "category": "Microprocessors",
+        "total_items": 2,
+        "avg_stock_per_item": "11.0"
+      },
+      {
+        "category": "Motors",
+        "total_items": 1,
+        "avg_stock_per_item": "8.0"
+      },
+      {
+        "category": "Compute",
+        "total_items": 1,
+        "avg_stock_per_item": "0.0"
+      }
+    ],
+    "count": 9
+  },
+  "ANALYTICS_AGGREGATION_HAVING": {
+    "sql": "\n        SELECT \n            i.category,\n            COUNT(DISTINCT i.id) AS unique_components,\n            SUM(s.good) AS total_good_stock,\n            SUM(s.bad) AS total_defective_stock,\n            ROUND(AVG(s.good), 2) AS avg_stock_level\n        FROM items i\n        INNER JOIN stock s ON s.item_id = i.id\n        GROUP BY i.category\n        HAVING SUM(s.good) > 20\n        ORDER BY total_good_stock DESC;\n        ",
+    "columns": [
+      "category",
+      "unique_components",
+      "total_good_stock",
+      "total_defective_stock",
+      "avg_stock_level"
+    ],
+    "rows": [
+      {
+        "category": "Actuators",
+        "unique_components": 14,
+        "total_good_stock": "515",
+        "total_defective_stock": "30",
+        "avg_stock_level": "24.52"
+      },
+      {
+        "category": "Sensors",
+        "unique_components": 14,
+        "total_good_stock": "497",
+        "total_defective_stock": "34",
+        "avg_stock_level": "19.88"
+      },
+      {
+        "category": "Microcontrollers",
+        "unique_components": 4,
+        "total_good_stock": "148",
+        "total_defective_stock": "11",
+        "avg_stock_level": "24.67"
+      },
+      {
+        "category": "Single Board Computers",
+        "unique_components": 4,
+        "total_good_stock": "123",
+        "total_defective_stock": "10",
+        "avg_stock_level": "8.79"
+      },
+      {
+        "category": "Microprocessors",
+        "unique_components": 2,
+        "total_good_stock": "22",
+        "total_defective_stock": "0",
+        "avg_stock_level": "7.33"
+      }
+    ],
+    "count": 5
+  },
+  "STORED_PROCEDURE_CALL": {
+    "sql": "\n        CALL labtrack_usage_by_lab();\n        ",
+    "columns": [
+      "lab_id",
+      "lab_name",
+      "component",
+      "issued_quantity",
+      "issued_requests",
+      "active_quantity"
+    ],
+    "rows": [
+      {
+        "lab_id": 1,
+        "lab_name": "Robotics Lab",
+        "component": "Ultrasonic Sensor HC-SR04",
+        "issued_quantity": "2",
+        "issued_requests": 1,
+        "active_quantity": "0"
+      },
+      {
+        "lab_id": 1,
+        "lab_name": "Robotics Lab",
+        "component": "DC Gear Motor",
+        "issued_quantity": "2",
+        "issued_requests": 1,
+        "active_quantity": "0"
+      },
+      {
+        "lab_id": 1,
+        "lab_name": "Robotics Lab",
+        "component": "Jetson Nano",
+        "issued_quantity": "8",
+        "issued_requests": 8,
+        "active_quantity": "4"
+      }
+    ],
+    "count": 3
+  },
+  "VIEW_1_ACTIVE_LOANS": {
+    "sql": "\n        SELECT * FROM v_active_loans_summary LIMIT 5;\n        ",
+    "columns": [
+      "request_id",
+      "project_name",
+      "borrower_name",
+      "borrower_id",
+      "borrower_email",
+      "item_id",
+      "component_name",
+      "component_kind",
+      "issued_quantity",
+      "issuing_lab",
+      "lab_code",
+      "loan_state",
+      "issued_at",
+      "due_at",
+      "hours_remaining"
+    ],
+    "rows": [
+      {
+        "request_id": 8,
+        "project_name": "Autonomous Rover \u00b7 20261015-180321",
+        "borrower_name": "Aarav Shah \u00b7 Demo",
+        "borrower_id": "DEMO-STU-001",
+        "borrower_email": "student1@example.invalid",
+        "item_id": 4,
+        "component_name": "Jetson Nano",
+        "component_kind": "ASSET",
+        "issued_quantity": 1,
+        "issuing_lab": "Robotics Lab",
+        "lab_code": null,
+        "loan_state": "ISSUED",
+        "issued_at": "2026-10-27 22:22:04",
+        "due_at": "2026-10-29 22:22:04",
+        "hours_remaining": 47
+      },
+      {
+        "request_id": 9,
+        "project_name": "Autonomous Rover \u00b7 20261015-180321",
+        "borrower_name": "Aarav Shah \u00b7 Demo",
+        "borrower_id": "DEMO-STU-001",
+        "borrower_email": "student1@example.invalid",
+        "item_id": 4,
+        "component_name": "Jetson Nano",
+        "component_kind": "ASSET",
+        "issued_quantity": 1,
+        "issuing_lab": "Robotics Lab",
+        "lab_code": null,
+        "loan_state": "ISSUED",
+        "issued_at": "2026-10-27 22:22:04",
+        "due_at": "2026-10-29 22:22:04",
+        "hours_remaining": 47
+      },
+      {
+        "request_id": 10,
+        "project_name": "Autonomous Rover \u00b7 20261015-180321",
+        "borrower_name": "Aarav Shah \u00b7 Demo",
+        "borrower_id": "DEMO-STU-001",
+        "borrower_email": "student1@example.invalid",
+        "item_id": 4,
+        "component_name": "Jetson Nano",
+        "component_kind": "ASSET",
+        "issued_quantity": 1,
+        "issuing_lab": "Robotics Lab",
+        "lab_code": null,
+        "loan_state": "ISSUED",
+        "issued_at": "2026-10-27 22:22:27",
+        "due_at": "2026-10-29 22:22:27",
+        "hours_remaining": 47
+      },
+      {
+        "request_id": 11,
+        "project_name": "Autonomous Rover \u00b7 20261015-180321",
+        "borrower_name": "Aarav Shah \u00b7 Demo",
+        "borrower_id": "DEMO-STU-001",
+        "borrower_email": "student1@example.invalid",
+        "item_id": 4,
+        "component_name": "Jetson Nano",
+        "component_kind": "ASSET",
+        "issued_quantity": 1,
+        "issuing_lab": "Robotics Lab",
+        "lab_code": null,
+        "loan_state": "ISSUED",
+        "issued_at": "2026-10-27 22:22:27",
+        "due_at": "2026-10-29 22:22:27",
+        "hours_remaining": 47
+      }
+    ],
+    "count": 4
+  },
+  "VIEW_2_INVENTORY_HEALTH": {
+    "sql": "\n        SELECT * FROM v_lab_inventory_health ORDER BY operational_health_pct ASC, total_good_stock DESC LIMIT 5;\n        ",
+    "columns": [
+      "lab_id",
+      "lab_name",
+      "lab_code",
+      "faculty_incharge",
+      "distinct_components",
+      "total_good_stock",
+      "total_defective_stock",
+      "avg_stock_per_component",
+      "operational_health_pct"
+    ],
+    "rows": [
+      {
+        "lab_id": 1,
+        "lab_name": "Robotics Lab",
+        "lab_code": null,
+        "faculty_incharge": "Lab In-Charge \u00b7 Demo",
+        "distinct_components": 3,
+        "total_good_stock": "9",
+        "total_defective_stock": "2",
+        "avg_stock_per_component": "3.00",
+        "operational_health_pct": "81.82"
+      },
+      {
+        "lab_id": 2,
+        "lab_name": "Automation Lab",
+        "lab_code": null,
+        "faculty_incharge": "Lab In-Charge \u00b7 Demo",
+        "distinct_components": 3,
+        "total_good_stock": "15",
+        "total_defective_stock": "2",
+        "avg_stock_per_component": "5.00",
+        "operational_health_pct": "88.24"
+      },
+      {
+        "lab_id": 14,
+        "lab_name": "Machine and Deep Learning Lab",
+        "lab_code": "MDL-AIML",
+        "faculty_incharge": "Dr. Manoj Patil",
+        "distinct_components": 3,
+        "total_good_stock": "47",
+        "total_defective_stock": "5",
+        "avg_stock_per_component": "15.67",
+        "operational_health_pct": "90.38"
+      },
+      {
+        "lab_id": 16,
+        "lab_name": "Cloud Computing Lab",
+        "lab_code": "CCL-AIML",
+        "faculty_incharge": "Dr. Sandeep Shinde",
+        "distinct_components": 5,
+        "total_good_stock": "95",
+        "total_defective_stock": "8",
+        "avg_stock_per_component": "19.00",
+        "operational_health_pct": "92.23"
+      },
+      {
+        "lab_id": 9,
+        "lab_name": "Database Management and Analytics Lab (CL-9)",
+        "lab_code": "DMAL-CSE",
+        "faculty_incharge": "Dr. Preeti Shinde",
+        "distinct_components": 3,
+        "total_good_stock": "48",
+        "total_defective_stock": "4",
+        "avg_stock_per_component": "16.00",
+        "operational_health_pct": "92.31"
+      }
+    ],
+    "count": 5
+  },
+  "EXPLAIN_PRIMARY_KEY_LOOKUP": {
+    "sql": "\n        EXPLAIN FORMAT=TREE\n        SELECT * FROM users WHERE id = 1;\n        ",
+    "columns": [
+      "EXPLAIN"
+    ],
+    "rows": [
+      {
+        "EXPLAIN": "-> Rows fetched before execution  (cost=0..0 rows=1)\n"
+      }
+    ],
+    "count": 1
+  },
+  "EXPLAIN_UNIQUE_INDEX_IDENTIFIER": {
+    "sql": "\n        EXPLAIN FORMAT=TREE\n        SELECT * FROM users WHERE identifier = 'DEMO-STU-001';\n        ",
+    "columns": [
+      "EXPLAIN"
+    ],
+    "rows": [
+      {
+        "EXPLAIN": "-> Rows fetched before execution  (cost=0..0 rows=1)\n"
+      }
+    ],
+    "count": 1
+  },
+  "EXPLAIN_COMPOSITE_INDEX_STOCK": {
+    "sql": "\n        EXPLAIN FORMAT=TREE\n        SELECT * FROM stock WHERE item_id = 1 AND lab_id = 1;\n        ",
+    "columns": [
+      "EXPLAIN"
+    ],
+    "rows": [
+      {
+        "EXPLAIN": "-> Rows fetched before execution  (cost=0..0 rows=1)\n"
+      }
+    ],
+    "count": 1
+  }
+}
